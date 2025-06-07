@@ -1,0 +1,2712 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"soft_i2c.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.i2c_read_sda,"ax",%progbits
+  18              		.align	1
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  23              	i2c_read_sda:
+  24              	.LFB73:
+  25              		.file 1 "User/Src/soft_i2c.c"
+   1:User/Src/soft_i2c.c **** /*
+   2:User/Src/soft_i2c.c ****  * @Author: Liang 
+   3:User/Src/soft_i2c.c ****  * @Date: 2025-03-06 18:12:05
+   4:User/Src/soft_i2c.c ****  * @LastEditors: HA HA 
+   5:User/Src/soft_i2c.c ****  * @LastEditTime: 2025-03-07 15:28:39
+   6:User/Src/soft_i2c.c ****  * @Description: iic  PB6--SCL  PB7--SDA
+   7:User/Src/soft_i2c.c ****  * 
+   8:User/Src/soft_i2c.c ****  * Copyright (c) 2025 by ${git_name_email}, All Rights Reserved.
+   9:User/Src/soft_i2c.c ****  */
+  10:User/Src/soft_i2c.c **** #include "soft_i2c.h"
+  11:User/Src/soft_i2c.c **** 
+  12:User/Src/soft_i2c.c **** uint16_t 	soft_i2c_delay = 300;
+  13:User/Src/soft_i2c.c **** 
+  14:User/Src/soft_i2c.c **** 
+  15:User/Src/soft_i2c.c **** void IIC_GPIO_Init(void)
+  16:User/Src/soft_i2c.c **** {
+  17:User/Src/soft_i2c.c **** 
+  18:User/Src/soft_i2c.c **** 	GPIO_InitTypeDef GPIO_InitStruct = {0};
+  19:User/Src/soft_i2c.c **** 
+  20:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = I2C_SDA;
+  21:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  22:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  23:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  24:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+  25:User/Src/soft_i2c.c **** 		
+  26:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = I2C_SCL;
+  27:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  28:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  29:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  30:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+  31:User/Src/soft_i2c.c **** 
+  32:User/Src/soft_i2c.c **** }
+  33:User/Src/soft_i2c.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 2
+
+
+  34:User/Src/soft_i2c.c **** 
+  35:User/Src/soft_i2c.c **** /**
+  36:User/Src/soft_i2c.c ****  * @brief set sda is high
+  37:User/Src/soft_i2c.c ****  * 
+  38:User/Src/soft_i2c.c ****  */
+  39:User/Src/soft_i2c.c **** static inline void i2c_sda_h(void)
+  40:User/Src/soft_i2c.c **** {
+  41:User/Src/soft_i2c.c **** 	/*user code*/
+  42:User/Src/soft_i2c.c **** 
+  43:User/Src/soft_i2c.c **** 	HAL_GPIO_WritePin(I2C_GPIO, GPIO_PIN_7, GPIO_PIN_SET);
+  44:User/Src/soft_i2c.c **** }
+  45:User/Src/soft_i2c.c **** 
+  46:User/Src/soft_i2c.c **** /**
+  47:User/Src/soft_i2c.c ****  * @brief set sda is low
+  48:User/Src/soft_i2c.c ****  * 
+  49:User/Src/soft_i2c.c ****  */
+  50:User/Src/soft_i2c.c **** static inline void i2c_sda_l(void)
+  51:User/Src/soft_i2c.c **** {
+  52:User/Src/soft_i2c.c **** 	/*user code*/
+  53:User/Src/soft_i2c.c ****     HAL_GPIO_WritePin(I2C_GPIO, GPIO_PIN_7, GPIO_PIN_RESET);
+  54:User/Src/soft_i2c.c **** }
+  55:User/Src/soft_i2c.c **** 
+  56:User/Src/soft_i2c.c **** /**
+  57:User/Src/soft_i2c.c ****  * @brief set scl is high
+  58:User/Src/soft_i2c.c ****  * 
+  59:User/Src/soft_i2c.c ****  */
+  60:User/Src/soft_i2c.c **** static inline void i2c_scl_h(void)
+  61:User/Src/soft_i2c.c **** {
+  62:User/Src/soft_i2c.c **** 	/*user code*/
+  63:User/Src/soft_i2c.c ****     HAL_GPIO_WritePin(I2C_GPIO, GPIO_PIN_6, GPIO_PIN_SET);
+  64:User/Src/soft_i2c.c **** }
+  65:User/Src/soft_i2c.c **** 
+  66:User/Src/soft_i2c.c **** /**
+  67:User/Src/soft_i2c.c ****  * @brief set scl is low
+  68:User/Src/soft_i2c.c ****  * 
+  69:User/Src/soft_i2c.c ****  */
+  70:User/Src/soft_i2c.c **** static inline void i2c_scl_l(void)
+  71:User/Src/soft_i2c.c **** {
+  72:User/Src/soft_i2c.c **** 	/*user code*/
+  73:User/Src/soft_i2c.c ****     HAL_GPIO_WritePin(I2C_GPIO, GPIO_PIN_6, GPIO_PIN_RESET);
+  74:User/Src/soft_i2c.c **** }
+  75:User/Src/soft_i2c.c **** 
+  76:User/Src/soft_i2c.c **** /**
+  77:User/Src/soft_i2c.c ****  * @brief Read sda pin state
+  78:User/Src/soft_i2c.c ****  * 
+  79:User/Src/soft_i2c.c ****  */
+  80:User/Src/soft_i2c.c **** static unsigned char i2c_read_sda(void)
+  81:User/Src/soft_i2c.c **** {
+  26              		.loc 1 81 1 view -0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30 0000 08B5     		push	{r3, lr}
+  31              	.LCFI0:
+  32              		.cfi_def_cfa_offset 8
+  33              		.cfi_offset 3, -8
+  34              		.cfi_offset 14, -4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 3
+
+
+  82:User/Src/soft_i2c.c **** 	/*user code*/
+  83:User/Src/soft_i2c.c ****     if (HAL_GPIO_ReadPin(I2C_GPIO, GPIO_PIN_7) == GPIO_PIN_SET) {
+  35              		.loc 1 83 5 view .LVU1
+  36              		.loc 1 83 9 is_stmt 0 view .LVU2
+  37 0002 8021     		movs	r1, #128
+  38 0004 0348     		ldr	r0, .L5
+  39 0006 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+  40              	.LVL0:
+  41              		.loc 1 83 8 view .LVU3
+  42 000a 0128     		cmp	r0, #1
+  43 000c 00D0     		beq	.L2
+  84:User/Src/soft_i2c.c ****         return 1;
+  85:User/Src/soft_i2c.c ****     } else {
+  86:User/Src/soft_i2c.c ****         return 0;
+  44              		.loc 1 86 16 view .LVU4
+  45 000e 0020     		movs	r0, #0
+  46              	.L2:
+  87:User/Src/soft_i2c.c ****     }
+  88:User/Src/soft_i2c.c **** }
+  47              		.loc 1 88 1 view .LVU5
+  48 0010 08BD     		pop	{r3, pc}
+  49              	.L6:
+  50 0012 00BF     		.align	2
+  51              	.L5:
+  52 0014 000C0140 		.word	1073810432
+  53              		.cfi_endproc
+  54              	.LFE73:
+  56              		.section	.text.IIC_GPIO_Init,"ax",%progbits
+  57              		.align	1
+  58              		.global	IIC_GPIO_Init
+  59              		.syntax unified
+  60              		.thumb
+  61              		.thumb_func
+  63              	IIC_GPIO_Init:
+  64              	.LFB68:
+  16:User/Src/soft_i2c.c **** 
+  65              		.loc 1 16 1 is_stmt 1 view -0
+  66              		.cfi_startproc
+  67              		@ args = 0, pretend = 0, frame = 16
+  68              		@ frame_needed = 0, uses_anonymous_args = 0
+  69 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  70              	.LCFI1:
+  71              		.cfi_def_cfa_offset 20
+  72              		.cfi_offset 4, -20
+  73              		.cfi_offset 5, -16
+  74              		.cfi_offset 6, -12
+  75              		.cfi_offset 7, -8
+  76              		.cfi_offset 14, -4
+  77 0002 85B0     		sub	sp, sp, #20
+  78              	.LCFI2:
+  79              		.cfi_def_cfa_offset 40
+  18:User/Src/soft_i2c.c **** 
+  80              		.loc 1 18 2 view .LVU7
+  18:User/Src/soft_i2c.c **** 
+  81              		.loc 1 18 19 is_stmt 0 view .LVU8
+  82 0004 0024     		movs	r4, #0
+  83 0006 0094     		str	r4, [sp]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 4
+
+
+  84 0008 0194     		str	r4, [sp, #4]
+  85 000a 0294     		str	r4, [sp, #8]
+  86 000c 0394     		str	r4, [sp, #12]
+  20:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  87              		.loc 1 20 2 is_stmt 1 view .LVU9
+  20:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  88              		.loc 1 20 22 is_stmt 0 view .LVU10
+  89 000e 8023     		movs	r3, #128
+  90 0010 0093     		str	r3, [sp]
+  21:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  91              		.loc 1 21 2 is_stmt 1 view .LVU11
+  21:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  92              		.loc 1 21 23 is_stmt 0 view .LVU12
+  93 0012 1127     		movs	r7, #17
+  94 0014 0197     		str	r7, [sp, #4]
+  22:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  95              		.loc 1 22 2 is_stmt 1 view .LVU13
+  23:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+  96              		.loc 1 23 2 view .LVU14
+  23:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+  97              		.loc 1 23 24 is_stmt 0 view .LVU15
+  98 0016 0226     		movs	r6, #2
+  99 0018 0396     		str	r6, [sp, #12]
+  24:User/Src/soft_i2c.c **** 		
+ 100              		.loc 1 24 2 is_stmt 1 view .LVU16
+ 101 001a 084D     		ldr	r5, .L9
+ 102 001c 6946     		mov	r1, sp
+ 103 001e 2846     		mov	r0, r5
+ 104 0020 FFF7FEFF 		bl	HAL_GPIO_Init
+ 105              	.LVL1:
+  26:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 106              		.loc 1 26 2 view .LVU17
+  26:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 107              		.loc 1 26 22 is_stmt 0 view .LVU18
+ 108 0024 4023     		movs	r3, #64
+ 109 0026 0093     		str	r3, [sp]
+  27:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 110              		.loc 1 27 2 is_stmt 1 view .LVU19
+  27:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 111              		.loc 1 27 23 is_stmt 0 view .LVU20
+ 112 0028 0197     		str	r7, [sp, #4]
+  28:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 113              		.loc 1 28 2 is_stmt 1 view .LVU21
+  28:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 114              		.loc 1 28 23 is_stmt 0 view .LVU22
+ 115 002a 0294     		str	r4, [sp, #8]
+  29:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 116              		.loc 1 29 2 is_stmt 1 view .LVU23
+  29:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 117              		.loc 1 29 24 is_stmt 0 view .LVU24
+ 118 002c 0396     		str	r6, [sp, #12]
+  30:User/Src/soft_i2c.c **** 
+ 119              		.loc 1 30 2 is_stmt 1 view .LVU25
+ 120 002e 6946     		mov	r1, sp
+ 121 0030 2846     		mov	r0, r5
+ 122 0032 FFF7FEFF 		bl	HAL_GPIO_Init
+ 123              	.LVL2:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 5
+
+
+  32:User/Src/soft_i2c.c **** 
+ 124              		.loc 1 32 1 is_stmt 0 view .LVU26
+ 125 0036 05B0     		add	sp, sp, #20
+ 126              	.LCFI3:
+ 127              		.cfi_def_cfa_offset 20
+ 128              		@ sp needed
+ 129 0038 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 130              	.L10:
+ 131 003a 00BF     		.align	2
+ 132              	.L9:
+ 133 003c 000C0140 		.word	1073810432
+ 134              		.cfi_endproc
+ 135              	.LFE68:
+ 137              		.section	.text.i2c_start,"ax",%progbits
+ 138              		.align	1
+ 139              		.global	i2c_start
+ 140              		.syntax unified
+ 141              		.thumb
+ 142              		.thumb_func
+ 144              	i2c_start:
+ 145              	.LFB77:
+  89:User/Src/soft_i2c.c **** 
+  90:User/Src/soft_i2c.c **** /**
+  91:User/Src/soft_i2c.c ****  * @brief When read data, need to set sda as in
+  92:User/Src/soft_i2c.c ****  * 
+  93:User/Src/soft_i2c.c ****  */
+  94:User/Src/soft_i2c.c **** static inline void i2c_sda_in(void)
+  95:User/Src/soft_i2c.c **** {
+  96:User/Src/soft_i2c.c **** 	/*user code */
+  97:User/Src/soft_i2c.c ****   	GPIO_InitTypeDef GPIO_InitStruct = {0};
+  98:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+  99:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 100:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 101:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 102:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 103:User/Src/soft_i2c.c **** }
+ 104:User/Src/soft_i2c.c **** 
+ 105:User/Src/soft_i2c.c **** /**
+ 106:User/Src/soft_i2c.c ****  * @brief When send data, need to set sda as out
+ 107:User/Src/soft_i2c.c ****  * 
+ 108:User/Src/soft_i2c.c ****  */
+ 109:User/Src/soft_i2c.c **** static inline void i2c_sda_out(void)
+ 110:User/Src/soft_i2c.c **** {
+ 111:User/Src/soft_i2c.c **** 	/*user code */
+ 112:User/Src/soft_i2c.c ****   	GPIO_InitTypeDef GPIO_InitStruct = {0};
+ 113:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 114:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 115:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 116:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 117:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 118:User/Src/soft_i2c.c ****   
+ 119:User/Src/soft_i2c.c **** }
+ 120:User/Src/soft_i2c.c **** 
+ 121:User/Src/soft_i2c.c **** /**
+ 122:User/Src/soft_i2c.c ****  * @brief i2c wiat
+ 123:User/Src/soft_i2c.c ****  * 
+ 124:User/Src/soft_i2c.c ****  */
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 6
+
+
+ 125:User/Src/soft_i2c.c **** static inline void i2c_Wait(void)
+ 126:User/Src/soft_i2c.c **** {	
+ 127:User/Src/soft_i2c.c **** 	int i = soft_i2c_delay;
+ 128:User/Src/soft_i2c.c **** 	while (i--);
+ 129:User/Src/soft_i2c.c **** }
+ 130:User/Src/soft_i2c.c **** 
+ 131:User/Src/soft_i2c.c **** /**
+ 132:User/Src/soft_i2c.c ****  * @brief Generate an i2c strat signal
+ 133:User/Src/soft_i2c.c ****  * 
+ 134:User/Src/soft_i2c.c ****  */
+ 135:User/Src/soft_i2c.c **** i2c_exit_code_e i2c_start(void)
+ 136:User/Src/soft_i2c.c **** {
+ 146              		.loc 1 136 1 is_stmt 1 view -0
+ 147              		.cfi_startproc
+ 148              		@ args = 0, pretend = 0, frame = 16
+ 149              		@ frame_needed = 0, uses_anonymous_args = 0
+ 150 0000 70B5     		push	{r4, r5, r6, lr}
+ 151              	.LCFI4:
+ 152              		.cfi_def_cfa_offset 16
+ 153              		.cfi_offset 4, -16
+ 154              		.cfi_offset 5, -12
+ 155              		.cfi_offset 6, -8
+ 156              		.cfi_offset 14, -4
+ 157 0002 84B0     		sub	sp, sp, #16
+ 158              	.LCFI5:
+ 159              		.cfi_def_cfa_offset 32
+ 137:User/Src/soft_i2c.c **** 	i2c_sda_out();
+ 160              		.loc 1 137 2 view .LVU28
+ 161              	.LBB108:
+ 162              	.LBI108:
+ 109:User/Src/soft_i2c.c **** {
+ 163              		.loc 1 109 20 view .LVU29
+ 164              	.LBB109:
+ 112:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 165              		.loc 1 112 4 view .LVU30
+ 112:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 166              		.loc 1 112 21 is_stmt 0 view .LVU31
+ 167 0004 0023     		movs	r3, #0
+ 168 0006 0093     		str	r3, [sp]
+ 169 0008 0193     		str	r3, [sp, #4]
+ 170 000a 0293     		str	r3, [sp, #8]
+ 171 000c 0393     		str	r3, [sp, #12]
+ 113:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 172              		.loc 1 113 2 is_stmt 1 view .LVU32
+ 113:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 173              		.loc 1 113 22 is_stmt 0 view .LVU33
+ 174 000e 8026     		movs	r6, #128
+ 175 0010 0096     		str	r6, [sp]
+ 114:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 176              		.loc 1 114 2 is_stmt 1 view .LVU34
+ 114:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 177              		.loc 1 114 23 is_stmt 0 view .LVU35
+ 178 0012 1123     		movs	r3, #17
+ 179 0014 0193     		str	r3, [sp, #4]
+ 115:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 180              		.loc 1 115 2 is_stmt 1 view .LVU36
+ 115:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 7
+
+
+ 181              		.loc 1 115 23 is_stmt 0 view .LVU37
+ 182 0016 0125     		movs	r5, #1
+ 183 0018 0295     		str	r5, [sp, #8]
+ 116:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 184              		.loc 1 116 2 is_stmt 1 view .LVU38
+ 116:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 185              		.loc 1 116 24 is_stmt 0 view .LVU39
+ 186 001a 0223     		movs	r3, #2
+ 187 001c 0393     		str	r3, [sp, #12]
+ 117:User/Src/soft_i2c.c ****   
+ 188              		.loc 1 117 2 is_stmt 1 view .LVU40
+ 189 001e 194C     		ldr	r4, .L19
+ 190 0020 6946     		mov	r1, sp
+ 191 0022 2046     		mov	r0, r4
+ 192 0024 FFF7FEFF 		bl	HAL_GPIO_Init
+ 193              	.LVL3:
+ 194              	.LBE109:
+ 195              	.LBE108:
+ 138:User/Src/soft_i2c.c **** 	i2c_sda_h();
+ 196              		.loc 1 138 2 view .LVU41
+ 197              	.LBB110:
+ 198              	.LBI110:
+  39:User/Src/soft_i2c.c **** {
+ 199              		.loc 1 39 20 view .LVU42
+ 200              	.LBB111:
+  43:User/Src/soft_i2c.c **** }
+ 201              		.loc 1 43 2 view .LVU43
+ 202 0028 2A46     		mov	r2, r5
+ 203 002a 3146     		mov	r1, r6
+ 204 002c 2046     		mov	r0, r4
+ 205 002e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 206              	.LVL4:
+ 207              	.LBE111:
+ 208              	.LBE110:
+ 139:User/Src/soft_i2c.c **** 	i2c_scl_h();
+ 209              		.loc 1 139 2 view .LVU44
+ 210              	.LBB112:
+ 211              	.LBI112:
+  60:User/Src/soft_i2c.c **** {
+ 212              		.loc 1 60 20 view .LVU45
+ 213              	.LBB113:
+  63:User/Src/soft_i2c.c **** }
+ 214              		.loc 1 63 5 view .LVU46
+ 215 0032 2A46     		mov	r2, r5
+ 216 0034 4021     		movs	r1, #64
+ 217 0036 2046     		mov	r0, r4
+ 218 0038 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 219              	.LVL5:
+ 220              	.LBE113:
+ 221              	.LBE112:
+ 140:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 222              		.loc 1 140 2 view .LVU47
+ 223              	.LBB114:
+ 224              	.LBI114:
+ 125:User/Src/soft_i2c.c **** {	
+ 225              		.loc 1 125 20 view .LVU48
+ 226              	.LBB115:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 8
+
+
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 227              		.loc 1 127 2 view .LVU49
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 228              		.loc 1 127 6 is_stmt 0 view .LVU50
+ 229 003c 124B     		ldr	r3, .L19+4
+ 230 003e 1B88     		ldrh	r3, [r3]
+ 231              	.LVL6:
+ 128:User/Src/soft_i2c.c **** }
+ 232              		.loc 1 128 2 is_stmt 1 view .LVU51
+ 233              	.L12:
+ 128:User/Src/soft_i2c.c **** }
+ 234              		.loc 1 128 13 view .LVU52
+ 128:User/Src/soft_i2c.c **** }
+ 235              		.loc 1 128 8 view .LVU53
+ 236 0040 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 237              		.loc 1 128 10 is_stmt 0 view .LVU54
+ 238 0042 013B     		subs	r3, r3, #1
+ 239              	.LVL7:
+ 128:User/Src/soft_i2c.c **** }
+ 240              		.loc 1 128 8 view .LVU55
+ 241 0044 002A     		cmp	r2, #0
+ 242 0046 FBD1     		bne	.L12
+ 243              	.LVL8:
+ 128:User/Src/soft_i2c.c **** }
+ 244              		.loc 1 128 8 view .LVU56
+ 245              	.LBE115:
+ 246              	.LBE114:
+ 141:User/Src/soft_i2c.c **** 
+ 142:User/Src/soft_i2c.c **** 	if(!i2c_read_sda())
+ 247              		.loc 1 142 2 is_stmt 1 view .LVU57
+ 248              		.loc 1 142 6 is_stmt 0 view .LVU58
+ 249 0048 FFF7FEFF 		bl	i2c_read_sda
+ 250              	.LVL9:
+ 251              		.loc 1 142 4 view .LVU59
+ 252 004c 10B9     		cbnz	r0, .L18
+ 143:User/Src/soft_i2c.c **** 	{
+ 144:User/Src/soft_i2c.c **** 		return I2C_START_FAIL;
+ 253              		.loc 1 144 10 view .LVU60
+ 254 004e 0120     		movs	r0, #1
+ 255              	.L13:
+ 145:User/Src/soft_i2c.c **** 	}
+ 146:User/Src/soft_i2c.c **** 
+ 147:User/Src/soft_i2c.c **** 	i2c_sda_l();
+ 148:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 149:User/Src/soft_i2c.c **** 	i2c_scl_l();
+ 150:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 151:User/Src/soft_i2c.c **** 	return I2C_OK;
+ 152:User/Src/soft_i2c.c **** }
+ 256              		.loc 1 152 1 view .LVU61
+ 257 0050 04B0     		add	sp, sp, #16
+ 258              	.LCFI6:
+ 259              		.cfi_remember_state
+ 260              		.cfi_def_cfa_offset 16
+ 261              		@ sp needed
+ 262 0052 70BD     		pop	{r4, r5, r6, pc}
+ 263              	.L18:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 9
+
+
+ 264              	.LCFI7:
+ 265              		.cfi_restore_state
+ 147:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 266              		.loc 1 147 2 is_stmt 1 view .LVU62
+ 267              	.LBB116:
+ 268              	.LBI116:
+  50:User/Src/soft_i2c.c **** {
+ 269              		.loc 1 50 20 view .LVU63
+ 270              	.LBB117:
+  53:User/Src/soft_i2c.c **** }
+ 271              		.loc 1 53 5 view .LVU64
+ 272 0054 0022     		movs	r2, #0
+ 273 0056 8021     		movs	r1, #128
+ 274 0058 0A48     		ldr	r0, .L19
+ 275 005a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 276              	.LVL10:
+ 277              	.LBE117:
+ 278              	.LBE116:
+ 148:User/Src/soft_i2c.c **** 	i2c_scl_l();
+ 279              		.loc 1 148 2 view .LVU65
+ 280              	.LBB118:
+ 281              	.LBI118:
+ 125:User/Src/soft_i2c.c **** {	
+ 282              		.loc 1 125 20 view .LVU66
+ 283              	.LBB119:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 284              		.loc 1 127 2 view .LVU67
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 285              		.loc 1 127 6 is_stmt 0 view .LVU68
+ 286 005e 0A4B     		ldr	r3, .L19+4
+ 287 0060 1B88     		ldrh	r3, [r3]
+ 288              	.LVL11:
+ 128:User/Src/soft_i2c.c **** }
+ 289              		.loc 1 128 2 is_stmt 1 view .LVU69
+ 290              	.L14:
+ 128:User/Src/soft_i2c.c **** }
+ 291              		.loc 1 128 13 view .LVU70
+ 128:User/Src/soft_i2c.c **** }
+ 292              		.loc 1 128 8 view .LVU71
+ 293 0062 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 294              		.loc 1 128 10 is_stmt 0 view .LVU72
+ 295 0064 013B     		subs	r3, r3, #1
+ 296              	.LVL12:
+ 128:User/Src/soft_i2c.c **** }
+ 297              		.loc 1 128 8 view .LVU73
+ 298 0066 002A     		cmp	r2, #0
+ 299 0068 FBD1     		bne	.L14
+ 300              	.LVL13:
+ 128:User/Src/soft_i2c.c **** }
+ 301              		.loc 1 128 8 view .LVU74
+ 302              	.LBE119:
+ 303              	.LBE118:
+ 149:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 304              		.loc 1 149 2 is_stmt 1 view .LVU75
+ 305              	.LBB120:
+ 306              	.LBI120:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 10
+
+
+  70:User/Src/soft_i2c.c **** {
+ 307              		.loc 1 70 20 view .LVU76
+ 308              	.LBB121:
+  73:User/Src/soft_i2c.c **** }
+ 309              		.loc 1 73 5 view .LVU77
+ 310 006a 4021     		movs	r1, #64
+ 311 006c 0548     		ldr	r0, .L19
+ 312 006e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 313              	.LVL14:
+ 314              	.LBE121:
+ 315              	.LBE120:
+ 150:User/Src/soft_i2c.c **** 	return I2C_OK;
+ 316              		.loc 1 150 2 view .LVU78
+ 317              	.LBB122:
+ 318              	.LBI122:
+ 125:User/Src/soft_i2c.c **** {	
+ 319              		.loc 1 125 20 view .LVU79
+ 320              	.LBB123:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 321              		.loc 1 127 2 view .LVU80
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 322              		.loc 1 127 6 is_stmt 0 view .LVU81
+ 323 0072 054B     		ldr	r3, .L19+4
+ 324 0074 1B88     		ldrh	r3, [r3]
+ 325              	.LVL15:
+ 128:User/Src/soft_i2c.c **** }
+ 326              		.loc 1 128 2 is_stmt 1 view .LVU82
+ 327              	.L15:
+ 128:User/Src/soft_i2c.c **** }
+ 328              		.loc 1 128 13 view .LVU83
+ 128:User/Src/soft_i2c.c **** }
+ 329              		.loc 1 128 8 view .LVU84
+ 330 0076 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 331              		.loc 1 128 10 is_stmt 0 view .LVU85
+ 332 0078 013B     		subs	r3, r3, #1
+ 333              	.LVL16:
+ 128:User/Src/soft_i2c.c **** }
+ 334              		.loc 1 128 8 view .LVU86
+ 335 007a 002A     		cmp	r2, #0
+ 336 007c FBD1     		bne	.L15
+ 337              	.LBE123:
+ 338              	.LBE122:
+ 151:User/Src/soft_i2c.c **** }
+ 339              		.loc 1 151 9 view .LVU87
+ 340 007e 0020     		movs	r0, #0
+ 341              	.LBB125:
+ 342              	.LBB124:
+ 343 0080 E6E7     		b	.L13
+ 344              	.L20:
+ 345 0082 00BF     		.align	2
+ 346              	.L19:
+ 347 0084 000C0140 		.word	1073810432
+ 348 0088 00000000 		.word	.LANCHOR0
+ 349              	.LBE124:
+ 350              	.LBE125:
+ 351              		.cfi_endproc
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 11
+
+
+ 352              	.LFE77:
+ 354              		.section	.text.i2c_stop,"ax",%progbits
+ 355              		.align	1
+ 356              		.global	i2c_stop
+ 357              		.syntax unified
+ 358              		.thumb
+ 359              		.thumb_func
+ 361              	i2c_stop:
+ 362              	.LFB78:
+ 153:User/Src/soft_i2c.c **** 
+ 154:User/Src/soft_i2c.c **** /**
+ 155:User/Src/soft_i2c.c ****  * @brief Generate an i2c stop signal
+ 156:User/Src/soft_i2c.c ****  * 
+ 157:User/Src/soft_i2c.c ****  */
+ 158:User/Src/soft_i2c.c **** void i2c_stop(void)
+ 159:User/Src/soft_i2c.c **** {
+ 363              		.loc 1 159 1 is_stmt 1 view -0
+ 364              		.cfi_startproc
+ 365              		@ args = 0, pretend = 0, frame = 16
+ 366              		@ frame_needed = 0, uses_anonymous_args = 0
+ 367 0000 70B5     		push	{r4, r5, r6, lr}
+ 368              	.LCFI8:
+ 369              		.cfi_def_cfa_offset 16
+ 370              		.cfi_offset 4, -16
+ 371              		.cfi_offset 5, -12
+ 372              		.cfi_offset 6, -8
+ 373              		.cfi_offset 14, -4
+ 374 0002 84B0     		sub	sp, sp, #16
+ 375              	.LCFI9:
+ 376              		.cfi_def_cfa_offset 32
+ 160:User/Src/soft_i2c.c **** 	i2c_sda_out();
+ 377              		.loc 1 160 2 view .LVU89
+ 378              	.LBB140:
+ 379              	.LBI140:
+ 109:User/Src/soft_i2c.c **** {
+ 380              		.loc 1 109 20 view .LVU90
+ 381              	.LBB141:
+ 112:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 382              		.loc 1 112 4 view .LVU91
+ 112:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 383              		.loc 1 112 21 is_stmt 0 view .LVU92
+ 384 0004 0024     		movs	r4, #0
+ 385 0006 0094     		str	r4, [sp]
+ 386 0008 0194     		str	r4, [sp, #4]
+ 387 000a 0294     		str	r4, [sp, #8]
+ 388 000c 0394     		str	r4, [sp, #12]
+ 113:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 389              		.loc 1 113 2 is_stmt 1 view .LVU93
+ 113:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 390              		.loc 1 113 22 is_stmt 0 view .LVU94
+ 391 000e 8026     		movs	r6, #128
+ 392 0010 0096     		str	r6, [sp]
+ 114:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 393              		.loc 1 114 2 is_stmt 1 view .LVU95
+ 114:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 394              		.loc 1 114 23 is_stmt 0 view .LVU96
+ 395 0012 1123     		movs	r3, #17
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 12
+
+
+ 396 0014 0193     		str	r3, [sp, #4]
+ 115:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 397              		.loc 1 115 2 is_stmt 1 view .LVU97
+ 115:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 398              		.loc 1 115 23 is_stmt 0 view .LVU98
+ 399 0016 0123     		movs	r3, #1
+ 400 0018 0293     		str	r3, [sp, #8]
+ 116:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 401              		.loc 1 116 2 is_stmt 1 view .LVU99
+ 116:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 402              		.loc 1 116 24 is_stmt 0 view .LVU100
+ 403 001a 0223     		movs	r3, #2
+ 404 001c 0393     		str	r3, [sp, #12]
+ 117:User/Src/soft_i2c.c ****   
+ 405              		.loc 1 117 2 is_stmt 1 view .LVU101
+ 406 001e 134D     		ldr	r5, .L25
+ 407 0020 6946     		mov	r1, sp
+ 408 0022 2846     		mov	r0, r5
+ 409 0024 FFF7FEFF 		bl	HAL_GPIO_Init
+ 410              	.LVL17:
+ 411              	.LBE141:
+ 412              	.LBE140:
+ 161:User/Src/soft_i2c.c **** 	i2c_sda_l();
+ 413              		.loc 1 161 2 view .LVU102
+ 414              	.LBB142:
+ 415              	.LBI142:
+  50:User/Src/soft_i2c.c **** {
+ 416              		.loc 1 50 20 view .LVU103
+ 417              	.LBB143:
+  53:User/Src/soft_i2c.c **** }
+ 418              		.loc 1 53 5 view .LVU104
+ 419 0028 2246     		mov	r2, r4
+ 420 002a 3146     		mov	r1, r6
+ 421 002c 2846     		mov	r0, r5
+ 422 002e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 423              	.LVL18:
+ 424              	.LBE143:
+ 425              	.LBE142:
+ 162:User/Src/soft_i2c.c **** 	i2c_scl_l();
+ 426              		.loc 1 162 2 view .LVU105
+ 427              	.LBB144:
+ 428              	.LBI144:
+  70:User/Src/soft_i2c.c **** {
+ 429              		.loc 1 70 20 view .LVU106
+ 430              	.LBB145:
+  73:User/Src/soft_i2c.c **** }
+ 431              		.loc 1 73 5 view .LVU107
+ 432 0032 2246     		mov	r2, r4
+ 433 0034 4021     		movs	r1, #64
+ 434 0036 2846     		mov	r0, r5
+ 435 0038 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 436              	.LVL19:
+ 437              	.LBE145:
+ 438              	.LBE144:
+ 163:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 439              		.loc 1 163 2 view .LVU108
+ 440              	.LBB146:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 13
+
+
+ 441              	.LBI146:
+ 125:User/Src/soft_i2c.c **** {	
+ 442              		.loc 1 125 20 view .LVU109
+ 443              	.LBB147:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 444              		.loc 1 127 2 view .LVU110
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 445              		.loc 1 127 6 is_stmt 0 view .LVU111
+ 446 003c 0C4B     		ldr	r3, .L25+4
+ 447 003e 1B88     		ldrh	r3, [r3]
+ 448              	.LVL20:
+ 128:User/Src/soft_i2c.c **** }
+ 449              		.loc 1 128 2 is_stmt 1 view .LVU112
+ 450              	.L22:
+ 128:User/Src/soft_i2c.c **** }
+ 451              		.loc 1 128 13 view .LVU113
+ 128:User/Src/soft_i2c.c **** }
+ 452              		.loc 1 128 8 view .LVU114
+ 453 0040 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 454              		.loc 1 128 10 is_stmt 0 view .LVU115
+ 455 0042 013B     		subs	r3, r3, #1
+ 456              	.LVL21:
+ 128:User/Src/soft_i2c.c **** }
+ 457              		.loc 1 128 8 view .LVU116
+ 458 0044 002A     		cmp	r2, #0
+ 459 0046 FBD1     		bne	.L22
+ 460              	.LVL22:
+ 128:User/Src/soft_i2c.c **** }
+ 461              		.loc 1 128 8 view .LVU117
+ 462              	.LBE147:
+ 463              	.LBE146:
+ 164:User/Src/soft_i2c.c **** 	i2c_scl_h();
+ 464              		.loc 1 164 2 is_stmt 1 view .LVU118
+ 465              	.LBB148:
+ 466              	.LBI148:
+  60:User/Src/soft_i2c.c **** {
+ 467              		.loc 1 60 20 view .LVU119
+ 468              	.LBB149:
+  63:User/Src/soft_i2c.c **** }
+ 469              		.loc 1 63 5 view .LVU120
+ 470 0048 0122     		movs	r2, #1
+ 471 004a 4021     		movs	r1, #64
+ 472 004c 0748     		ldr	r0, .L25
+ 473 004e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 474              	.LVL23:
+ 475              	.LBE149:
+ 476              	.LBE148:
+ 165:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 477              		.loc 1 165 2 view .LVU121
+ 478              	.LBB150:
+ 479              	.LBI150:
+ 125:User/Src/soft_i2c.c **** {	
+ 480              		.loc 1 125 20 view .LVU122
+ 481              	.LBB151:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 482              		.loc 1 127 2 view .LVU123
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 14
+
+
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 483              		.loc 1 127 6 is_stmt 0 view .LVU124
+ 484 0052 074B     		ldr	r3, .L25+4
+ 485 0054 1B88     		ldrh	r3, [r3]
+ 486              	.LVL24:
+ 128:User/Src/soft_i2c.c **** }
+ 487              		.loc 1 128 2 is_stmt 1 view .LVU125
+ 488              	.L23:
+ 128:User/Src/soft_i2c.c **** }
+ 489              		.loc 1 128 13 view .LVU126
+ 128:User/Src/soft_i2c.c **** }
+ 490              		.loc 1 128 8 view .LVU127
+ 491 0056 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 492              		.loc 1 128 10 is_stmt 0 view .LVU128
+ 493 0058 013B     		subs	r3, r3, #1
+ 494              	.LVL25:
+ 128:User/Src/soft_i2c.c **** }
+ 495              		.loc 1 128 8 view .LVU129
+ 496 005a 002A     		cmp	r2, #0
+ 497 005c FBD1     		bne	.L23
+ 498              	.LVL26:
+ 128:User/Src/soft_i2c.c **** }
+ 499              		.loc 1 128 8 view .LVU130
+ 500              	.LBE151:
+ 501              	.LBE150:
+ 166:User/Src/soft_i2c.c **** 	i2c_sda_h();
+ 502              		.loc 1 166 2 is_stmt 1 view .LVU131
+ 503              	.LBB152:
+ 504              	.LBI152:
+  39:User/Src/soft_i2c.c **** {
+ 505              		.loc 1 39 20 view .LVU132
+ 506              	.LBB153:
+  43:User/Src/soft_i2c.c **** }
+ 507              		.loc 1 43 2 view .LVU133
+ 508 005e 0122     		movs	r2, #1
+ 509 0060 8021     		movs	r1, #128
+ 510 0062 0248     		ldr	r0, .L25
+ 511 0064 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 512              	.LVL27:
+ 513              	.LBE153:
+ 514              	.LBE152:
+ 167:User/Src/soft_i2c.c **** }
+ 515              		.loc 1 167 1 is_stmt 0 view .LVU134
+ 516 0068 04B0     		add	sp, sp, #16
+ 517              	.LCFI10:
+ 518              		.cfi_def_cfa_offset 16
+ 519              		@ sp needed
+ 520 006a 70BD     		pop	{r4, r5, r6, pc}
+ 521              	.L26:
+ 522              		.align	2
+ 523              	.L25:
+ 524 006c 000C0140 		.word	1073810432
+ 525 0070 00000000 		.word	.LANCHOR0
+ 526              		.cfi_endproc
+ 527              	.LFE78:
+ 529              		.section	.text.i2c_ack,"ax",%progbits
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 15
+
+
+ 530              		.align	1
+ 531              		.global	i2c_ack
+ 532              		.syntax unified
+ 533              		.thumb
+ 534              		.thumb_func
+ 536              	i2c_ack:
+ 537              	.LFB79:
+ 168:User/Src/soft_i2c.c **** 
+ 169:User/Src/soft_i2c.c **** /**
+ 170:User/Src/soft_i2c.c ****  * @brief When data is read, the host responds a ack signal
+ 171:User/Src/soft_i2c.c ****  * 
+ 172:User/Src/soft_i2c.c ****  */
+ 173:User/Src/soft_i2c.c **** void i2c_ack(void)
+ 174:User/Src/soft_i2c.c **** {	
+ 538              		.loc 1 174 1 is_stmt 1 view -0
+ 539              		.cfi_startproc
+ 540              		@ args = 0, pretend = 0, frame = 0
+ 541              		@ frame_needed = 0, uses_anonymous_args = 0
+ 542 0000 10B5     		push	{r4, lr}
+ 543              	.LCFI11:
+ 544              		.cfi_def_cfa_offset 8
+ 545              		.cfi_offset 4, -8
+ 546              		.cfi_offset 14, -4
+ 175:User/Src/soft_i2c.c **** 	i2c_sda_l();
+ 547              		.loc 1 175 2 view .LVU136
+ 548              	.LBB154:
+ 549              	.LBI154:
+  50:User/Src/soft_i2c.c **** {
+ 550              		.loc 1 50 20 view .LVU137
+ 551              	.LBB155:
+  53:User/Src/soft_i2c.c **** }
+ 552              		.loc 1 53 5 view .LVU138
+ 553 0002 104C     		ldr	r4, .L31
+ 554 0004 0022     		movs	r2, #0
+ 555 0006 8021     		movs	r1, #128
+ 556 0008 2046     		mov	r0, r4
+ 557 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 558              	.LVL28:
+ 559              	.LBE155:
+ 560              	.LBE154:
+ 176:User/Src/soft_i2c.c **** 	i2c_scl_l();
+ 561              		.loc 1 176 2 view .LVU139
+ 562              	.LBB156:
+ 563              	.LBI156:
+  70:User/Src/soft_i2c.c **** {
+ 564              		.loc 1 70 20 view .LVU140
+ 565              	.LBB157:
+  73:User/Src/soft_i2c.c **** }
+ 566              		.loc 1 73 5 view .LVU141
+ 567 000e 0022     		movs	r2, #0
+ 568 0010 4021     		movs	r1, #64
+ 569 0012 2046     		mov	r0, r4
+ 570 0014 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 571              	.LVL29:
+ 572              	.LBE157:
+ 573              	.LBE156:
+ 177:User/Src/soft_i2c.c **** 	i2c_Wait();
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 16
+
+
+ 574              		.loc 1 177 2 view .LVU142
+ 575              	.LBB158:
+ 576              	.LBI158:
+ 125:User/Src/soft_i2c.c **** {	
+ 577              		.loc 1 125 20 view .LVU143
+ 578              	.LBB159:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 579              		.loc 1 127 2 view .LVU144
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 580              		.loc 1 127 6 is_stmt 0 view .LVU145
+ 581 0018 0B4B     		ldr	r3, .L31+4
+ 582 001a 1B88     		ldrh	r3, [r3]
+ 583              	.LVL30:
+ 128:User/Src/soft_i2c.c **** }
+ 584              		.loc 1 128 2 is_stmt 1 view .LVU146
+ 585              	.L28:
+ 128:User/Src/soft_i2c.c **** }
+ 586              		.loc 1 128 13 view .LVU147
+ 128:User/Src/soft_i2c.c **** }
+ 587              		.loc 1 128 8 view .LVU148
+ 588 001c 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 589              		.loc 1 128 10 is_stmt 0 view .LVU149
+ 590 001e 013B     		subs	r3, r3, #1
+ 591              	.LVL31:
+ 128:User/Src/soft_i2c.c **** }
+ 592              		.loc 1 128 8 view .LVU150
+ 593 0020 002A     		cmp	r2, #0
+ 594 0022 FBD1     		bne	.L28
+ 595              	.LVL32:
+ 128:User/Src/soft_i2c.c **** }
+ 596              		.loc 1 128 8 view .LVU151
+ 597              	.LBE159:
+ 598              	.LBE158:
+ 178:User/Src/soft_i2c.c **** 	i2c_scl_h();
+ 599              		.loc 1 178 2 is_stmt 1 view .LVU152
+ 600              	.LBB160:
+ 601              	.LBI160:
+  60:User/Src/soft_i2c.c **** {
+ 602              		.loc 1 60 20 view .LVU153
+ 603              	.LBB161:
+  63:User/Src/soft_i2c.c **** }
+ 604              		.loc 1 63 5 view .LVU154
+ 605 0024 0122     		movs	r2, #1
+ 606 0026 4021     		movs	r1, #64
+ 607 0028 0648     		ldr	r0, .L31
+ 608 002a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 609              	.LVL33:
+ 610              	.LBE161:
+ 611              	.LBE160:
+ 179:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 612              		.loc 1 179 2 view .LVU155
+ 613              	.LBB162:
+ 614              	.LBI162:
+ 125:User/Src/soft_i2c.c **** {	
+ 615              		.loc 1 125 20 view .LVU156
+ 616              	.LBB163:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 17
+
+
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 617              		.loc 1 127 2 view .LVU157
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 618              		.loc 1 127 6 is_stmt 0 view .LVU158
+ 619 002e 064B     		ldr	r3, .L31+4
+ 620 0030 1B88     		ldrh	r3, [r3]
+ 621              	.LVL34:
+ 128:User/Src/soft_i2c.c **** }
+ 622              		.loc 1 128 2 is_stmt 1 view .LVU159
+ 623              	.L29:
+ 128:User/Src/soft_i2c.c **** }
+ 624              		.loc 1 128 13 view .LVU160
+ 128:User/Src/soft_i2c.c **** }
+ 625              		.loc 1 128 8 view .LVU161
+ 626 0032 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 627              		.loc 1 128 10 is_stmt 0 view .LVU162
+ 628 0034 013B     		subs	r3, r3, #1
+ 629              	.LVL35:
+ 128:User/Src/soft_i2c.c **** }
+ 630              		.loc 1 128 8 view .LVU163
+ 631 0036 002A     		cmp	r2, #0
+ 632 0038 FBD1     		bne	.L29
+ 633              	.LVL36:
+ 128:User/Src/soft_i2c.c **** }
+ 634              		.loc 1 128 8 view .LVU164
+ 635              	.LBE163:
+ 636              	.LBE162:
+ 180:User/Src/soft_i2c.c **** 	i2c_scl_l();
+ 637              		.loc 1 180 2 is_stmt 1 view .LVU165
+ 638              	.LBB164:
+ 639              	.LBI164:
+  70:User/Src/soft_i2c.c **** {
+ 640              		.loc 1 70 20 view .LVU166
+ 641              	.LBB165:
+  73:User/Src/soft_i2c.c **** }
+ 642              		.loc 1 73 5 view .LVU167
+ 643 003a 4021     		movs	r1, #64
+ 644 003c 0148     		ldr	r0, .L31
+ 645 003e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 646              	.LVL37:
+ 647              	.LBE165:
+ 648              	.LBE164:
+ 181:User/Src/soft_i2c.c **** }
+ 649              		.loc 1 181 1 is_stmt 0 view .LVU168
+ 650 0042 10BD     		pop	{r4, pc}
+ 651              	.L32:
+ 652              		.align	2
+ 653              	.L31:
+ 654 0044 000C0140 		.word	1073810432
+ 655 0048 00000000 		.word	.LANCHOR0
+ 656              		.cfi_endproc
+ 657              	.LFE79:
+ 659              		.section	.text.i2c_nack,"ax",%progbits
+ 660              		.align	1
+ 661              		.global	i2c_nack
+ 662              		.syntax unified
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 18
+
+
+ 663              		.thumb
+ 664              		.thumb_func
+ 666              	i2c_nack:
+ 667              	.LFB80:
+ 182:User/Src/soft_i2c.c **** 
+ 183:User/Src/soft_i2c.c **** /**
+ 184:User/Src/soft_i2c.c ****  * @brief when data is read, the host responds a nack signal
+ 185:User/Src/soft_i2c.c ****  * 
+ 186:User/Src/soft_i2c.c ****  */
+ 187:User/Src/soft_i2c.c **** void i2c_nack(void)
+ 188:User/Src/soft_i2c.c **** {	
+ 668              		.loc 1 188 1 is_stmt 1 view -0
+ 669              		.cfi_startproc
+ 670              		@ args = 0, pretend = 0, frame = 0
+ 671              		@ frame_needed = 0, uses_anonymous_args = 0
+ 672 0000 10B5     		push	{r4, lr}
+ 673              	.LCFI12:
+ 674              		.cfi_def_cfa_offset 8
+ 675              		.cfi_offset 4, -8
+ 676              		.cfi_offset 14, -4
+ 189:User/Src/soft_i2c.c **** 	i2c_sda_h();
+ 677              		.loc 1 189 2 view .LVU170
+ 678              	.LBB166:
+ 679              	.LBI166:
+  39:User/Src/soft_i2c.c **** {
+ 680              		.loc 1 39 20 view .LVU171
+ 681              	.LBB167:
+  43:User/Src/soft_i2c.c **** }
+ 682              		.loc 1 43 2 view .LVU172
+ 683 0002 104C     		ldr	r4, .L37
+ 684 0004 0122     		movs	r2, #1
+ 685 0006 8021     		movs	r1, #128
+ 686 0008 2046     		mov	r0, r4
+ 687 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 688              	.LVL38:
+ 689              	.LBE167:
+ 690              	.LBE166:
+ 190:User/Src/soft_i2c.c **** 	i2c_scl_l();
+ 691              		.loc 1 190 2 view .LVU173
+ 692              	.LBB168:
+ 693              	.LBI168:
+  70:User/Src/soft_i2c.c **** {
+ 694              		.loc 1 70 20 view .LVU174
+ 695              	.LBB169:
+  73:User/Src/soft_i2c.c **** }
+ 696              		.loc 1 73 5 view .LVU175
+ 697 000e 0022     		movs	r2, #0
+ 698 0010 4021     		movs	r1, #64
+ 699 0012 2046     		mov	r0, r4
+ 700 0014 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 701              	.LVL39:
+ 702              	.LBE169:
+ 703              	.LBE168:
+ 191:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 704              		.loc 1 191 2 view .LVU176
+ 705              	.LBB170:
+ 706              	.LBI170:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 19
+
+
+ 125:User/Src/soft_i2c.c **** {	
+ 707              		.loc 1 125 20 view .LVU177
+ 708              	.LBB171:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 709              		.loc 1 127 2 view .LVU178
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 710              		.loc 1 127 6 is_stmt 0 view .LVU179
+ 711 0018 0B4B     		ldr	r3, .L37+4
+ 712 001a 1B88     		ldrh	r3, [r3]
+ 713              	.LVL40:
+ 128:User/Src/soft_i2c.c **** }
+ 714              		.loc 1 128 2 is_stmt 1 view .LVU180
+ 715              	.L34:
+ 128:User/Src/soft_i2c.c **** }
+ 716              		.loc 1 128 13 view .LVU181
+ 128:User/Src/soft_i2c.c **** }
+ 717              		.loc 1 128 8 view .LVU182
+ 718 001c 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 719              		.loc 1 128 10 is_stmt 0 view .LVU183
+ 720 001e 013B     		subs	r3, r3, #1
+ 721              	.LVL41:
+ 128:User/Src/soft_i2c.c **** }
+ 722              		.loc 1 128 8 view .LVU184
+ 723 0020 002A     		cmp	r2, #0
+ 724 0022 FBD1     		bne	.L34
+ 725              	.LVL42:
+ 128:User/Src/soft_i2c.c **** }
+ 726              		.loc 1 128 8 view .LVU185
+ 727              	.LBE171:
+ 728              	.LBE170:
+ 192:User/Src/soft_i2c.c **** 	i2c_scl_h();
+ 729              		.loc 1 192 2 is_stmt 1 view .LVU186
+ 730              	.LBB172:
+ 731              	.LBI172:
+  60:User/Src/soft_i2c.c **** {
+ 732              		.loc 1 60 20 view .LVU187
+ 733              	.LBB173:
+  63:User/Src/soft_i2c.c **** }
+ 734              		.loc 1 63 5 view .LVU188
+ 735 0024 0122     		movs	r2, #1
+ 736 0026 4021     		movs	r1, #64
+ 737 0028 0648     		ldr	r0, .L37
+ 738 002a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 739              	.LVL43:
+ 740              	.LBE173:
+ 741              	.LBE172:
+ 193:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 742              		.loc 1 193 2 view .LVU189
+ 743              	.LBB174:
+ 744              	.LBI174:
+ 125:User/Src/soft_i2c.c **** {	
+ 745              		.loc 1 125 20 view .LVU190
+ 746              	.LBB175:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 747              		.loc 1 127 2 view .LVU191
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 20
+
+
+ 748              		.loc 1 127 6 is_stmt 0 view .LVU192
+ 749 002e 064B     		ldr	r3, .L37+4
+ 750 0030 1B88     		ldrh	r3, [r3]
+ 751              	.LVL44:
+ 128:User/Src/soft_i2c.c **** }
+ 752              		.loc 1 128 2 is_stmt 1 view .LVU193
+ 753              	.L35:
+ 128:User/Src/soft_i2c.c **** }
+ 754              		.loc 1 128 13 view .LVU194
+ 128:User/Src/soft_i2c.c **** }
+ 755              		.loc 1 128 8 view .LVU195
+ 756 0032 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 757              		.loc 1 128 10 is_stmt 0 view .LVU196
+ 758 0034 013B     		subs	r3, r3, #1
+ 759              	.LVL45:
+ 128:User/Src/soft_i2c.c **** }
+ 760              		.loc 1 128 8 view .LVU197
+ 761 0036 002A     		cmp	r2, #0
+ 762 0038 FBD1     		bne	.L35
+ 763              	.LVL46:
+ 128:User/Src/soft_i2c.c **** }
+ 764              		.loc 1 128 8 view .LVU198
+ 765              	.LBE175:
+ 766              	.LBE174:
+ 194:User/Src/soft_i2c.c **** 	i2c_scl_l();
+ 767              		.loc 1 194 2 is_stmt 1 view .LVU199
+ 768              	.LBB176:
+ 769              	.LBI176:
+  70:User/Src/soft_i2c.c **** {
+ 770              		.loc 1 70 20 view .LVU200
+ 771              	.LBB177:
+  73:User/Src/soft_i2c.c **** }
+ 772              		.loc 1 73 5 view .LVU201
+ 773 003a 4021     		movs	r1, #64
+ 774 003c 0148     		ldr	r0, .L37
+ 775 003e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 776              	.LVL47:
+ 777              	.LBE177:
+ 778              	.LBE176:
+ 195:User/Src/soft_i2c.c **** }
+ 779              		.loc 1 195 1 is_stmt 0 view .LVU202
+ 780 0042 10BD     		pop	{r4, pc}
+ 781              	.L38:
+ 782              		.align	2
+ 783              	.L37:
+ 784 0044 000C0140 		.word	1073810432
+ 785 0048 00000000 		.word	.LANCHOR0
+ 786              		.cfi_endproc
+ 787              	.LFE80:
+ 789              		.section	.text.i2c_wait_ack,"ax",%progbits
+ 790              		.align	1
+ 791              		.global	i2c_wait_ack
+ 792              		.syntax unified
+ 793              		.thumb
+ 794              		.thumb_func
+ 796              	i2c_wait_ack:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 21
+
+
+ 797              	.LFB81:
+ 196:User/Src/soft_i2c.c **** 
+ 197:User/Src/soft_i2c.c **** /**
+ 198:User/Src/soft_i2c.c ****  * @brief When data is written, the slave responds  a ack signal
+ 199:User/Src/soft_i2c.c ****  * 
+ 200:User/Src/soft_i2c.c ****  */
+ 201:User/Src/soft_i2c.c **** i2c_exit_code_e i2c_wait_ack(void)
+ 202:User/Src/soft_i2c.c **** {
+ 798              		.loc 1 202 1 is_stmt 1 view -0
+ 799              		.cfi_startproc
+ 800              		@ args = 0, pretend = 0, frame = 16
+ 801              		@ frame_needed = 0, uses_anonymous_args = 0
+ 802 0000 30B5     		push	{r4, r5, lr}
+ 803              	.LCFI13:
+ 804              		.cfi_def_cfa_offset 12
+ 805              		.cfi_offset 4, -12
+ 806              		.cfi_offset 5, -8
+ 807              		.cfi_offset 14, -4
+ 808 0002 85B0     		sub	sp, sp, #20
+ 809              	.LCFI14:
+ 810              		.cfi_def_cfa_offset 32
+ 203:User/Src/soft_i2c.c **** 	i2c_sda_in();
+ 811              		.loc 1 203 2 view .LVU204
+ 812              	.LBB194:
+ 813              	.LBI194:
+  94:User/Src/soft_i2c.c **** {
+ 814              		.loc 1 94 20 view .LVU205
+ 815              	.LBB195:
+  97:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 816              		.loc 1 97 4 view .LVU206
+  97:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 817              		.loc 1 97 21 is_stmt 0 view .LVU207
+ 818 0004 0023     		movs	r3, #0
+ 819 0006 0093     		str	r3, [sp]
+ 820 0008 0193     		str	r3, [sp, #4]
+ 821 000a 0293     		str	r3, [sp, #8]
+ 822 000c 0393     		str	r3, [sp, #12]
+  98:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 823              		.loc 1 98 2 is_stmt 1 view .LVU208
+  98:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 824              		.loc 1 98 22 is_stmt 0 view .LVU209
+ 825 000e 8023     		movs	r3, #128
+ 826 0010 0093     		str	r3, [sp]
+  99:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 827              		.loc 1 99 2 is_stmt 1 view .LVU210
+ 100:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 828              		.loc 1 100 2 view .LVU211
+ 101:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 829              		.loc 1 101 2 view .LVU212
+ 101:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 830              		.loc 1 101 24 is_stmt 0 view .LVU213
+ 831 0012 0223     		movs	r3, #2
+ 832 0014 0393     		str	r3, [sp, #12]
+ 102:User/Src/soft_i2c.c **** }
+ 833              		.loc 1 102 2 is_stmt 1 view .LVU214
+ 834 0016 204C     		ldr	r4, .L46
+ 835 0018 6946     		mov	r1, sp
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 22
+
+
+ 836 001a 2046     		mov	r0, r4
+ 837 001c FFF7FEFF 		bl	HAL_GPIO_Init
+ 838              	.LVL48:
+ 839              	.LBE195:
+ 840              	.LBE194:
+ 204:User/Src/soft_i2c.c **** 	i2c_scl_h();
+ 841              		.loc 1 204 2 view .LVU215
+ 842              	.LBB196:
+ 843              	.LBI196:
+  60:User/Src/soft_i2c.c **** {
+ 844              		.loc 1 60 20 view .LVU216
+ 845              	.LBB197:
+  63:User/Src/soft_i2c.c **** }
+ 846              		.loc 1 63 5 view .LVU217
+ 847 0020 0122     		movs	r2, #1
+ 848 0022 4021     		movs	r1, #64
+ 849 0024 2046     		mov	r0, r4
+ 850 0026 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 851              	.LVL49:
+ 852              	.LBE197:
+ 853              	.LBE196:
+ 205:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 854              		.loc 1 205 2 view .LVU218
+ 855              	.LBB198:
+ 856              	.LBI198:
+ 125:User/Src/soft_i2c.c **** {	
+ 857              		.loc 1 125 20 view .LVU219
+ 858              	.LBB199:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 859              		.loc 1 127 2 view .LVU220
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 860              		.loc 1 127 6 is_stmt 0 view .LVU221
+ 861 002a 1C4B     		ldr	r3, .L46+4
+ 862 002c 1B88     		ldrh	r3, [r3]
+ 863              	.LVL50:
+ 128:User/Src/soft_i2c.c **** }
+ 864              		.loc 1 128 2 is_stmt 1 view .LVU222
+ 865              	.L40:
+ 128:User/Src/soft_i2c.c **** }
+ 866              		.loc 1 128 13 view .LVU223
+ 128:User/Src/soft_i2c.c **** }
+ 867              		.loc 1 128 8 view .LVU224
+ 868 002e 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 869              		.loc 1 128 10 is_stmt 0 view .LVU225
+ 870 0030 013B     		subs	r3, r3, #1
+ 871              	.LVL51:
+ 128:User/Src/soft_i2c.c **** }
+ 872              		.loc 1 128 8 view .LVU226
+ 873 0032 002A     		cmp	r2, #0
+ 874 0034 FBD1     		bne	.L40
+ 875              	.LVL52:
+ 128:User/Src/soft_i2c.c **** }
+ 876              		.loc 1 128 8 view .LVU227
+ 877              	.LBE199:
+ 878              	.LBE198:
+ 206:User/Src/soft_i2c.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 23
+
+
+ 207:User/Src/soft_i2c.c **** 	if (i2c_read_sda())
+ 879              		.loc 1 207 2 is_stmt 1 view .LVU228
+ 880              		.loc 1 207 6 is_stmt 0 view .LVU229
+ 881 0036 FFF7FEFF 		bl	i2c_read_sda
+ 882              	.LVL53:
+ 883              		.loc 1 207 5 view .LVU230
+ 884 003a 0546     		mov	r5, r0
+ 885 003c 20BB     		cbnz	r0, .L45
+ 208:User/Src/soft_i2c.c **** 	{
+ 209:User/Src/soft_i2c.c **** 		i2c_scl_l();
+ 210:User/Src/soft_i2c.c **** 		return I2C_NO_ACK;
+ 211:User/Src/soft_i2c.c **** 	}
+ 212:User/Src/soft_i2c.c **** 	i2c_scl_l();
+ 886              		.loc 1 212 2 is_stmt 1 view .LVU231
+ 887              	.LBB200:
+ 888              	.LBI200:
+  70:User/Src/soft_i2c.c **** {
+ 889              		.loc 1 70 20 view .LVU232
+ 890              	.LBB201:
+  73:User/Src/soft_i2c.c **** }
+ 891              		.loc 1 73 5 view .LVU233
+ 892 003e 0022     		movs	r2, #0
+ 893 0040 4021     		movs	r1, #64
+ 894 0042 1548     		ldr	r0, .L46
+ 895 0044 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 896              	.LVL54:
+ 897              	.LBE201:
+ 898              	.LBE200:
+ 213:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 899              		.loc 1 213 2 view .LVU234
+ 900              	.LBB202:
+ 901              	.LBI202:
+ 125:User/Src/soft_i2c.c **** {	
+ 902              		.loc 1 125 20 view .LVU235
+ 903              	.LBB203:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 904              		.loc 1 127 2 view .LVU236
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 905              		.loc 1 127 6 is_stmt 0 view .LVU237
+ 906 0048 144B     		ldr	r3, .L46+4
+ 907 004a 1B88     		ldrh	r3, [r3]
+ 908              	.LVL55:
+ 128:User/Src/soft_i2c.c **** }
+ 909              		.loc 1 128 2 is_stmt 1 view .LVU238
+ 910              	.L43:
+ 128:User/Src/soft_i2c.c **** }
+ 911              		.loc 1 128 13 view .LVU239
+ 128:User/Src/soft_i2c.c **** }
+ 912              		.loc 1 128 8 view .LVU240
+ 913 004c 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 914              		.loc 1 128 10 is_stmt 0 view .LVU241
+ 915 004e 013B     		subs	r3, r3, #1
+ 916              	.LVL56:
+ 128:User/Src/soft_i2c.c **** }
+ 917              		.loc 1 128 8 view .LVU242
+ 918 0050 002A     		cmp	r2, #0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 24
+
+
+ 919 0052 FBD1     		bne	.L43
+ 920              	.LVL57:
+ 128:User/Src/soft_i2c.c **** }
+ 921              		.loc 1 128 8 view .LVU243
+ 922              	.LBE203:
+ 923              	.LBE202:
+ 214:User/Src/soft_i2c.c **** 	i2c_sda_h();
+ 924              		.loc 1 214 2 is_stmt 1 view .LVU244
+ 925              	.LBB204:
+ 926              	.LBI204:
+  39:User/Src/soft_i2c.c **** {
+ 927              		.loc 1 39 20 view .LVU245
+ 928              	.LBB205:
+  43:User/Src/soft_i2c.c **** }
+ 929              		.loc 1 43 2 view .LVU246
+ 930 0054 104C     		ldr	r4, .L46
+ 931 0056 0122     		movs	r2, #1
+ 932 0058 8021     		movs	r1, #128
+ 933 005a 2046     		mov	r0, r4
+ 934 005c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 935              	.LVL58:
+ 936              	.LBE205:
+ 937              	.LBE204:
+ 215:User/Src/soft_i2c.c **** 	i2c_sda_out();
+ 938              		.loc 1 215 2 view .LVU247
+ 939              	.LBB206:
+ 940              	.LBI206:
+ 109:User/Src/soft_i2c.c **** {
+ 941              		.loc 1 109 20 view .LVU248
+ 942              	.LBB207:
+ 112:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 943              		.loc 1 112 4 view .LVU249
+ 112:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 944              		.loc 1 112 21 is_stmt 0 view .LVU250
+ 945 0060 0023     		movs	r3, #0
+ 946 0062 0093     		str	r3, [sp]
+ 947 0064 0193     		str	r3, [sp, #4]
+ 948 0066 0293     		str	r3, [sp, #8]
+ 949 0068 0393     		str	r3, [sp, #12]
+ 113:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 950              		.loc 1 113 2 is_stmt 1 view .LVU251
+ 113:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 951              		.loc 1 113 22 is_stmt 0 view .LVU252
+ 952 006a 8023     		movs	r3, #128
+ 953 006c 0093     		str	r3, [sp]
+ 114:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 954              		.loc 1 114 2 is_stmt 1 view .LVU253
+ 114:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 955              		.loc 1 114 23 is_stmt 0 view .LVU254
+ 956 006e 1123     		movs	r3, #17
+ 957 0070 0193     		str	r3, [sp, #4]
+ 115:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 958              		.loc 1 115 2 is_stmt 1 view .LVU255
+ 115:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 959              		.loc 1 115 23 is_stmt 0 view .LVU256
+ 960 0072 0123     		movs	r3, #1
+ 961 0074 0293     		str	r3, [sp, #8]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 25
+
+
+ 116:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 962              		.loc 1 116 2 is_stmt 1 view .LVU257
+ 116:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 963              		.loc 1 116 24 is_stmt 0 view .LVU258
+ 964 0076 0223     		movs	r3, #2
+ 965 0078 0393     		str	r3, [sp, #12]
+ 117:User/Src/soft_i2c.c ****   
+ 966              		.loc 1 117 2 is_stmt 1 view .LVU259
+ 967 007a 6946     		mov	r1, sp
+ 968 007c 2046     		mov	r0, r4
+ 969 007e FFF7FEFF 		bl	HAL_GPIO_Init
+ 970              	.LVL59:
+ 971              	.L42:
+ 972              	.LBE207:
+ 973              	.LBE206:
+ 216:User/Src/soft_i2c.c **** 	return I2C_OK;
+ 217:User/Src/soft_i2c.c **** }
+ 974              		.loc 1 217 1 is_stmt 0 view .LVU260
+ 975 0082 2846     		mov	r0, r5
+ 976 0084 05B0     		add	sp, sp, #20
+ 977              	.LCFI15:
+ 978              		.cfi_remember_state
+ 979              		.cfi_def_cfa_offset 12
+ 980              		@ sp needed
+ 981 0086 30BD     		pop	{r4, r5, pc}
+ 982              	.L45:
+ 983              	.LCFI16:
+ 984              		.cfi_restore_state
+ 209:User/Src/soft_i2c.c **** 		return I2C_NO_ACK;
+ 985              		.loc 1 209 3 is_stmt 1 view .LVU261
+ 986              	.LBB208:
+ 987              	.LBI208:
+  70:User/Src/soft_i2c.c **** {
+ 988              		.loc 1 70 20 view .LVU262
+ 989              	.LBB209:
+  73:User/Src/soft_i2c.c **** }
+ 990              		.loc 1 73 5 view .LVU263
+ 991 0088 0022     		movs	r2, #0
+ 992 008a 4021     		movs	r1, #64
+ 993 008c 0248     		ldr	r0, .L46
+ 994 008e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 995              	.LVL60:
+ 996              	.LBE209:
+ 997              	.LBE208:
+ 210:User/Src/soft_i2c.c **** 	}
+ 998              		.loc 1 210 3 view .LVU264
+ 210:User/Src/soft_i2c.c **** 	}
+ 999              		.loc 1 210 10 is_stmt 0 view .LVU265
+ 1000 0092 0225     		movs	r5, #2
+ 1001 0094 F5E7     		b	.L42
+ 1002              	.L47:
+ 1003 0096 00BF     		.align	2
+ 1004              	.L46:
+ 1005 0098 000C0140 		.word	1073810432
+ 1006 009c 00000000 		.word	.LANCHOR0
+ 1007              		.cfi_endproc
+ 1008              	.LFE81:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 26
+
+
+ 1010              		.section	.text.i2c_send_byte,"ax",%progbits
+ 1011              		.align	1
+ 1012              		.global	i2c_send_byte
+ 1013              		.syntax unified
+ 1014              		.thumb
+ 1015              		.thumb_func
+ 1017              	i2c_send_byte:
+ 1018              	.LVL61:
+ 1019              	.LFB82:
+ 218:User/Src/soft_i2c.c **** 
+ 219:User/Src/soft_i2c.c **** /**
+ 220:User/Src/soft_i2c.c ****  * @brief Send a byte to slave
+ 221:User/Src/soft_i2c.c ****  * 
+ 222:User/Src/soft_i2c.c ****  */
+ 223:User/Src/soft_i2c.c **** void i2c_send_byte(unsigned char value)
+ 224:User/Src/soft_i2c.c **** {
+ 1020              		.loc 1 224 1 is_stmt 1 view -0
+ 1021              		.cfi_startproc
+ 1022              		@ args = 0, pretend = 0, frame = 0
+ 1023              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1024              		.loc 1 224 1 is_stmt 0 view .LVU267
+ 1025 0000 38B5     		push	{r3, r4, r5, lr}
+ 1026              	.LCFI17:
+ 1027              		.cfi_def_cfa_offset 16
+ 1028              		.cfi_offset 3, -16
+ 1029              		.cfi_offset 4, -12
+ 1030              		.cfi_offset 5, -8
+ 1031              		.cfi_offset 14, -4
+ 1032 0002 0446     		mov	r4, r0
+ 225:User/Src/soft_i2c.c **** 	unsigned char i;
+ 1033              		.loc 1 225 2 is_stmt 1 view .LVU268
+ 226:User/Src/soft_i2c.c **** 
+ 227:User/Src/soft_i2c.c **** 	i2c_scl_l();
+ 1034              		.loc 1 227 2 view .LVU269
+ 1035              	.LBB210:
+ 1036              	.LBI210:
+  70:User/Src/soft_i2c.c **** {
+ 1037              		.loc 1 70 20 view .LVU270
+ 1038              	.LBB211:
+  73:User/Src/soft_i2c.c **** }
+ 1039              		.loc 1 73 5 view .LVU271
+ 1040 0004 0022     		movs	r2, #0
+ 1041 0006 4021     		movs	r1, #64
+ 1042 0008 1748     		ldr	r0, .L58
+ 1043              	.LVL62:
+  73:User/Src/soft_i2c.c **** }
+ 1044              		.loc 1 73 5 is_stmt 0 view .LVU272
+ 1045 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1046              	.LVL63:
+ 1047              	.LBE211:
+ 1048              	.LBE210:
+ 228:User/Src/soft_i2c.c **** 	for (i = 0; i < 8; i ++)
+ 1049              		.loc 1 228 2 is_stmt 1 view .LVU273
+ 1050              		.loc 1 228 9 is_stmt 0 view .LVU274
+ 1051 000e 0025     		movs	r5, #0
+ 1052              		.loc 1 228 2 view .LVU275
+ 1053 0010 1DE0     		b	.L49
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 27
+
+
+ 1054              	.LVL64:
+ 1055              	.L57:
+ 229:User/Src/soft_i2c.c **** 	{
+ 230:User/Src/soft_i2c.c **** 		if(value & 0x80)
+ 231:User/Src/soft_i2c.c **** 			i2c_sda_h();
+ 1056              		.loc 1 231 4 is_stmt 1 view .LVU276
+ 1057              	.LBB212:
+ 1058              	.LBI212:
+  39:User/Src/soft_i2c.c **** {
+ 1059              		.loc 1 39 20 view .LVU277
+ 1060              	.LBB213:
+  43:User/Src/soft_i2c.c **** }
+ 1061              		.loc 1 43 2 view .LVU278
+ 1062 0012 0122     		movs	r2, #1
+ 1063 0014 8021     		movs	r1, #128
+ 1064 0016 1448     		ldr	r0, .L58
+ 1065 0018 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1066              	.LVL65:
+ 1067              	.L51:
+ 1068              	.LBE213:
+ 1069              	.LBE212:
+ 232:User/Src/soft_i2c.c **** 		else 
+ 233:User/Src/soft_i2c.c **** 			i2c_sda_l();
+ 234:User/Src/soft_i2c.c **** 			
+ 235:User/Src/soft_i2c.c **** 		i2c_Wait();
+ 1070              		.loc 1 235 3 discriminator 2 view .LVU279
+ 1071              	.LBB214:
+ 1072              	.LBI214:
+ 125:User/Src/soft_i2c.c **** {	
+ 1073              		.loc 1 125 20 discriminator 2 view .LVU280
+ 1074              	.LBB215:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 1075              		.loc 1 127 2 discriminator 2 view .LVU281
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 1076              		.loc 1 127 6 is_stmt 0 discriminator 2 view .LVU282
+ 1077 001c 134B     		ldr	r3, .L58+4
+ 1078 001e 1B88     		ldrh	r3, [r3]
+ 1079              	.LVL66:
+ 128:User/Src/soft_i2c.c **** }
+ 1080              		.loc 1 128 2 is_stmt 1 discriminator 2 view .LVU283
+ 1081              	.L52:
+ 128:User/Src/soft_i2c.c **** }
+ 1082              		.loc 1 128 13 view .LVU284
+ 128:User/Src/soft_i2c.c **** }
+ 1083              		.loc 1 128 8 view .LVU285
+ 1084 0020 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 1085              		.loc 1 128 10 is_stmt 0 view .LVU286
+ 1086 0022 013B     		subs	r3, r3, #1
+ 1087              	.LVL67:
+ 128:User/Src/soft_i2c.c **** }
+ 1088              		.loc 1 128 8 view .LVU287
+ 1089 0024 002A     		cmp	r2, #0
+ 1090 0026 FBD1     		bne	.L52
+ 1091              	.LVL68:
+ 128:User/Src/soft_i2c.c **** }
+ 1092              		.loc 1 128 8 view .LVU288
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 28
+
+
+ 1093              	.LBE215:
+ 1094              	.LBE214:
+ 236:User/Src/soft_i2c.c **** 		value <<= 1;
+ 1095              		.loc 1 236 3 is_stmt 1 discriminator 2 view .LVU289
+ 1096              		.loc 1 236 9 is_stmt 0 discriminator 2 view .LVU290
+ 1097 0028 6400     		lsls	r4, r4, #1
+ 1098              	.LVL69:
+ 1099              		.loc 1 236 9 discriminator 2 view .LVU291
+ 1100 002a E4B2     		uxtb	r4, r4
+ 1101              	.LVL70:
+ 237:User/Src/soft_i2c.c **** 		i2c_scl_h();
+ 1102              		.loc 1 237 3 is_stmt 1 discriminator 2 view .LVU292
+ 1103              	.LBB216:
+ 1104              	.LBI216:
+  60:User/Src/soft_i2c.c **** {
+ 1105              		.loc 1 60 20 discriminator 2 view .LVU293
+ 1106              	.LBB217:
+  63:User/Src/soft_i2c.c **** }
+ 1107              		.loc 1 63 5 discriminator 2 view .LVU294
+ 1108 002c 0122     		movs	r2, #1
+ 1109 002e 4021     		movs	r1, #64
+ 1110 0030 0D48     		ldr	r0, .L58
+ 1111 0032 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1112              	.LVL71:
+ 1113              	.LBE217:
+ 1114              	.LBE216:
+ 238:User/Src/soft_i2c.c **** 		i2c_Wait();
+ 1115              		.loc 1 238 3 discriminator 2 view .LVU295
+ 1116              	.LBB218:
+ 1117              	.LBI218:
+ 125:User/Src/soft_i2c.c **** {	
+ 1118              		.loc 1 125 20 discriminator 2 view .LVU296
+ 1119              	.LBB219:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 1120              		.loc 1 127 2 discriminator 2 view .LVU297
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 1121              		.loc 1 127 6 is_stmt 0 discriminator 2 view .LVU298
+ 1122 0036 0D4B     		ldr	r3, .L58+4
+ 1123 0038 1B88     		ldrh	r3, [r3]
+ 1124              	.LVL72:
+ 128:User/Src/soft_i2c.c **** }
+ 1125              		.loc 1 128 2 is_stmt 1 discriminator 2 view .LVU299
+ 1126              	.L53:
+ 128:User/Src/soft_i2c.c **** }
+ 1127              		.loc 1 128 13 view .LVU300
+ 128:User/Src/soft_i2c.c **** }
+ 1128              		.loc 1 128 8 view .LVU301
+ 1129 003a 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 1130              		.loc 1 128 10 is_stmt 0 view .LVU302
+ 1131 003c 013B     		subs	r3, r3, #1
+ 1132              	.LVL73:
+ 128:User/Src/soft_i2c.c **** }
+ 1133              		.loc 1 128 8 view .LVU303
+ 1134 003e 002A     		cmp	r2, #0
+ 1135 0040 FBD1     		bne	.L53
+ 1136              	.LVL74:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 29
+
+
+ 128:User/Src/soft_i2c.c **** }
+ 1137              		.loc 1 128 8 view .LVU304
+ 1138              	.LBE219:
+ 1139              	.LBE218:
+ 239:User/Src/soft_i2c.c **** 		i2c_scl_l();
+ 1140              		.loc 1 239 3 is_stmt 1 view .LVU305
+ 1141              	.LBB220:
+ 1142              	.LBI220:
+  70:User/Src/soft_i2c.c **** {
+ 1143              		.loc 1 70 20 view .LVU306
+ 1144              	.LBB221:
+  73:User/Src/soft_i2c.c **** }
+ 1145              		.loc 1 73 5 view .LVU307
+ 1146 0042 4021     		movs	r1, #64
+ 1147 0044 0848     		ldr	r0, .L58
+ 1148 0046 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1149              	.LVL75:
+ 1150              	.LBE221:
+ 1151              	.LBE220:
+ 228:User/Src/soft_i2c.c **** 	{
+ 1152              		.loc 1 228 21 view .LVU308
+ 228:User/Src/soft_i2c.c **** 	{
+ 1153              		.loc 1 228 23 is_stmt 0 view .LVU309
+ 1154 004a 0135     		adds	r5, r5, #1
+ 1155              	.LVL76:
+ 228:User/Src/soft_i2c.c **** 	{
+ 1156              		.loc 1 228 23 view .LVU310
+ 1157 004c EDB2     		uxtb	r5, r5
+ 1158              	.LVL77:
+ 1159              	.L49:
+ 228:User/Src/soft_i2c.c **** 	{
+ 1160              		.loc 1 228 14 is_stmt 1 discriminator 1 view .LVU311
+ 228:User/Src/soft_i2c.c **** 	{
+ 1161              		.loc 1 228 2 is_stmt 0 discriminator 1 view .LVU312
+ 1162 004e 072D     		cmp	r5, #7
+ 1163 0050 08D8     		bhi	.L56
+ 230:User/Src/soft_i2c.c **** 			i2c_sda_h();
+ 1164              		.loc 1 230 3 is_stmt 1 view .LVU313
+ 230:User/Src/soft_i2c.c **** 			i2c_sda_h();
+ 1165              		.loc 1 230 5 is_stmt 0 view .LVU314
+ 1166 0052 14F0800F 		tst	r4, #128
+ 1167 0056 DCD1     		bne	.L57
+ 233:User/Src/soft_i2c.c **** 			
+ 1168              		.loc 1 233 4 is_stmt 1 view .LVU315
+ 1169              	.LBB222:
+ 1170              	.LBI222:
+  50:User/Src/soft_i2c.c **** {
+ 1171              		.loc 1 50 20 view .LVU316
+ 1172              	.LBB223:
+  53:User/Src/soft_i2c.c **** }
+ 1173              		.loc 1 53 5 view .LVU317
+ 1174 0058 0022     		movs	r2, #0
+ 1175 005a 8021     		movs	r1, #128
+ 1176 005c 0248     		ldr	r0, .L58
+ 1177 005e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1178              	.LVL78:
+  54:User/Src/soft_i2c.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 30
+
+
+ 1179              		.loc 1 54 1 is_stmt 0 view .LVU318
+ 1180 0062 DBE7     		b	.L51
+ 1181              	.L56:
+ 1182              	.LBE223:
+ 1183              	.LBE222:
+ 240:User/Src/soft_i2c.c **** 	}
+ 241:User/Src/soft_i2c.c **** }
+ 1184              		.loc 1 241 1 view .LVU319
+ 1185 0064 38BD     		pop	{r3, r4, r5, pc}
+ 1186              	.LVL79:
+ 1187              	.L59:
+ 1188              		.loc 1 241 1 view .LVU320
+ 1189 0066 00BF     		.align	2
+ 1190              	.L58:
+ 1191 0068 000C0140 		.word	1073810432
+ 1192 006c 00000000 		.word	.LANCHOR0
+ 1193              		.cfi_endproc
+ 1194              	.LFE82:
+ 1196              		.section	.text.i2c_receive_byte,"ax",%progbits
+ 1197              		.align	1
+ 1198              		.global	i2c_receive_byte
+ 1199              		.syntax unified
+ 1200              		.thumb
+ 1201              		.thumb_func
+ 1203              	i2c_receive_byte:
+ 1204              	.LFB83:
+ 242:User/Src/soft_i2c.c **** 
+ 243:User/Src/soft_i2c.c **** /**
+ 244:User/Src/soft_i2c.c ****  * @brief Receive a byte timing
+ 245:User/Src/soft_i2c.c ****  * 
+ 246:User/Src/soft_i2c.c ****  */
+ 247:User/Src/soft_i2c.c **** unsigned char i2c_receive_byte(void)
+ 248:User/Src/soft_i2c.c **** {
+ 1205              		.loc 1 248 1 is_stmt 1 view -0
+ 1206              		.cfi_startproc
+ 1207              		@ args = 0, pretend = 0, frame = 16
+ 1208              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1209 0000 70B5     		push	{r4, r5, r6, lr}
+ 1210              	.LCFI18:
+ 1211              		.cfi_def_cfa_offset 16
+ 1212              		.cfi_offset 4, -16
+ 1213              		.cfi_offset 5, -12
+ 1214              		.cfi_offset 6, -8
+ 1215              		.cfi_offset 14, -4
+ 1216 0002 84B0     		sub	sp, sp, #16
+ 1217              	.LCFI19:
+ 1218              		.cfi_def_cfa_offset 32
+ 249:User/Src/soft_i2c.c **** 	unsigned char i;
+ 1219              		.loc 1 249 2 view .LVU322
+ 250:User/Src/soft_i2c.c **** 	unsigned char data = 0;
+ 1220              		.loc 1 250 2 view .LVU323
+ 1221              	.LVL80:
+ 251:User/Src/soft_i2c.c **** 
+ 252:User/Src/soft_i2c.c ****     i2c_sda_in();
+ 1222              		.loc 1 252 5 view .LVU324
+ 1223              	.LBB242:
+ 1224              	.LBI242:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 31
+
+
+  94:User/Src/soft_i2c.c **** {
+ 1225              		.loc 1 94 20 view .LVU325
+ 1226              	.LBB243:
+  97:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 1227              		.loc 1 97 4 view .LVU326
+  97:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 1228              		.loc 1 97 21 is_stmt 0 view .LVU327
+ 1229 0004 0024     		movs	r4, #0
+ 1230 0006 0094     		str	r4, [sp]
+ 1231 0008 0194     		str	r4, [sp, #4]
+ 1232 000a 0294     		str	r4, [sp, #8]
+ 1233 000c 0394     		str	r4, [sp, #12]
+  98:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 1234              		.loc 1 98 2 is_stmt 1 view .LVU328
+  98:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 1235              		.loc 1 98 22 is_stmt 0 view .LVU329
+ 1236 000e 8026     		movs	r6, #128
+ 1237 0010 0096     		str	r6, [sp]
+  99:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 1238              		.loc 1 99 2 is_stmt 1 view .LVU330
+ 100:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 1239              		.loc 1 100 2 view .LVU331
+ 101:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 1240              		.loc 1 101 2 view .LVU332
+ 101:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 1241              		.loc 1 101 24 is_stmt 0 view .LVU333
+ 1242 0012 0223     		movs	r3, #2
+ 1243 0014 0393     		str	r3, [sp, #12]
+ 102:User/Src/soft_i2c.c **** }
+ 1244              		.loc 1 102 2 is_stmt 1 view .LVU334
+ 1245 0016 274D     		ldr	r5, .L69
+ 1246 0018 6946     		mov	r1, sp
+ 1247 001a 2846     		mov	r0, r5
+ 1248 001c FFF7FEFF 		bl	HAL_GPIO_Init
+ 1249              	.LVL81:
+ 1250              	.LBE243:
+ 1251              	.LBE242:
+ 253:User/Src/soft_i2c.c **** 	i2c_sda_h();
+ 1252              		.loc 1 253 2 view .LVU335
+ 1253              	.LBB244:
+ 1254              	.LBI244:
+  39:User/Src/soft_i2c.c **** {
+ 1255              		.loc 1 39 20 view .LVU336
+ 1256              	.LBB245:
+  43:User/Src/soft_i2c.c **** }
+ 1257              		.loc 1 43 2 view .LVU337
+ 1258 0020 0122     		movs	r2, #1
+ 1259 0022 3146     		mov	r1, r6
+ 1260 0024 2846     		mov	r0, r5
+ 1261 0026 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1262              	.LVL82:
+ 1263              	.LBE245:
+ 1264              	.LBE244:
+ 254:User/Src/soft_i2c.c **** 	for (i = 0; i < 8; i++)
+ 1265              		.loc 1 254 2 view .LVU338
+ 250:User/Src/soft_i2c.c **** 
+ 1266              		.loc 1 250 16 is_stmt 0 view .LVU339
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 32
+
+
+ 1267 002a 2546     		mov	r5, r4
+ 1268              		.loc 1 254 2 view .LVU340
+ 1269 002c 01E0     		b	.L61
+ 1270              	.LVL83:
+ 1271              	.L64:
+ 1272              		.loc 1 254 21 is_stmt 1 discriminator 2 view .LVU341
+ 1273              		.loc 1 254 22 is_stmt 0 discriminator 2 view .LVU342
+ 1274 002e 0134     		adds	r4, r4, #1
+ 1275              	.LVL84:
+ 1276              		.loc 1 254 22 discriminator 2 view .LVU343
+ 1277 0030 E4B2     		uxtb	r4, r4
+ 1278              	.LVL85:
+ 1279              	.L61:
+ 1280              		.loc 1 254 14 is_stmt 1 discriminator 1 view .LVU344
+ 1281              		.loc 1 254 2 is_stmt 0 discriminator 1 view .LVU345
+ 1282 0032 072C     		cmp	r4, #7
+ 1283 0034 1ED8     		bhi	.L68
+ 255:User/Src/soft_i2c.c **** 	{
+ 256:User/Src/soft_i2c.c **** 		i2c_scl_l();
+ 1284              		.loc 1 256 3 is_stmt 1 view .LVU346
+ 1285              	.LBB246:
+ 1286              	.LBI246:
+  70:User/Src/soft_i2c.c **** {
+ 1287              		.loc 1 70 20 view .LVU347
+ 1288              	.LBB247:
+  73:User/Src/soft_i2c.c **** }
+ 1289              		.loc 1 73 5 view .LVU348
+ 1290 0036 0022     		movs	r2, #0
+ 1291 0038 4021     		movs	r1, #64
+ 1292 003a 1E48     		ldr	r0, .L69
+ 1293 003c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1294              	.LVL86:
+ 1295              	.LBE247:
+ 1296              	.LBE246:
+ 257:User/Src/soft_i2c.c **** 		data <<= 1;
+ 1297              		.loc 1 257 3 view .LVU349
+ 1298              		.loc 1 257 8 is_stmt 0 view .LVU350
+ 1299 0040 6D00     		lsls	r5, r5, #1
+ 1300              	.LVL87:
+ 1301              		.loc 1 257 8 view .LVU351
+ 1302 0042 EDB2     		uxtb	r5, r5
+ 1303              	.LVL88:
+ 258:User/Src/soft_i2c.c **** 		i2c_Wait();
+ 1304              		.loc 1 258 3 is_stmt 1 view .LVU352
+ 1305              	.LBB248:
+ 1306              	.LBI248:
+ 125:User/Src/soft_i2c.c **** {	
+ 1307              		.loc 1 125 20 view .LVU353
+ 1308              	.LBB249:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 1309              		.loc 1 127 2 view .LVU354
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 1310              		.loc 1 127 6 is_stmt 0 view .LVU355
+ 1311 0044 1C4B     		ldr	r3, .L69+4
+ 1312 0046 1B88     		ldrh	r3, [r3]
+ 1313              	.LVL89:
+ 128:User/Src/soft_i2c.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 33
+
+
+ 1314              		.loc 1 128 2 is_stmt 1 view .LVU356
+ 1315              	.L62:
+ 128:User/Src/soft_i2c.c **** }
+ 1316              		.loc 1 128 13 view .LVU357
+ 128:User/Src/soft_i2c.c **** }
+ 1317              		.loc 1 128 8 view .LVU358
+ 1318 0048 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 1319              		.loc 1 128 10 is_stmt 0 view .LVU359
+ 1320 004a 013B     		subs	r3, r3, #1
+ 1321              	.LVL90:
+ 128:User/Src/soft_i2c.c **** }
+ 1322              		.loc 1 128 8 view .LVU360
+ 1323 004c 002A     		cmp	r2, #0
+ 1324 004e FBD1     		bne	.L62
+ 1325              	.LVL91:
+ 128:User/Src/soft_i2c.c **** }
+ 1326              		.loc 1 128 8 view .LVU361
+ 1327              	.LBE249:
+ 1328              	.LBE248:
+ 259:User/Src/soft_i2c.c **** 		i2c_scl_h();
+ 1329              		.loc 1 259 3 is_stmt 1 view .LVU362
+ 1330              	.LBB250:
+ 1331              	.LBI250:
+  60:User/Src/soft_i2c.c **** {
+ 1332              		.loc 1 60 20 view .LVU363
+ 1333              	.LBB251:
+  63:User/Src/soft_i2c.c **** }
+ 1334              		.loc 1 63 5 view .LVU364
+ 1335 0050 0122     		movs	r2, #1
+ 1336 0052 4021     		movs	r1, #64
+ 1337 0054 1748     		ldr	r0, .L69
+ 1338 0056 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1339              	.LVL92:
+ 1340              	.LBE251:
+ 1341              	.LBE250:
+ 260:User/Src/soft_i2c.c **** 		i2c_Wait();
+ 1342              		.loc 1 260 3 view .LVU365
+ 1343              	.LBB252:
+ 1344              	.LBI252:
+ 125:User/Src/soft_i2c.c **** {	
+ 1345              		.loc 1 125 20 view .LVU366
+ 1346              	.LBB253:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 1347              		.loc 1 127 2 view .LVU367
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 1348              		.loc 1 127 6 is_stmt 0 view .LVU368
+ 1349 005a 174B     		ldr	r3, .L69+4
+ 1350 005c 1B88     		ldrh	r3, [r3]
+ 1351              	.LVL93:
+ 128:User/Src/soft_i2c.c **** }
+ 1352              		.loc 1 128 2 is_stmt 1 view .LVU369
+ 1353              	.L63:
+ 128:User/Src/soft_i2c.c **** }
+ 1354              		.loc 1 128 13 view .LVU370
+ 128:User/Src/soft_i2c.c **** }
+ 1355              		.loc 1 128 8 view .LVU371
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 34
+
+
+ 1356 005e 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 1357              		.loc 1 128 10 is_stmt 0 view .LVU372
+ 1358 0060 013B     		subs	r3, r3, #1
+ 1359              	.LVL94:
+ 128:User/Src/soft_i2c.c **** }
+ 1360              		.loc 1 128 8 view .LVU373
+ 1361 0062 002A     		cmp	r2, #0
+ 1362 0064 FBD1     		bne	.L63
+ 1363              	.LVL95:
+ 128:User/Src/soft_i2c.c **** }
+ 1364              		.loc 1 128 8 view .LVU374
+ 1365              	.LBE253:
+ 1366              	.LBE252:
+ 261:User/Src/soft_i2c.c **** 		if(i2c_read_sda())
+ 1367              		.loc 1 261 3 is_stmt 1 view .LVU375
+ 1368              		.loc 1 261 6 is_stmt 0 view .LVU376
+ 1369 0066 FFF7FEFF 		bl	i2c_read_sda
+ 1370              	.LVL96:
+ 1371              		.loc 1 261 5 view .LVU377
+ 1372 006a 0028     		cmp	r0, #0
+ 1373 006c DFD0     		beq	.L64
+ 262:User/Src/soft_i2c.c **** 		{
+ 263:User/Src/soft_i2c.c **** 			data |= 0x01;
+ 1374              		.loc 1 263 4 is_stmt 1 view .LVU378
+ 1375              		.loc 1 263 9 is_stmt 0 view .LVU379
+ 1376 006e 45F00105 		orr	r5, r5, #1
+ 1377              	.LVL97:
+ 1378              		.loc 1 263 9 view .LVU380
+ 1379 0072 DCE7     		b	.L64
+ 1380              	.L68:
+ 264:User/Src/soft_i2c.c **** 		}
+ 265:User/Src/soft_i2c.c **** 	}
+ 266:User/Src/soft_i2c.c **** 	i2c_scl_l();
+ 1381              		.loc 1 266 2 is_stmt 1 view .LVU381
+ 1382              	.LBB254:
+ 1383              	.LBI254:
+  70:User/Src/soft_i2c.c **** {
+ 1384              		.loc 1 70 20 view .LVU382
+ 1385              	.LBB255:
+  73:User/Src/soft_i2c.c **** }
+ 1386              		.loc 1 73 5 view .LVU383
+ 1387 0074 0022     		movs	r2, #0
+ 1388 0076 4021     		movs	r1, #64
+ 1389 0078 0E48     		ldr	r0, .L69
+ 1390 007a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1391              	.LVL98:
+ 1392              	.LBE255:
+ 1393              	.LBE254:
+ 267:User/Src/soft_i2c.c **** 	i2c_Wait();
+ 1394              		.loc 1 267 2 view .LVU384
+ 1395              	.LBB256:
+ 1396              	.LBI256:
+ 125:User/Src/soft_i2c.c **** {	
+ 1397              		.loc 1 125 20 view .LVU385
+ 1398              	.LBB257:
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 35
+
+
+ 1399              		.loc 1 127 2 view .LVU386
+ 127:User/Src/soft_i2c.c **** 	while (i--);
+ 1400              		.loc 1 127 6 is_stmt 0 view .LVU387
+ 1401 007e 0E4B     		ldr	r3, .L69+4
+ 1402 0080 1B88     		ldrh	r3, [r3]
+ 1403              	.LVL99:
+ 128:User/Src/soft_i2c.c **** }
+ 1404              		.loc 1 128 2 is_stmt 1 view .LVU388
+ 1405              	.L66:
+ 128:User/Src/soft_i2c.c **** }
+ 1406              		.loc 1 128 13 view .LVU389
+ 128:User/Src/soft_i2c.c **** }
+ 1407              		.loc 1 128 8 view .LVU390
+ 1408 0082 1A46     		mov	r2, r3
+ 128:User/Src/soft_i2c.c **** }
+ 1409              		.loc 1 128 10 is_stmt 0 view .LVU391
+ 1410 0084 013B     		subs	r3, r3, #1
+ 1411              	.LVL100:
+ 128:User/Src/soft_i2c.c **** }
+ 1412              		.loc 1 128 8 view .LVU392
+ 1413 0086 002A     		cmp	r2, #0
+ 1414 0088 FBD1     		bne	.L66
+ 1415              	.LVL101:
+ 128:User/Src/soft_i2c.c **** }
+ 1416              		.loc 1 128 8 view .LVU393
+ 1417              	.LBE257:
+ 1418              	.LBE256:
+ 268:User/Src/soft_i2c.c ****     i2c_sda_out();
+ 1419              		.loc 1 268 5 is_stmt 1 view .LVU394
+ 1420              	.LBB258:
+ 1421              	.LBI258:
+ 109:User/Src/soft_i2c.c **** {
+ 1422              		.loc 1 109 20 view .LVU395
+ 1423              	.LBB259:
+ 112:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 1424              		.loc 1 112 4 view .LVU396
+ 112:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_7;
+ 1425              		.loc 1 112 21 is_stmt 0 view .LVU397
+ 1426 008a 0023     		movs	r3, #0
+ 1427 008c 0093     		str	r3, [sp]
+ 1428 008e 0193     		str	r3, [sp, #4]
+ 1429 0090 0293     		str	r3, [sp, #8]
+ 1430 0092 0393     		str	r3, [sp, #12]
+ 113:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 1431              		.loc 1 113 2 is_stmt 1 view .LVU398
+ 113:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 1432              		.loc 1 113 22 is_stmt 0 view .LVU399
+ 1433 0094 8023     		movs	r3, #128
+ 1434 0096 0093     		str	r3, [sp]
+ 114:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 1435              		.loc 1 114 2 is_stmt 1 view .LVU400
+ 114:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 1436              		.loc 1 114 23 is_stmt 0 view .LVU401
+ 1437 0098 1123     		movs	r3, #17
+ 1438 009a 0193     		str	r3, [sp, #4]
+ 115:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 1439              		.loc 1 115 2 is_stmt 1 view .LVU402
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 36
+
+
+ 115:User/Src/soft_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 1440              		.loc 1 115 23 is_stmt 0 view .LVU403
+ 1441 009c 0123     		movs	r3, #1
+ 1442 009e 0293     		str	r3, [sp, #8]
+ 116:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 1443              		.loc 1 116 2 is_stmt 1 view .LVU404
+ 116:User/Src/soft_i2c.c **** 	HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+ 1444              		.loc 1 116 24 is_stmt 0 view .LVU405
+ 1445 00a0 0223     		movs	r3, #2
+ 1446 00a2 0393     		str	r3, [sp, #12]
+ 117:User/Src/soft_i2c.c ****   
+ 1447              		.loc 1 117 2 is_stmt 1 view .LVU406
+ 1448 00a4 6946     		mov	r1, sp
+ 1449 00a6 0348     		ldr	r0, .L69
+ 1450 00a8 FFF7FEFF 		bl	HAL_GPIO_Init
+ 1451              	.LVL102:
+ 1452              	.LBE259:
+ 1453              	.LBE258:
+ 269:User/Src/soft_i2c.c **** 	return data;
+ 1454              		.loc 1 269 2 view .LVU407
+ 270:User/Src/soft_i2c.c **** }
+ 1455              		.loc 1 270 1 is_stmt 0 view .LVU408
+ 1456 00ac 2846     		mov	r0, r5
+ 1457 00ae 04B0     		add	sp, sp, #16
+ 1458              	.LCFI20:
+ 1459              		.cfi_def_cfa_offset 16
+ 1460              		@ sp needed
+ 1461 00b0 70BD     		pop	{r4, r5, r6, pc}
+ 1462              	.LVL103:
+ 1463              	.L70:
+ 1464              		.loc 1 270 1 view .LVU409
+ 1465 00b2 00BF     		.align	2
+ 1466              	.L69:
+ 1467 00b4 000C0140 		.word	1073810432
+ 1468 00b8 00000000 		.word	.LANCHOR0
+ 1469              		.cfi_endproc
+ 1470              	.LFE83:
+ 1472              		.section	.text.i2c_write_multi_bytes,"ax",%progbits
+ 1473              		.align	1
+ 1474              		.global	i2c_write_multi_bytes
+ 1475              		.syntax unified
+ 1476              		.thumb
+ 1477              		.thumb_func
+ 1479              	i2c_write_multi_bytes:
+ 1480              	.LVL104:
+ 1481              	.LFB84:
+ 271:User/Src/soft_i2c.c **** 
+ 272:User/Src/soft_i2c.c **** /**
+ 273:User/Src/soft_i2c.c ****  * @brief Write multiple bytes to slave 
+ 274:User/Src/soft_i2c.c ****  * 
+ 275:User/Src/soft_i2c.c ****  */
+ 276:User/Src/soft_i2c.c **** i2c_exit_code_e i2c_write_multi_bytes(unsigned char dev_addr, unsigned char reg_addr, const unsigne
+ 277:User/Src/soft_i2c.c **** {
+ 1482              		.loc 1 277 1 is_stmt 1 view -0
+ 1483              		.cfi_startproc
+ 1484              		@ args = 0, pretend = 0, frame = 0
+ 1485              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 37
+
+
+ 1486              		.loc 1 277 1 is_stmt 0 view .LVU411
+ 1487 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 1488              	.LCFI21:
+ 1489              		.cfi_def_cfa_offset 24
+ 1490              		.cfi_offset 3, -24
+ 1491              		.cfi_offset 4, -20
+ 1492              		.cfi_offset 5, -16
+ 1493              		.cfi_offset 6, -12
+ 1494              		.cfi_offset 7, -8
+ 1495              		.cfi_offset 14, -4
+ 1496 0002 0446     		mov	r4, r0
+ 1497 0004 0F46     		mov	r7, r1
+ 1498 0006 1646     		mov	r6, r2
+ 1499 0008 1D46     		mov	r5, r3
+ 278:User/Src/soft_i2c.c ****     unsigned short i;
+ 1500              		.loc 1 278 5 is_stmt 1 view .LVU412
+ 279:User/Src/soft_i2c.c **** 
+ 280:User/Src/soft_i2c.c ****     if (i2c_start() != I2C_OK)
+ 1501              		.loc 1 280 5 view .LVU413
+ 1502              		.loc 1 280 9 is_stmt 0 view .LVU414
+ 1503 000a FFF7FEFF 		bl	i2c_start
+ 1504              	.LVL105:
+ 1505              		.loc 1 280 8 view .LVU415
+ 1506 000e 10B1     		cbz	r0, .L79
+ 281:User/Src/soft_i2c.c **** 		return I2C_START_FAIL;
+ 1507              		.loc 1 281 10 view .LVU416
+ 1508 0010 0127     		movs	r7, #1
+ 1509              	.L72:
+ 282:User/Src/soft_i2c.c **** 
+ 283:User/Src/soft_i2c.c ****     i2c_send_byte(dev_addr);
+ 284:User/Src/soft_i2c.c **** 	if (i2c_wait_ack() != I2C_OK)
+ 285:User/Src/soft_i2c.c **** 	{
+ 286:User/Src/soft_i2c.c **** 		i2c_stop(); 
+ 287:User/Src/soft_i2c.c **** 		return I2C_NO_ACK;
+ 288:User/Src/soft_i2c.c **** 	}
+ 289:User/Src/soft_i2c.c **** 	i2c_send_byte(reg_addr);
+ 290:User/Src/soft_i2c.c **** 	if (i2c_wait_ack() != I2C_OK)
+ 291:User/Src/soft_i2c.c **** 	{
+ 292:User/Src/soft_i2c.c **** 		i2c_stop(); 
+ 293:User/Src/soft_i2c.c **** 		return I2C_NO_ACK;
+ 294:User/Src/soft_i2c.c **** 	}
+ 295:User/Src/soft_i2c.c ****     for (i = 0; i < size; i++)
+ 296:User/Src/soft_i2c.c ****     {
+ 297:User/Src/soft_i2c.c ****     	i2c_send_byte(*(buf + i));
+ 298:User/Src/soft_i2c.c ****     	i2c_wait_ack();
+ 299:User/Src/soft_i2c.c ****     }
+ 300:User/Src/soft_i2c.c ****     i2c_stop();
+ 301:User/Src/soft_i2c.c **** 
+ 302:User/Src/soft_i2c.c **** 	return	I2C_OK;
+ 303:User/Src/soft_i2c.c **** }
+ 1510              		.loc 1 303 1 view .LVU417
+ 1511 0012 3846     		mov	r0, r7
+ 1512 0014 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 1513              	.LVL106:
+ 1514              	.L79:
+ 283:User/Src/soft_i2c.c **** 	if (i2c_wait_ack() != I2C_OK)
+ 1515              		.loc 1 283 5 is_stmt 1 view .LVU418
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 38
+
+
+ 1516 0016 2046     		mov	r0, r4
+ 1517 0018 FFF7FEFF 		bl	i2c_send_byte
+ 1518              	.LVL107:
+ 284:User/Src/soft_i2c.c **** 	{
+ 1519              		.loc 1 284 2 view .LVU419
+ 284:User/Src/soft_i2c.c **** 	{
+ 1520              		.loc 1 284 6 is_stmt 0 view .LVU420
+ 1521 001c FFF7FEFF 		bl	i2c_wait_ack
+ 1522              	.LVL108:
+ 284:User/Src/soft_i2c.c **** 	{
+ 1523              		.loc 1 284 5 view .LVU421
+ 1524 0020 40B9     		cbnz	r0, .L80
+ 289:User/Src/soft_i2c.c **** 	if (i2c_wait_ack() != I2C_OK)
+ 1525              		.loc 1 289 2 is_stmt 1 view .LVU422
+ 1526 0022 3846     		mov	r0, r7
+ 1527 0024 FFF7FEFF 		bl	i2c_send_byte
+ 1528              	.LVL109:
+ 290:User/Src/soft_i2c.c **** 	{
+ 1529              		.loc 1 290 2 view .LVU423
+ 290:User/Src/soft_i2c.c **** 	{
+ 1530              		.loc 1 290 6 is_stmt 0 view .LVU424
+ 1531 0028 FFF7FEFF 		bl	i2c_wait_ack
+ 1532              	.LVL110:
+ 290:User/Src/soft_i2c.c **** 	{
+ 1533              		.loc 1 290 5 view .LVU425
+ 1534 002c 0746     		mov	r7, r0
+ 1535 002e 28B9     		cbnz	r0, .L81
+ 295:User/Src/soft_i2c.c ****     {
+ 1536              		.loc 1 295 12 view .LVU426
+ 1537 0030 0024     		movs	r4, #0
+ 1538 0032 0EE0     		b	.L74
+ 1539              	.L80:
+ 286:User/Src/soft_i2c.c **** 		return I2C_NO_ACK;
+ 1540              		.loc 1 286 3 is_stmt 1 view .LVU427
+ 1541 0034 FFF7FEFF 		bl	i2c_stop
+ 1542              	.LVL111:
+ 287:User/Src/soft_i2c.c **** 	}
+ 1543              		.loc 1 287 3 view .LVU428
+ 287:User/Src/soft_i2c.c **** 	}
+ 1544              		.loc 1 287 10 is_stmt 0 view .LVU429
+ 1545 0038 0227     		movs	r7, #2
+ 1546 003a EAE7     		b	.L72
+ 1547              	.L81:
+ 292:User/Src/soft_i2c.c **** 		return I2C_NO_ACK;
+ 1548              		.loc 1 292 3 is_stmt 1 view .LVU430
+ 1549 003c FFF7FEFF 		bl	i2c_stop
+ 1550              	.LVL112:
+ 293:User/Src/soft_i2c.c **** 	}
+ 1551              		.loc 1 293 3 view .LVU431
+ 293:User/Src/soft_i2c.c **** 	}
+ 1552              		.loc 1 293 10 is_stmt 0 view .LVU432
+ 1553 0040 0227     		movs	r7, #2
+ 1554 0042 E6E7     		b	.L72
+ 1555              	.LVL113:
+ 1556              	.L75:
+ 297:User/Src/soft_i2c.c ****     	i2c_wait_ack();
+ 1557              		.loc 1 297 6 is_stmt 1 discriminator 3 view .LVU433
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 39
+
+
+ 1558 0044 305D     		ldrb	r0, [r6, r4]	@ zero_extendqisi2
+ 1559 0046 FFF7FEFF 		bl	i2c_send_byte
+ 1560              	.LVL114:
+ 298:User/Src/soft_i2c.c ****     }
+ 1561              		.loc 1 298 6 discriminator 3 view .LVU434
+ 1562 004a FFF7FEFF 		bl	i2c_wait_ack
+ 1563              	.LVL115:
+ 295:User/Src/soft_i2c.c ****     {
+ 1564              		.loc 1 295 27 discriminator 3 view .LVU435
+ 295:User/Src/soft_i2c.c ****     {
+ 1565              		.loc 1 295 28 is_stmt 0 discriminator 3 view .LVU436
+ 1566 004e 0134     		adds	r4, r4, #1
+ 1567              	.LVL116:
+ 295:User/Src/soft_i2c.c ****     {
+ 1568              		.loc 1 295 28 discriminator 3 view .LVU437
+ 1569 0050 A4B2     		uxth	r4, r4
+ 1570              	.LVL117:
+ 1571              	.L74:
+ 295:User/Src/soft_i2c.c ****     {
+ 1572              		.loc 1 295 17 is_stmt 1 discriminator 1 view .LVU438
+ 295:User/Src/soft_i2c.c ****     {
+ 1573              		.loc 1 295 5 is_stmt 0 discriminator 1 view .LVU439
+ 1574 0052 AC42     		cmp	r4, r5
+ 1575 0054 F6D3     		bcc	.L75
+ 300:User/Src/soft_i2c.c **** 
+ 1576              		.loc 1 300 5 is_stmt 1 view .LVU440
+ 1577 0056 FFF7FEFF 		bl	i2c_stop
+ 1578              	.LVL118:
+ 302:User/Src/soft_i2c.c **** }
+ 1579              		.loc 1 302 2 view .LVU441
+ 302:User/Src/soft_i2c.c **** }
+ 1580              		.loc 1 302 9 is_stmt 0 view .LVU442
+ 1581 005a DAE7     		b	.L72
+ 1582              		.cfi_endproc
+ 1583              	.LFE84:
+ 1585              		.section	.text.i2c_read_multi_bytes,"ax",%progbits
+ 1586              		.align	1
+ 1587              		.global	i2c_read_multi_bytes
+ 1588              		.syntax unified
+ 1589              		.thumb
+ 1590              		.thumb_func
+ 1592              	i2c_read_multi_bytes:
+ 1593              	.LVL119:
+ 1594              	.LFB85:
+ 304:User/Src/soft_i2c.c **** 
+ 305:User/Src/soft_i2c.c **** /**
+ 306:User/Src/soft_i2c.c ****  * @brief Read multiple bytes from slave 
+ 307:User/Src/soft_i2c.c ****  * 
+ 308:User/Src/soft_i2c.c ****  */
+ 309:User/Src/soft_i2c.c **** i2c_exit_code_e i2c_read_multi_bytes(unsigned char dev_addr,unsigned char reg_addr, unsigned char *
+ 310:User/Src/soft_i2c.c **** {
+ 1595              		.loc 1 310 1 is_stmt 1 view -0
+ 1596              		.cfi_startproc
+ 1597              		@ args = 0, pretend = 0, frame = 0
+ 1598              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1599              		.loc 1 310 1 is_stmt 0 view .LVU444
+ 1600 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 40
+
+
+ 1601              	.LCFI22:
+ 1602              		.cfi_def_cfa_offset 24
+ 1603              		.cfi_offset 3, -24
+ 1604              		.cfi_offset 4, -20
+ 1605              		.cfi_offset 5, -16
+ 1606              		.cfi_offset 6, -12
+ 1607              		.cfi_offset 7, -8
+ 1608              		.cfi_offset 14, -4
+ 1609 0002 0446     		mov	r4, r0
+ 1610 0004 0F46     		mov	r7, r1
+ 1611 0006 1646     		mov	r6, r2
+ 1612 0008 1D46     		mov	r5, r3
+ 311:User/Src/soft_i2c.c **** 	unsigned short i;
+ 1613              		.loc 1 311 2 is_stmt 1 view .LVU445
+ 312:User/Src/soft_i2c.c **** 
+ 313:User/Src/soft_i2c.c **** 	if(i2c_start() != I2C_OK)
+ 1614              		.loc 1 313 2 view .LVU446
+ 1615              		.loc 1 313 5 is_stmt 0 view .LVU447
+ 1616 000a FFF7FEFF 		bl	i2c_start
+ 1617              	.LVL120:
+ 1618              		.loc 1 313 4 view .LVU448
+ 1619 000e 10B1     		cbz	r0, .L91
+ 314:User/Src/soft_i2c.c **** 		return I2C_START_FAIL;
+ 1620              		.loc 1 314 10 view .LVU449
+ 1621 0010 0127     		movs	r7, #1
+ 1622              	.L83:
+ 315:User/Src/soft_i2c.c **** 	/*send device address*/
+ 316:User/Src/soft_i2c.c **** 	i2c_send_byte(dev_addr);
+ 317:User/Src/soft_i2c.c **** 	if(i2c_wait_ack() != I2C_OK)
+ 318:User/Src/soft_i2c.c **** 	{
+ 319:User/Src/soft_i2c.c **** 		i2c_stop(); 
+ 320:User/Src/soft_i2c.c **** 		HAL_GPIO_TogglePin(GPIOF,GPIO_PIN_7);
+ 321:User/Src/soft_i2c.c **** 		return I2C_NO_ACK;
+ 322:User/Src/soft_i2c.c **** 	}
+ 323:User/Src/soft_i2c.c **** 	/*send register address*/
+ 324:User/Src/soft_i2c.c **** 	i2c_send_byte(reg_addr);
+ 325:User/Src/soft_i2c.c **** 	if (i2c_wait_ack() != I2C_OK)
+ 326:User/Src/soft_i2c.c **** 	{
+ 327:User/Src/soft_i2c.c **** 		i2c_stop(); 
+ 328:User/Src/soft_i2c.c **** 		HAL_GPIO_TogglePin(GPIOF,GPIO_PIN_8);
+ 329:User/Src/soft_i2c.c **** 		return I2C_NO_ACK;
+ 330:User/Src/soft_i2c.c **** 	}
+ 331:User/Src/soft_i2c.c **** 	/*restart and send read device address*/
+ 332:User/Src/soft_i2c.c **** 	i2c_start();
+ 333:User/Src/soft_i2c.c **** 	i2c_send_byte(dev_addr | 0x01);
+ 334:User/Src/soft_i2c.c **** 	i2c_wait_ack();
+ 335:User/Src/soft_i2c.c **** 	for (i = 0; i < size; i++)
+ 336:User/Src/soft_i2c.c **** 	{
+ 337:User/Src/soft_i2c.c **** 		*(buf+i) = i2c_receive_byte();
+ 338:User/Src/soft_i2c.c **** 
+ 339:User/Src/soft_i2c.c **** 		if (i != size-1) { i2c_ack(); }			
+ 340:User/Src/soft_i2c.c **** 	}
+ 341:User/Src/soft_i2c.c **** 	i2c_nack();
+ 342:User/Src/soft_i2c.c **** 	i2c_stop();
+ 343:User/Src/soft_i2c.c **** 
+ 344:User/Src/soft_i2c.c **** 	return  I2C_OK;
+ 345:User/Src/soft_i2c.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 41
+
+
+ 1623              		.loc 1 345 1 view .LVU450
+ 1624 0012 3846     		mov	r0, r7
+ 1625 0014 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 1626              	.LVL121:
+ 1627              	.L91:
+ 316:User/Src/soft_i2c.c **** 	if(i2c_wait_ack() != I2C_OK)
+ 1628              		.loc 1 316 2 is_stmt 1 view .LVU451
+ 1629 0016 2046     		mov	r0, r4
+ 1630 0018 FFF7FEFF 		bl	i2c_send_byte
+ 1631              	.LVL122:
+ 317:User/Src/soft_i2c.c **** 	{
+ 1632              		.loc 1 317 2 view .LVU452
+ 317:User/Src/soft_i2c.c **** 	{
+ 1633              		.loc 1 317 5 is_stmt 0 view .LVU453
+ 1634 001c FFF7FEFF 		bl	i2c_wait_ack
+ 1635              	.LVL123:
+ 317:User/Src/soft_i2c.c **** 	{
+ 1636              		.loc 1 317 4 view .LVU454
+ 1637 0020 80B9     		cbnz	r0, .L92
+ 324:User/Src/soft_i2c.c **** 	if (i2c_wait_ack() != I2C_OK)
+ 1638              		.loc 1 324 2 is_stmt 1 view .LVU455
+ 1639 0022 3846     		mov	r0, r7
+ 1640 0024 FFF7FEFF 		bl	i2c_send_byte
+ 1641              	.LVL124:
+ 325:User/Src/soft_i2c.c **** 	{
+ 1642              		.loc 1 325 2 view .LVU456
+ 325:User/Src/soft_i2c.c **** 	{
+ 1643              		.loc 1 325 6 is_stmt 0 view .LVU457
+ 1644 0028 FFF7FEFF 		bl	i2c_wait_ack
+ 1645              	.LVL125:
+ 325:User/Src/soft_i2c.c **** 	{
+ 1646              		.loc 1 325 5 view .LVU458
+ 1647 002c 0746     		mov	r7, r0
+ 1648 002e 88B9     		cbnz	r0, .L93
+ 332:User/Src/soft_i2c.c **** 	i2c_send_byte(dev_addr | 0x01);
+ 1649              		.loc 1 332 2 is_stmt 1 view .LVU459
+ 1650 0030 FFF7FEFF 		bl	i2c_start
+ 1651              	.LVL126:
+ 333:User/Src/soft_i2c.c **** 	i2c_wait_ack();
+ 1652              		.loc 1 333 2 view .LVU460
+ 1653 0034 44F00100 		orr	r0, r4, #1
+ 1654 0038 FFF7FEFF 		bl	i2c_send_byte
+ 1655              	.LVL127:
+ 334:User/Src/soft_i2c.c **** 	for (i = 0; i < size; i++)
+ 1656              		.loc 1 334 2 view .LVU461
+ 1657 003c FFF7FEFF 		bl	i2c_wait_ack
+ 1658              	.LVL128:
+ 335:User/Src/soft_i2c.c **** 	{
+ 1659              		.loc 1 335 2 view .LVU462
+ 335:User/Src/soft_i2c.c **** 	{
+ 1660              		.loc 1 335 9 is_stmt 0 view .LVU463
+ 1661 0040 0024     		movs	r4, #0
+ 335:User/Src/soft_i2c.c **** 	{
+ 1662              		.loc 1 335 2 view .LVU464
+ 1663 0042 12E0     		b	.L86
+ 1664              	.LVL129:
+ 1665              	.L92:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 42
+
+
+ 319:User/Src/soft_i2c.c **** 		HAL_GPIO_TogglePin(GPIOF,GPIO_PIN_7);
+ 1666              		.loc 1 319 3 is_stmt 1 view .LVU465
+ 1667 0044 FFF7FEFF 		bl	i2c_stop
+ 1668              	.LVL130:
+ 320:User/Src/soft_i2c.c **** 		return I2C_NO_ACK;
+ 1669              		.loc 1 320 3 view .LVU466
+ 1670 0048 8021     		movs	r1, #128
+ 1671 004a 1048     		ldr	r0, .L95
+ 1672 004c FFF7FEFF 		bl	HAL_GPIO_TogglePin
+ 1673              	.LVL131:
+ 321:User/Src/soft_i2c.c **** 	}
+ 1674              		.loc 1 321 3 view .LVU467
+ 321:User/Src/soft_i2c.c **** 	}
+ 1675              		.loc 1 321 10 is_stmt 0 view .LVU468
+ 1676 0050 0227     		movs	r7, #2
+ 1677 0052 DEE7     		b	.L83
+ 1678              	.L93:
+ 327:User/Src/soft_i2c.c **** 		HAL_GPIO_TogglePin(GPIOF,GPIO_PIN_8);
+ 1679              		.loc 1 327 3 is_stmt 1 view .LVU469
+ 1680 0054 FFF7FEFF 		bl	i2c_stop
+ 1681              	.LVL132:
+ 328:User/Src/soft_i2c.c **** 		return I2C_NO_ACK;
+ 1682              		.loc 1 328 3 view .LVU470
+ 1683 0058 4FF48071 		mov	r1, #256
+ 1684 005c 0B48     		ldr	r0, .L95
+ 1685 005e FFF7FEFF 		bl	HAL_GPIO_TogglePin
+ 1686              	.LVL133:
+ 329:User/Src/soft_i2c.c **** 	}
+ 1687              		.loc 1 329 3 view .LVU471
+ 329:User/Src/soft_i2c.c **** 	}
+ 1688              		.loc 1 329 10 is_stmt 0 view .LVU472
+ 1689 0062 0227     		movs	r7, #2
+ 1690 0064 D5E7     		b	.L83
+ 1691              	.LVL134:
+ 1692              	.L87:
+ 335:User/Src/soft_i2c.c **** 	{
+ 1693              		.loc 1 335 24 is_stmt 1 discriminator 2 view .LVU473
+ 335:User/Src/soft_i2c.c **** 	{
+ 1694              		.loc 1 335 25 is_stmt 0 discriminator 2 view .LVU474
+ 1695 0066 0134     		adds	r4, r4, #1
+ 1696              	.LVL135:
+ 335:User/Src/soft_i2c.c **** 	{
+ 1697              		.loc 1 335 25 discriminator 2 view .LVU475
+ 1698 0068 A4B2     		uxth	r4, r4
+ 1699              	.LVL136:
+ 1700              	.L86:
+ 335:User/Src/soft_i2c.c **** 	{
+ 1701              		.loc 1 335 14 is_stmt 1 discriminator 1 view .LVU476
+ 335:User/Src/soft_i2c.c **** 	{
+ 1702              		.loc 1 335 2 is_stmt 0 discriminator 1 view .LVU477
+ 1703 006a AC42     		cmp	r4, r5
+ 1704 006c 08D2     		bcs	.L94
+ 337:User/Src/soft_i2c.c **** 
+ 1705              		.loc 1 337 3 is_stmt 1 view .LVU478
+ 337:User/Src/soft_i2c.c **** 
+ 1706              		.loc 1 337 14 is_stmt 0 view .LVU479
+ 1707 006e FFF7FEFF 		bl	i2c_receive_byte
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 43
+
+
+ 1708              	.LVL137:
+ 337:User/Src/soft_i2c.c **** 
+ 1709              		.loc 1 337 12 view .LVU480
+ 1710 0072 3055     		strb	r0, [r6, r4]
+ 339:User/Src/soft_i2c.c **** 	}
+ 1711              		.loc 1 339 3 is_stmt 1 view .LVU481
+ 339:User/Src/soft_i2c.c **** 	}
+ 1712              		.loc 1 339 16 is_stmt 0 view .LVU482
+ 1713 0074 6B1E     		subs	r3, r5, #1
+ 339:User/Src/soft_i2c.c **** 	}
+ 1714              		.loc 1 339 6 view .LVU483
+ 1715 0076 9C42     		cmp	r4, r3
+ 1716 0078 F5D0     		beq	.L87
+ 339:User/Src/soft_i2c.c **** 	}
+ 1717              		.loc 1 339 22 is_stmt 1 discriminator 1 view .LVU484
+ 1718 007a FFF7FEFF 		bl	i2c_ack
+ 1719              	.LVL138:
+ 1720 007e F2E7     		b	.L87
+ 1721              	.L94:
+ 341:User/Src/soft_i2c.c **** 	i2c_stop();
+ 1722              		.loc 1 341 2 view .LVU485
+ 1723 0080 FFF7FEFF 		bl	i2c_nack
+ 1724              	.LVL139:
+ 342:User/Src/soft_i2c.c **** 
+ 1725              		.loc 1 342 2 view .LVU486
+ 1726 0084 FFF7FEFF 		bl	i2c_stop
+ 1727              	.LVL140:
+ 344:User/Src/soft_i2c.c **** }
+ 1728              		.loc 1 344 2 view .LVU487
+ 344:User/Src/soft_i2c.c **** }
+ 1729              		.loc 1 344 10 is_stmt 0 view .LVU488
+ 1730 0088 C3E7     		b	.L83
+ 1731              	.L96:
+ 1732 008a 00BF     		.align	2
+ 1733              	.L95:
+ 1734 008c 001C0140 		.word	1073814528
+ 1735              		.cfi_endproc
+ 1736              	.LFE85:
+ 1738              		.section	.text.i2c_dev_detect,"ax",%progbits
+ 1739              		.align	1
+ 1740              		.global	i2c_dev_detect
+ 1741              		.syntax unified
+ 1742              		.thumb
+ 1743              		.thumb_func
+ 1745              	i2c_dev_detect:
+ 1746              	.LVL141:
+ 1747              	.LFB86:
+ 346:User/Src/soft_i2c.c **** 
+ 347:User/Src/soft_i2c.c **** i2c_exit_code_e i2c_dev_detect(unsigned char dev_addr)
+ 348:User/Src/soft_i2c.c **** {
+ 1748              		.loc 1 348 1 is_stmt 1 view -0
+ 1749              		.cfi_startproc
+ 1750              		@ args = 0, pretend = 0, frame = 0
+ 1751              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1752              		.loc 1 348 1 is_stmt 0 view .LVU490
+ 1753 0000 10B5     		push	{r4, lr}
+ 1754              	.LCFI23:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 44
+
+
+ 1755              		.cfi_def_cfa_offset 8
+ 1756              		.cfi_offset 4, -8
+ 1757              		.cfi_offset 14, -4
+ 1758 0002 0446     		mov	r4, r0
+ 349:User/Src/soft_i2c.c **** 	i2c_exit_code_e ret = I2C_OK;
+ 1759              		.loc 1 349 2 is_stmt 1 view .LVU491
+ 1760              	.LVL142:
+ 350:User/Src/soft_i2c.c **** 
+ 351:User/Src/soft_i2c.c **** 	if (i2c_start() != I2C_OK) {
+ 1761              		.loc 1 351 2 view .LVU492
+ 1762              		.loc 1 351 6 is_stmt 0 view .LVU493
+ 1763 0004 FFF7FEFF 		bl	i2c_start
+ 1764              	.LVL143:
+ 1765              		.loc 1 351 5 view .LVU494
+ 1766 0008 10B1     		cbz	r0, .L103
+ 352:User/Src/soft_i2c.c **** 		return I2C_START_FAIL;
+ 1767              		.loc 1 352 10 view .LVU495
+ 1768 000a 0124     		movs	r4, #1
+ 1769              	.LVL144:
+ 1770              	.L98:
+ 353:User/Src/soft_i2c.c **** 	}
+ 354:User/Src/soft_i2c.c **** 	i2c_send_byte(dev_addr);
+ 355:User/Src/soft_i2c.c **** 	if (i2c_wait_ack() != I2C_OK) {
+ 356:User/Src/soft_i2c.c **** 		ret = I2C_NO_ACK;
+ 357:User/Src/soft_i2c.c **** 	}	
+ 358:User/Src/soft_i2c.c **** 	i2c_stop(); 
+ 359:User/Src/soft_i2c.c **** 
+ 360:User/Src/soft_i2c.c **** 	return ret;
+ 361:User/Src/soft_i2c.c **** }
+ 1771              		.loc 1 361 1 view .LVU496
+ 1772 000c 2046     		mov	r0, r4
+ 1773 000e 10BD     		pop	{r4, pc}
+ 1774              	.LVL145:
+ 1775              	.L103:
+ 354:User/Src/soft_i2c.c **** 	if (i2c_wait_ack() != I2C_OK) {
+ 1776              		.loc 1 354 2 is_stmt 1 view .LVU497
+ 1777 0010 2046     		mov	r0, r4
+ 1778 0012 FFF7FEFF 		bl	i2c_send_byte
+ 1779              	.LVL146:
+ 355:User/Src/soft_i2c.c **** 		ret = I2C_NO_ACK;
+ 1780              		.loc 1 355 2 view .LVU498
+ 355:User/Src/soft_i2c.c **** 		ret = I2C_NO_ACK;
+ 1781              		.loc 1 355 6 is_stmt 0 view .LVU499
+ 1782 0016 FFF7FEFF 		bl	i2c_wait_ack
+ 1783              	.LVL147:
+ 355:User/Src/soft_i2c.c **** 		ret = I2C_NO_ACK;
+ 1784              		.loc 1 355 5 view .LVU500
+ 1785 001a 0446     		mov	r4, r0
+ 1786 001c 00B1     		cbz	r0, .L99
+ 356:User/Src/soft_i2c.c **** 	}	
+ 1787              		.loc 1 356 7 view .LVU501
+ 1788 001e 0224     		movs	r4, #2
+ 1789              	.L99:
+ 1790              	.LVL148:
+ 358:User/Src/soft_i2c.c **** 
+ 1791              		.loc 1 358 2 is_stmt 1 view .LVU502
+ 1792 0020 FFF7FEFF 		bl	i2c_stop
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 45
+
+
+ 1793              	.LVL149:
+ 360:User/Src/soft_i2c.c **** }
+ 1794              		.loc 1 360 2 view .LVU503
+ 360:User/Src/soft_i2c.c **** }
+ 1795              		.loc 1 360 9 is_stmt 0 view .LVU504
+ 1796 0024 F2E7     		b	.L98
+ 1797              		.cfi_endproc
+ 1798              	.LFE86:
+ 1800              		.global	soft_i2c_delay
+ 1801              		.section	.data.soft_i2c_delay,"aw"
+ 1802              		.align	1
+ 1803              		.set	.LANCHOR0,. + 0
+ 1806              	soft_i2c_delay:
+ 1807 0000 2C01     		.short	300
+ 1808              		.text
+ 1809              	.Letext0:
+ 1810              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1811              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1812              		.file 4 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 1813              		.file 5 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h"
+ 1814              		.file 6 "User/Inc/multi_button.h"
+ 1815              		.file 7 "User/Inc/soft_i2c.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s 			page 46
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 soft_i2c.c
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:18     .text.i2c_read_sda:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:23     .text.i2c_read_sda:00000000 i2c_read_sda
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:52     .text.i2c_read_sda:00000014 $d
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:57     .text.IIC_GPIO_Init:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:63     .text.IIC_GPIO_Init:00000000 IIC_GPIO_Init
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:133    .text.IIC_GPIO_Init:0000003c $d
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:138    .text.i2c_start:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:144    .text.i2c_start:00000000 i2c_start
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:347    .text.i2c_start:00000084 $d
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:355    .text.i2c_stop:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:361    .text.i2c_stop:00000000 i2c_stop
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:524    .text.i2c_stop:0000006c $d
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:530    .text.i2c_ack:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:536    .text.i2c_ack:00000000 i2c_ack
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:654    .text.i2c_ack:00000044 $d
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:660    .text.i2c_nack:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:666    .text.i2c_nack:00000000 i2c_nack
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:784    .text.i2c_nack:00000044 $d
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:790    .text.i2c_wait_ack:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:796    .text.i2c_wait_ack:00000000 i2c_wait_ack
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1005   .text.i2c_wait_ack:00000098 $d
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1011   .text.i2c_send_byte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1017   .text.i2c_send_byte:00000000 i2c_send_byte
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1191   .text.i2c_send_byte:00000068 $d
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1197   .text.i2c_receive_byte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1203   .text.i2c_receive_byte:00000000 i2c_receive_byte
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1467   .text.i2c_receive_byte:000000b4 $d
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1473   .text.i2c_write_multi_bytes:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1479   .text.i2c_write_multi_bytes:00000000 i2c_write_multi_bytes
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1586   .text.i2c_read_multi_bytes:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1592   .text.i2c_read_multi_bytes:00000000 i2c_read_multi_bytes
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1734   .text.i2c_read_multi_bytes:0000008c $d
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1739   .text.i2c_dev_detect:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1745   .text.i2c_dev_detect:00000000 i2c_dev_detect
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1806   .data.soft_i2c_delay:00000000 soft_i2c_delay
+C:\Users\84759\AppData\Local\Temp\ccSkcQAj.s:1802   .data.soft_i2c_delay:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_ReadPin
+HAL_GPIO_Init
+HAL_GPIO_WritePin
+HAL_GPIO_TogglePin
