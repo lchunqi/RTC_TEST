@@ -1,0 +1,1569 @@
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lcd_driver.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.clear_buffer,"ax",%progbits
+  20              		.align	1
+  21              		.global	clear_buffer
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	clear_buffer:
+  27              	.LFB238:
+  28              		.file 1 "Device/Src/lcd_driver.c"
+   1:Device/Src/lcd_driver.c **** /************************************版权申明********************************************
+   2:Device/Src/lcd_driver.c **** **                             广州大彩光电科技有限公司
+   3:Device/Src/lcd_driver.c **** **                             http://www.gz-dc.com
+   4:Device/Src/lcd_driver.c **** **-----------------------------------文件信息--------------------------------------------
+   5:Device/Src/lcd_driver.c **** ** 文件名称:   hmi_driver.c
+   6:Device/Src/lcd_driver.c **** ** 修改时间:   2018-05-18
+   7:Device/Src/lcd_driver.c **** ** 文件说明:   用户MCU串口驱动函数库
+   8:Device/Src/lcd_driver.c **** ** 技术支持：  Tel: 020-82186683  Email: hmi@gz-dc.com Web:www.gz-dc.com
+   9:Device/Src/lcd_driver.c **** --------------------------------------------------------------------------------------
+  10:Device/Src/lcd_driver.c **** ----------------------------------------------------------------------------------------*/
+  11:Device/Src/lcd_driver.c **** #include "lcd_driver.h"
+  12:Device/Src/lcd_driver.c **** #include "control.h"
+  13:Device/Src/lcd_driver.c **** #include "string.h"
+  14:Device/Src/lcd_driver.c **** #include "stdio.h"
+  15:Device/Src/lcd_driver.c **** 
+  16:Device/Src/lcd_driver.c **** #define LCD_UART_START          0XEE
+  17:Device/Src/lcd_driver.c **** #define LCD_UART_END            0XFFFCFFFF
+  18:Device/Src/lcd_driver.c **** #define LCD_BUFFER_LENGTH       256
+  19:Device/Src/lcd_driver.c **** 
+  20:Device/Src/lcd_driver.c **** extern UART_HandleTypeDef huart2;
+  21:Device/Src/lcd_driver.c **** typedef struct {
+  22:Device/Src/lcd_driver.c **** uint16_t length;
+  23:Device/Src/lcd_driver.c **** uint8_t buffer[LCD_BUFFER_LENGTH];
+  24:Device/Src/lcd_driver.c **** } LcdBuffer;
+  25:Device/Src/lcd_driver.c **** LcdBuffer g_lcdUart = {0};
+  26:Device/Src/lcd_driver.c **** 
+  27:Device/Src/lcd_driver.c **** void clear_buffer(void)
+  28:Device/Src/lcd_driver.c **** {
+  29              		.loc 1 28 1 view -0
+  30              		.cfi_startproc
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 2
+
+
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+  29:Device/Src/lcd_driver.c ****     g_lcdUart.length = 0;
+  38              		.loc 1 29 5 view .LVU1
+  39              		.loc 1 29 22 is_stmt 0 view .LVU2
+  40 0002 0021     		movs	r1, #0
+  41 0004 0348     		ldr	r0, .L3
+  42 0006 20F8021B 		strh	r1, [r0], #2	@ movhi
+  30:Device/Src/lcd_driver.c ****     memset(g_lcdUart.buffer, 0x00, LCD_BUFFER_LENGTH);
+  43              		.loc 1 30 5 is_stmt 1 view .LVU3
+  44 000a 4FF48072 		mov	r2, #256
+  45 000e FFF7FEFF 		bl	memset
+  46              	.LVL0:
+  31:Device/Src/lcd_driver.c **** }
+  47              		.loc 1 31 1 is_stmt 0 view .LVU4
+  48 0012 08BD     		pop	{r3, pc}
+  49              	.L4:
+  50              		.align	2
+  51              	.L3:
+  52 0014 00000000 		.word	.LANCHOR0
+  53              		.cfi_endproc
+  54              	.LFE238:
+  56              		.section	.text.buffer_add_start,"ax",%progbits
+  57              		.align	1
+  58              		.global	buffer_add_start
+  59              		.syntax unified
+  60              		.thumb
+  61              		.thumb_func
+  63              	buffer_add_start:
+  64              	.LFB239:
+  32:Device/Src/lcd_driver.c **** 
+  33:Device/Src/lcd_driver.c **** void buffer_add_start(void)
+  34:Device/Src/lcd_driver.c **** {
+  65              		.loc 1 34 1 is_stmt 1 view -0
+  66              		.cfi_startproc
+  67              		@ args = 0, pretend = 0, frame = 0
+  68              		@ frame_needed = 0, uses_anonymous_args = 0
+  69              		@ link register save eliminated.
+  35:Device/Src/lcd_driver.c ****     g_lcdUart.length = 0;
+  70              		.loc 1 35 5 view .LVU6
+  71              		.loc 1 35 22 is_stmt 0 view .LVU7
+  72 0000 034B     		ldr	r3, .L6
+  73 0002 0022     		movs	r2, #0
+  74 0004 1A80     		strh	r2, [r3]	@ movhi
+  36:Device/Src/lcd_driver.c ****     g_lcdUart.buffer[g_lcdUart.length++] = LCD_UART_START;
+  75              		.loc 1 36 5 is_stmt 1 view .LVU8
+  76              		.loc 1 36 38 is_stmt 0 view .LVU9
+  77 0006 0122     		movs	r2, #1
+  78 0008 1A80     		strh	r2, [r3]	@ movhi
+  79              		.loc 1 36 42 view .LVU10
+  80 000a EE22     		movs	r2, #238
+  81 000c 9A70     		strb	r2, [r3, #2]
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 3
+
+
+  37:Device/Src/lcd_driver.c **** }
+  82              		.loc 1 37 1 view .LVU11
+  83 000e 7047     		bx	lr
+  84              	.L7:
+  85              		.align	2
+  86              	.L6:
+  87 0010 00000000 		.word	.LANCHOR0
+  88              		.cfi_endproc
+  89              	.LFE239:
+  91              		.section	.text.buffer_add_end,"ax",%progbits
+  92              		.align	1
+  93              		.global	buffer_add_end
+  94              		.syntax unified
+  95              		.thumb
+  96              		.thumb_func
+  98              	buffer_add_end:
+  99              	.LFB240:
+  38:Device/Src/lcd_driver.c **** 
+  39:Device/Src/lcd_driver.c **** void buffer_add_end(void)
+  40:Device/Src/lcd_driver.c **** {
+ 100              		.loc 1 40 1 is_stmt 1 view -0
+ 101              		.cfi_startproc
+ 102              		@ args = 0, pretend = 0, frame = 0
+ 103              		@ frame_needed = 0, uses_anonymous_args = 0
+ 104              		@ link register save eliminated.
+  41:Device/Src/lcd_driver.c ****     if (g_lcdUart.length + 4 < LCD_BUFFER_LENGTH) {
+ 105              		.loc 1 41 5 view .LVU13
+ 106              		.loc 1 41 18 is_stmt 0 view .LVU14
+ 107 0000 0D4B     		ldr	r3, .L10
+ 108 0002 1A88     		ldrh	r2, [r3]
+ 109              		.loc 1 41 8 view .LVU15
+ 110 0004 FB2A     		cmp	r2, #251
+ 111 0006 16D8     		bhi	.L8
+  42:Device/Src/lcd_driver.c ****         g_lcdUart.buffer[g_lcdUart.length++] = 0xFF;
+ 112              		.loc 1 42 9 is_stmt 1 view .LVU16
+ 113              		.loc 1 42 42 is_stmt 0 view .LVU17
+ 114 0008 511C     		adds	r1, r2, #1
+ 115 000a 89B2     		uxth	r1, r1
+ 116 000c 1980     		strh	r1, [r3]	@ movhi
+ 117              		.loc 1 42 46 view .LVU18
+ 118 000e 1A44     		add	r2, r2, r3
+ 119 0010 FF20     		movs	r0, #255
+ 120 0012 9070     		strb	r0, [r2, #2]
+  43:Device/Src/lcd_driver.c ****         g_lcdUart.buffer[g_lcdUart.length++] = 0xFC;
+ 121              		.loc 1 43 9 is_stmt 1 view .LVU19
+ 122              		.loc 1 43 42 is_stmt 0 view .LVU20
+ 123 0014 4A1C     		adds	r2, r1, #1
+ 124 0016 92B2     		uxth	r2, r2
+ 125 0018 1A80     		strh	r2, [r3]	@ movhi
+ 126              		.loc 1 43 46 view .LVU21
+ 127 001a 1944     		add	r1, r1, r3
+ 128 001c 4FF0FC0C 		mov	ip, #252
+ 129 0020 81F802C0 		strb	ip, [r1, #2]
+  44:Device/Src/lcd_driver.c ****         g_lcdUart.buffer[g_lcdUart.length++] = 0xFF;
+ 130              		.loc 1 44 9 is_stmt 1 view .LVU22
+ 131              		.loc 1 44 42 is_stmt 0 view .LVU23
+ 132 0024 511C     		adds	r1, r2, #1
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 4
+
+
+ 133 0026 89B2     		uxth	r1, r1
+ 134 0028 1980     		strh	r1, [r3]	@ movhi
+ 135              		.loc 1 44 46 view .LVU24
+ 136 002a 1A44     		add	r2, r2, r3
+ 137 002c 9070     		strb	r0, [r2, #2]
+  45:Device/Src/lcd_driver.c ****         g_lcdUart.buffer[g_lcdUart.length++] = 0xFF;
+ 138              		.loc 1 45 9 is_stmt 1 view .LVU25
+ 139              		.loc 1 45 42 is_stmt 0 view .LVU26
+ 140 002e 4A1C     		adds	r2, r1, #1
+ 141 0030 1A80     		strh	r2, [r3]	@ movhi
+ 142              		.loc 1 45 46 view .LVU27
+ 143 0032 0B44     		add	r3, r3, r1
+ 144 0034 9870     		strb	r0, [r3, #2]
+ 145              	.L8:
+  46:Device/Src/lcd_driver.c ****     }
+  47:Device/Src/lcd_driver.c **** }
+ 146              		.loc 1 47 1 view .LVU28
+ 147 0036 7047     		bx	lr
+ 148              	.L11:
+ 149              		.align	2
+ 150              	.L10:
+ 151 0038 00000000 		.word	.LANCHOR0
+ 152              		.cfi_endproc
+ 153              	.LFE240:
+ 155              		.section	.text.buffer_add_1_byte,"ax",%progbits
+ 156              		.align	1
+ 157              		.global	buffer_add_1_byte
+ 158              		.syntax unified
+ 159              		.thumb
+ 160              		.thumb_func
+ 162              	buffer_add_1_byte:
+ 163              	.LVL1:
+ 164              	.LFB241:
+  48:Device/Src/lcd_driver.c **** void buffer_add_1_byte(uint8_t data)
+  49:Device/Src/lcd_driver.c **** {
+ 165              		.loc 1 49 1 is_stmt 1 view -0
+ 166              		.cfi_startproc
+ 167              		@ args = 0, pretend = 0, frame = 0
+ 168              		@ frame_needed = 0, uses_anonymous_args = 0
+ 169              		@ link register save eliminated.
+  50:Device/Src/lcd_driver.c ****     if (g_lcdUart.length + 1 < LCD_BUFFER_LENGTH) {
+ 170              		.loc 1 50 5 view .LVU30
+ 171              		.loc 1 50 18 is_stmt 0 view .LVU31
+ 172 0000 044B     		ldr	r3, .L14
+ 173 0002 1B88     		ldrh	r3, [r3]
+ 174              		.loc 1 50 8 view .LVU32
+ 175 0004 FE2B     		cmp	r3, #254
+ 176 0006 04D8     		bhi	.L12
+  51:Device/Src/lcd_driver.c ****         g_lcdUart.buffer[g_lcdUart.length++] = data;
+ 177              		.loc 1 51 9 is_stmt 1 view .LVU33
+ 178              		.loc 1 51 42 is_stmt 0 view .LVU34
+ 179 0008 024A     		ldr	r2, .L14
+ 180 000a 591C     		adds	r1, r3, #1
+ 181 000c 1180     		strh	r1, [r2]	@ movhi
+ 182              		.loc 1 51 46 view .LVU35
+ 183 000e 1344     		add	r3, r3, r2
+ 184 0010 9870     		strb	r0, [r3, #2]
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 5
+
+
+ 185              	.L12:
+  52:Device/Src/lcd_driver.c ****     }
+  53:Device/Src/lcd_driver.c **** }
+ 186              		.loc 1 53 1 view .LVU36
+ 187 0012 7047     		bx	lr
+ 188              	.L15:
+ 189              		.align	2
+ 190              	.L14:
+ 191 0014 00000000 		.word	.LANCHOR0
+ 192              		.cfi_endproc
+ 193              	.LFE241:
+ 195              		.section	.text.buffer_add_2_byte,"ax",%progbits
+ 196              		.align	1
+ 197              		.global	buffer_add_2_byte
+ 198              		.syntax unified
+ 199              		.thumb
+ 200              		.thumb_func
+ 202              	buffer_add_2_byte:
+ 203              	.LVL2:
+ 204              	.LFB242:
+  54:Device/Src/lcd_driver.c **** void buffer_add_2_byte(uint16_t data)
+  55:Device/Src/lcd_driver.c **** {
+ 205              		.loc 1 55 1 is_stmt 1 view -0
+ 206              		.cfi_startproc
+ 207              		@ args = 0, pretend = 0, frame = 0
+ 208              		@ frame_needed = 0, uses_anonymous_args = 0
+ 209              		@ link register save eliminated.
+  56:Device/Src/lcd_driver.c ****     if (g_lcdUart.length + 2 < LCD_BUFFER_LENGTH) {
+ 210              		.loc 1 56 5 view .LVU38
+ 211              		.loc 1 56 18 is_stmt 0 view .LVU39
+ 212 0000 084B     		ldr	r3, .L18
+ 213 0002 1B88     		ldrh	r3, [r3]
+ 214              		.loc 1 56 8 view .LVU40
+ 215 0004 FD2B     		cmp	r3, #253
+ 216 0006 0CD8     		bhi	.L16
+  57:Device/Src/lcd_driver.c ****         g_lcdUart.buffer[g_lcdUart.length++] = data >> 8;
+ 217              		.loc 1 57 9 is_stmt 1 view .LVU41
+ 218              		.loc 1 57 42 is_stmt 0 view .LVU42
+ 219 0008 5A1C     		adds	r2, r3, #1
+ 220 000a 91B2     		uxth	r1, r2
+ 221 000c 054A     		ldr	r2, .L18
+ 222 000e 1180     		strh	r1, [r2]	@ movhi
+ 223              		.loc 1 57 46 view .LVU43
+ 224 0010 1344     		add	r3, r3, r2
+ 225 0012 4FEA102C 		lsr	ip, r0, #8
+ 226 0016 83F802C0 		strb	ip, [r3, #2]
+  58:Device/Src/lcd_driver.c ****         g_lcdUart.buffer[g_lcdUart.length++] = data % 256;
+ 227              		.loc 1 58 9 is_stmt 1 view .LVU44
+ 228              		.loc 1 58 42 is_stmt 0 view .LVU45
+ 229 001a 4B1C     		adds	r3, r1, #1
+ 230 001c 1380     		strh	r3, [r2]	@ movhi
+ 231              		.loc 1 58 46 view .LVU46
+ 232 001e 0A44     		add	r2, r2, r1
+ 233 0020 9070     		strb	r0, [r2, #2]
+ 234              	.L16:
+  59:Device/Src/lcd_driver.c ****     }
+  60:Device/Src/lcd_driver.c **** }
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 6
+
+
+ 235              		.loc 1 60 1 view .LVU47
+ 236 0022 7047     		bx	lr
+ 237              	.L19:
+ 238              		.align	2
+ 239              	.L18:
+ 240 0024 00000000 		.word	.LANCHOR0
+ 241              		.cfi_endproc
+ 242              	.LFE242:
+ 244              		.section	.text.buffer_add_4_byte,"ax",%progbits
+ 245              		.align	1
+ 246              		.global	buffer_add_4_byte
+ 247              		.syntax unified
+ 248              		.thumb
+ 249              		.thumb_func
+ 251              	buffer_add_4_byte:
+ 252              	.LVL3:
+ 253              	.LFB243:
+  61:Device/Src/lcd_driver.c **** void buffer_add_4_byte(uint32_t data)
+  62:Device/Src/lcd_driver.c **** {
+ 254              		.loc 1 62 1 is_stmt 1 view -0
+ 255              		.cfi_startproc
+ 256              		@ args = 0, pretend = 0, frame = 0
+ 257              		@ frame_needed = 0, uses_anonymous_args = 0
+ 258              		@ link register save eliminated.
+  63:Device/Src/lcd_driver.c ****     if (g_lcdUart.length + 4 < LCD_BUFFER_LENGTH) {
+ 259              		.loc 1 63 5 view .LVU49
+ 260              		.loc 1 63 18 is_stmt 0 view .LVU50
+ 261 0000 104B     		ldr	r3, .L22
+ 262 0002 1A88     		ldrh	r2, [r3]
+ 263              		.loc 1 63 8 view .LVU51
+ 264 0004 FB2A     		cmp	r2, #251
+ 265 0006 1BD8     		bhi	.L20
+  64:Device/Src/lcd_driver.c ****         g_lcdUart.buffer[g_lcdUart.length++] = (data >> 24) % 256;
+ 266              		.loc 1 64 9 is_stmt 1 view .LVU52
+ 267              		.loc 1 64 54 is_stmt 0 view .LVU53
+ 268 0008 4FEA106C 		lsr	ip, r0, #24
+ 269              		.loc 1 64 42 view .LVU54
+ 270 000c 511C     		adds	r1, r2, #1
+ 271 000e 89B2     		uxth	r1, r1
+ 272 0010 1980     		strh	r1, [r3]	@ movhi
+ 273              		.loc 1 64 46 view .LVU55
+ 274 0012 1A44     		add	r2, r2, r3
+ 275 0014 82F802C0 		strb	ip, [r2, #2]
+  65:Device/Src/lcd_driver.c ****         g_lcdUart.buffer[g_lcdUart.length++] = (data >> 16) % 256;
+ 276              		.loc 1 65 9 is_stmt 1 view .LVU56
+ 277              		.loc 1 65 54 is_stmt 0 view .LVU57
+ 278 0018 4FEA104C 		lsr	ip, r0, #16
+ 279              		.loc 1 65 42 view .LVU58
+ 280 001c 4A1C     		adds	r2, r1, #1
+ 281 001e 92B2     		uxth	r2, r2
+ 282 0020 1A80     		strh	r2, [r3]	@ movhi
+ 283              		.loc 1 65 46 view .LVU59
+ 284 0022 1944     		add	r1, r1, r3
+ 285 0024 81F802C0 		strb	ip, [r1, #2]
+  66:Device/Src/lcd_driver.c ****         g_lcdUart.buffer[g_lcdUart.length++] = (data >> 8) % 256;
+ 286              		.loc 1 66 9 is_stmt 1 view .LVU60
+ 287              		.loc 1 66 54 is_stmt 0 view .LVU61
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 7
+
+
+ 288 0028 4FEA102C 		lsr	ip, r0, #8
+ 289              		.loc 1 66 42 view .LVU62
+ 290 002c 511C     		adds	r1, r2, #1
+ 291 002e 89B2     		uxth	r1, r1
+ 292 0030 1980     		strh	r1, [r3]	@ movhi
+ 293              		.loc 1 66 46 view .LVU63
+ 294 0032 1A44     		add	r2, r2, r3
+ 295 0034 82F802C0 		strb	ip, [r2, #2]
+  67:Device/Src/lcd_driver.c ****         g_lcdUart.buffer[g_lcdUart.length++] = data % 256;
+ 296              		.loc 1 67 9 is_stmt 1 view .LVU64
+ 297              		.loc 1 67 42 is_stmt 0 view .LVU65
+ 298 0038 4A1C     		adds	r2, r1, #1
+ 299 003a 1A80     		strh	r2, [r3]	@ movhi
+ 300              		.loc 1 67 46 view .LVU66
+ 301 003c 0B44     		add	r3, r3, r1
+ 302 003e 9870     		strb	r0, [r3, #2]
+ 303              	.L20:
+  68:Device/Src/lcd_driver.c ****     }
+  69:Device/Src/lcd_driver.c **** }
+ 304              		.loc 1 69 1 view .LVU67
+ 305 0040 7047     		bx	lr
+ 306              	.L23:
+ 307 0042 00BF     		.align	2
+ 308              	.L22:
+ 309 0044 00000000 		.word	.LANCHOR0
+ 310              		.cfi_endproc
+ 311              	.LFE243:
+ 313              		.section	.text.buffer_add_string,"ax",%progbits
+ 314              		.align	1
+ 315              		.global	buffer_add_string
+ 316              		.syntax unified
+ 317              		.thumb
+ 318              		.thumb_func
+ 320              	buffer_add_string:
+ 321              	.LVL4:
+ 322              	.LFB244:
+  70:Device/Src/lcd_driver.c **** 
+  71:Device/Src/lcd_driver.c **** void buffer_add_string(char* str)
+  72:Device/Src/lcd_driver.c **** {
+ 323              		.loc 1 72 1 is_stmt 1 view -0
+ 324              		.cfi_startproc
+ 325              		@ args = 0, pretend = 0, frame = 0
+ 326              		@ frame_needed = 0, uses_anonymous_args = 0
+ 327              		@ link register save eliminated.
+  73:Device/Src/lcd_driver.c ****     while (*str) {
+ 328              		.loc 1 73 5 view .LVU69
+ 329              		.loc 1 73 11 is_stmt 0 view .LVU70
+ 330 0000 05E0     		b	.L25
+ 331              	.L28:
+  74:Device/Src/lcd_driver.c ****         if (g_lcdUart.length >= LCD_BUFFER_LENGTH) { break; }
+  75:Device/Src/lcd_driver.c ****         g_lcdUart.buffer[g_lcdUart.length++] = *str;
+ 332              		.loc 1 75 9 is_stmt 1 view .LVU71
+ 333              		.loc 1 75 42 is_stmt 0 view .LVU72
+ 334 0002 511C     		adds	r1, r2, #1
+ 335 0004 1980     		strh	r1, [r3]	@ movhi
+ 336              		.loc 1 75 48 view .LVU73
+ 337 0006 10F8011B 		ldrb	r1, [r0], #1	@ zero_extendqisi2
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 8
+
+
+ 338              	.LVL5:
+ 339              		.loc 1 75 46 view .LVU74
+ 340 000a 1344     		add	r3, r3, r2
+ 341 000c 9970     		strb	r1, [r3, #2]
+  76:Device/Src/lcd_driver.c ****         str++;
+ 342              		.loc 1 76 9 is_stmt 1 view .LVU75
+ 343              	.LVL6:
+ 344              	.L25:
+  73:Device/Src/lcd_driver.c ****     while (*str) {
+ 345              		.loc 1 73 11 view .LVU76
+  73:Device/Src/lcd_driver.c ****     while (*str) {
+ 346              		.loc 1 73 12 is_stmt 0 view .LVU77
+ 347 000e 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+  73:Device/Src/lcd_driver.c ****     while (*str) {
+ 348              		.loc 1 73 11 view .LVU78
+ 349 0010 1BB1     		cbz	r3, .L24
+  74:Device/Src/lcd_driver.c ****         if (g_lcdUart.length >= LCD_BUFFER_LENGTH) { break; }
+ 350              		.loc 1 74 9 is_stmt 1 view .LVU79
+  74:Device/Src/lcd_driver.c ****         if (g_lcdUart.length >= LCD_BUFFER_LENGTH) { break; }
+ 351              		.loc 1 74 22 is_stmt 0 view .LVU80
+ 352 0012 024B     		ldr	r3, .L29
+ 353 0014 1A88     		ldrh	r2, [r3]
+  74:Device/Src/lcd_driver.c ****         if (g_lcdUart.length >= LCD_BUFFER_LENGTH) { break; }
+ 354              		.loc 1 74 12 view .LVU81
+ 355 0016 FF2A     		cmp	r2, #255
+ 356 0018 F3D9     		bls	.L28
+ 357              	.L24:
+  77:Device/Src/lcd_driver.c ****     }
+  78:Device/Src/lcd_driver.c **** }
+ 358              		.loc 1 78 1 view .LVU82
+ 359 001a 7047     		bx	lr
+ 360              	.L30:
+ 361              		.align	2
+ 362              	.L29:
+ 363 001c 00000000 		.word	.LANCHOR0
+ 364              		.cfi_endproc
+ 365              	.LFE244:
+ 367              		.section	.text.SetPowerSaving,"ax",%progbits
+ 368              		.align	1
+ 369              		.global	SetPowerSaving
+ 370              		.syntax unified
+ 371              		.thumb
+ 372              		.thumb_func
+ 374              	SetPowerSaving:
+ 375              	.LVL7:
+ 376              	.LFB245:
+  79:Device/Src/lcd_driver.c **** /*!
+  80:Device/Src/lcd_driver.c **** *  \brief  自动调节背光亮度
+  81:Device/Src/lcd_driver.c **** *  \param  enable 使能
+  82:Device/Src/lcd_driver.c **** *  \param  bl_off_level 待机亮度
+  83:Device/Src/lcd_driver.c **** *  \param  bl_on_level  激活亮度
+  84:Device/Src/lcd_driver.c **** *  \param  bl_on_time  未触摸时间 xs
+  85:Device/Src/lcd_driver.c **** */
+  86:Device/Src/lcd_driver.c **** void SetPowerSaving(uint8_t enable, uint8_t bl_off_level, uint8_t bl_on_level, uint8_t  bl_on_time)
+  87:Device/Src/lcd_driver.c **** {
+ 377              		.loc 1 87 1 is_stmt 1 view -0
+ 378              		.cfi_startproc
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 9
+
+
+ 379              		@ args = 0, pretend = 0, frame = 0
+ 380              		@ frame_needed = 0, uses_anonymous_args = 0
+ 381              		.loc 1 87 1 is_stmt 0 view .LVU84
+ 382 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 383              	.LCFI1:
+ 384              		.cfi_def_cfa_offset 24
+ 385              		.cfi_offset 3, -24
+ 386              		.cfi_offset 4, -20
+ 387              		.cfi_offset 5, -16
+ 388              		.cfi_offset 6, -12
+ 389              		.cfi_offset 7, -8
+ 390              		.cfi_offset 14, -4
+ 391 0002 0746     		mov	r7, r0
+ 392 0004 0E46     		mov	r6, r1
+ 393 0006 1546     		mov	r5, r2
+ 394 0008 1C46     		mov	r4, r3
+  88:Device/Src/lcd_driver.c ****     buffer_add_start();
+ 395              		.loc 1 88 5 is_stmt 1 view .LVU85
+ 396 000a FFF7FEFF 		bl	buffer_add_start
+ 397              	.LVL8:
+  89:Device/Src/lcd_driver.c ****     buffer_add_1_byte(0x77);
+ 398              		.loc 1 89 5 view .LVU86
+ 399 000e 7720     		movs	r0, #119
+ 400 0010 FFF7FEFF 		bl	buffer_add_1_byte
+ 401              	.LVL9:
+  90:Device/Src/lcd_driver.c ****     buffer_add_1_byte(enable);
+ 402              		.loc 1 90 5 view .LVU87
+ 403 0014 3846     		mov	r0, r7
+ 404 0016 FFF7FEFF 		bl	buffer_add_1_byte
+ 405              	.LVL10:
+  91:Device/Src/lcd_driver.c ****     buffer_add_1_byte(bl_off_level);
+ 406              		.loc 1 91 5 view .LVU88
+ 407 001a 3046     		mov	r0, r6
+ 408 001c FFF7FEFF 		bl	buffer_add_1_byte
+ 409              	.LVL11:
+  92:Device/Src/lcd_driver.c ****     buffer_add_1_byte(bl_on_level);
+ 410              		.loc 1 92 5 view .LVU89
+ 411 0020 2846     		mov	r0, r5
+ 412 0022 FFF7FEFF 		bl	buffer_add_1_byte
+ 413              	.LVL12:
+  93:Device/Src/lcd_driver.c ****     buffer_add_1_byte(bl_on_time);
+ 414              		.loc 1 93 5 view .LVU90
+ 415 0026 2046     		mov	r0, r4
+ 416 0028 FFF7FEFF 		bl	buffer_add_1_byte
+ 417              	.LVL13:
+  94:Device/Src/lcd_driver.c ****     buffer_add_end();
+ 418              		.loc 1 94 5 view .LVU91
+ 419 002c FFF7FEFF 		bl	buffer_add_end
+ 420              	.LVL14:
+  95:Device/Src/lcd_driver.c ****     HAL_UART_Transmit(&huart2, g_lcdUart.buffer, g_lcdUart.length, 1000);
+ 421              		.loc 1 95 5 view .LVU92
+ 422 0030 0449     		ldr	r1, .L33
+ 423 0032 4FF47A73 		mov	r3, #1000
+ 424 0036 31F8022B 		ldrh	r2, [r1], #2
+ 425 003a 0348     		ldr	r0, .L33+4
+ 426 003c FFF7FEFF 		bl	HAL_UART_Transmit
+ 427              	.LVL15:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 10
+
+
+  96:Device/Src/lcd_driver.c **** }
+ 428              		.loc 1 96 1 is_stmt 0 view .LVU93
+ 429 0040 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 430              	.L34:
+ 431 0042 00BF     		.align	2
+ 432              	.L33:
+ 433 0044 00000000 		.word	.LANCHOR0
+ 434 0048 00000000 		.word	huart2
+ 435              		.cfi_endproc
+ 436              	.LFE245:
+ 438              		.section	.text.SetScreen,"ax",%progbits
+ 439              		.align	1
+ 440              		.global	SetScreen
+ 441              		.syntax unified
+ 442              		.thumb
+ 443              		.thumb_func
+ 445              	SetScreen:
+ 446              	.LVL16:
+ 447              	.LFB246:
+  97:Device/Src/lcd_driver.c **** 
+  98:Device/Src/lcd_driver.c **** /*!
+  99:Device/Src/lcd_driver.c **** *  \brief      设置当前画面
+ 100:Device/Src/lcd_driver.c **** *  \param  screen_id 画面ID
+ 101:Device/Src/lcd_driver.c **** */
+ 102:Device/Src/lcd_driver.c **** void SetScreen(uint16_t screen_id)
+ 103:Device/Src/lcd_driver.c **** {
+ 448              		.loc 1 103 1 is_stmt 1 view -0
+ 449              		.cfi_startproc
+ 450              		@ args = 0, pretend = 0, frame = 0
+ 451              		@ frame_needed = 0, uses_anonymous_args = 0
+ 452              		.loc 1 103 1 is_stmt 0 view .LVU95
+ 453 0000 10B5     		push	{r4, lr}
+ 454              	.LCFI2:
+ 455              		.cfi_def_cfa_offset 8
+ 456              		.cfi_offset 4, -8
+ 457              		.cfi_offset 14, -4
+ 458 0002 0446     		mov	r4, r0
+ 104:Device/Src/lcd_driver.c ****     buffer_add_start();
+ 459              		.loc 1 104 5 is_stmt 1 view .LVU96
+ 460 0004 FFF7FEFF 		bl	buffer_add_start
+ 461              	.LVL17:
+ 105:Device/Src/lcd_driver.c ****     buffer_add_2_byte(0xB100);
+ 462              		.loc 1 105 5 view .LVU97
+ 463 0008 4FF43140 		mov	r0, #45312
+ 464 000c FFF7FEFF 		bl	buffer_add_2_byte
+ 465              	.LVL18:
+ 106:Device/Src/lcd_driver.c ****     buffer_add_2_byte(screen_id);
+ 466              		.loc 1 106 5 view .LVU98
+ 467 0010 2046     		mov	r0, r4
+ 468 0012 FFF7FEFF 		bl	buffer_add_2_byte
+ 469              	.LVL19:
+ 107:Device/Src/lcd_driver.c ****     buffer_add_end();
+ 470              		.loc 1 107 5 view .LVU99
+ 471 0016 FFF7FEFF 		bl	buffer_add_end
+ 472              	.LVL20:
+ 108:Device/Src/lcd_driver.c ****     HAL_UART_Transmit(&huart2, g_lcdUart.buffer, g_lcdUart.length, 1000);
+ 473              		.loc 1 108 5 view .LVU100
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 11
+
+
+ 474 001a 0449     		ldr	r1, .L37
+ 475 001c 4FF47A73 		mov	r3, #1000
+ 476 0020 31F8022B 		ldrh	r2, [r1], #2
+ 477 0024 0248     		ldr	r0, .L37+4
+ 478 0026 FFF7FEFF 		bl	HAL_UART_Transmit
+ 479              	.LVL21:
+ 109:Device/Src/lcd_driver.c **** }
+ 480              		.loc 1 109 1 is_stmt 0 view .LVU101
+ 481 002a 10BD     		pop	{r4, pc}
+ 482              	.L38:
+ 483              		.align	2
+ 484              	.L37:
+ 485 002c 00000000 		.word	.LANCHOR0
+ 486 0030 00000000 		.word	huart2
+ 487              		.cfi_endproc
+ 488              	.LFE246:
+ 490              		.section	.text.SetTextValue,"ax",%progbits
+ 491              		.align	1
+ 492              		.global	SetTextValue
+ 493              		.syntax unified
+ 494              		.thumb
+ 495              		.thumb_func
+ 497              	SetTextValue:
+ 498              	.LVL22:
+ 499              	.LFB247:
+ 110:Device/Src/lcd_driver.c **** /*!
+ 111:Device/Src/lcd_driver.c **** *  \brief     设置文本值
+ 112:Device/Src/lcd_driver.c **** *  \param  screen_id 画面ID
+ 113:Device/Src/lcd_driver.c **** *  \param  control_id 控件ID
+ 114:Device/Src/lcd_driver.c **** *  \param  str 文本值
+ 115:Device/Src/lcd_driver.c **** */
+ 116:Device/Src/lcd_driver.c **** void SetTextValue(uint16_t screen_id, uint16_t control_id, char *str)
+ 117:Device/Src/lcd_driver.c **** { 
+ 500              		.loc 1 117 1 is_stmt 1 view -0
+ 501              		.cfi_startproc
+ 502              		@ args = 0, pretend = 0, frame = 0
+ 503              		@ frame_needed = 0, uses_anonymous_args = 0
+ 504              		.loc 1 117 1 is_stmt 0 view .LVU103
+ 505 0000 70B5     		push	{r4, r5, r6, lr}
+ 506              	.LCFI3:
+ 507              		.cfi_def_cfa_offset 16
+ 508              		.cfi_offset 4, -16
+ 509              		.cfi_offset 5, -12
+ 510              		.cfi_offset 6, -8
+ 511              		.cfi_offset 14, -4
+ 512 0002 0646     		mov	r6, r0
+ 513 0004 0D46     		mov	r5, r1
+ 514 0006 1446     		mov	r4, r2
+ 118:Device/Src/lcd_driver.c ****     buffer_add_start();
+ 515              		.loc 1 118 5 is_stmt 1 view .LVU104
+ 516 0008 FFF7FEFF 		bl	buffer_add_start
+ 517              	.LVL23:
+ 119:Device/Src/lcd_driver.c ****     buffer_add_2_byte(0xB110);
+ 518              		.loc 1 119 5 view .LVU105
+ 519 000c 4BF21010 		movw	r0, #45328
+ 520 0010 FFF7FEFF 		bl	buffer_add_2_byte
+ 521              	.LVL24:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 12
+
+
+ 120:Device/Src/lcd_driver.c ****     buffer_add_2_byte(screen_id);
+ 522              		.loc 1 120 5 view .LVU106
+ 523 0014 3046     		mov	r0, r6
+ 524 0016 FFF7FEFF 		bl	buffer_add_2_byte
+ 525              	.LVL25:
+ 121:Device/Src/lcd_driver.c ****     buffer_add_2_byte(control_id);
+ 526              		.loc 1 121 5 view .LVU107
+ 527 001a 2846     		mov	r0, r5
+ 528 001c FFF7FEFF 		bl	buffer_add_2_byte
+ 529              	.LVL26:
+ 122:Device/Src/lcd_driver.c ****     buffer_add_string(str);
+ 530              		.loc 1 122 5 view .LVU108
+ 531 0020 2046     		mov	r0, r4
+ 532 0022 FFF7FEFF 		bl	buffer_add_string
+ 533              	.LVL27:
+ 123:Device/Src/lcd_driver.c ****     buffer_add_end();
+ 534              		.loc 1 123 5 view .LVU109
+ 535 0026 FFF7FEFF 		bl	buffer_add_end
+ 536              	.LVL28:
+ 124:Device/Src/lcd_driver.c ****     HAL_UART_Transmit(&huart2, g_lcdUart.buffer, g_lcdUart.length, 1000);
+ 537              		.loc 1 124 5 view .LVU110
+ 538 002a 0449     		ldr	r1, .L41
+ 539 002c 4FF47A73 		mov	r3, #1000
+ 540 0030 31F8022B 		ldrh	r2, [r1], #2
+ 541 0034 0248     		ldr	r0, .L41+4
+ 542 0036 FFF7FEFF 		bl	HAL_UART_Transmit
+ 543              	.LVL29:
+ 125:Device/Src/lcd_driver.c **** }
+ 544              		.loc 1 125 1 is_stmt 0 view .LVU111
+ 545 003a 70BD     		pop	{r4, r5, r6, pc}
+ 546              	.LVL30:
+ 547              	.L42:
+ 548              		.loc 1 125 1 view .LVU112
+ 549              		.align	2
+ 550              	.L41:
+ 551 003c 00000000 		.word	.LANCHOR0
+ 552 0040 00000000 		.word	huart2
+ 553              		.cfi_endproc
+ 554              	.LFE247:
+ 556              		.section	.text.SetControlBackColor,"ax",%progbits
+ 557              		.align	1
+ 558              		.global	SetControlBackColor
+ 559              		.syntax unified
+ 560              		.thumb
+ 561              		.thumb_func
+ 563              	SetControlBackColor:
+ 564              	.LVL31:
+ 565              	.LFB248:
+ 126:Device/Src/lcd_driver.c **** /*!
+ 127:Device/Src/lcd_driver.c **** *  \brief     设置控件背景色
+ 128:Device/Src/lcd_driver.c **** *  \details  支持控件：进度条、文本
+ 129:Device/Src/lcd_driver.c **** *  \param  screen_id 画面ID
+ 130:Device/Src/lcd_driver.c **** *  \param  control_id 控件ID
+ 131:Device/Src/lcd_driver.c **** *  \param  color 背景色
+ 132:Device/Src/lcd_driver.c **** */
+ 133:Device/Src/lcd_driver.c **** void SetControlBackColor(uint16_t screen_id, uint16_t control_id, uint16_t color)
+ 134:Device/Src/lcd_driver.c **** {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 13
+
+
+ 566              		.loc 1 134 1 is_stmt 1 view -0
+ 567              		.cfi_startproc
+ 568              		@ args = 0, pretend = 0, frame = 0
+ 569              		@ frame_needed = 0, uses_anonymous_args = 0
+ 570              		.loc 1 134 1 is_stmt 0 view .LVU114
+ 571 0000 70B5     		push	{r4, r5, r6, lr}
+ 572              	.LCFI4:
+ 573              		.cfi_def_cfa_offset 16
+ 574              		.cfi_offset 4, -16
+ 575              		.cfi_offset 5, -12
+ 576              		.cfi_offset 6, -8
+ 577              		.cfi_offset 14, -4
+ 578 0002 0646     		mov	r6, r0
+ 579 0004 0D46     		mov	r5, r1
+ 580 0006 1446     		mov	r4, r2
+ 135:Device/Src/lcd_driver.c ****     buffer_add_start();
+ 581              		.loc 1 135 5 is_stmt 1 view .LVU115
+ 582 0008 FFF7FEFF 		bl	buffer_add_start
+ 583              	.LVL32:
+ 136:Device/Src/lcd_driver.c ****     buffer_add_2_byte(0xB118);
+ 584              		.loc 1 136 5 view .LVU116
+ 585 000c 4BF21810 		movw	r0, #45336
+ 586 0010 FFF7FEFF 		bl	buffer_add_2_byte
+ 587              	.LVL33:
+ 137:Device/Src/lcd_driver.c ****     buffer_add_2_byte(screen_id);
+ 588              		.loc 1 137 5 view .LVU117
+ 589 0014 3046     		mov	r0, r6
+ 590 0016 FFF7FEFF 		bl	buffer_add_2_byte
+ 591              	.LVL34:
+ 138:Device/Src/lcd_driver.c ****     buffer_add_2_byte(control_id);
+ 592              		.loc 1 138 5 view .LVU118
+ 593 001a 2846     		mov	r0, r5
+ 594 001c FFF7FEFF 		bl	buffer_add_2_byte
+ 595              	.LVL35:
+ 139:Device/Src/lcd_driver.c ****     buffer_add_2_byte(color);
+ 596              		.loc 1 139 5 view .LVU119
+ 597 0020 2046     		mov	r0, r4
+ 598 0022 FFF7FEFF 		bl	buffer_add_2_byte
+ 599              	.LVL36:
+ 140:Device/Src/lcd_driver.c ****     buffer_add_end();
+ 600              		.loc 1 140 5 view .LVU120
+ 601 0026 FFF7FEFF 		bl	buffer_add_end
+ 602              	.LVL37:
+ 141:Device/Src/lcd_driver.c ****     HAL_UART_Transmit(&huart2, g_lcdUart.buffer, g_lcdUart.length, 1000);
+ 603              		.loc 1 141 5 view .LVU121
+ 604 002a 0449     		ldr	r1, .L45
+ 605 002c 4FF47A73 		mov	r3, #1000
+ 606 0030 31F8022B 		ldrh	r2, [r1], #2
+ 607 0034 0248     		ldr	r0, .L45+4
+ 608 0036 FFF7FEFF 		bl	HAL_UART_Transmit
+ 609              	.LVL38:
+ 142:Device/Src/lcd_driver.c **** }
+ 610              		.loc 1 142 1 is_stmt 0 view .LVU122
+ 611 003a 70BD     		pop	{r4, r5, r6, pc}
+ 612              	.L46:
+ 613              		.align	2
+ 614              	.L45:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 14
+
+
+ 615 003c 00000000 		.word	.LANCHOR0
+ 616 0040 00000000 		.word	huart2
+ 617              		.cfi_endproc
+ 618              	.LFE248:
+ 620              		.section	.text.clear_function_select,"ax",%progbits
+ 621              		.align	1
+ 622              		.global	clear_function_select
+ 623              		.syntax unified
+ 624              		.thumb
+ 625              		.thumb_func
+ 627              	clear_function_select:
+ 628              	.LFB249:
+ 143:Device/Src/lcd_driver.c **** 
+ 144:Device/Src/lcd_driver.c **** #define MAX_FUNCTION_NUMBER         9
+ 145:Device/Src/lcd_driver.c **** void clear_function_select(void)
+ 146:Device/Src/lcd_driver.c **** {
+ 629              		.loc 1 146 1 is_stmt 1 view -0
+ 630              		.cfi_startproc
+ 631              		@ args = 0, pretend = 0, frame = 0
+ 632              		@ frame_needed = 0, uses_anonymous_args = 0
+ 633 0000 10B5     		push	{r4, lr}
+ 634              	.LCFI5:
+ 635              		.cfi_def_cfa_offset 8
+ 636              		.cfi_offset 4, -8
+ 637              		.cfi_offset 14, -4
+ 147:Device/Src/lcd_driver.c ****     uint8_t i;
+ 638              		.loc 1 147 5 view .LVU124
+ 148:Device/Src/lcd_driver.c ****     for (i = 0; i < MAX_FUNCTION_NUMBER; i++) {
+ 639              		.loc 1 148 5 view .LVU125
+ 640              	.LVL39:
+ 641              		.loc 1 148 12 is_stmt 0 view .LVU126
+ 642 0002 0024     		movs	r4, #0
+ 643              		.loc 1 148 5 view .LVU127
+ 644 0004 07E0     		b	.L48
+ 645              	.LVL40:
+ 646              	.L49:
+ 149:Device/Src/lcd_driver.c ****         SetControlBackColor(1, i + 1, DEFAULT_FREE_COLOR);
+ 647              		.loc 1 149 9 is_stmt 1 discriminator 3 view .LVU128
+ 648 0006 4DF6FB62 		movw	r2, #57083
+ 649 000a 611C     		adds	r1, r4, #1
+ 650 000c 0120     		movs	r0, #1
+ 651 000e FFF7FEFF 		bl	SetControlBackColor
+ 652              	.LVL41:
+ 148:Device/Src/lcd_driver.c ****     for (i = 0; i < MAX_FUNCTION_NUMBER; i++) {
+ 653              		.loc 1 148 42 discriminator 3 view .LVU129
+ 148:Device/Src/lcd_driver.c ****     for (i = 0; i < MAX_FUNCTION_NUMBER; i++) {
+ 654              		.loc 1 148 43 is_stmt 0 discriminator 3 view .LVU130
+ 655 0012 0134     		adds	r4, r4, #1
+ 656              	.LVL42:
+ 148:Device/Src/lcd_driver.c ****     for (i = 0; i < MAX_FUNCTION_NUMBER; i++) {
+ 657              		.loc 1 148 43 discriminator 3 view .LVU131
+ 658 0014 E4B2     		uxtb	r4, r4
+ 659              	.LVL43:
+ 660              	.L48:
+ 148:Device/Src/lcd_driver.c ****     for (i = 0; i < MAX_FUNCTION_NUMBER; i++) {
+ 661              		.loc 1 148 17 is_stmt 1 discriminator 1 view .LVU132
+ 148:Device/Src/lcd_driver.c ****     for (i = 0; i < MAX_FUNCTION_NUMBER; i++) {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 15
+
+
+ 662              		.loc 1 148 5 is_stmt 0 discriminator 1 view .LVU133
+ 663 0016 082C     		cmp	r4, #8
+ 664 0018 F5D9     		bls	.L49
+ 150:Device/Src/lcd_driver.c ****     }
+ 151:Device/Src/lcd_driver.c **** }
+ 665              		.loc 1 151 1 view .LVU134
+ 666 001a 10BD     		pop	{r4, pc}
+ 667              		.loc 1 151 1 view .LVU135
+ 668              		.cfi_endproc
+ 669              	.LFE249:
+ 671              		.section	.text.function_one_select,"ax",%progbits
+ 672              		.align	1
+ 673              		.global	function_one_select
+ 674              		.syntax unified
+ 675              		.thumb
+ 676              		.thumb_func
+ 678              	function_one_select:
+ 679              	.LVL44:
+ 680              	.LFB250:
+ 152:Device/Src/lcd_driver.c **** 
+ 153:Device/Src/lcd_driver.c **** void function_one_select(uint16_t control_id)
+ 154:Device/Src/lcd_driver.c **** {
+ 681              		.loc 1 154 1 is_stmt 1 view -0
+ 682              		.cfi_startproc
+ 683              		@ args = 0, pretend = 0, frame = 0
+ 684              		@ frame_needed = 0, uses_anonymous_args = 0
+ 685              		.loc 1 154 1 is_stmt 0 view .LVU137
+ 686 0000 10B5     		push	{r4, lr}
+ 687              	.LCFI6:
+ 688              		.cfi_def_cfa_offset 8
+ 689              		.cfi_offset 4, -8
+ 690              		.cfi_offset 14, -4
+ 691 0002 0446     		mov	r4, r0
+ 155:Device/Src/lcd_driver.c ****     static uint16_t lastControl = 0;
+ 692              		.loc 1 155 5 is_stmt 1 view .LVU138
+ 156:Device/Src/lcd_driver.c ****     if (lastControl != 0) {
+ 693              		.loc 1 156 5 view .LVU139
+ 694              		.loc 1 156 21 is_stmt 0 view .LVU140
+ 695 0004 084B     		ldr	r3, .L55
+ 696 0006 1988     		ldrh	r1, [r3]
+ 697              		.loc 1 156 8 view .LVU141
+ 698 0008 41B9     		cbnz	r1, .L54
+ 699              	.LVL45:
+ 700              	.L52:
+ 157:Device/Src/lcd_driver.c ****         SetControlBackColor(1, lastControl, DEFAULT_FREE_COLOR);
+ 158:Device/Src/lcd_driver.c ****     }
+ 159:Device/Src/lcd_driver.c ****     SetControlBackColor(1, control_id, DEFAULT_SELECT_COLOR);
+ 701              		.loc 1 159 5 is_stmt 1 view .LVU142
+ 702 000a 4CF6E672 		movw	r2, #53222
+ 703 000e 2146     		mov	r1, r4
+ 704 0010 0120     		movs	r0, #1
+ 705 0012 FFF7FEFF 		bl	SetControlBackColor
+ 706              	.LVL46:
+ 160:Device/Src/lcd_driver.c ****     lastControl = control_id;
+ 707              		.loc 1 160 5 view .LVU143
+ 708              		.loc 1 160 17 is_stmt 0 view .LVU144
+ 709 0016 044B     		ldr	r3, .L55
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 16
+
+
+ 710 0018 1C80     		strh	r4, [r3]	@ movhi
+ 161:Device/Src/lcd_driver.c **** 
+ 162:Device/Src/lcd_driver.c **** }
+ 711              		.loc 1 162 1 view .LVU145
+ 712 001a 10BD     		pop	{r4, pc}
+ 713              	.LVL47:
+ 714              	.L54:
+ 157:Device/Src/lcd_driver.c ****     }
+ 715              		.loc 1 157 9 is_stmt 1 view .LVU146
+ 716 001c 4DF6FB62 		movw	r2, #57083
+ 717 0020 0120     		movs	r0, #1
+ 718              	.LVL48:
+ 157:Device/Src/lcd_driver.c ****     }
+ 719              		.loc 1 157 9 is_stmt 0 view .LVU147
+ 720 0022 FFF7FEFF 		bl	SetControlBackColor
+ 721              	.LVL49:
+ 722 0026 F0E7     		b	.L52
+ 723              	.L56:
+ 724              		.align	2
+ 725              	.L55:
+ 726 0028 00000000 		.word	.LANCHOR1
+ 727              		.cfi_endproc
+ 728              	.LFE250:
+ 730              		.section	.text.function_one_select1,"ax",%progbits
+ 731              		.align	1
+ 732              		.global	function_one_select1
+ 733              		.syntax unified
+ 734              		.thumb
+ 735              		.thumb_func
+ 737              	function_one_select1:
+ 738              	.LVL50:
+ 739              	.LFB251:
+ 163:Device/Src/lcd_driver.c **** 
+ 164:Device/Src/lcd_driver.c **** void function_one_select1(uint16_t control_id)
+ 165:Device/Src/lcd_driver.c **** {
+ 740              		.loc 1 165 1 is_stmt 1 view -0
+ 741              		.cfi_startproc
+ 742              		@ args = 0, pretend = 0, frame = 0
+ 743              		@ frame_needed = 0, uses_anonymous_args = 0
+ 744              		.loc 1 165 1 is_stmt 0 view .LVU149
+ 745 0000 10B5     		push	{r4, lr}
+ 746              	.LCFI7:
+ 747              		.cfi_def_cfa_offset 8
+ 748              		.cfi_offset 4, -8
+ 749              		.cfi_offset 14, -4
+ 750 0002 0446     		mov	r4, r0
+ 166:Device/Src/lcd_driver.c ****     static uint16_t lastControl = 0;
+ 751              		.loc 1 166 5 is_stmt 1 view .LVU150
+ 167:Device/Src/lcd_driver.c ****     if (lastControl != 0) {
+ 752              		.loc 1 167 5 view .LVU151
+ 753              		.loc 1 167 21 is_stmt 0 view .LVU152
+ 754 0004 084B     		ldr	r3, .L61
+ 755 0006 1988     		ldrh	r1, [r3]
+ 756              		.loc 1 167 8 view .LVU153
+ 757 0008 41B9     		cbnz	r1, .L60
+ 758              	.LVL51:
+ 759              	.L58:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 17
+
+
+ 168:Device/Src/lcd_driver.c ****         SetControlBackColor(2, lastControl, DEFAULT_FREE_COLOR);
+ 169:Device/Src/lcd_driver.c ****     }
+ 170:Device/Src/lcd_driver.c ****     SetControlBackColor(2, control_id, DEFAULT_SELECT_COLOR);
+ 760              		.loc 1 170 5 is_stmt 1 view .LVU154
+ 761 000a 4CF6E672 		movw	r2, #53222
+ 762 000e 2146     		mov	r1, r4
+ 763 0010 0220     		movs	r0, #2
+ 764 0012 FFF7FEFF 		bl	SetControlBackColor
+ 765              	.LVL52:
+ 171:Device/Src/lcd_driver.c ****     lastControl = control_id;
+ 766              		.loc 1 171 5 view .LVU155
+ 767              		.loc 1 171 17 is_stmt 0 view .LVU156
+ 768 0016 044B     		ldr	r3, .L61
+ 769 0018 1C80     		strh	r4, [r3]	@ movhi
+ 172:Device/Src/lcd_driver.c **** 
+ 173:Device/Src/lcd_driver.c **** }
+ 770              		.loc 1 173 1 view .LVU157
+ 771 001a 10BD     		pop	{r4, pc}
+ 772              	.LVL53:
+ 773              	.L60:
+ 168:Device/Src/lcd_driver.c ****     }
+ 774              		.loc 1 168 9 is_stmt 1 view .LVU158
+ 775 001c 4DF6FB62 		movw	r2, #57083
+ 776 0020 0220     		movs	r0, #2
+ 777              	.LVL54:
+ 168:Device/Src/lcd_driver.c ****     }
+ 778              		.loc 1 168 9 is_stmt 0 view .LVU159
+ 779 0022 FFF7FEFF 		bl	SetControlBackColor
+ 780              	.LVL55:
+ 781 0026 F0E7     		b	.L58
+ 782              	.L62:
+ 783              		.align	2
+ 784              	.L61:
+ 785 0028 00000000 		.word	.LANCHOR2
+ 786              		.cfi_endproc
+ 787              	.LFE251:
+ 789              		.section	.rodata.excel_add_one_line.str1.4,"aMS",%progbits,1
+ 790              		.align	2
+ 791              	.LC0:
+ 792 0000 25643B25 		.ascii	"%d;%.1f;%d;%d;%d;%s;%s;\000"
+ 792      2E31663B 
+ 792      25643B25 
+ 792      643B2564 
+ 792      3B25733B 
+ 793              		.global	__aeabi_f2d
+ 794              		.section	.text.excel_add_one_line,"ax",%progbits
+ 795              		.align	1
+ 796              		.global	excel_add_one_line
+ 797              		.syntax unified
+ 798              		.thumb
+ 799              		.thumb_func
+ 801              	excel_add_one_line:
+ 802              	.LVL56:
+ 803              	.LFB252:
+ 174:Device/Src/lcd_driver.c **** 
+ 175:Device/Src/lcd_driver.c **** void excel_add_one_line(uint8_t screen_id, uint8_t control_id, ExcelMessage message)
+ 176:Device/Src/lcd_driver.c **** {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 18
+
+
+ 804              		.loc 1 176 1 is_stmt 1 view -0
+ 805              		.cfi_startproc
+ 806              		@ args = 56, pretend = 8, frame = 104
+ 807              		@ frame_needed = 0, uses_anonymous_args = 0
+ 808              		.loc 1 176 1 is_stmt 0 view .LVU161
+ 809 0000 82B0     		sub	sp, sp, #8
+ 810              	.LCFI8:
+ 811              		.cfi_def_cfa_offset 8
+ 812 0002 70B5     		push	{r4, r5, r6, lr}
+ 813              	.LCFI9:
+ 814              		.cfi_def_cfa_offset 24
+ 815              		.cfi_offset 4, -24
+ 816              		.cfi_offset 5, -20
+ 817              		.cfi_offset 6, -16
+ 818              		.cfi_offset 14, -12
+ 819 0004 A2B0     		sub	sp, sp, #136
+ 820              	.LCFI10:
+ 821              		.cfi_def_cfa_offset 160
+ 822 0006 0546     		mov	r5, r0
+ 823 0008 0C46     		mov	r4, r1
+ 824 000a 26A9     		add	r1, sp, #152
+ 825 000c 81E80C00 		stm	r1, {r2, r3}
+ 177:Device/Src/lcd_driver.c ****     char str[100] = {0};
+ 826              		.loc 1 177 5 is_stmt 1 view .LVU162
+ 827              		.loc 1 177 10 is_stmt 0 view .LVU163
+ 828 0010 0021     		movs	r1, #0
+ 829              	.LVL57:
+ 830              		.loc 1 177 10 view .LVU164
+ 831 0012 0991     		str	r1, [sp, #36]
+ 832 0014 6022     		movs	r2, #96
+ 833 0016 0AA8     		add	r0, sp, #40
+ 834 0018 FFF7FEFF 		bl	memset
+ 835              	.LVL58:
+ 178:Device/Src/lcd_driver.c ****     snprintf(str, 100, "%d;%.1f;%d;%d;%d;%s;%s;", message.board + 1, message.systemTemp, message.ok
+ 836              		.loc 1 178 5 is_stmt 1 view .LVU165
+ 837              		.loc 1 178 58 is_stmt 0 view .LVU166
+ 838 001c 9DF89860 		ldrb	r6, [sp, #152]	@ zero_extendqisi2
+ 839              		.loc 1 178 97 view .LVU167
+ 840 0020 9DF8A030 		ldrb	r3, [sp, #160]	@ zero_extendqisi2
+ 841              		.loc 1 178 115 view .LVU168
+ 842 0024 9DF8A120 		ldrb	r2, [sp, #161]	@ zero_extendqisi2
+ 843              		.loc 1 178 5 view .LVU169
+ 844 0028 0136     		adds	r6, r6, #1
+ 845 002a 2FA9     		add	r1, sp, #188
+ 846 002c 0691     		str	r1, [sp, #24]
+ 847 002e 2AA9     		add	r1, sp, #168
+ 848 0030 0591     		str	r1, [sp, #20]
+ 849 0032 2999     		ldr	r1, [sp, #164]
+ 850 0034 0491     		str	r1, [sp, #16]
+ 851 0036 0392     		str	r2, [sp, #12]
+ 852 0038 0293     		str	r3, [sp, #8]
+ 853 003a 2798     		ldr	r0, [sp, #156]	@ float
+ 854 003c FFF7FEFF 		bl	__aeabi_f2d
+ 855              	.LVL59:
+ 856 0040 CDE90001 		strd	r0, [sp]
+ 857 0044 3346     		mov	r3, r6
+ 858 0046 114A     		ldr	r2, .L65
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 19
+
+
+ 859 0048 6421     		movs	r1, #100
+ 860 004a 09A8     		add	r0, sp, #36
+ 861 004c FFF7FEFF 		bl	snprintf
+ 862              	.LVL60:
+ 179:Device/Src/lcd_driver.c ****     buffer_add_start();
+ 863              		.loc 1 179 5 is_stmt 1 view .LVU170
+ 864 0050 FFF7FEFF 		bl	buffer_add_start
+ 865              	.LVL61:
+ 180:Device/Src/lcd_driver.c ****     buffer_add_2_byte(0xB152);
+ 866              		.loc 1 180 5 view .LVU171
+ 867 0054 4BF25210 		movw	r0, #45394
+ 868 0058 FFF7FEFF 		bl	buffer_add_2_byte
+ 869              	.LVL62:
+ 181:Device/Src/lcd_driver.c ****     buffer_add_2_byte(screen_id);
+ 870              		.loc 1 181 5 view .LVU172
+ 871 005c 2846     		mov	r0, r5
+ 872 005e FFF7FEFF 		bl	buffer_add_2_byte
+ 873              	.LVL63:
+ 182:Device/Src/lcd_driver.c ****     buffer_add_2_byte(control_id);
+ 874              		.loc 1 182 5 view .LVU173
+ 875 0062 2046     		mov	r0, r4
+ 876 0064 FFF7FEFF 		bl	buffer_add_2_byte
+ 877              	.LVL64:
+ 183:Device/Src/lcd_driver.c ****     buffer_add_string(str);
+ 878              		.loc 1 183 5 view .LVU174
+ 879 0068 09A8     		add	r0, sp, #36
+ 880 006a FFF7FEFF 		bl	buffer_add_string
+ 881              	.LVL65:
+ 184:Device/Src/lcd_driver.c ****     buffer_add_end();
+ 882              		.loc 1 184 5 view .LVU175
+ 883 006e FFF7FEFF 		bl	buffer_add_end
+ 884              	.LVL66:
+ 185:Device/Src/lcd_driver.c ****     HAL_UART_Transmit(&huart2, g_lcdUart.buffer, g_lcdUart.length, 1000);
+ 885              		.loc 1 185 5 view .LVU176
+ 886 0072 0749     		ldr	r1, .L65+4
+ 887 0074 4FF47A73 		mov	r3, #1000
+ 888 0078 31F8022B 		ldrh	r2, [r1], #2
+ 889 007c 0548     		ldr	r0, .L65+8
+ 890 007e FFF7FEFF 		bl	HAL_UART_Transmit
+ 891              	.LVL67:
+ 186:Device/Src/lcd_driver.c **** }
+ 892              		.loc 1 186 1 is_stmt 0 view .LVU177
+ 893 0082 22B0     		add	sp, sp, #136
+ 894              	.LCFI11:
+ 895              		.cfi_def_cfa_offset 24
+ 896              		@ sp needed
+ 897 0084 BDE87040 		pop	{r4, r5, r6, lr}
+ 898              	.LCFI12:
+ 899              		.cfi_restore 14
+ 900              		.cfi_restore 6
+ 901              		.cfi_restore 5
+ 902              		.cfi_restore 4
+ 903              		.cfi_def_cfa_offset 8
+ 904 0088 02B0     		add	sp, sp, #8
+ 905              	.LCFI13:
+ 906              		.cfi_def_cfa_offset 0
+ 907 008a 7047     		bx	lr
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 20
+
+
+ 908              	.L66:
+ 909              		.align	2
+ 910              	.L65:
+ 911 008c 00000000 		.word	.LC0
+ 912 0090 00000000 		.word	.LANCHOR0
+ 913 0094 00000000 		.word	huart2
+ 914              		.cfi_endproc
+ 915              	.LFE252:
+ 917              		.section	.text.excel_clear,"ax",%progbits
+ 918              		.align	1
+ 919              		.global	excel_clear
+ 920              		.syntax unified
+ 921              		.thumb
+ 922              		.thumb_func
+ 924              	excel_clear:
+ 925              	.LVL68:
+ 926              	.LFB253:
+ 187:Device/Src/lcd_driver.c **** 
+ 188:Device/Src/lcd_driver.c **** void excel_clear(uint8_t screen_id, uint8_t control_id)
+ 189:Device/Src/lcd_driver.c **** {
+ 927              		.loc 1 189 1 is_stmt 1 view -0
+ 928              		.cfi_startproc
+ 929              		@ args = 0, pretend = 0, frame = 0
+ 930              		@ frame_needed = 0, uses_anonymous_args = 0
+ 931              		.loc 1 189 1 is_stmt 0 view .LVU179
+ 932 0000 38B5     		push	{r3, r4, r5, lr}
+ 933              	.LCFI14:
+ 934              		.cfi_def_cfa_offset 16
+ 935              		.cfi_offset 3, -16
+ 936              		.cfi_offset 4, -12
+ 937              		.cfi_offset 5, -8
+ 938              		.cfi_offset 14, -4
+ 939 0002 0546     		mov	r5, r0
+ 940 0004 0C46     		mov	r4, r1
+ 190:Device/Src/lcd_driver.c ****     buffer_add_start();
+ 941              		.loc 1 190 5 is_stmt 1 view .LVU180
+ 942 0006 FFF7FEFF 		bl	buffer_add_start
+ 943              	.LVL69:
+ 191:Device/Src/lcd_driver.c ****     buffer_add_2_byte(0xB153);
+ 944              		.loc 1 191 5 view .LVU181
+ 945 000a 4BF25310 		movw	r0, #45395
+ 946 000e FFF7FEFF 		bl	buffer_add_2_byte
+ 947              	.LVL70:
+ 192:Device/Src/lcd_driver.c ****     buffer_add_2_byte(screen_id);
+ 948              		.loc 1 192 5 view .LVU182
+ 949 0012 2846     		mov	r0, r5
+ 950 0014 FFF7FEFF 		bl	buffer_add_2_byte
+ 951              	.LVL71:
+ 193:Device/Src/lcd_driver.c ****     buffer_add_2_byte(control_id);
+ 952              		.loc 1 193 5 view .LVU183
+ 953 0018 2046     		mov	r0, r4
+ 954 001a FFF7FEFF 		bl	buffer_add_2_byte
+ 955              	.LVL72:
+ 194:Device/Src/lcd_driver.c ****     buffer_add_end();
+ 956              		.loc 1 194 5 view .LVU184
+ 957 001e FFF7FEFF 		bl	buffer_add_end
+ 958              	.LVL73:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 21
+
+
+ 195:Device/Src/lcd_driver.c ****     HAL_UART_Transmit(&huart2, g_lcdUart.buffer, g_lcdUart.length, 1000);
+ 959              		.loc 1 195 5 view .LVU185
+ 960 0022 0449     		ldr	r1, .L69
+ 961 0024 4FF47A73 		mov	r3, #1000
+ 962 0028 31F8022B 		ldrh	r2, [r1], #2
+ 963 002c 0248     		ldr	r0, .L69+4
+ 964 002e FFF7FEFF 		bl	HAL_UART_Transmit
+ 965              	.LVL74:
+ 196:Device/Src/lcd_driver.c **** }
+ 966              		.loc 1 196 1 is_stmt 0 view .LVU186
+ 967 0032 38BD     		pop	{r3, r4, r5, pc}
+ 968              	.L70:
+ 969              		.align	2
+ 970              	.L69:
+ 971 0034 00000000 		.word	.LANCHOR0
+ 972 0038 00000000 		.word	huart2
+ 973              		.cfi_endproc
+ 974              	.LFE253:
+ 976              		.section	.text.excel_change_one_line,"ax",%progbits
+ 977              		.align	1
+ 978              		.global	excel_change_one_line
+ 979              		.syntax unified
+ 980              		.thumb
+ 981              		.thumb_func
+ 983              	excel_change_one_line:
+ 984              	.LVL75:
+ 985              	.LFB254:
+ 197:Device/Src/lcd_driver.c **** 
+ 198:Device/Src/lcd_driver.c **** void excel_change_one_line(uint8_t screen_id, uint8_t control_id, ExcelMessage message)
+ 199:Device/Src/lcd_driver.c **** {
+ 986              		.loc 1 199 1 is_stmt 1 view -0
+ 987              		.cfi_startproc
+ 988              		@ args = 56, pretend = 8, frame = 104
+ 989              		@ frame_needed = 0, uses_anonymous_args = 0
+ 990              		.loc 1 199 1 is_stmt 0 view .LVU188
+ 991 0000 82B0     		sub	sp, sp, #8
+ 992              	.LCFI15:
+ 993              		.cfi_def_cfa_offset 8
+ 994 0002 70B5     		push	{r4, r5, r6, lr}
+ 995              	.LCFI16:
+ 996              		.cfi_def_cfa_offset 24
+ 997              		.cfi_offset 4, -24
+ 998              		.cfi_offset 5, -20
+ 999              		.cfi_offset 6, -16
+ 1000              		.cfi_offset 14, -12
+ 1001 0004 A2B0     		sub	sp, sp, #136
+ 1002              	.LCFI17:
+ 1003              		.cfi_def_cfa_offset 160
+ 1004 0006 0546     		mov	r5, r0
+ 1005 0008 0C46     		mov	r4, r1
+ 1006 000a 26A9     		add	r1, sp, #152
+ 1007 000c 81E80C00 		stm	r1, {r2, r3}
+ 200:Device/Src/lcd_driver.c ****     char str[100] = {0};
+ 1008              		.loc 1 200 5 is_stmt 1 view .LVU189
+ 1009              		.loc 1 200 10 is_stmt 0 view .LVU190
+ 1010 0010 0021     		movs	r1, #0
+ 1011              	.LVL76:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 22
+
+
+ 1012              		.loc 1 200 10 view .LVU191
+ 1013 0012 0991     		str	r1, [sp, #36]
+ 1014 0014 6022     		movs	r2, #96
+ 1015 0016 0AA8     		add	r0, sp, #40
+ 1016 0018 FFF7FEFF 		bl	memset
+ 1017              	.LVL77:
+ 201:Device/Src/lcd_driver.c ****     snprintf(str, 100, "%d;%.1f;%d;%d;%d;%s;%s;", message.board + 1, message.systemTemp, message.ok
+ 1018              		.loc 1 201 5 is_stmt 1 view .LVU192
+ 1019              		.loc 1 201 58 is_stmt 0 view .LVU193
+ 1020 001c 9DF89860 		ldrb	r6, [sp, #152]	@ zero_extendqisi2
+ 1021              		.loc 1 201 97 view .LVU194
+ 1022 0020 9DF8A030 		ldrb	r3, [sp, #160]	@ zero_extendqisi2
+ 1023              		.loc 1 201 115 view .LVU195
+ 1024 0024 9DF8A120 		ldrb	r2, [sp, #161]	@ zero_extendqisi2
+ 1025              		.loc 1 201 5 view .LVU196
+ 1026 0028 0136     		adds	r6, r6, #1
+ 1027 002a 2FA9     		add	r1, sp, #188
+ 1028 002c 0691     		str	r1, [sp, #24]
+ 1029 002e 2AA9     		add	r1, sp, #168
+ 1030 0030 0591     		str	r1, [sp, #20]
+ 1031 0032 2999     		ldr	r1, [sp, #164]
+ 1032 0034 0491     		str	r1, [sp, #16]
+ 1033 0036 0392     		str	r2, [sp, #12]
+ 1034 0038 0293     		str	r3, [sp, #8]
+ 1035 003a 2798     		ldr	r0, [sp, #156]	@ float
+ 1036 003c FFF7FEFF 		bl	__aeabi_f2d
+ 1037              	.LVL78:
+ 1038 0040 CDE90001 		strd	r0, [sp]
+ 1039 0044 3346     		mov	r3, r6
+ 1040 0046 134A     		ldr	r2, .L73
+ 1041 0048 6421     		movs	r1, #100
+ 1042 004a 09A8     		add	r0, sp, #36
+ 1043 004c FFF7FEFF 		bl	snprintf
+ 1044              	.LVL79:
+ 202:Device/Src/lcd_driver.c ****     buffer_add_start();
+ 1045              		.loc 1 202 5 is_stmt 1 view .LVU197
+ 1046 0050 FFF7FEFF 		bl	buffer_add_start
+ 1047              	.LVL80:
+ 203:Device/Src/lcd_driver.c ****     buffer_add_2_byte(0xB157);
+ 1048              		.loc 1 203 5 view .LVU198
+ 1049 0054 4BF25710 		movw	r0, #45399
+ 1050 0058 FFF7FEFF 		bl	buffer_add_2_byte
+ 1051              	.LVL81:
+ 204:Device/Src/lcd_driver.c ****     buffer_add_2_byte(screen_id);
+ 1052              		.loc 1 204 5 view .LVU199
+ 1053 005c 2846     		mov	r0, r5
+ 1054 005e FFF7FEFF 		bl	buffer_add_2_byte
+ 1055              	.LVL82:
+ 205:Device/Src/lcd_driver.c ****     buffer_add_2_byte(control_id);
+ 1056              		.loc 1 205 5 view .LVU200
+ 1057 0062 2046     		mov	r0, r4
+ 1058 0064 FFF7FEFF 		bl	buffer_add_2_byte
+ 1059              	.LVL83:
+ 206:Device/Src/lcd_driver.c ****     buffer_add_2_byte(message.board);
+ 1060              		.loc 1 206 5 view .LVU201
+ 1061 0068 9DF89800 		ldrb	r0, [sp, #152]	@ zero_extendqisi2
+ 1062 006c FFF7FEFF 		bl	buffer_add_2_byte
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 23
+
+
+ 1063              	.LVL84:
+ 207:Device/Src/lcd_driver.c ****     buffer_add_string(str);
+ 1064              		.loc 1 207 5 view .LVU202
+ 1065 0070 09A8     		add	r0, sp, #36
+ 1066 0072 FFF7FEFF 		bl	buffer_add_string
+ 1067              	.LVL85:
+ 208:Device/Src/lcd_driver.c ****     buffer_add_end();
+ 1068              		.loc 1 208 5 view .LVU203
+ 1069 0076 FFF7FEFF 		bl	buffer_add_end
+ 1070              	.LVL86:
+ 209:Device/Src/lcd_driver.c ****     HAL_UART_Transmit(&huart2, g_lcdUart.buffer, g_lcdUart.length, 1000);
+ 1071              		.loc 1 209 5 view .LVU204
+ 1072 007a 0749     		ldr	r1, .L73+4
+ 1073 007c 4FF47A73 		mov	r3, #1000
+ 1074 0080 31F8022B 		ldrh	r2, [r1], #2
+ 1075 0084 0548     		ldr	r0, .L73+8
+ 1076 0086 FFF7FEFF 		bl	HAL_UART_Transmit
+ 1077              	.LVL87:
+ 210:Device/Src/lcd_driver.c **** }
+ 1078              		.loc 1 210 1 is_stmt 0 view .LVU205
+ 1079 008a 22B0     		add	sp, sp, #136
+ 1080              	.LCFI18:
+ 1081              		.cfi_def_cfa_offset 24
+ 1082              		@ sp needed
+ 1083 008c BDE87040 		pop	{r4, r5, r6, lr}
+ 1084              	.LCFI19:
+ 1085              		.cfi_restore 14
+ 1086              		.cfi_restore 6
+ 1087              		.cfi_restore 5
+ 1088              		.cfi_restore 4
+ 1089              		.cfi_def_cfa_offset 8
+ 1090 0090 02B0     		add	sp, sp, #8
+ 1091              	.LCFI20:
+ 1092              		.cfi_def_cfa_offset 0
+ 1093 0092 7047     		bx	lr
+ 1094              	.L74:
+ 1095              		.align	2
+ 1096              	.L73:
+ 1097 0094 00000000 		.word	.LC0
+ 1098 0098 00000000 		.word	.LANCHOR0
+ 1099 009c 00000000 		.word	huart2
+ 1100              		.cfi_endproc
+ 1101              	.LFE254:
+ 1103              		.section	.text.lcd_init_message_excel,"ax",%progbits
+ 1104              		.align	1
+ 1105              		.global	lcd_init_message_excel
+ 1106              		.syntax unified
+ 1107              		.thumb
+ 1108              		.thumb_func
+ 1110              	lcd_init_message_excel:
+ 1111              	.LFB255:
+ 211:Device/Src/lcd_driver.c **** 
+ 212:Device/Src/lcd_driver.c **** void lcd_init_message_excel(void)
+ 213:Device/Src/lcd_driver.c **** {
+ 1112              		.loc 1 213 1 is_stmt 1 view -0
+ 1113              		.cfi_startproc
+ 1114              		@ args = 0, pretend = 0, frame = 56
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 24
+
+
+ 1115              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1116 0000 10B5     		push	{r4, lr}
+ 1117              	.LCFI21:
+ 1118              		.cfi_def_cfa_offset 8
+ 1119              		.cfi_offset 4, -8
+ 1120              		.cfi_offset 14, -4
+ 1121 0002 9AB0     		sub	sp, sp, #104
+ 1122              	.LCFI22:
+ 1123              		.cfi_def_cfa_offset 112
+ 214:Device/Src/lcd_driver.c ****     int i;
+ 1124              		.loc 1 214 5 view .LVU207
+ 215:Device/Src/lcd_driver.c ****     ExcelMessage message = {0};
+ 1125              		.loc 1 215 5 view .LVU208
+ 1126              		.loc 1 215 18 is_stmt 0 view .LVU209
+ 1127 0004 3822     		movs	r2, #56
+ 1128 0006 0021     		movs	r1, #0
+ 1129 0008 0CA8     		add	r0, sp, #48
+ 1130 000a FFF7FEFF 		bl	memset
+ 1131              	.LVL88:
+ 216:Device/Src/lcd_driver.c **** 
+ 217:Device/Src/lcd_driver.c ****     excel_clear(EXCEL_OF_SCREEN, EXCEL_TEXT_ID);
+ 1132              		.loc 1 217 5 is_stmt 1 view .LVU210
+ 1133 000e 0621     		movs	r1, #6
+ 1134 0010 0320     		movs	r0, #3
+ 1135 0012 FFF7FEFF 		bl	excel_clear
+ 1136              	.LVL89:
+ 218:Device/Src/lcd_driver.c ****     for (i = 0; i < EXCEL_V_NUMBER; i++) {
+ 1137              		.loc 1 218 5 view .LVU211
+ 1138              		.loc 1 218 12 is_stmt 0 view .LVU212
+ 1139 0016 0024     		movs	r4, #0
+ 1140              		.loc 1 218 5 view .LVU213
+ 1141 0018 17E0     		b	.L76
+ 1142              	.LVL90:
+ 1143              	.L77:
+ 219:Device/Src/lcd_driver.c ****         message.board = i;
+ 1144              		.loc 1 219 9 is_stmt 1 discriminator 3 view .LVU214
+ 1145              		.loc 1 219 23 is_stmt 0 discriminator 3 view .LVU215
+ 1146 001a 8DF83040 		strb	r4, [sp, #48]
+ 220:Device/Src/lcd_driver.c ****         excel_add_one_line(EXCEL_OF_SCREEN, EXCEL_TEXT_ID, message);
+ 1147              		.loc 1 220 9 is_stmt 1 discriminator 3 view .LVU216
+ 1148 001e EC46     		mov	ip, sp
+ 1149 0020 0DF1380E 		add	lr, sp, #56
+ 1150 0024 BEE80F00 		ldmia	lr!, {r0, r1, r2, r3}
+ 1151 0028 ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+ 1152 002c BEE80F00 		ldmia	lr!, {r0, r1, r2, r3}
+ 1153 0030 ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+ 1154 0034 9EE80F00 		ldm	lr, {r0, r1, r2, r3}
+ 1155 0038 8CE80F00 		stm	ip, {r0, r1, r2, r3}
+ 1156 003c 0CAB     		add	r3, sp, #48
+ 1157 003e 0CCB     		ldm	r3, {r2, r3}
+ 1158 0040 0621     		movs	r1, #6
+ 1159 0042 0320     		movs	r0, #3
+ 1160 0044 FFF7FEFF 		bl	excel_add_one_line
+ 1161              	.LVL91:
+ 218:Device/Src/lcd_driver.c ****     for (i = 0; i < EXCEL_V_NUMBER; i++) {
+ 1162              		.loc 1 218 37 discriminator 3 view .LVU217
+ 218:Device/Src/lcd_driver.c ****     for (i = 0; i < EXCEL_V_NUMBER; i++) {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 25
+
+
+ 1163              		.loc 1 218 38 is_stmt 0 discriminator 3 view .LVU218
+ 1164 0048 0134     		adds	r4, r4, #1
+ 1165              	.LVL92:
+ 1166              	.L76:
+ 218:Device/Src/lcd_driver.c ****     for (i = 0; i < EXCEL_V_NUMBER; i++) {
+ 1167              		.loc 1 218 17 is_stmt 1 discriminator 1 view .LVU219
+ 218:Device/Src/lcd_driver.c ****     for (i = 0; i < EXCEL_V_NUMBER; i++) {
+ 1168              		.loc 1 218 5 is_stmt 0 discriminator 1 view .LVU220
+ 1169 004a 092C     		cmp	r4, #9
+ 1170 004c E5DD     		ble	.L77
+ 221:Device/Src/lcd_driver.c ****     }
+ 222:Device/Src/lcd_driver.c **** }...
+ 1171              		.loc 1 222 1 view .LVU221
+ 1172 004e 1AB0     		add	sp, sp, #104
+ 1173              	.LCFI23:
+ 1174              		.cfi_def_cfa_offset 8
+ 1175              		@ sp needed
+ 1176 0050 10BD     		pop	{r4, pc}
+ 1177              		.loc 1 222 1 view .LVU222
+ 1178              		.cfi_endproc
+ 1179              	.LFE255:
+ 1181              		.global	g_lcdUart
+ 1182              		.section	.bss.g_lcdUart,"aw",%nobits
+ 1183              		.align	2
+ 1184              		.set	.LANCHOR0,. + 0
+ 1187              	g_lcdUart:
+ 1188 0000 00000000 		.space	258
+ 1188      00000000 
+ 1188      00000000 
+ 1188      00000000 
+ 1188      00000000 
+ 1189              		.section	.bss.lastControl.0,"aw",%nobits
+ 1190              		.align	1
+ 1191              		.set	.LANCHOR2,. + 0
+ 1194              	lastControl.0:
+ 1195 0000 0000     		.space	2
+ 1196              		.section	.bss.lastControl.1,"aw",%nobits
+ 1197              		.align	1
+ 1198              		.set	.LANCHOR1,. + 0
+ 1201              	lastControl.1:
+ 1202 0000 0000     		.space	2
+ 1203              		.text
+ 1204              	.Letext0:
+ 1205              		.file 2 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_default_
+ 1206              		.file 3 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 1207              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 1208              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 1209              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 1210              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h"
+ 1211              		.file 8 "Device/Inc/lcd_driver.h"
+ 1212              		.file 9 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\stdio.h"
+ 1213              		.file 10 "<built-in>"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 26
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lcd_driver.c
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:20     .text.clear_buffer:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:26     .text.clear_buffer:00000000 clear_buffer
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:52     .text.clear_buffer:00000014 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:57     .text.buffer_add_start:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:63     .text.buffer_add_start:00000000 buffer_add_start
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:87     .text.buffer_add_start:00000010 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:92     .text.buffer_add_end:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:98     .text.buffer_add_end:00000000 buffer_add_end
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:151    .text.buffer_add_end:00000038 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:156    .text.buffer_add_1_byte:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:162    .text.buffer_add_1_byte:00000000 buffer_add_1_byte
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:191    .text.buffer_add_1_byte:00000014 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:196    .text.buffer_add_2_byte:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:202    .text.buffer_add_2_byte:00000000 buffer_add_2_byte
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:240    .text.buffer_add_2_byte:00000024 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:245    .text.buffer_add_4_byte:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:251    .text.buffer_add_4_byte:00000000 buffer_add_4_byte
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:309    .text.buffer_add_4_byte:00000044 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:314    .text.buffer_add_string:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:320    .text.buffer_add_string:00000000 buffer_add_string
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:363    .text.buffer_add_string:0000001c $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:368    .text.SetPowerSaving:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:374    .text.SetPowerSaving:00000000 SetPowerSaving
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:433    .text.SetPowerSaving:00000044 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:439    .text.SetScreen:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:445    .text.SetScreen:00000000 SetScreen
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:485    .text.SetScreen:0000002c $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:491    .text.SetTextValue:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:497    .text.SetTextValue:00000000 SetTextValue
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:551    .text.SetTextValue:0000003c $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:557    .text.SetControlBackColor:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:563    .text.SetControlBackColor:00000000 SetControlBackColor
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:615    .text.SetControlBackColor:0000003c $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:621    .text.clear_function_select:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:627    .text.clear_function_select:00000000 clear_function_select
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:672    .text.function_one_select:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:678    .text.function_one_select:00000000 function_one_select
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:726    .text.function_one_select:00000028 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:731    .text.function_one_select1:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:737    .text.function_one_select1:00000000 function_one_select1
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:785    .text.function_one_select1:00000028 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:790    .rodata.excel_add_one_line.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:795    .text.excel_add_one_line:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:801    .text.excel_add_one_line:00000000 excel_add_one_line
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:911    .text.excel_add_one_line:0000008c $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:918    .text.excel_clear:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:924    .text.excel_clear:00000000 excel_clear
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:971    .text.excel_clear:00000034 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:977    .text.excel_change_one_line:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:983    .text.excel_change_one_line:00000000 excel_change_one_line
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:1097   .text.excel_change_one_line:00000094 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:1104   .text.lcd_init_message_excel:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:1110   .text.lcd_init_message_excel:00000000 lcd_init_message_excel
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:1187   .bss.g_lcdUart:00000000 g_lcdUart
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:1183   .bss.g_lcdUart:00000000 $d
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s 			page 27
+
+
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:1190   .bss.lastControl.0:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:1194   .bss.lastControl.0:00000000 lastControl.0
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:1197   .bss.lastControl.1:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccY42Hq2.s:1201   .bss.lastControl.1:00000000 lastControl.1
+
+UNDEFINED SYMBOLS
+memset
+HAL_UART_Transmit
+huart2
+__aeabi_f2d
+snprintf
