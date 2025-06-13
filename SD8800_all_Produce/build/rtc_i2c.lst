@@ -1,0 +1,3466 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"rtc_i2c.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.rtc_read_sda,"ax",%progbits
+  20              		.align	1
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	rtc_read_sda:
+  26              	.LFB241:
+  27              		.file 1 "Drivers/User_Driver/Src/rtc_i2c.c"
+   1:Drivers/User_Driver/Src/rtc_i2c.c **** 
+   2:Drivers/User_Driver/Src/rtc_i2c.c **** /*
+   3:Drivers/User_Driver/Src/rtc_i2c.c ****  *  drivers  rtc i2c
+   4:Drivers/User_Driver/Src/rtc_i2c.c ****  * Copyright (C) 2022 shenzhen wave
+   5:Drivers/User_Driver/Src/rtc_i2c.c ****  * version:v1.0.0--2023-8-1
+   6:Drivers/User_Driver/Src/rtc_i2c.c ****  * This program is free software; you can redistribute it and/or modify
+   7:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+   8:Drivers/User_Driver/Src/rtc_i2c.c **** #include "main.h"
+   9:Drivers/User_Driver/Src/rtc_i2c.c **** #include "rtc_i2c.h"
+  10:Drivers/User_Driver/Src/rtc_i2c.c **** #include "string.h"
+  11:Drivers/User_Driver/Src/rtc_i2c.c **** 
+  12:Drivers/User_Driver/Src/rtc_i2c.c **** 
+  13:Drivers/User_Driver/Src/rtc_i2c.c **** typedef struct {
+  14:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_TypeDef* busSdaIn;
+  15:Drivers/User_Driver/Src/rtc_i2c.c **** 	uint16_t pinSdaIn;
+  16:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_TypeDef* busSdaOut;
+  17:Drivers/User_Driver/Src/rtc_i2c.c **** 	uint16_t pinSdaOut;
+  18:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_TypeDef* busScl;
+  19:Drivers/User_Driver/Src/rtc_i2c.c **** 	uint16_t pinScl;
+  20:Drivers/User_Driver/Src/rtc_i2c.c **** }I2cGpio;
+  21:Drivers/User_Driver/Src/rtc_i2c.c **** 
+  22:Drivers/User_Driver/Src/rtc_i2c.c **** uint16_t soft_rtc_delay = 600;
+  23:Drivers/User_Driver/Src/rtc_i2c.c **** uint8_t g_state = 0;
+  24:Drivers/User_Driver/Src/rtc_i2c.c **** static I2cGpio  g_i2c = {0};
+  25:Drivers/User_Driver/Src/rtc_i2c.c **** 
+  26:Drivers/User_Driver/Src/rtc_i2c.c **** void set_switch_channel(uint8_t channel)
+  27:Drivers/User_Driver/Src/rtc_i2c.c **** {	//sda_key
+  28:Drivers/User_Driver/Src/rtc_i2c.c **** 
+  29:Drivers/User_Driver/Src/rtc_i2c.c **** 	uint8_t chip_switch[100][2] = {//记录每个芯片对应的模拟开关序号和8选1序号
+  30:Drivers/User_Driver/Src/rtc_i2c.c **** 	{0, 0},	{0, 1},	{1, 0},	{1, 1},	{2, 0},	{2, 1},	{3, 0},	{3, 1},	{4, 0},	{4, 1}, 
+  31:Drivers/User_Driver/Src/rtc_i2c.c **** 	{0, 2},	{0, 3},	{1, 2},	{1, 3},	{2, 2},	{2, 3},	{3, 2},	{3, 3},	{4, 2},	{4, 3}, 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 2
+
+
+  32:Drivers/User_Driver/Src/rtc_i2c.c **** 	{0, 4},	{0, 5},	{1, 4},	{1, 5},	{2, 4},	{2, 5},	{3, 4},	{3, 5},	{4, 4},	{4, 5}, 
+  33:Drivers/User_Driver/Src/rtc_i2c.c **** 	{0, 6},	{0, 7},	{1, 6},	{1, 7},	{2, 6},	{2, 7},	{3, 6},	{3, 7},	{4, 6},	{4, 7}, 
+  34:Drivers/User_Driver/Src/rtc_i2c.c **** 	{5, 0},	{5, 1},	{6, 0},	{6, 1},	{7, 0},	{7, 1},	{8, 0},	{8, 1},	{9, 0},	{9, 1}, 
+  35:Drivers/User_Driver/Src/rtc_i2c.c **** 	{5, 2},	{5, 3},	{6, 2},	{6, 3},	{7, 2},	{7, 3},	{8, 2},	{8, 3},	{9, 2},	{9, 3}, 
+  36:Drivers/User_Driver/Src/rtc_i2c.c **** 	{5, 4},	{5, 5},	{6, 4},	{6, 5},	{7, 4},	{7, 5},	{8, 4},	{8, 5},	{9, 4},	{9, 5}, 
+  37:Drivers/User_Driver/Src/rtc_i2c.c **** 	{5, 6},	{5, 7},	{6, 6},	{6, 7},	{7, 6},	{7, 7},	{8, 6},	{8, 7},	{9, 6},	{9, 7}, 
+  38:Drivers/User_Driver/Src/rtc_i2c.c **** 	{10,0},	{10,1},	{10,2},	{10,3},	{11,0},	{11,1},	{11,2},	{11,3},	{12,0},	{12,1}, 
+  39:Drivers/User_Driver/Src/rtc_i2c.c **** 	{10,4},	{10,5},	{10,6},	{10,7},	{11,4},	{11,5},	{11,6},	{11,7},	{12,2},	{12,3}, 
+  40:Drivers/User_Driver/Src/rtc_i2c.c **** 	};
+  41:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (channel > 99) {//最多100个芯片
+  42:Drivers/User_Driver/Src/rtc_i2c.c **** 		channel = 99;
+  43:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+  44:Drivers/User_Driver/Src/rtc_i2c.c **** 	//4051模拟开关的片选信号由4067选中
+  45:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, chip_switch[channel][0] & 0x01);
+  46:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, chip_switch[channel][0] & 0x02);
+  47:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, chip_switch[channel][0] & 0x04);//切换模拟开关
+  48:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, chip_switch[channel][0] & 0x08);//切换模拟开关
+  49:Drivers/User_Driver/Src/rtc_i2c.c **** 	//4051的地址线
+  50:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, chip_switch[channel][1] & 0x01);//切换模拟开关
+  51:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, chip_switch[channel][1] & 0x02);//切换模拟开关
+  52:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, chip_switch[channel][1] & 0x04);//切换模拟开关
+  53:Drivers/User_Driver/Src/rtc_i2c.c **** }
+  54:Drivers/User_Driver/Src/rtc_i2c.c **** 
+  55:Drivers/User_Driver/Src/rtc_i2c.c **** void rtc_set_channel(uint8_t channel, RtcI2cState state)
+  56:Drivers/User_Driver/Src/rtc_i2c.c **** {
+  57:Drivers/User_Driver/Src/rtc_i2c.c **** 
+  58:Drivers/User_Driver/Src/rtc_i2c.c ****     g_i2c.busScl = GPIOD;
+  59:Drivers/User_Driver/Src/rtc_i2c.c **** 	g_i2c.pinScl = GPIO_PIN_14;
+  60:Drivers/User_Driver/Src/rtc_i2c.c **** 	g_state = state;
+  61:Drivers/User_Driver/Src/rtc_i2c.c **** 
+  62:Drivers/User_Driver/Src/rtc_i2c.c **** 	switch (state) {
+  63:Drivers/User_Driver/Src/rtc_i2c.c **** 		case RTC_VDD_OFF:
+  64:Drivers/User_Driver/Src/rtc_i2c.c **** 		break;
+  65:Drivers/User_Driver/Src/rtc_i2c.c **** 		case RTC_INIT_1006:
+  66:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.busSdaIn = GPIOE;
+  67:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaIn = GPIO_PIN_1;
+  68:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.busSdaOut = GPIOB;
+  69:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaOut = GPIO_PIN_15;
+  70:Drivers/User_Driver/Src/rtc_i2c.c **** 			soft_rtc_delay = 600;
+  71:Drivers/User_Driver/Src/rtc_i2c.c **** 		break;
+  72:Drivers/User_Driver/Src/rtc_i2c.c **** 		case RTC_SD3031:
+  73:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.busSdaIn = GPIOD;
+  74:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaIn = GPIO_PIN_15;
+  75:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.busSdaOut = GPIOD;
+  76:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaOut = GPIO_PIN_15;
+  77:Drivers/User_Driver/Src/rtc_i2c.c **** 			soft_rtc_delay = 50;
+  78:Drivers/User_Driver/Src/rtc_i2c.c **** 		break;
+  79:Drivers/User_Driver/Src/rtc_i2c.c **** 		default:break;
+  80:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+  81:Drivers/User_Driver/Src/rtc_i2c.c **** }
+  82:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+  83:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief set sda is high
+  84:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+  85:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+  86:Drivers/User_Driver/Src/rtc_i2c.c **** void rtc_sda_h(void)
+  87:Drivers/User_Driver/Src/rtc_i2c.c **** {
+  88:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*user code*/
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 3
+
+
+  89:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (g_state == RTC_SD3031) {
+  90:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_WritePin(g_i2c.busSdaOut, g_i2c.pinSdaOut, GPIO_PIN_SET);
+  91:Drivers/User_Driver/Src/rtc_i2c.c **** 	} else {
+  92:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_WritePin(g_i2c.busSdaOut, g_i2c.pinSdaOut, GPIO_PIN_RESET);
+  93:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+  94:Drivers/User_Driver/Src/rtc_i2c.c **** }
+  95:Drivers/User_Driver/Src/rtc_i2c.c **** 
+  96:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+  97:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief set sda is low
+  98:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+  99:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 100:Drivers/User_Driver/Src/rtc_i2c.c **** void rtc_sda_l(void)
+ 101:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 102:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*user code*/
+ 103:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (g_state == RTC_SD3031) {
+ 104:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_WritePin(g_i2c.busSdaOut, g_i2c.pinSdaOut, GPIO_PIN_RESET);
+ 105:Drivers/User_Driver/Src/rtc_i2c.c **** 	} else {
+ 106:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_WritePin(g_i2c.busSdaOut, g_i2c.pinSdaOut, GPIO_PIN_SET);
+ 107:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 108:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 109:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 110:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 111:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief set scl is high
+ 112:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 113:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 114:Drivers/User_Driver/Src/rtc_i2c.c **** void rtc_scl_h(void)
+ 115:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 116:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*user code*/
+ 117:Drivers/User_Driver/Src/rtc_i2c.c ****     HAL_GPIO_WritePin(g_i2c.busScl, g_i2c.pinScl, GPIO_PIN_SET);
+ 118:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 119:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 120:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 121:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief set scl is low
+ 122:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 123:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 124:Drivers/User_Driver/Src/rtc_i2c.c **** void rtc_scl_l(void)
+ 125:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 126:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*user code*/
+ 127:Drivers/User_Driver/Src/rtc_i2c.c ****     HAL_GPIO_WritePin(g_i2c.busScl, g_i2c.pinScl, GPIO_PIN_RESET);
+ 128:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 129:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 130:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 131:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief Read sda pin state
+ 132:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 133:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 134:Drivers/User_Driver/Src/rtc_i2c.c **** static unsigned char rtc_read_sda(void)
+ 135:Drivers/User_Driver/Src/rtc_i2c.c **** {
+  28              		.loc 1 135 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+ 136:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*user code*/	
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 4
+
+
+ 137:Drivers/User_Driver/Src/rtc_i2c.c **** 	uint8_t result;
+  37              		.loc 1 137 2 view .LVU1
+ 138:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 139:Drivers/User_Driver/Src/rtc_i2c.c **** 	result = HAL_GPIO_ReadPin(g_i2c.busSdaIn, g_i2c.pinSdaIn);
+  38              		.loc 1 139 2 view .LVU2
+  39              		.loc 1 139 11 is_stmt 0 view .LVU3
+  40 0002 074B     		ldr	r3, .L6
+  41 0004 9988     		ldrh	r1, [r3, #4]
+  42 0006 1868     		ldr	r0, [r3]
+  43 0008 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+  44              	.LVL0:
+ 140:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (g_state == RTC_INIT_1006) {//需要取反
+  45              		.loc 1 140 2 is_stmt 1 view .LVU4
+  46              		.loc 1 140 14 is_stmt 0 view .LVU5
+  47 000c 054B     		ldr	r3, .L6+4
+  48 000e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  49              		.loc 1 140 5 view .LVU6
+  50 0010 012B     		cmp	r3, #1
+  51 0012 00D0     		beq	.L5
+  52              	.LVL1:
+  53              	.L2:
+ 141:Drivers/User_Driver/Src/rtc_i2c.c **** 		if (result) {
+ 142:Drivers/User_Driver/Src/rtc_i2c.c **** 			return 0;
+ 143:Drivers/User_Driver/Src/rtc_i2c.c **** 		} else {
+ 144:Drivers/User_Driver/Src/rtc_i2c.c **** 			return 1;
+ 145:Drivers/User_Driver/Src/rtc_i2c.c **** 		}
+ 146:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 147:Drivers/User_Driver/Src/rtc_i2c.c **** 	return result;
+ 148:Drivers/User_Driver/Src/rtc_i2c.c **** }
+  54              		.loc 1 148 1 view .LVU7
+  55 0014 08BD     		pop	{r3, pc}
+  56              	.LVL2:
+  57              	.L5:
+ 141:Drivers/User_Driver/Src/rtc_i2c.c **** 		if (result) {
+  58              		.loc 1 141 3 is_stmt 1 view .LVU8
+ 141:Drivers/User_Driver/Src/rtc_i2c.c **** 		if (result) {
+  59              		.loc 1 141 6 is_stmt 0 view .LVU9
+  60 0016 08B1     		cbz	r0, .L3
+ 142:Drivers/User_Driver/Src/rtc_i2c.c **** 		} else {
+  61              		.loc 1 142 11 view .LVU10
+  62 0018 0020     		movs	r0, #0
+  63              	.LVL3:
+ 142:Drivers/User_Driver/Src/rtc_i2c.c **** 		} else {
+  64              		.loc 1 142 11 view .LVU11
+  65 001a FBE7     		b	.L2
+  66              	.LVL4:
+  67              	.L3:
+ 144:Drivers/User_Driver/Src/rtc_i2c.c **** 		}
+  68              		.loc 1 144 11 view .LVU12
+  69 001c 1846     		mov	r0, r3
+  70              	.LVL5:
+ 144:Drivers/User_Driver/Src/rtc_i2c.c **** 		}
+  71              		.loc 1 144 11 view .LVU13
+  72 001e F9E7     		b	.L2
+  73              	.L7:
+  74              		.align	2
+  75              	.L6:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 5
+
+
+  76 0020 00000000 		.word	.LANCHOR0
+  77 0024 00000000 		.word	.LANCHOR1
+  78              		.cfi_endproc
+  79              	.LFE241:
+  81              		.section	.text.set_switch_channel,"ax",%progbits
+  82              		.align	1
+  83              		.global	set_switch_channel
+  84              		.syntax unified
+  85              		.thumb
+  86              		.thumb_func
+  88              	set_switch_channel:
+  89              	.LVL6:
+  90              	.LFB235:
+  27:Drivers/User_Driver/Src/rtc_i2c.c **** 
+  91              		.loc 1 27 1 is_stmt 1 view -0
+  92              		.cfi_startproc
+  93              		@ args = 0, pretend = 0, frame = 200
+  94              		@ frame_needed = 0, uses_anonymous_args = 0
+  27:Drivers/User_Driver/Src/rtc_i2c.c **** 
+  95              		.loc 1 27 1 is_stmt 0 view .LVU15
+  96 0000 70B5     		push	{r4, r5, r6, lr}
+  97              	.LCFI1:
+  98              		.cfi_def_cfa_offset 16
+  99              		.cfi_offset 4, -16
+ 100              		.cfi_offset 5, -12
+ 101              		.cfi_offset 6, -8
+ 102              		.cfi_offset 14, -4
+ 103 0002 B2B0     		sub	sp, sp, #200
+ 104              	.LCFI2:
+ 105              		.cfi_def_cfa_offset 216
+ 106 0004 0446     		mov	r4, r0
+  29:Drivers/User_Driver/Src/rtc_i2c.c **** 	{0, 0},	{0, 1},	{1, 0},	{1, 1},	{2, 0},	{2, 1},	{3, 0},	{3, 1},	{4, 0},	{4, 1}, 
+ 107              		.loc 1 29 2 is_stmt 1 view .LVU16
+  29:Drivers/User_Driver/Src/rtc_i2c.c **** 	{0, 0},	{0, 1},	{1, 0},	{1, 1},	{2, 0},	{2, 1},	{3, 0},	{3, 1},	{4, 0},	{4, 1}, 
+ 108              		.loc 1 29 10 is_stmt 0 view .LVU17
+ 109 0006 C822     		movs	r2, #200
+ 110 0008 2149     		ldr	r1, .L12
+ 111 000a 6846     		mov	r0, sp
+ 112              	.LVL7:
+  29:Drivers/User_Driver/Src/rtc_i2c.c **** 	{0, 0},	{0, 1},	{1, 0},	{1, 1},	{2, 0},	{2, 1},	{3, 0},	{3, 1},	{4, 0},	{4, 1}, 
+ 113              		.loc 1 29 10 view .LVU18
+ 114 000c FFF7FEFF 		bl	memcpy
+ 115              	.LVL8:
+  41:Drivers/User_Driver/Src/rtc_i2c.c **** 		channel = 99;
+ 116              		.loc 1 41 2 is_stmt 1 view .LVU19
+  41:Drivers/User_Driver/Src/rtc_i2c.c **** 		channel = 99;
+ 117              		.loc 1 41 5 is_stmt 0 view .LVU20
+ 118 0010 632C     		cmp	r4, #99
+ 119 0012 00D9     		bls	.L9
+  42:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 120              		.loc 1 42 11 view .LVU21
+ 121 0014 6324     		movs	r4, #99
+ 122              	.L9:
+ 123              	.LVL9:
+  45:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, chip_switch[channel][0] & 0x02);
+ 124              		.loc 1 45 2 is_stmt 1 view .LVU22
+  45:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, chip_switch[channel][0] & 0x02);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 6
+
+
+ 125              		.loc 1 45 59 is_stmt 0 view .LVU23
+ 126 0016 32AB     		add	r3, sp, #200
+ 127 0018 03EB4404 		add	r4, r3, r4, lsl #1
+ 128              	.LVL10:
+  45:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, chip_switch[channel][0] & 0x02);
+ 129              		.loc 1 45 59 view .LVU24
+ 130 001c 14F8C86C 		ldrb	r6, [r4, #-200]	@ zero_extendqisi2
+  45:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, chip_switch[channel][0] & 0x02);
+ 131              		.loc 1 45 2 view .LVU25
+ 132 0020 1C4D     		ldr	r5, .L12+4
+ 133 0022 06F00102 		and	r2, r6, #1
+ 134 0026 4FF48071 		mov	r1, #256
+ 135 002a 2846     		mov	r0, r5
+ 136 002c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 137              	.LVL11:
+  46:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, chip_switch[channel][0] & 0x04);//切换模拟开关
+ 138              		.loc 1 46 2 is_stmt 1 view .LVU26
+ 139 0030 06F00202 		and	r2, r6, #2
+ 140 0034 4FF40071 		mov	r1, #512
+ 141 0038 2846     		mov	r0, r5
+ 142 003a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 143              	.LVL12:
+  47:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, chip_switch[channel][0] & 0x08);//切换模拟开关
+ 144              		.loc 1 47 2 view .LVU27
+ 145 003e 06F00402 		and	r2, r6, #4
+ 146 0042 4FF48061 		mov	r1, #1024
+ 147 0046 2846     		mov	r0, r5
+ 148 0048 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 149              	.LVL13:
+  48:Drivers/User_Driver/Src/rtc_i2c.c **** 	//4051的地址线
+ 150              		.loc 1 48 2 view .LVU28
+ 151 004c 06F00802 		and	r2, r6, #8
+ 152 0050 4FF40061 		mov	r1, #2048
+ 153 0054 2846     		mov	r0, r5
+ 154 0056 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 155              	.LVL14:
+  50:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, chip_switch[channel][1] & 0x02);//切换模拟开关
+ 156              		.loc 1 50 2 view .LVU29
+  50:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, chip_switch[channel][1] & 0x02);//切换模拟开关
+ 157              		.loc 1 50 60 is_stmt 0 view .LVU30
+ 158 005a 14F8C75C 		ldrb	r5, [r4, #-199]	@ zero_extendqisi2
+  50:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, chip_switch[channel][1] & 0x02);//切换模拟开关
+ 159              		.loc 1 50 2 view .LVU31
+ 160 005e 0E4C     		ldr	r4, .L12+8
+ 161 0060 05F00102 		and	r2, r5, #1
+ 162 0064 4FF48061 		mov	r1, #1024
+ 163 0068 2046     		mov	r0, r4
+ 164 006a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 165              	.LVL15:
+  51:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, chip_switch[channel][1] & 0x04);//切换模拟开关
+ 166              		.loc 1 51 2 is_stmt 1 view .LVU32
+ 167 006e 05F00202 		and	r2, r5, #2
+ 168 0072 4FF40061 		mov	r1, #2048
+ 169 0076 2046     		mov	r0, r4
+ 170 0078 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 171              	.LVL16:
+  52:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 7
+
+
+ 172              		.loc 1 52 2 view .LVU33
+ 173 007c 05F00402 		and	r2, r5, #4
+ 174 0080 4FF48051 		mov	r1, #4096
+ 175 0084 2046     		mov	r0, r4
+ 176 0086 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 177              	.LVL17:
+  53:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 178              		.loc 1 53 1 is_stmt 0 view .LVU34
+ 179 008a 32B0     		add	sp, sp, #200
+ 180              	.LCFI3:
+ 181              		.cfi_def_cfa_offset 16
+ 182              		@ sp needed
+ 183 008c 70BD     		pop	{r4, r5, r6, pc}
+ 184              	.L13:
+ 185 008e 00BF     		.align	2
+ 186              	.L12:
+ 187 0090 00000000 		.word	.LANCHOR2
+ 188 0094 00080240 		.word	1073874944
+ 189 0098 000C0240 		.word	1073875968
+ 190              		.cfi_endproc
+ 191              	.LFE235:
+ 193              		.section	.text.rtc_set_channel,"ax",%progbits
+ 194              		.align	1
+ 195              		.global	rtc_set_channel
+ 196              		.syntax unified
+ 197              		.thumb
+ 198              		.thumb_func
+ 200              	rtc_set_channel:
+ 201              	.LVL18:
+ 202              	.LFB236:
+  56:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 203              		.loc 1 56 1 is_stmt 1 view -0
+ 204              		.cfi_startproc
+ 205              		@ args = 0, pretend = 0, frame = 0
+ 206              		@ frame_needed = 0, uses_anonymous_args = 0
+ 207              		@ link register save eliminated.
+  58:Drivers/User_Driver/Src/rtc_i2c.c **** 	g_i2c.pinScl = GPIO_PIN_14;
+ 208              		.loc 1 58 5 view .LVU36
+  58:Drivers/User_Driver/Src/rtc_i2c.c **** 	g_i2c.pinScl = GPIO_PIN_14;
+ 209              		.loc 1 58 18 is_stmt 0 view .LVU37
+ 210 0000 134B     		ldr	r3, .L18
+ 211 0002 144A     		ldr	r2, .L18+4
+ 212 0004 1A61     		str	r2, [r3, #16]
+  59:Drivers/User_Driver/Src/rtc_i2c.c **** 	g_state = state;
+ 213              		.loc 1 59 2 is_stmt 1 view .LVU38
+  59:Drivers/User_Driver/Src/rtc_i2c.c **** 	g_state = state;
+ 214              		.loc 1 59 15 is_stmt 0 view .LVU39
+ 215 0006 4FF48042 		mov	r2, #16384
+ 216 000a 9A82     		strh	r2, [r3, #20]	@ movhi
+  60:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 217              		.loc 1 60 2 is_stmt 1 view .LVU40
+  60:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 218              		.loc 1 60 10 is_stmt 0 view .LVU41
+ 219 000c 124B     		ldr	r3, .L18+8
+ 220 000e 1970     		strb	r1, [r3]
+  62:Drivers/User_Driver/Src/rtc_i2c.c **** 		case RTC_VDD_OFF:
+ 221              		.loc 1 62 2 is_stmt 1 view .LVU42
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 8
+
+
+ 222 0010 0129     		cmp	r1, #1
+ 223 0012 02D0     		beq	.L15
+ 224 0014 0229     		cmp	r1, #2
+ 225 0016 0FD0     		beq	.L16
+ 226 0018 7047     		bx	lr
+ 227              	.L15:
+  66:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaIn = GPIO_PIN_1;
+ 228              		.loc 1 66 4 view .LVU43
+  66:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaIn = GPIO_PIN_1;
+ 229              		.loc 1 66 19 is_stmt 0 view .LVU44
+ 230 001a 0D4B     		ldr	r3, .L18
+ 231 001c 0F4A     		ldr	r2, .L18+12
+ 232 001e 1A60     		str	r2, [r3]
+  67:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.busSdaOut = GPIOB;
+ 233              		.loc 1 67 4 is_stmt 1 view .LVU45
+  67:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.busSdaOut = GPIOB;
+ 234              		.loc 1 67 19 is_stmt 0 view .LVU46
+ 235 0020 0222     		movs	r2, #2
+ 236 0022 9A80     		strh	r2, [r3, #4]	@ movhi
+  68:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaOut = GPIO_PIN_15;
+ 237              		.loc 1 68 4 is_stmt 1 view .LVU47
+  68:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaOut = GPIO_PIN_15;
+ 238              		.loc 1 68 20 is_stmt 0 view .LVU48
+ 239 0024 0E4A     		ldr	r2, .L18+16
+ 240 0026 9A60     		str	r2, [r3, #8]
+  69:Drivers/User_Driver/Src/rtc_i2c.c **** 			soft_rtc_delay = 600;
+ 241              		.loc 1 69 4 is_stmt 1 view .LVU49
+  69:Drivers/User_Driver/Src/rtc_i2c.c **** 			soft_rtc_delay = 600;
+ 242              		.loc 1 69 20 is_stmt 0 view .LVU50
+ 243 0028 4FF40042 		mov	r2, #32768
+ 244 002c 9A81     		strh	r2, [r3, #12]	@ movhi
+  70:Drivers/User_Driver/Src/rtc_i2c.c **** 		break;
+ 245              		.loc 1 70 4 is_stmt 1 view .LVU51
+  70:Drivers/User_Driver/Src/rtc_i2c.c **** 		break;
+ 246              		.loc 1 70 19 is_stmt 0 view .LVU52
+ 247 002e 0D4B     		ldr	r3, .L18+20
+ 248 0030 4FF41672 		mov	r2, #600
+ 249 0034 1A80     		strh	r2, [r3]	@ movhi
+  71:Drivers/User_Driver/Src/rtc_i2c.c **** 		case RTC_SD3031:
+ 250              		.loc 1 71 3 is_stmt 1 view .LVU53
+ 251 0036 7047     		bx	lr
+ 252              	.L16:
+  73:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaIn = GPIO_PIN_15;
+ 253              		.loc 1 73 4 view .LVU54
+  73:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaIn = GPIO_PIN_15;
+ 254              		.loc 1 73 19 is_stmt 0 view .LVU55
+ 255 0038 054B     		ldr	r3, .L18
+ 256 003a 0649     		ldr	r1, .L18+4
+ 257              	.LVL19:
+  73:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaIn = GPIO_PIN_15;
+ 258              		.loc 1 73 19 view .LVU56
+ 259 003c 1960     		str	r1, [r3]
+  74:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.busSdaOut = GPIOD;
+ 260              		.loc 1 74 4 is_stmt 1 view .LVU57
+  74:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.busSdaOut = GPIOD;
+ 261              		.loc 1 74 19 is_stmt 0 view .LVU58
+ 262 003e 4FF40042 		mov	r2, #32768
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 9
+
+
+ 263 0042 9A80     		strh	r2, [r3, #4]	@ movhi
+  75:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaOut = GPIO_PIN_15;
+ 264              		.loc 1 75 4 is_stmt 1 view .LVU59
+  75:Drivers/User_Driver/Src/rtc_i2c.c **** 			g_i2c.pinSdaOut = GPIO_PIN_15;
+ 265              		.loc 1 75 20 is_stmt 0 view .LVU60
+ 266 0044 9960     		str	r1, [r3, #8]
+  76:Drivers/User_Driver/Src/rtc_i2c.c **** 			soft_rtc_delay = 50;
+ 267              		.loc 1 76 4 is_stmt 1 view .LVU61
+  76:Drivers/User_Driver/Src/rtc_i2c.c **** 			soft_rtc_delay = 50;
+ 268              		.loc 1 76 20 is_stmt 0 view .LVU62
+ 269 0046 9A81     		strh	r2, [r3, #12]	@ movhi
+  77:Drivers/User_Driver/Src/rtc_i2c.c **** 		break;
+ 270              		.loc 1 77 4 is_stmt 1 view .LVU63
+  77:Drivers/User_Driver/Src/rtc_i2c.c **** 		break;
+ 271              		.loc 1 77 19 is_stmt 0 view .LVU64
+ 272 0048 064B     		ldr	r3, .L18+20
+ 273 004a 3222     		movs	r2, #50
+ 274 004c 1A80     		strh	r2, [r3]	@ movhi
+  78:Drivers/User_Driver/Src/rtc_i2c.c **** 		default:break;
+ 275              		.loc 1 78 3 is_stmt 1 view .LVU65
+  81:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 276              		.loc 1 81 1 is_stmt 0 view .LVU66
+ 277 004e 7047     		bx	lr
+ 278              	.L19:
+ 279              		.align	2
+ 280              	.L18:
+ 281 0050 00000000 		.word	.LANCHOR0
+ 282 0054 000C0240 		.word	1073875968
+ 283 0058 00000000 		.word	.LANCHOR1
+ 284 005c 00100240 		.word	1073876992
+ 285 0060 00040240 		.word	1073873920
+ 286 0064 00000000 		.word	.LANCHOR3
+ 287              		.cfi_endproc
+ 288              	.LFE236:
+ 290              		.section	.text.rtc_sda_h,"ax",%progbits
+ 291              		.align	1
+ 292              		.global	rtc_sda_h
+ 293              		.syntax unified
+ 294              		.thumb
+ 295              		.thumb_func
+ 297              	rtc_sda_h:
+ 298              	.LFB237:
+  87:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*user code*/
+ 299              		.loc 1 87 1 is_stmt 1 view -0
+ 300              		.cfi_startproc
+ 301              		@ args = 0, pretend = 0, frame = 0
+ 302              		@ frame_needed = 0, uses_anonymous_args = 0
+ 303 0000 08B5     		push	{r3, lr}
+ 304              	.LCFI4:
+ 305              		.cfi_def_cfa_offset 8
+ 306              		.cfi_offset 3, -8
+ 307              		.cfi_offset 14, -4
+  89:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_WritePin(g_i2c.busSdaOut, g_i2c.pinSdaOut, GPIO_PIN_SET);
+ 308              		.loc 1 89 2 view .LVU68
+  89:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_WritePin(g_i2c.busSdaOut, g_i2c.pinSdaOut, GPIO_PIN_SET);
+ 309              		.loc 1 89 14 is_stmt 0 view .LVU69
+ 310 0002 094B     		ldr	r3, .L25
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 10
+
+
+ 311 0004 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  89:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_WritePin(g_i2c.busSdaOut, g_i2c.pinSdaOut, GPIO_PIN_SET);
+ 312              		.loc 1 89 5 view .LVU70
+ 313 0006 022B     		cmp	r3, #2
+ 314 0008 06D0     		beq	.L24
+  92:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 315              		.loc 1 92 3 is_stmt 1 view .LVU71
+ 316 000a 084B     		ldr	r3, .L25+4
+ 317 000c 0022     		movs	r2, #0
+ 318 000e 9989     		ldrh	r1, [r3, #12]
+ 319 0010 9868     		ldr	r0, [r3, #8]
+ 320 0012 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 321              	.LVL20:
+ 322              	.L20:
+  94:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 323              		.loc 1 94 1 is_stmt 0 view .LVU72
+ 324 0016 08BD     		pop	{r3, pc}
+ 325              	.L24:
+  90:Drivers/User_Driver/Src/rtc_i2c.c **** 	} else {
+ 326              		.loc 1 90 3 is_stmt 1 view .LVU73
+ 327 0018 044B     		ldr	r3, .L25+4
+ 328 001a 0122     		movs	r2, #1
+ 329 001c 9989     		ldrh	r1, [r3, #12]
+ 330 001e 9868     		ldr	r0, [r3, #8]
+ 331 0020 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 332              	.LVL21:
+ 333 0024 F7E7     		b	.L20
+ 334              	.L26:
+ 335 0026 00BF     		.align	2
+ 336              	.L25:
+ 337 0028 00000000 		.word	.LANCHOR1
+ 338 002c 00000000 		.word	.LANCHOR0
+ 339              		.cfi_endproc
+ 340              	.LFE237:
+ 342              		.section	.text.rtc_sda_l,"ax",%progbits
+ 343              		.align	1
+ 344              		.global	rtc_sda_l
+ 345              		.syntax unified
+ 346              		.thumb
+ 347              		.thumb_func
+ 349              	rtc_sda_l:
+ 350              	.LFB238:
+ 101:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*user code*/
+ 351              		.loc 1 101 1 view -0
+ 352              		.cfi_startproc
+ 353              		@ args = 0, pretend = 0, frame = 0
+ 354              		@ frame_needed = 0, uses_anonymous_args = 0
+ 355 0000 08B5     		push	{r3, lr}
+ 356              	.LCFI5:
+ 357              		.cfi_def_cfa_offset 8
+ 358              		.cfi_offset 3, -8
+ 359              		.cfi_offset 14, -4
+ 103:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_WritePin(g_i2c.busSdaOut, g_i2c.pinSdaOut, GPIO_PIN_RESET);
+ 360              		.loc 1 103 2 view .LVU75
+ 103:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_WritePin(g_i2c.busSdaOut, g_i2c.pinSdaOut, GPIO_PIN_RESET);
+ 361              		.loc 1 103 14 is_stmt 0 view .LVU76
+ 362 0002 094B     		ldr	r3, .L32
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 11
+
+
+ 363 0004 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 103:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_WritePin(g_i2c.busSdaOut, g_i2c.pinSdaOut, GPIO_PIN_RESET);
+ 364              		.loc 1 103 5 view .LVU77
+ 365 0006 022B     		cmp	r3, #2
+ 366 0008 06D0     		beq	.L31
+ 106:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 367              		.loc 1 106 3 is_stmt 1 view .LVU78
+ 368 000a 084B     		ldr	r3, .L32+4
+ 369 000c 0122     		movs	r2, #1
+ 370 000e 9989     		ldrh	r1, [r3, #12]
+ 371 0010 9868     		ldr	r0, [r3, #8]
+ 372 0012 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 373              	.LVL22:
+ 374              	.L27:
+ 108:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 375              		.loc 1 108 1 is_stmt 0 view .LVU79
+ 376 0016 08BD     		pop	{r3, pc}
+ 377              	.L31:
+ 104:Drivers/User_Driver/Src/rtc_i2c.c **** 	} else {
+ 378              		.loc 1 104 3 is_stmt 1 view .LVU80
+ 379 0018 044B     		ldr	r3, .L32+4
+ 380 001a 0022     		movs	r2, #0
+ 381 001c 9989     		ldrh	r1, [r3, #12]
+ 382 001e 9868     		ldr	r0, [r3, #8]
+ 383 0020 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 384              	.LVL23:
+ 385 0024 F7E7     		b	.L27
+ 386              	.L33:
+ 387 0026 00BF     		.align	2
+ 388              	.L32:
+ 389 0028 00000000 		.word	.LANCHOR1
+ 390 002c 00000000 		.word	.LANCHOR0
+ 391              		.cfi_endproc
+ 392              	.LFE238:
+ 394              		.section	.text.rtc_scl_h,"ax",%progbits
+ 395              		.align	1
+ 396              		.global	rtc_scl_h
+ 397              		.syntax unified
+ 398              		.thumb
+ 399              		.thumb_func
+ 401              	rtc_scl_h:
+ 402              	.LFB239:
+ 115:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*user code*/
+ 403              		.loc 1 115 1 view -0
+ 404              		.cfi_startproc
+ 405              		@ args = 0, pretend = 0, frame = 0
+ 406              		@ frame_needed = 0, uses_anonymous_args = 0
+ 407 0000 08B5     		push	{r3, lr}
+ 408              	.LCFI6:
+ 409              		.cfi_def_cfa_offset 8
+ 410              		.cfi_offset 3, -8
+ 411              		.cfi_offset 14, -4
+ 117:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 412              		.loc 1 117 5 view .LVU82
+ 413 0002 034B     		ldr	r3, .L36
+ 414 0004 0122     		movs	r2, #1
+ 415 0006 998A     		ldrh	r1, [r3, #20]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 12
+
+
+ 416 0008 1869     		ldr	r0, [r3, #16]
+ 417 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 418              	.LVL24:
+ 118:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 419              		.loc 1 118 1 is_stmt 0 view .LVU83
+ 420 000e 08BD     		pop	{r3, pc}
+ 421              	.L37:
+ 422              		.align	2
+ 423              	.L36:
+ 424 0010 00000000 		.word	.LANCHOR0
+ 425              		.cfi_endproc
+ 426              	.LFE239:
+ 428              		.section	.text.rtc_scl_l,"ax",%progbits
+ 429              		.align	1
+ 430              		.global	rtc_scl_l
+ 431              		.syntax unified
+ 432              		.thumb
+ 433              		.thumb_func
+ 435              	rtc_scl_l:
+ 436              	.LFB240:
+ 125:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*user code*/
+ 437              		.loc 1 125 1 is_stmt 1 view -0
+ 438              		.cfi_startproc
+ 439              		@ args = 0, pretend = 0, frame = 0
+ 440              		@ frame_needed = 0, uses_anonymous_args = 0
+ 441 0000 08B5     		push	{r3, lr}
+ 442              	.LCFI7:
+ 443              		.cfi_def_cfa_offset 8
+ 444              		.cfi_offset 3, -8
+ 445              		.cfi_offset 14, -4
+ 127:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 446              		.loc 1 127 5 view .LVU85
+ 447 0002 034B     		ldr	r3, .L40
+ 448 0004 0022     		movs	r2, #0
+ 449 0006 998A     		ldrh	r1, [r3, #20]
+ 450 0008 1869     		ldr	r0, [r3, #16]
+ 451 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 452              	.LVL25:
+ 128:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 453              		.loc 1 128 1 is_stmt 0 view .LVU86
+ 454 000e 08BD     		pop	{r3, pc}
+ 455              	.L41:
+ 456              		.align	2
+ 457              	.L40:
+ 458 0010 00000000 		.word	.LANCHOR0
+ 459              		.cfi_endproc
+ 460              	.LFE240:
+ 462              		.section	.text.rtc_start,"ax",%progbits
+ 463              		.align	1
+ 464              		.global	rtc_start
+ 465              		.syntax unified
+ 466              		.thumb
+ 467              		.thumb_func
+ 469              	rtc_start:
+ 470              	.LFB246:
+ 149:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 150:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 13
+
+
+ 151:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief When read data, need to set sda as in
+ 152:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 153:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 154:Drivers/User_Driver/Src/rtc_i2c.c **** static inline void rtc_sda_in(void)
+ 155:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 156:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*user code */
+ 157:Drivers/User_Driver/Src/rtc_i2c.c ****   	GPIO_InitTypeDef GPIO_InitStruct = {0};
+ 158:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Pin = g_i2c.pinSdaIn;
+ 159:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 160:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 161:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 162:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_Init(g_i2c.busSdaIn, &GPIO_InitStruct);
+ 163:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 164:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 165:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 166:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief When send data, need to set sda as out
+ 167:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 168:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 169:Drivers/User_Driver/Src/rtc_i2c.c **** static inline void rtc_sda_out(void)
+ 170:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 171:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*user code */
+ 172:Drivers/User_Driver/Src/rtc_i2c.c ****   	GPIO_InitTypeDef GPIO_InitStruct = {0};
+ 173:Drivers/User_Driver/Src/rtc_i2c.c **** 	
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (g_state == RTC_SD3031) {
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ 176:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 177:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 178:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 179:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_Init(g_i2c.busSdaOut, &GPIO_InitStruct);
+ 180:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 181:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 182:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 183:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 184:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief i2c wiat
+ 185:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 186:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** static inline void rtc_Wait(void)
+ 188:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	int i = soft_rtc_delay;
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 191:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 192:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 193:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief i2c wiat
+ 194:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 195:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 196:Drivers/User_Driver/Src/rtc_i2c.c **** static inline void rtc_Wait_half(void)
+ 197:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 198:Drivers/User_Driver/Src/rtc_i2c.c **** 	int i = soft_rtc_delay / 2;
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 200:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 201:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 202:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 203:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief Generate an i2c strat signal
+ 204:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 205:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 206:Drivers/User_Driver/Src/rtc_i2c.c **** i2c_exit_code_e rtc_start(void)
+ 207:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 14
+
+
+ 471              		.loc 1 207 1 is_stmt 1 view -0
+ 472              		.cfi_startproc
+ 473              		@ args = 0, pretend = 0, frame = 24
+ 474              		@ frame_needed = 0, uses_anonymous_args = 0
+ 475 0000 00B5     		push	{lr}
+ 476              	.LCFI8:
+ 477              		.cfi_def_cfa_offset 4
+ 478              		.cfi_offset 14, -4
+ 479 0002 87B0     		sub	sp, sp, #28
+ 480              	.LCFI9:
+ 481              		.cfi_def_cfa_offset 32
+ 208:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_out();
+ 482              		.loc 1 208 2 view .LVU88
+ 483              	.LBB52:
+ 484              	.LBI52:
+ 169:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 485              		.loc 1 169 20 view .LVU89
+ 486              	.LBB53:
+ 172:Drivers/User_Driver/Src/rtc_i2c.c **** 	
+ 487              		.loc 1 172 4 view .LVU90
+ 172:Drivers/User_Driver/Src/rtc_i2c.c **** 	
+ 488              		.loc 1 172 21 is_stmt 0 view .LVU91
+ 489 0004 0023     		movs	r3, #0
+ 490 0006 0193     		str	r3, [sp, #4]
+ 491 0008 0293     		str	r3, [sp, #8]
+ 492 000a 0393     		str	r3, [sp, #12]
+ 493 000c 0493     		str	r3, [sp, #16]
+ 494 000e 0593     		str	r3, [sp, #20]
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ 495              		.loc 1 174 2 is_stmt 1 view .LVU92
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ 496              		.loc 1 174 14 is_stmt 0 view .LVU93
+ 497 0010 184B     		ldr	r3, .L50
+ 498 0012 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ 499              		.loc 1 174 5 view .LVU94
+ 500 0014 022B     		cmp	r3, #2
+ 501 0016 22D0     		beq	.L49
+ 502              	.L43:
+ 503              	.LBE53:
+ 504              	.LBE52:
+ 209:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_h();
+ 505              		.loc 1 209 2 is_stmt 1 view .LVU95
+ 506 0018 FFF7FEFF 		bl	rtc_sda_h
+ 507              	.LVL26:
+ 210:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_h();
+ 508              		.loc 1 210 2 view .LVU96
+ 509 001c FFF7FEFF 		bl	rtc_scl_h
+ 510              	.LVL27:
+ 211:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 511              		.loc 1 211 2 view .LVU97
+ 512              	.LBB55:
+ 513              	.LBI55:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 514              		.loc 1 187 20 view .LVU98
+ 515              	.LBB56:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 15
+
+
+ 516              		.loc 1 189 2 view .LVU99
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 517              		.loc 1 189 6 is_stmt 0 view .LVU100
+ 518 0020 154B     		ldr	r3, .L50+4
+ 519 0022 1B88     		ldrh	r3, [r3]
+ 520              	.LVL28:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 521              		.loc 1 190 2 is_stmt 1 view .LVU101
+ 522              	.L44:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 523              		.loc 1 190 13 view .LVU102
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 524              		.loc 1 190 8 view .LVU103
+ 525 0024 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 526              		.loc 1 190 10 is_stmt 0 view .LVU104
+ 527 0026 013B     		subs	r3, r3, #1
+ 528              	.LVL29:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 529              		.loc 1 190 8 view .LVU105
+ 530 0028 002A     		cmp	r2, #0
+ 531 002a FBD1     		bne	.L44
+ 532              	.LVL30:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 533              		.loc 1 190 8 view .LVU106
+ 534              	.LBE56:
+ 535              	.LBE55:
+ 212:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 213:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_l();
+ 536              		.loc 1 213 2 is_stmt 1 view .LVU107
+ 537 002c FFF7FEFF 		bl	rtc_sda_l
+ 538              	.LVL31:
+ 214:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 539              		.loc 1 214 2 view .LVU108
+ 540              	.LBB57:
+ 541              	.LBI57:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 542              		.loc 1 187 20 view .LVU109
+ 543              	.LBB58:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 544              		.loc 1 189 2 view .LVU110
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 545              		.loc 1 189 6 is_stmt 0 view .LVU111
+ 546 0030 114B     		ldr	r3, .L50+4
+ 547 0032 1B88     		ldrh	r3, [r3]
+ 548              	.LVL32:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 549              		.loc 1 190 2 is_stmt 1 view .LVU112
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 550              		.loc 1 189 6 is_stmt 0 view .LVU113
+ 551 0034 1A46     		mov	r2, r3
+ 552              	.LVL33:
+ 553              	.L45:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 554              		.loc 1 190 13 is_stmt 1 view .LVU114
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 555              		.loc 1 190 8 view .LVU115
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 16
+
+
+ 556 0036 1146     		mov	r1, r2
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 557              		.loc 1 190 10 is_stmt 0 view .LVU116
+ 558 0038 013A     		subs	r2, r2, #1
+ 559              	.LVL34:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 560              		.loc 1 190 8 view .LVU117
+ 561 003a 0029     		cmp	r1, #0
+ 562 003c FBD1     		bne	.L45
+ 563              	.LVL35:
+ 564              	.L46:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 565              		.loc 1 190 8 view .LVU118
+ 566              	.LBE58:
+ 567              	.LBE57:
+ 568              	.LBB59:
+ 569              	.LBB60:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 570              		.loc 1 190 13 is_stmt 1 view .LVU119
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 571              		.loc 1 190 8 view .LVU120
+ 572 003e 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 573              		.loc 1 190 10 is_stmt 0 view .LVU121
+ 574 0040 013B     		subs	r3, r3, #1
+ 575              	.LVL36:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 576              		.loc 1 190 8 view .LVU122
+ 577 0042 002A     		cmp	r2, #0
+ 578 0044 FBD1     		bne	.L46
+ 579              	.LVL37:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 580              		.loc 1 190 8 view .LVU123
+ 581              	.LBE60:
+ 582              	.LBE59:
+ 215:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 216:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_l();
+ 583              		.loc 1 216 2 is_stmt 1 view .LVU124
+ 584 0046 FFF7FEFF 		bl	rtc_scl_l
+ 585              	.LVL38:
+ 217:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 586              		.loc 1 217 2 view .LVU125
+ 587              	.LBB61:
+ 588              	.LBI61:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 589              		.loc 1 187 20 view .LVU126
+ 590              	.LBB62:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 591              		.loc 1 189 2 view .LVU127
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 592              		.loc 1 189 6 is_stmt 0 view .LVU128
+ 593 004a 0B4B     		ldr	r3, .L50+4
+ 594 004c 1B88     		ldrh	r3, [r3]
+ 595              	.LVL39:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 596              		.loc 1 190 2 is_stmt 1 view .LVU129
+ 597              	.L47:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 17
+
+
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 598              		.loc 1 190 13 view .LVU130
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 599              		.loc 1 190 8 view .LVU131
+ 600 004e 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 601              		.loc 1 190 10 is_stmt 0 view .LVU132
+ 602 0050 013B     		subs	r3, r3, #1
+ 603              	.LVL40:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 604              		.loc 1 190 8 view .LVU133
+ 605 0052 002A     		cmp	r2, #0
+ 606 0054 FBD1     		bne	.L47
+ 607              	.LVL41:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 608              		.loc 1 190 8 view .LVU134
+ 609              	.LBE62:
+ 610              	.LBE61:
+ 218:Drivers/User_Driver/Src/rtc_i2c.c **** 	return I2C_OK;
+ 611              		.loc 1 218 2 is_stmt 1 view .LVU135
+ 219:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 612              		.loc 1 219 1 is_stmt 0 view .LVU136
+ 613 0056 0020     		movs	r0, #0
+ 614 0058 07B0     		add	sp, sp, #28
+ 615              	.LCFI10:
+ 616              		.cfi_remember_state
+ 617              		.cfi_def_cfa_offset 4
+ 618              		@ sp needed
+ 619 005a 5DF804FB 		ldr	pc, [sp], #4
+ 620              	.L49:
+ 621              	.LCFI11:
+ 622              		.cfi_restore_state
+ 623              	.LBB63:
+ 624              	.LBB54:
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 625              		.loc 1 175 3 is_stmt 1 view .LVU137
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 626              		.loc 1 175 30 is_stmt 0 view .LVU138
+ 627 005e 074B     		ldr	r3, .L50+8
+ 628 0060 9A89     		ldrh	r2, [r3, #12]
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 629              		.loc 1 175 23 view .LVU139
+ 630 0062 0192     		str	r2, [sp, #4]
+ 176:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 631              		.loc 1 176 3 is_stmt 1 view .LVU140
+ 176:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 632              		.loc 1 176 24 is_stmt 0 view .LVU141
+ 633 0064 1122     		movs	r2, #17
+ 634 0066 0292     		str	r2, [sp, #8]
+ 177:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 635              		.loc 1 177 3 is_stmt 1 view .LVU142
+ 178:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_Init(g_i2c.busSdaOut, &GPIO_InitStruct);
+ 636              		.loc 1 178 3 view .LVU143
+ 179:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 637              		.loc 1 179 3 view .LVU144
+ 638 0068 01A9     		add	r1, sp, #4
+ 639 006a 9868     		ldr	r0, [r3, #8]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 18
+
+
+ 640 006c FFF7FEFF 		bl	HAL_GPIO_Init
+ 641              	.LVL42:
+ 642 0070 D2E7     		b	.L43
+ 643              	.L51:
+ 644 0072 00BF     		.align	2
+ 645              	.L50:
+ 646 0074 00000000 		.word	.LANCHOR1
+ 647 0078 00000000 		.word	.LANCHOR3
+ 648 007c 00000000 		.word	.LANCHOR0
+ 649              	.LBE54:
+ 650              	.LBE63:
+ 651              		.cfi_endproc
+ 652              	.LFE246:
+ 654              		.section	.text.rtc_stop,"ax",%progbits
+ 655              		.align	1
+ 656              		.global	rtc_stop
+ 657              		.syntax unified
+ 658              		.thumb
+ 659              		.thumb_func
+ 661              	rtc_stop:
+ 662              	.LFB247:
+ 220:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 221:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 222:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief Generate an i2c stop signal
+ 223:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 224:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 225:Drivers/User_Driver/Src/rtc_i2c.c **** void rtc_stop(void)
+ 226:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 663              		.loc 1 226 1 view -0
+ 664              		.cfi_startproc
+ 665              		@ args = 0, pretend = 0, frame = 24
+ 666              		@ frame_needed = 0, uses_anonymous_args = 0
+ 667 0000 00B5     		push	{lr}
+ 668              	.LCFI12:
+ 669              		.cfi_def_cfa_offset 4
+ 670              		.cfi_offset 14, -4
+ 671 0002 87B0     		sub	sp, sp, #28
+ 672              	.LCFI13:
+ 673              		.cfi_def_cfa_offset 32
+ 227:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_out();
+ 674              		.loc 1 227 2 view .LVU146
+ 675              	.LBB70:
+ 676              	.LBI70:
+ 169:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 677              		.loc 1 169 20 view .LVU147
+ 678              	.LBB71:
+ 172:Drivers/User_Driver/Src/rtc_i2c.c **** 	
+ 679              		.loc 1 172 4 view .LVU148
+ 172:Drivers/User_Driver/Src/rtc_i2c.c **** 	
+ 680              		.loc 1 172 21 is_stmt 0 view .LVU149
+ 681 0004 0023     		movs	r3, #0
+ 682 0006 0193     		str	r3, [sp, #4]
+ 683 0008 0293     		str	r3, [sp, #8]
+ 684 000a 0393     		str	r3, [sp, #12]
+ 685 000c 0493     		str	r3, [sp, #16]
+ 686 000e 0593     		str	r3, [sp, #20]
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 19
+
+
+ 687              		.loc 1 174 2 is_stmt 1 view .LVU150
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ 688              		.loc 1 174 14 is_stmt 0 view .LVU151
+ 689 0010 124B     		ldr	r3, .L58
+ 690 0012 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ 691              		.loc 1 174 5 view .LVU152
+ 692 0014 022B     		cmp	r3, #2
+ 693 0016 16D0     		beq	.L57
+ 694              	.L53:
+ 695              	.LBE71:
+ 696              	.LBE70:
+ 228:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_l();
+ 697              		.loc 1 228 2 is_stmt 1 view .LVU153
+ 698 0018 FFF7FEFF 		bl	rtc_sda_l
+ 699              	.LVL43:
+ 229:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_l();
+ 700              		.loc 1 229 2 view .LVU154
+ 701 001c FFF7FEFF 		bl	rtc_scl_l
+ 702              	.LVL44:
+ 230:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 703              		.loc 1 230 2 view .LVU155
+ 704              	.LBB73:
+ 705              	.LBI73:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 706              		.loc 1 187 20 view .LVU156
+ 707              	.LBB74:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 708              		.loc 1 189 2 view .LVU157
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 709              		.loc 1 189 6 is_stmt 0 view .LVU158
+ 710 0020 0F4B     		ldr	r3, .L58+4
+ 711 0022 1B88     		ldrh	r3, [r3]
+ 712              	.LVL45:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 713              		.loc 1 190 2 is_stmt 1 view .LVU159
+ 714              	.L54:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 715              		.loc 1 190 13 view .LVU160
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 716              		.loc 1 190 8 view .LVU161
+ 717 0024 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 718              		.loc 1 190 10 is_stmt 0 view .LVU162
+ 719 0026 013B     		subs	r3, r3, #1
+ 720              	.LVL46:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 721              		.loc 1 190 8 view .LVU163
+ 722 0028 002A     		cmp	r2, #0
+ 723 002a FBD1     		bne	.L54
+ 724              	.LVL47:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 725              		.loc 1 190 8 view .LVU164
+ 726              	.LBE74:
+ 727              	.LBE73:
+ 231:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_h();
+ 728              		.loc 1 231 2 is_stmt 1 view .LVU165
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 20
+
+
+ 729 002c FFF7FEFF 		bl	rtc_scl_h
+ 730              	.LVL48:
+ 232:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 731              		.loc 1 232 2 view .LVU166
+ 732              	.LBB75:
+ 733              	.LBI75:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 734              		.loc 1 187 20 view .LVU167
+ 735              	.LBB76:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 736              		.loc 1 189 2 view .LVU168
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 737              		.loc 1 189 6 is_stmt 0 view .LVU169
+ 738 0030 0B4B     		ldr	r3, .L58+4
+ 739 0032 1B88     		ldrh	r3, [r3]
+ 740              	.LVL49:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 741              		.loc 1 190 2 is_stmt 1 view .LVU170
+ 742              	.L55:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 743              		.loc 1 190 13 view .LVU171
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 744              		.loc 1 190 8 view .LVU172
+ 745 0034 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 746              		.loc 1 190 10 is_stmt 0 view .LVU173
+ 747 0036 013B     		subs	r3, r3, #1
+ 748              	.LVL50:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 749              		.loc 1 190 8 view .LVU174
+ 750 0038 002A     		cmp	r2, #0
+ 751 003a FBD1     		bne	.L55
+ 752              	.LVL51:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 753              		.loc 1 190 8 view .LVU175
+ 754              	.LBE76:
+ 755              	.LBE75:
+ 233:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_h();
+ 756              		.loc 1 233 2 is_stmt 1 view .LVU176
+ 757 003c FFF7FEFF 		bl	rtc_sda_h
+ 758              	.LVL52:
+ 234:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 759              		.loc 1 234 1 is_stmt 0 view .LVU177
+ 760 0040 07B0     		add	sp, sp, #28
+ 761              	.LCFI14:
+ 762              		.cfi_remember_state
+ 763              		.cfi_def_cfa_offset 4
+ 764              		@ sp needed
+ 765 0042 5DF804FB 		ldr	pc, [sp], #4
+ 766              	.L57:
+ 767              	.LCFI15:
+ 768              		.cfi_restore_state
+ 769              	.LBB77:
+ 770              	.LBB72:
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 771              		.loc 1 175 3 is_stmt 1 view .LVU178
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 21
+
+
+ 772              		.loc 1 175 30 is_stmt 0 view .LVU179
+ 773 0046 074B     		ldr	r3, .L58+8
+ 774 0048 9A89     		ldrh	r2, [r3, #12]
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 775              		.loc 1 175 23 view .LVU180
+ 776 004a 0192     		str	r2, [sp, #4]
+ 176:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 777              		.loc 1 176 3 is_stmt 1 view .LVU181
+ 176:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 778              		.loc 1 176 24 is_stmt 0 view .LVU182
+ 779 004c 1122     		movs	r2, #17
+ 780 004e 0292     		str	r2, [sp, #8]
+ 177:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 781              		.loc 1 177 3 is_stmt 1 view .LVU183
+ 178:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_Init(g_i2c.busSdaOut, &GPIO_InitStruct);
+ 782              		.loc 1 178 3 view .LVU184
+ 179:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 783              		.loc 1 179 3 view .LVU185
+ 784 0050 01A9     		add	r1, sp, #4
+ 785 0052 9868     		ldr	r0, [r3, #8]
+ 786 0054 FFF7FEFF 		bl	HAL_GPIO_Init
+ 787              	.LVL53:
+ 788 0058 DEE7     		b	.L53
+ 789              	.L59:
+ 790 005a 00BF     		.align	2
+ 791              	.L58:
+ 792 005c 00000000 		.word	.LANCHOR1
+ 793 0060 00000000 		.word	.LANCHOR3
+ 794 0064 00000000 		.word	.LANCHOR0
+ 795              	.LBE72:
+ 796              	.LBE77:
+ 797              		.cfi_endproc
+ 798              	.LFE247:
+ 800              		.section	.text.rtc_ack,"ax",%progbits
+ 801              		.align	1
+ 802              		.global	rtc_ack
+ 803              		.syntax unified
+ 804              		.thumb
+ 805              		.thumb_func
+ 807              	rtc_ack:
+ 808              	.LFB248:
+ 235:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 236:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 237:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief When data is read, the host responds a ack signal
+ 238:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 239:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 240:Drivers/User_Driver/Src/rtc_i2c.c **** void rtc_ack(void)
+ 241:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 809              		.loc 1 241 1 view -0
+ 810              		.cfi_startproc
+ 811              		@ args = 0, pretend = 0, frame = 0
+ 812              		@ frame_needed = 0, uses_anonymous_args = 0
+ 813 0000 08B5     		push	{r3, lr}
+ 814              	.LCFI16:
+ 815              		.cfi_def_cfa_offset 8
+ 816              		.cfi_offset 3, -8
+ 817              		.cfi_offset 14, -4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 22
+
+
+ 242:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_l();
+ 818              		.loc 1 242 2 view .LVU187
+ 819 0002 FFF7FEFF 		bl	rtc_scl_l
+ 820              	.LVL54:
+ 243:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait_half();
+ 821              		.loc 1 243 2 view .LVU188
+ 822              	.LBB78:
+ 823              	.LBI78:
+ 196:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 824              		.loc 1 196 20 view .LVU189
+ 825              	.LBB79:
+ 198:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 826              		.loc 1 198 2 view .LVU190
+ 198:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 827              		.loc 1 198 25 is_stmt 0 view .LVU191
+ 828 0006 104B     		ldr	r3, .L66
+ 829 0008 1B88     		ldrh	r3, [r3]
+ 830 000a 5B08     		lsrs	r3, r3, #1
+ 831              	.LVL55:
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 832              		.loc 1 199 2 is_stmt 1 view .LVU192
+ 833              	.L61:
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 834              		.loc 1 199 13 view .LVU193
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 835              		.loc 1 199 8 view .LVU194
+ 836 000c 1A46     		mov	r2, r3
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 837              		.loc 1 199 10 is_stmt 0 view .LVU195
+ 838 000e 013B     		subs	r3, r3, #1
+ 839              	.LVL56:
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 840              		.loc 1 199 8 view .LVU196
+ 841 0010 002A     		cmp	r2, #0
+ 842 0012 FBD1     		bne	.L61
+ 843              	.LVL57:
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 844              		.loc 1 199 8 view .LVU197
+ 845              	.LBE79:
+ 846              	.LBE78:
+ 244:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_l();
+ 847              		.loc 1 244 2 is_stmt 1 view .LVU198
+ 848 0014 FFF7FEFF 		bl	rtc_sda_l
+ 849              	.LVL58:
+ 245:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 850              		.loc 1 245 2 view .LVU199
+ 851              	.LBB80:
+ 852              	.LBI80:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 853              		.loc 1 187 20 view .LVU200
+ 854              	.LBB81:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 855              		.loc 1 189 2 view .LVU201
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 856              		.loc 1 189 6 is_stmt 0 view .LVU202
+ 857 0018 0B4B     		ldr	r3, .L66
+ 858 001a 1B88     		ldrh	r3, [r3]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 23
+
+
+ 859              	.LVL59:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 860              		.loc 1 190 2 is_stmt 1 view .LVU203
+ 861              	.L62:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 862              		.loc 1 190 13 view .LVU204
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 863              		.loc 1 190 8 view .LVU205
+ 864 001c 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 865              		.loc 1 190 10 is_stmt 0 view .LVU206
+ 866 001e 013B     		subs	r3, r3, #1
+ 867              	.LVL60:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 868              		.loc 1 190 8 view .LVU207
+ 869 0020 002A     		cmp	r2, #0
+ 870 0022 FBD1     		bne	.L62
+ 871              	.LVL61:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 872              		.loc 1 190 8 view .LVU208
+ 873              	.LBE81:
+ 874              	.LBE80:
+ 246:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_h();
+ 875              		.loc 1 246 2 is_stmt 1 view .LVU209
+ 876 0024 FFF7FEFF 		bl	rtc_scl_h
+ 877              	.LVL62:
+ 247:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 878              		.loc 1 247 2 view .LVU210
+ 879              	.LBB82:
+ 880              	.LBI82:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 881              		.loc 1 187 20 view .LVU211
+ 882              	.LBB83:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 883              		.loc 1 189 2 view .LVU212
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 884              		.loc 1 189 6 is_stmt 0 view .LVU213
+ 885 0028 074B     		ldr	r3, .L66
+ 886 002a 1B88     		ldrh	r3, [r3]
+ 887              	.LVL63:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 888              		.loc 1 190 2 is_stmt 1 view .LVU214
+ 889              	.L63:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 890              		.loc 1 190 13 view .LVU215
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 891              		.loc 1 190 8 view .LVU216
+ 892 002c 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 893              		.loc 1 190 10 is_stmt 0 view .LVU217
+ 894 002e 013B     		subs	r3, r3, #1
+ 895              	.LVL64:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 896              		.loc 1 190 8 view .LVU218
+ 897 0030 002A     		cmp	r2, #0
+ 898 0032 FBD1     		bne	.L63
+ 899              	.LVL65:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 24
+
+
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 900              		.loc 1 190 8 view .LVU219
+ 901              	.LBE83:
+ 902              	.LBE82:
+ 248:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_l();
+ 903              		.loc 1 248 2 is_stmt 1 view .LVU220
+ 904 0034 FFF7FEFF 		bl	rtc_scl_l
+ 905              	.LVL66:
+ 249:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 906              		.loc 1 249 2 view .LVU221
+ 907              	.LBB84:
+ 908              	.LBI84:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 909              		.loc 1 187 20 view .LVU222
+ 910              	.LBB85:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 911              		.loc 1 189 2 view .LVU223
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 912              		.loc 1 189 6 is_stmt 0 view .LVU224
+ 913 0038 034B     		ldr	r3, .L66
+ 914 003a 1B88     		ldrh	r3, [r3]
+ 915              	.LVL67:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 916              		.loc 1 190 2 is_stmt 1 view .LVU225
+ 917              	.L64:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 918              		.loc 1 190 13 view .LVU226
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 919              		.loc 1 190 8 view .LVU227
+ 920 003c 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 921              		.loc 1 190 10 is_stmt 0 view .LVU228
+ 922 003e 013B     		subs	r3, r3, #1
+ 923              	.LVL68:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 924              		.loc 1 190 8 view .LVU229
+ 925 0040 002A     		cmp	r2, #0
+ 926 0042 FBD1     		bne	.L64
+ 927              	.LBE85:
+ 928              	.LBE84:
+ 250:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 929              		.loc 1 250 1 view .LVU230
+ 930 0044 08BD     		pop	{r3, pc}
+ 931              	.LVL69:
+ 932              	.L67:
+ 933              		.loc 1 250 1 view .LVU231
+ 934 0046 00BF     		.align	2
+ 935              	.L66:
+ 936 0048 00000000 		.word	.LANCHOR3
+ 937              		.cfi_endproc
+ 938              	.LFE248:
+ 940              		.section	.text.rtc_nack,"ax",%progbits
+ 941              		.align	1
+ 942              		.global	rtc_nack
+ 943              		.syntax unified
+ 944              		.thumb
+ 945              		.thumb_func
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 25
+
+
+ 947              	rtc_nack:
+ 948              	.LFB249:
+ 251:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 252:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 253:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief when data is read, the host responds a nack signal
+ 254:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 255:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 256:Drivers/User_Driver/Src/rtc_i2c.c **** void rtc_nack(void)
+ 257:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 949              		.loc 1 257 1 is_stmt 1 view -0
+ 950              		.cfi_startproc
+ 951              		@ args = 0, pretend = 0, frame = 0
+ 952              		@ frame_needed = 0, uses_anonymous_args = 0
+ 953 0000 08B5     		push	{r3, lr}
+ 954              	.LCFI17:
+ 955              		.cfi_def_cfa_offset 8
+ 956              		.cfi_offset 3, -8
+ 957              		.cfi_offset 14, -4
+ 258:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_h();
+ 958              		.loc 1 258 2 view .LVU233
+ 959 0002 FFF7FEFF 		bl	rtc_sda_h
+ 960              	.LVL70:
+ 259:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_l();
+ 961              		.loc 1 259 2 view .LVU234
+ 962 0006 FFF7FEFF 		bl	rtc_scl_l
+ 963              	.LVL71:
+ 260:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 964              		.loc 1 260 2 view .LVU235
+ 965              	.LBB86:
+ 966              	.LBI86:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 967              		.loc 1 187 20 view .LVU236
+ 968              	.LBB87:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 969              		.loc 1 189 2 view .LVU237
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 970              		.loc 1 189 6 is_stmt 0 view .LVU238
+ 971 000a 084B     		ldr	r3, .L72
+ 972 000c 1B88     		ldrh	r3, [r3]
+ 973              	.LVL72:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 974              		.loc 1 190 2 is_stmt 1 view .LVU239
+ 975              	.L69:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 976              		.loc 1 190 13 view .LVU240
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 977              		.loc 1 190 8 view .LVU241
+ 978 000e 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 979              		.loc 1 190 10 is_stmt 0 view .LVU242
+ 980 0010 013B     		subs	r3, r3, #1
+ 981              	.LVL73:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 982              		.loc 1 190 8 view .LVU243
+ 983 0012 002A     		cmp	r2, #0
+ 984 0014 FBD1     		bne	.L69
+ 985              	.LVL74:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 26
+
+
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 986              		.loc 1 190 8 view .LVU244
+ 987              	.LBE87:
+ 988              	.LBE86:
+ 261:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_h();
+ 989              		.loc 1 261 2 is_stmt 1 view .LVU245
+ 990 0016 FFF7FEFF 		bl	rtc_scl_h
+ 991              	.LVL75:
+ 262:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 992              		.loc 1 262 2 view .LVU246
+ 993              	.LBB88:
+ 994              	.LBI88:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 995              		.loc 1 187 20 view .LVU247
+ 996              	.LBB89:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 997              		.loc 1 189 2 view .LVU248
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 998              		.loc 1 189 6 is_stmt 0 view .LVU249
+ 999 001a 044B     		ldr	r3, .L72
+ 1000 001c 1B88     		ldrh	r3, [r3]
+ 1001              	.LVL76:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1002              		.loc 1 190 2 is_stmt 1 view .LVU250
+ 1003              	.L70:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1004              		.loc 1 190 13 view .LVU251
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1005              		.loc 1 190 8 view .LVU252
+ 1006 001e 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1007              		.loc 1 190 10 is_stmt 0 view .LVU253
+ 1008 0020 013B     		subs	r3, r3, #1
+ 1009              	.LVL77:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1010              		.loc 1 190 8 view .LVU254
+ 1011 0022 002A     		cmp	r2, #0
+ 1012 0024 FBD1     		bne	.L70
+ 1013              	.LVL78:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1014              		.loc 1 190 8 view .LVU255
+ 1015              	.LBE89:
+ 1016              	.LBE88:
+ 263:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_l();
+ 1017              		.loc 1 263 2 is_stmt 1 view .LVU256
+ 1018 0026 FFF7FEFF 		bl	rtc_scl_l
+ 1019              	.LVL79:
+ 264:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1020              		.loc 1 264 1 is_stmt 0 view .LVU257
+ 1021 002a 08BD     		pop	{r3, pc}
+ 1022              	.L73:
+ 1023              		.align	2
+ 1024              	.L72:
+ 1025 002c 00000000 		.word	.LANCHOR3
+ 1026              		.cfi_endproc
+ 1027              	.LFE249:
+ 1029              		.section	.text.rtc_wait_ack,"ax",%progbits
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 27
+
+
+ 1030              		.align	1
+ 1031              		.global	rtc_wait_ack
+ 1032              		.syntax unified
+ 1033              		.thumb
+ 1034              		.thumb_func
+ 1036              	rtc_wait_ack:
+ 1037              	.LFB250:
+ 265:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 266:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 267:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief When data is written, the slave responds  a ack signal
+ 268:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 269:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 270:Drivers/User_Driver/Src/rtc_i2c.c **** i2c_exit_code_e rtc_wait_ack(void)
+ 271:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 1038              		.loc 1 271 1 is_stmt 1 view -0
+ 1039              		.cfi_startproc
+ 1040              		@ args = 0, pretend = 0, frame = 24
+ 1041              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1042 0000 10B5     		push	{r4, lr}
+ 1043              	.LCFI18:
+ 1044              		.cfi_def_cfa_offset 8
+ 1045              		.cfi_offset 4, -8
+ 1046              		.cfi_offset 14, -4
+ 1047 0002 86B0     		sub	sp, sp, #24
+ 1048              	.LCFI19:
+ 1049              		.cfi_def_cfa_offset 32
+ 272:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_in();
+ 1050              		.loc 1 272 2 view .LVU259
+ 1051              	.LBB98:
+ 1052              	.LBI98:
+ 154:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 1053              		.loc 1 154 20 view .LVU260
+ 1054              	.LBB99:
+ 157:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Pin = g_i2c.pinSdaIn;
+ 1055              		.loc 1 157 4 view .LVU261
+ 157:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Pin = g_i2c.pinSdaIn;
+ 1056              		.loc 1 157 21 is_stmt 0 view .LVU262
+ 1057 0004 0023     		movs	r3, #0
+ 1058 0006 0193     		str	r3, [sp, #4]
+ 1059 0008 0293     		str	r3, [sp, #8]
+ 1060 000a 0393     		str	r3, [sp, #12]
+ 1061 000c 0493     		str	r3, [sp, #16]
+ 1062 000e 0593     		str	r3, [sp, #20]
+ 158:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 1063              		.loc 1 158 2 is_stmt 1 view .LVU263
+ 158:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 1064              		.loc 1 158 29 is_stmt 0 view .LVU264
+ 1065 0010 1C4B     		ldr	r3, .L83
+ 1066 0012 9A88     		ldrh	r2, [r3, #4]
+ 158:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 1067              		.loc 1 158 22 view .LVU265
+ 1068 0014 0192     		str	r2, [sp, #4]
+ 159:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 1069              		.loc 1 159 2 is_stmt 1 view .LVU266
+ 160:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 1070              		.loc 1 160 2 view .LVU267
+ 161:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_Init(g_i2c.busSdaIn, &GPIO_InitStruct);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 28
+
+
+ 1071              		.loc 1 161 2 view .LVU268
+ 161:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_Init(g_i2c.busSdaIn, &GPIO_InitStruct);
+ 1072              		.loc 1 161 24 is_stmt 0 view .LVU269
+ 1073 0016 0222     		movs	r2, #2
+ 1074 0018 0492     		str	r2, [sp, #16]
+ 162:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1075              		.loc 1 162 2 is_stmt 1 view .LVU270
+ 1076 001a 01A9     		add	r1, sp, #4
+ 1077 001c 1868     		ldr	r0, [r3]
+ 1078 001e FFF7FEFF 		bl	HAL_GPIO_Init
+ 1079              	.LVL80:
+ 1080              	.LBE99:
+ 1081              	.LBE98:
+ 273:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_h();
+ 1082              		.loc 1 273 2 view .LVU271
+ 1083 0022 FFF7FEFF 		bl	rtc_scl_h
+ 1084              	.LVL81:
+ 274:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 1085              		.loc 1 274 2 view .LVU272
+ 1086              	.LBB100:
+ 1087              	.LBI100:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 1088              		.loc 1 187 20 view .LVU273
+ 1089              	.LBB101:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1090              		.loc 1 189 2 view .LVU274
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1091              		.loc 1 189 6 is_stmt 0 view .LVU275
+ 1092 0026 184B     		ldr	r3, .L83+4
+ 1093 0028 1B88     		ldrh	r3, [r3]
+ 1094              	.LVL82:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1095              		.loc 1 190 2 is_stmt 1 view .LVU276
+ 1096              	.L75:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1097              		.loc 1 190 13 view .LVU277
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1098              		.loc 1 190 8 view .LVU278
+ 1099 002a 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1100              		.loc 1 190 10 is_stmt 0 view .LVU279
+ 1101 002c 013B     		subs	r3, r3, #1
+ 1102              	.LVL83:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1103              		.loc 1 190 8 view .LVU280
+ 1104 002e 002A     		cmp	r2, #0
+ 1105 0030 FBD1     		bne	.L75
+ 1106              	.LVL84:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1107              		.loc 1 190 8 view .LVU281
+ 1108              	.LBE101:
+ 1109              	.LBE100:
+ 275:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 276:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (rtc_read_sda())
+ 1110              		.loc 1 276 2 is_stmt 1 view .LVU282
+ 1111              		.loc 1 276 6 is_stmt 0 view .LVU283
+ 1112 0032 FFF7FEFF 		bl	rtc_read_sda
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 29
+
+
+ 1113              	.LVL85:
+ 1114              		.loc 1 276 5 view .LVU284
+ 1115 0036 0446     		mov	r4, r0
+ 1116 0038 B0B9     		cbnz	r0, .L81
+ 277:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 278:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_scl_l();
+ 279:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 280:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 281:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_l();
+ 1117              		.loc 1 281 2 is_stmt 1 view .LVU285
+ 1118 003a FFF7FEFF 		bl	rtc_scl_l
+ 1119              	.LVL86:
+ 282:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 1120              		.loc 1 282 2 view .LVU286
+ 1121              	.LBB102:
+ 1122              	.LBI102:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 1123              		.loc 1 187 20 view .LVU287
+ 1124              	.LBB103:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1125              		.loc 1 189 2 view .LVU288
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1126              		.loc 1 189 6 is_stmt 0 view .LVU289
+ 1127 003e 124B     		ldr	r3, .L83+4
+ 1128 0040 1B88     		ldrh	r3, [r3]
+ 1129              	.LVL87:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1130              		.loc 1 190 2 is_stmt 1 view .LVU290
+ 1131              	.L78:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1132              		.loc 1 190 13 view .LVU291
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1133              		.loc 1 190 8 view .LVU292
+ 1134 0042 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1135              		.loc 1 190 10 is_stmt 0 view .LVU293
+ 1136 0044 013B     		subs	r3, r3, #1
+ 1137              	.LVL88:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1138              		.loc 1 190 8 view .LVU294
+ 1139 0046 002A     		cmp	r2, #0
+ 1140 0048 FBD1     		bne	.L78
+ 1141              	.LVL89:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1142              		.loc 1 190 8 view .LVU295
+ 1143              	.LBE103:
+ 1144              	.LBE102:
+ 283:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_h();
+ 1145              		.loc 1 283 2 is_stmt 1 view .LVU296
+ 1146 004a FFF7FEFF 		bl	rtc_sda_h
+ 1147              	.LVL90:
+ 284:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_out();
+ 1148              		.loc 1 284 2 view .LVU297
+ 1149              	.LBB104:
+ 1150              	.LBI104:
+ 169:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 1151              		.loc 1 169 20 view .LVU298
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 30
+
+
+ 1152              	.LBB105:
+ 172:Drivers/User_Driver/Src/rtc_i2c.c **** 	
+ 1153              		.loc 1 172 4 view .LVU299
+ 172:Drivers/User_Driver/Src/rtc_i2c.c **** 	
+ 1154              		.loc 1 172 21 is_stmt 0 view .LVU300
+ 1155 004e 0023     		movs	r3, #0
+ 1156 0050 0193     		str	r3, [sp, #4]
+ 1157 0052 0293     		str	r3, [sp, #8]
+ 1158 0054 0393     		str	r3, [sp, #12]
+ 1159 0056 0493     		str	r3, [sp, #16]
+ 1160 0058 0593     		str	r3, [sp, #20]
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ 1161              		.loc 1 174 2 is_stmt 1 view .LVU301
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ 1162              		.loc 1 174 14 is_stmt 0 view .LVU302
+ 1163 005a 0C4B     		ldr	r3, .L83+8
+ 1164 005c 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ 1165              		.loc 1 174 5 view .LVU303
+ 1166 005e 022B     		cmp	r3, #2
+ 1167 0060 06D0     		beq	.L82
+ 1168              	.L77:
+ 1169              	.LBE105:
+ 1170              	.LBE104:
+ 285:Drivers/User_Driver/Src/rtc_i2c.c **** 	return I2C_OK;
+ 286:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1171              		.loc 1 286 1 view .LVU304
+ 1172 0062 2046     		mov	r0, r4
+ 1173 0064 06B0     		add	sp, sp, #24
+ 1174              	.LCFI20:
+ 1175              		.cfi_remember_state
+ 1176              		.cfi_def_cfa_offset 8
+ 1177              		@ sp needed
+ 1178 0066 10BD     		pop	{r4, pc}
+ 1179              	.L81:
+ 1180              	.LCFI21:
+ 1181              		.cfi_restore_state
+ 278:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 1182              		.loc 1 278 3 is_stmt 1 view .LVU305
+ 1183 0068 FFF7FEFF 		bl	rtc_scl_l
+ 1184              	.LVL91:
+ 279:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1185              		.loc 1 279 3 view .LVU306
+ 279:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1186              		.loc 1 279 10 is_stmt 0 view .LVU307
+ 1187 006c 0224     		movs	r4, #2
+ 1188 006e F8E7     		b	.L77
+ 1189              	.L82:
+ 1190              	.LBB107:
+ 1191              	.LBB106:
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 1192              		.loc 1 175 3 is_stmt 1 view .LVU308
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 1193              		.loc 1 175 30 is_stmt 0 view .LVU309
+ 1194 0070 044B     		ldr	r3, .L83
+ 1195 0072 9A89     		ldrh	r2, [r3, #12]
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 31
+
+
+ 1196              		.loc 1 175 23 view .LVU310
+ 1197 0074 0192     		str	r2, [sp, #4]
+ 176:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 1198              		.loc 1 176 3 is_stmt 1 view .LVU311
+ 176:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 1199              		.loc 1 176 24 is_stmt 0 view .LVU312
+ 1200 0076 1122     		movs	r2, #17
+ 1201 0078 0292     		str	r2, [sp, #8]
+ 177:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 1202              		.loc 1 177 3 is_stmt 1 view .LVU313
+ 178:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_Init(g_i2c.busSdaOut, &GPIO_InitStruct);
+ 1203              		.loc 1 178 3 view .LVU314
+ 179:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1204              		.loc 1 179 3 view .LVU315
+ 1205 007a 01A9     		add	r1, sp, #4
+ 1206 007c 9868     		ldr	r0, [r3, #8]
+ 1207 007e FFF7FEFF 		bl	HAL_GPIO_Init
+ 1208              	.LVL92:
+ 181:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 1209              		.loc 1 181 1 is_stmt 0 view .LVU316
+ 1210 0082 EEE7     		b	.L77
+ 1211              	.L84:
+ 1212              		.align	2
+ 1213              	.L83:
+ 1214 0084 00000000 		.word	.LANCHOR0
+ 1215 0088 00000000 		.word	.LANCHOR3
+ 1216 008c 00000000 		.word	.LANCHOR1
+ 1217              	.LBE106:
+ 1218              	.LBE107:
+ 1219              		.cfi_endproc
+ 1220              	.LFE250:
+ 1222              		.section	.text.rtc_send_byte,"ax",%progbits
+ 1223              		.align	1
+ 1224              		.global	rtc_send_byte
+ 1225              		.syntax unified
+ 1226              		.thumb
+ 1227              		.thumb_func
+ 1229              	rtc_send_byte:
+ 1230              	.LVL93:
+ 1231              	.LFB251:
+ 287:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 288:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 289:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief Send a byte to slave
+ 290:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 291:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 292:Drivers/User_Driver/Src/rtc_i2c.c **** void rtc_send_byte(unsigned char value)
+ 293:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 1232              		.loc 1 293 1 is_stmt 1 view -0
+ 1233              		.cfi_startproc
+ 1234              		@ args = 0, pretend = 0, frame = 0
+ 1235              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1236              		.loc 1 293 1 is_stmt 0 view .LVU318
+ 1237 0000 38B5     		push	{r3, r4, r5, lr}
+ 1238              	.LCFI22:
+ 1239              		.cfi_def_cfa_offset 16
+ 1240              		.cfi_offset 3, -16
+ 1241              		.cfi_offset 4, -12
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 32
+
+
+ 1242              		.cfi_offset 5, -8
+ 1243              		.cfi_offset 14, -4
+ 1244 0002 0446     		mov	r4, r0
+ 294:Drivers/User_Driver/Src/rtc_i2c.c **** 	unsigned char i;
+ 1245              		.loc 1 294 2 is_stmt 1 view .LVU319
+ 295:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 296:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_l();
+ 1246              		.loc 1 296 2 view .LVU320
+ 1247 0004 FFF7FEFF 		bl	rtc_scl_l
+ 1248              	.LVL94:
+ 297:Drivers/User_Driver/Src/rtc_i2c.c **** 	for (i = 0; i < 8; i ++)
+ 1249              		.loc 1 297 2 view .LVU321
+ 1250              		.loc 1 297 9 is_stmt 0 view .LVU322
+ 1251 0008 0025     		movs	r5, #0
+ 1252              		.loc 1 297 2 view .LVU323
+ 1253 000a 16E0     		b	.L86
+ 1254              	.LVL95:
+ 1255              	.L95:
+ 298:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 299:Drivers/User_Driver/Src/rtc_i2c.c **** 		if (value & 0x80)
+ 300:Drivers/User_Driver/Src/rtc_i2c.c **** 			rtc_sda_h();
+ 1256              		.loc 1 300 4 is_stmt 1 view .LVU324
+ 1257 000c FFF7FEFF 		bl	rtc_sda_h
+ 1258              	.LVL96:
+ 1259              	.L88:
+ 301:Drivers/User_Driver/Src/rtc_i2c.c **** 		else 
+ 302:Drivers/User_Driver/Src/rtc_i2c.c **** 			rtc_sda_l();
+ 303:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_Wait();
+ 1260              		.loc 1 303 3 discriminator 2 view .LVU325
+ 1261              	.LBB108:
+ 1262              	.LBI108:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 1263              		.loc 1 187 20 discriminator 2 view .LVU326
+ 1264              	.LBB109:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1265              		.loc 1 189 2 discriminator 2 view .LVU327
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1266              		.loc 1 189 6 is_stmt 0 discriminator 2 view .LVU328
+ 1267 0010 124B     		ldr	r3, .L96
+ 1268 0012 1B88     		ldrh	r3, [r3]
+ 1269              	.LVL97:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1270              		.loc 1 190 2 is_stmt 1 discriminator 2 view .LVU329
+ 1271              	.L89:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1272              		.loc 1 190 13 view .LVU330
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1273              		.loc 1 190 8 view .LVU331
+ 1274 0014 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1275              		.loc 1 190 10 is_stmt 0 view .LVU332
+ 1276 0016 013B     		subs	r3, r3, #1
+ 1277              	.LVL98:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1278              		.loc 1 190 8 view .LVU333
+ 1279 0018 002A     		cmp	r2, #0
+ 1280 001a FBD1     		bne	.L89
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 33
+
+
+ 1281              	.LVL99:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1282              		.loc 1 190 8 view .LVU334
+ 1283              	.LBE109:
+ 1284              	.LBE108:
+ 304:Drivers/User_Driver/Src/rtc_i2c.c **** 		value <<= 1;
+ 1285              		.loc 1 304 3 is_stmt 1 discriminator 2 view .LVU335
+ 1286              		.loc 1 304 9 is_stmt 0 discriminator 2 view .LVU336
+ 1287 001c 6400     		lsls	r4, r4, #1
+ 1288              	.LVL100:
+ 1289              		.loc 1 304 9 discriminator 2 view .LVU337
+ 1290 001e E4B2     		uxtb	r4, r4
+ 1291              	.LVL101:
+ 305:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_scl_h();
+ 1292              		.loc 1 305 3 is_stmt 1 discriminator 2 view .LVU338
+ 1293 0020 FFF7FEFF 		bl	rtc_scl_h
+ 1294              	.LVL102:
+ 306:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_Wait_half();
+ 1295              		.loc 1 306 3 discriminator 2 view .LVU339
+ 1296              	.LBB110:
+ 1297              	.LBI110:
+ 196:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 1298              		.loc 1 196 20 discriminator 2 view .LVU340
+ 1299              	.LBB111:
+ 198:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1300              		.loc 1 198 2 discriminator 2 view .LVU341
+ 198:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1301              		.loc 1 198 25 is_stmt 0 discriminator 2 view .LVU342
+ 1302 0024 0D4B     		ldr	r3, .L96
+ 1303 0026 1B88     		ldrh	r3, [r3]
+ 1304 0028 5B08     		lsrs	r3, r3, #1
+ 1305              	.LVL103:
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1306              		.loc 1 199 2 is_stmt 1 discriminator 2 view .LVU343
+ 1307              	.L90:
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1308              		.loc 1 199 13 view .LVU344
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1309              		.loc 1 199 8 view .LVU345
+ 1310 002a 1A46     		mov	r2, r3
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1311              		.loc 1 199 10 is_stmt 0 view .LVU346
+ 1312 002c 013B     		subs	r3, r3, #1
+ 1313              	.LVL104:
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1314              		.loc 1 199 8 view .LVU347
+ 1315 002e 002A     		cmp	r2, #0
+ 1316 0030 FBD1     		bne	.L90
+ 1317              	.LVL105:
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1318              		.loc 1 199 8 view .LVU348
+ 1319              	.LBE111:
+ 1320              	.LBE110:
+ 307:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_scl_l();
+ 1321              		.loc 1 307 3 is_stmt 1 discriminator 2 view .LVU349
+ 1322 0032 FFF7FEFF 		bl	rtc_scl_l
+ 1323              	.LVL106:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 34
+
+
+ 297:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1324              		.loc 1 297 21 discriminator 2 view .LVU350
+ 297:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1325              		.loc 1 297 23 is_stmt 0 discriminator 2 view .LVU351
+ 1326 0036 0135     		adds	r5, r5, #1
+ 1327              	.LVL107:
+ 297:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1328              		.loc 1 297 23 discriminator 2 view .LVU352
+ 1329 0038 EDB2     		uxtb	r5, r5
+ 1330              	.LVL108:
+ 1331              	.L86:
+ 297:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1332              		.loc 1 297 14 is_stmt 1 discriminator 1 view .LVU353
+ 297:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1333              		.loc 1 297 2 is_stmt 0 discriminator 1 view .LVU354
+ 1334 003a 072D     		cmp	r5, #7
+ 1335 003c 05D8     		bhi	.L94
+ 299:Drivers/User_Driver/Src/rtc_i2c.c **** 			rtc_sda_h();
+ 1336              		.loc 1 299 3 is_stmt 1 view .LVU355
+ 299:Drivers/User_Driver/Src/rtc_i2c.c **** 			rtc_sda_h();
+ 1337              		.loc 1 299 6 is_stmt 0 view .LVU356
+ 1338 003e 14F0800F 		tst	r4, #128
+ 1339 0042 E3D1     		bne	.L95
+ 302:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_Wait();
+ 1340              		.loc 1 302 4 is_stmt 1 view .LVU357
+ 1341 0044 FFF7FEFF 		bl	rtc_sda_l
+ 1342              	.LVL109:
+ 1343 0048 E2E7     		b	.L88
+ 1344              	.L94:
+ 308:Drivers/User_Driver/Src/rtc_i2c.c **** 		// rtc_Wait_half();
+ 309:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 310:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_h();
+ 1345              		.loc 1 310 2 view .LVU358
+ 1346 004a FFF7FEFF 		bl	rtc_sda_h
+ 1347              	.LVL110:
+ 311:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 1348              		.loc 1 311 2 view .LVU359
+ 1349              	.LBB112:
+ 1350              	.LBI112:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 1351              		.loc 1 187 20 view .LVU360
+ 1352              	.LBB113:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1353              		.loc 1 189 2 view .LVU361
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1354              		.loc 1 189 6 is_stmt 0 view .LVU362
+ 1355 004e 034B     		ldr	r3, .L96
+ 1356 0050 1B88     		ldrh	r3, [r3]
+ 1357              	.LVL111:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1358              		.loc 1 190 2 is_stmt 1 view .LVU363
+ 1359              	.L92:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1360              		.loc 1 190 13 view .LVU364
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1361              		.loc 1 190 8 view .LVU365
+ 1362 0052 1A46     		mov	r2, r3
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 35
+
+
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1363              		.loc 1 190 10 is_stmt 0 view .LVU366
+ 1364 0054 013B     		subs	r3, r3, #1
+ 1365              	.LVL112:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1366              		.loc 1 190 8 view .LVU367
+ 1367 0056 002A     		cmp	r2, #0
+ 1368 0058 FBD1     		bne	.L92
+ 1369              	.LBE113:
+ 1370              	.LBE112:
+ 312:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1371              		.loc 1 312 1 view .LVU368
+ 1372 005a 38BD     		pop	{r3, r4, r5, pc}
+ 1373              	.LVL113:
+ 1374              	.L97:
+ 1375              		.loc 1 312 1 view .LVU369
+ 1376              		.align	2
+ 1377              	.L96:
+ 1378 005c 00000000 		.word	.LANCHOR3
+ 1379              		.cfi_endproc
+ 1380              	.LFE251:
+ 1382              		.section	.text.rtc_receive_byte,"ax",%progbits
+ 1383              		.align	1
+ 1384              		.global	rtc_receive_byte
+ 1385              		.syntax unified
+ 1386              		.thumb
+ 1387              		.thumb_func
+ 1389              	rtc_receive_byte:
+ 1390              	.LFB252:
+ 313:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 314:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 315:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief Receive a byte timing
+ 316:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 317:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 318:Drivers/User_Driver/Src/rtc_i2c.c **** unsigned char rtc_receive_byte(void)
+ 319:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 1391              		.loc 1 319 1 is_stmt 1 view -0
+ 1392              		.cfi_startproc
+ 1393              		@ args = 0, pretend = 0, frame = 24
+ 1394              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1395 0000 30B5     		push	{r4, r5, lr}
+ 1396              	.LCFI23:
+ 1397              		.cfi_def_cfa_offset 12
+ 1398              		.cfi_offset 4, -12
+ 1399              		.cfi_offset 5, -8
+ 1400              		.cfi_offset 14, -4
+ 1401 0002 87B0     		sub	sp, sp, #28
+ 1402              	.LCFI24:
+ 1403              		.cfi_def_cfa_offset 40
+ 320:Drivers/User_Driver/Src/rtc_i2c.c **** 	unsigned char i;
+ 1404              		.loc 1 320 2 view .LVU371
+ 321:Drivers/User_Driver/Src/rtc_i2c.c **** 	unsigned char data = 0;
+ 1405              		.loc 1 321 2 view .LVU372
+ 1406              	.LVL114:
+ 322:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 323:Drivers/User_Driver/Src/rtc_i2c.c ****     rtc_sda_in();
+ 1407              		.loc 1 323 5 view .LVU373
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 36
+
+
+ 1408              	.LBB124:
+ 1409              	.LBI124:
+ 154:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 1410              		.loc 1 154 20 view .LVU374
+ 1411              	.LBB125:
+ 157:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Pin = g_i2c.pinSdaIn;
+ 1412              		.loc 1 157 4 view .LVU375
+ 157:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Pin = g_i2c.pinSdaIn;
+ 1413              		.loc 1 157 21 is_stmt 0 view .LVU376
+ 1414 0004 0024     		movs	r4, #0
+ 1415 0006 0194     		str	r4, [sp, #4]
+ 1416 0008 0294     		str	r4, [sp, #8]
+ 1417 000a 0394     		str	r4, [sp, #12]
+ 1418 000c 0494     		str	r4, [sp, #16]
+ 1419 000e 0594     		str	r4, [sp, #20]
+ 158:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 1420              		.loc 1 158 2 is_stmt 1 view .LVU377
+ 158:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 1421              		.loc 1 158 29 is_stmt 0 view .LVU378
+ 1422 0010 244B     		ldr	r3, .L109
+ 1423 0012 9A88     		ldrh	r2, [r3, #4]
+ 158:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 1424              		.loc 1 158 22 view .LVU379
+ 1425 0014 0192     		str	r2, [sp, #4]
+ 159:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 1426              		.loc 1 159 2 is_stmt 1 view .LVU380
+ 160:Drivers/User_Driver/Src/rtc_i2c.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 1427              		.loc 1 160 2 view .LVU381
+ 161:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_Init(g_i2c.busSdaIn, &GPIO_InitStruct);
+ 1428              		.loc 1 161 2 view .LVU382
+ 161:Drivers/User_Driver/Src/rtc_i2c.c **** 	HAL_GPIO_Init(g_i2c.busSdaIn, &GPIO_InitStruct);
+ 1429              		.loc 1 161 24 is_stmt 0 view .LVU383
+ 1430 0016 0222     		movs	r2, #2
+ 1431 0018 0492     		str	r2, [sp, #16]
+ 162:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1432              		.loc 1 162 2 is_stmt 1 view .LVU384
+ 1433 001a 01A9     		add	r1, sp, #4
+ 1434 001c 1868     		ldr	r0, [r3]
+ 1435 001e FFF7FEFF 		bl	HAL_GPIO_Init
+ 1436              	.LVL115:
+ 1437              	.LBE125:
+ 1438              	.LBE124:
+ 324:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_sda_h();
+ 1439              		.loc 1 324 2 view .LVU385
+ 1440 0022 FFF7FEFF 		bl	rtc_sda_h
+ 1441              	.LVL116:
+ 325:Drivers/User_Driver/Src/rtc_i2c.c **** 	for (i = 0; i < 8; i++)
+ 1442              		.loc 1 325 2 view .LVU386
+ 321:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 1443              		.loc 1 321 16 is_stmt 0 view .LVU387
+ 1444 0026 2546     		mov	r5, r4
+ 1445              		.loc 1 325 2 view .LVU388
+ 1446 0028 01E0     		b	.L99
+ 1447              	.LVL117:
+ 1448              	.L102:
+ 1449              		.loc 1 325 21 is_stmt 1 discriminator 2 view .LVU389
+ 1450              		.loc 1 325 22 is_stmt 0 discriminator 2 view .LVU390
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 37
+
+
+ 1451 002a 0134     		adds	r4, r4, #1
+ 1452              	.LVL118:
+ 1453              		.loc 1 325 22 discriminator 2 view .LVU391
+ 1454 002c E4B2     		uxtb	r4, r4
+ 1455              	.LVL119:
+ 1456              	.L99:
+ 1457              		.loc 1 325 14 is_stmt 1 discriminator 1 view .LVU392
+ 1458              		.loc 1 325 2 is_stmt 0 discriminator 1 view .LVU393
+ 1459 002e 072C     		cmp	r4, #7
+ 1460 0030 19D8     		bhi	.L107
+ 326:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 327:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_scl_l();
+ 1461              		.loc 1 327 3 is_stmt 1 view .LVU394
+ 1462 0032 FFF7FEFF 		bl	rtc_scl_l
+ 1463              	.LVL120:
+ 328:Drivers/User_Driver/Src/rtc_i2c.c **** 		// rtc_Wait();
+ 329:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_Wait();
+ 1464              		.loc 1 329 3 view .LVU395
+ 1465              	.LBB126:
+ 1466              	.LBI126:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 1467              		.loc 1 187 20 view .LVU396
+ 1468              	.LBB127:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1469              		.loc 1 189 2 view .LVU397
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1470              		.loc 1 189 6 is_stmt 0 view .LVU398
+ 1471 0036 1C4B     		ldr	r3, .L109+4
+ 1472 0038 1B88     		ldrh	r3, [r3]
+ 1473              	.LVL121:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1474              		.loc 1 190 2 is_stmt 1 view .LVU399
+ 1475              	.L100:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1476              		.loc 1 190 13 view .LVU400
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1477              		.loc 1 190 8 view .LVU401
+ 1478 003a 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1479              		.loc 1 190 10 is_stmt 0 view .LVU402
+ 1480 003c 013B     		subs	r3, r3, #1
+ 1481              	.LVL122:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1482              		.loc 1 190 8 view .LVU403
+ 1483 003e 002A     		cmp	r2, #0
+ 1484 0040 FBD1     		bne	.L100
+ 1485              	.LVL123:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1486              		.loc 1 190 8 view .LVU404
+ 1487              	.LBE127:
+ 1488              	.LBE126:
+ 330:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_scl_h();
+ 1489              		.loc 1 330 3 is_stmt 1 view .LVU405
+ 1490 0042 FFF7FEFF 		bl	rtc_scl_h
+ 1491              	.LVL124:
+ 331:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_Wait_half();
+ 1492              		.loc 1 331 3 view .LVU406
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 38
+
+
+ 1493              	.LBB128:
+ 1494              	.LBI128:
+ 196:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 1495              		.loc 1 196 20 view .LVU407
+ 1496              	.LBB129:
+ 198:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1497              		.loc 1 198 2 view .LVU408
+ 198:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1498              		.loc 1 198 25 is_stmt 0 view .LVU409
+ 1499 0046 184B     		ldr	r3, .L109+4
+ 1500 0048 1B88     		ldrh	r3, [r3]
+ 1501 004a 5B08     		lsrs	r3, r3, #1
+ 1502              	.LVL125:
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1503              		.loc 1 199 2 is_stmt 1 view .LVU410
+ 1504              	.L101:
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1505              		.loc 1 199 13 view .LVU411
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1506              		.loc 1 199 8 view .LVU412
+ 1507 004c 1A46     		mov	r2, r3
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1508              		.loc 1 199 10 is_stmt 0 view .LVU413
+ 1509 004e 013B     		subs	r3, r3, #1
+ 1510              	.LVL126:
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1511              		.loc 1 199 8 view .LVU414
+ 1512 0050 002A     		cmp	r2, #0
+ 1513 0052 FBD1     		bne	.L101
+ 1514              	.LVL127:
+ 199:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1515              		.loc 1 199 8 view .LVU415
+ 1516              	.LBE129:
+ 1517              	.LBE128:
+ 332:Drivers/User_Driver/Src/rtc_i2c.c **** 		data <<= 1;
+ 1518              		.loc 1 332 3 is_stmt 1 view .LVU416
+ 1519              		.loc 1 332 8 is_stmt 0 view .LVU417
+ 1520 0054 6D00     		lsls	r5, r5, #1
+ 1521              	.LVL128:
+ 1522              		.loc 1 332 8 view .LVU418
+ 1523 0056 EDB2     		uxtb	r5, r5
+ 1524              	.LVL129:
+ 333:Drivers/User_Driver/Src/rtc_i2c.c **** 		if (rtc_read_sda()) { data |= 0x01;	}
+ 1525              		.loc 1 333 3 is_stmt 1 view .LVU419
+ 1526              		.loc 1 333 7 is_stmt 0 view .LVU420
+ 1527 0058 FFF7FEFF 		bl	rtc_read_sda
+ 1528              	.LVL130:
+ 1529              		.loc 1 333 6 view .LVU421
+ 1530 005c 0028     		cmp	r0, #0
+ 1531 005e E4D0     		beq	.L102
+ 1532              		.loc 1 333 25 is_stmt 1 discriminator 1 view .LVU422
+ 1533              		.loc 1 333 30 is_stmt 0 discriminator 1 view .LVU423
+ 1534 0060 45F00105 		orr	r5, r5, #1
+ 1535              	.LVL131:
+ 1536              		.loc 1 333 30 discriminator 1 view .LVU424
+ 1537 0064 E1E7     		b	.L102
+ 1538              	.L107:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 39
+
+
+ 334:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 335:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_Wait();
+ 1539              		.loc 1 335 2 is_stmt 1 view .LVU425
+ 1540              	.LBB130:
+ 1541              	.LBI130:
+ 187:Drivers/User_Driver/Src/rtc_i2c.c **** {	
+ 1542              		.loc 1 187 20 view .LVU426
+ 1543              	.LBB131:
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1544              		.loc 1 189 2 view .LVU427
+ 189:Drivers/User_Driver/Src/rtc_i2c.c **** 	while (i--);
+ 1545              		.loc 1 189 6 is_stmt 0 view .LVU428
+ 1546 0066 104B     		ldr	r3, .L109+4
+ 1547 0068 1B88     		ldrh	r3, [r3]
+ 1548              	.LVL132:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1549              		.loc 1 190 2 is_stmt 1 view .LVU429
+ 1550              	.L104:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1551              		.loc 1 190 13 view .LVU430
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1552              		.loc 1 190 8 view .LVU431
+ 1553 006a 1A46     		mov	r2, r3
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1554              		.loc 1 190 10 is_stmt 0 view .LVU432
+ 1555 006c 013B     		subs	r3, r3, #1
+ 1556              	.LVL133:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1557              		.loc 1 190 8 view .LVU433
+ 1558 006e 002A     		cmp	r2, #0
+ 1559 0070 FBD1     		bne	.L104
+ 1560              	.LVL134:
+ 190:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1561              		.loc 1 190 8 view .LVU434
+ 1562              	.LBE131:
+ 1563              	.LBE130:
+ 336:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_scl_l();
+ 1564              		.loc 1 336 2 is_stmt 1 view .LVU435
+ 1565 0072 FFF7FEFF 		bl	rtc_scl_l
+ 1566              	.LVL135:
+ 337:Drivers/User_Driver/Src/rtc_i2c.c ****     rtc_sda_out();
+ 1567              		.loc 1 337 5 view .LVU436
+ 1568              	.LBB132:
+ 1569              	.LBI132:
+ 169:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 1570              		.loc 1 169 20 view .LVU437
+ 1571              	.LBB133:
+ 172:Drivers/User_Driver/Src/rtc_i2c.c **** 	
+ 1572              		.loc 1 172 4 view .LVU438
+ 172:Drivers/User_Driver/Src/rtc_i2c.c **** 	
+ 1573              		.loc 1 172 21 is_stmt 0 view .LVU439
+ 1574 0076 0023     		movs	r3, #0
+ 1575 0078 0193     		str	r3, [sp, #4]
+ 1576 007a 0293     		str	r3, [sp, #8]
+ 1577 007c 0393     		str	r3, [sp, #12]
+ 1578 007e 0493     		str	r3, [sp, #16]
+ 1579 0080 0593     		str	r3, [sp, #20]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 40
+
+
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ 1580              		.loc 1 174 2 is_stmt 1 view .LVU440
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ 1581              		.loc 1 174 14 is_stmt 0 view .LVU441
+ 1582 0082 0A4B     		ldr	r3, .L109+8
+ 1583 0084 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 174:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pin = g_i2c.pinSdaOut;
+ 1584              		.loc 1 174 5 view .LVU442
+ 1585 0086 022B     		cmp	r3, #2
+ 1586 0088 02D0     		beq	.L108
+ 1587              	.L105:
+ 1588              	.LBE133:
+ 1589              	.LBE132:
+ 338:Drivers/User_Driver/Src/rtc_i2c.c **** 	return data;
+ 1590              		.loc 1 338 2 is_stmt 1 view .LVU443
+ 339:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1591              		.loc 1 339 1 is_stmt 0 view .LVU444
+ 1592 008a 2846     		mov	r0, r5
+ 1593 008c 07B0     		add	sp, sp, #28
+ 1594              	.LCFI25:
+ 1595              		.cfi_remember_state
+ 1596              		.cfi_def_cfa_offset 12
+ 1597              		@ sp needed
+ 1598 008e 30BD     		pop	{r4, r5, pc}
+ 1599              	.LVL136:
+ 1600              	.L108:
+ 1601              	.LCFI26:
+ 1602              		.cfi_restore_state
+ 1603              	.LBB135:
+ 1604              	.LBB134:
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 1605              		.loc 1 175 3 is_stmt 1 view .LVU445
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 1606              		.loc 1 175 30 is_stmt 0 view .LVU446
+ 1607 0090 044B     		ldr	r3, .L109
+ 1608 0092 9A89     		ldrh	r2, [r3, #12]
+ 175:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 1609              		.loc 1 175 23 view .LVU447
+ 1610 0094 0192     		str	r2, [sp, #4]
+ 176:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 1611              		.loc 1 176 3 is_stmt 1 view .LVU448
+ 176:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 1612              		.loc 1 176 24 is_stmt 0 view .LVU449
+ 1613 0096 1122     		movs	r2, #17
+ 1614 0098 0292     		str	r2, [sp, #8]
+ 177:Drivers/User_Driver/Src/rtc_i2c.c **** 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 1615              		.loc 1 177 3 is_stmt 1 view .LVU450
+ 178:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_GPIO_Init(g_i2c.busSdaOut, &GPIO_InitStruct);
+ 1616              		.loc 1 178 3 view .LVU451
+ 179:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1617              		.loc 1 179 3 view .LVU452
+ 1618 009a 01A9     		add	r1, sp, #4
+ 1619 009c 9868     		ldr	r0, [r3, #8]
+ 1620 009e FFF7FEFF 		bl	HAL_GPIO_Init
+ 1621              	.LVL137:
+ 1622 00a2 F2E7     		b	.L105
+ 1623              	.L110:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 41
+
+
+ 1624              		.align	2
+ 1625              	.L109:
+ 1626 00a4 00000000 		.word	.LANCHOR0
+ 1627 00a8 00000000 		.word	.LANCHOR3
+ 1628 00ac 00000000 		.word	.LANCHOR1
+ 1629              	.LBE134:
+ 1630              	.LBE135:
+ 1631              		.cfi_endproc
+ 1632              	.LFE252:
+ 1634              		.section	.text.rtc_write_multi_bytes,"ax",%progbits
+ 1635              		.align	1
+ 1636              		.global	rtc_write_multi_bytes
+ 1637              		.syntax unified
+ 1638              		.thumb
+ 1639              		.thumb_func
+ 1641              	rtc_write_multi_bytes:
+ 1642              	.LVL138:
+ 1643              	.LFB253:
+ 340:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 341:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 342:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief Write multiple bytes to slave 
+ 343:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 344:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 345:Drivers/User_Driver/Src/rtc_i2c.c **** i2c_exit_code_e rtc_write_multi_bytes(unsigned char dev_addr, unsigned char reg_addr, const unsigne
+ 346:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 1644              		.loc 1 346 1 view -0
+ 1645              		.cfi_startproc
+ 1646              		@ args = 0, pretend = 0, frame = 0
+ 1647              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1648              		.loc 1 346 1 is_stmt 0 view .LVU454
+ 1649 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 1650              	.LCFI27:
+ 1651              		.cfi_def_cfa_offset 24
+ 1652              		.cfi_offset 3, -24
+ 1653              		.cfi_offset 4, -20
+ 1654              		.cfi_offset 5, -16
+ 1655              		.cfi_offset 6, -12
+ 1656              		.cfi_offset 7, -8
+ 1657              		.cfi_offset 14, -4
+ 1658 0002 0446     		mov	r4, r0
+ 1659 0004 0F46     		mov	r7, r1
+ 1660 0006 1646     		mov	r6, r2
+ 1661 0008 1D46     		mov	r5, r3
+ 347:Drivers/User_Driver/Src/rtc_i2c.c ****     unsigned short i;
+ 1662              		.loc 1 347 5 is_stmt 1 view .LVU455
+ 348:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 349:Drivers/User_Driver/Src/rtc_i2c.c ****     if (rtc_start() != I2C_OK)
+ 1663              		.loc 1 349 5 view .LVU456
+ 1664              		.loc 1 349 9 is_stmt 0 view .LVU457
+ 1665 000a FFF7FEFF 		bl	rtc_start
+ 1666              	.LVL139:
+ 1667              		.loc 1 349 8 view .LVU458
+ 1668 000e 10B1     		cbz	r0, .L119
+ 350:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_START_FAIL;
+ 1669              		.loc 1 350 10 view .LVU459
+ 1670 0010 0127     		movs	r7, #1
+ 1671              	.L112:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 42
+
+
+ 351:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 352:Drivers/User_Driver/Src/rtc_i2c.c ****     rtc_send_byte(dev_addr);
+ 353:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (rtc_wait_ack() != I2C_OK)
+ 354:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 355:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_stop(); 
+ 356:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 357:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 358:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_send_byte(reg_addr);
+ 359:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (rtc_wait_ack() != I2C_OK)
+ 360:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 361:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_stop(); 
+ 362:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 363:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 364:Drivers/User_Driver/Src/rtc_i2c.c ****     for (i = 0; i < size; i++)
+ 365:Drivers/User_Driver/Src/rtc_i2c.c ****     {
+ 366:Drivers/User_Driver/Src/rtc_i2c.c ****     	rtc_send_byte(*(buf + i));
+ 367:Drivers/User_Driver/Src/rtc_i2c.c ****     	rtc_wait_ack();
+ 368:Drivers/User_Driver/Src/rtc_i2c.c ****     }
+ 369:Drivers/User_Driver/Src/rtc_i2c.c ****     rtc_stop();
+ 370:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 371:Drivers/User_Driver/Src/rtc_i2c.c **** 	return	I2C_OK;
+ 372:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1672              		.loc 1 372 1 view .LVU460
+ 1673 0012 3846     		mov	r0, r7
+ 1674 0014 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 1675              	.LVL140:
+ 1676              	.L119:
+ 352:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (rtc_wait_ack() != I2C_OK)
+ 1677              		.loc 1 352 5 is_stmt 1 view .LVU461
+ 1678 0016 2046     		mov	r0, r4
+ 1679 0018 FFF7FEFF 		bl	rtc_send_byte
+ 1680              	.LVL141:
+ 353:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1681              		.loc 1 353 2 view .LVU462
+ 353:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1682              		.loc 1 353 6 is_stmt 0 view .LVU463
+ 1683 001c FFF7FEFF 		bl	rtc_wait_ack
+ 1684              	.LVL142:
+ 353:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1685              		.loc 1 353 5 view .LVU464
+ 1686 0020 40B9     		cbnz	r0, .L120
+ 358:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (rtc_wait_ack() != I2C_OK)
+ 1687              		.loc 1 358 2 is_stmt 1 view .LVU465
+ 1688 0022 3846     		mov	r0, r7
+ 1689 0024 FFF7FEFF 		bl	rtc_send_byte
+ 1690              	.LVL143:
+ 359:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1691              		.loc 1 359 2 view .LVU466
+ 359:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1692              		.loc 1 359 6 is_stmt 0 view .LVU467
+ 1693 0028 FFF7FEFF 		bl	rtc_wait_ack
+ 1694              	.LVL144:
+ 359:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1695              		.loc 1 359 5 view .LVU468
+ 1696 002c 0746     		mov	r7, r0
+ 1697 002e 28B9     		cbnz	r0, .L121
+ 364:Drivers/User_Driver/Src/rtc_i2c.c ****     {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 43
+
+
+ 1698              		.loc 1 364 12 view .LVU469
+ 1699 0030 0024     		movs	r4, #0
+ 1700 0032 0EE0     		b	.L114
+ 1701              	.L120:
+ 355:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 1702              		.loc 1 355 3 is_stmt 1 view .LVU470
+ 1703 0034 FFF7FEFF 		bl	rtc_stop
+ 1704              	.LVL145:
+ 356:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1705              		.loc 1 356 3 view .LVU471
+ 356:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1706              		.loc 1 356 10 is_stmt 0 view .LVU472
+ 1707 0038 0227     		movs	r7, #2
+ 1708 003a EAE7     		b	.L112
+ 1709              	.L121:
+ 361:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 1710              		.loc 1 361 3 is_stmt 1 view .LVU473
+ 1711 003c FFF7FEFF 		bl	rtc_stop
+ 1712              	.LVL146:
+ 362:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1713              		.loc 1 362 3 view .LVU474
+ 362:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1714              		.loc 1 362 10 is_stmt 0 view .LVU475
+ 1715 0040 0227     		movs	r7, #2
+ 1716 0042 E6E7     		b	.L112
+ 1717              	.LVL147:
+ 1718              	.L115:
+ 366:Drivers/User_Driver/Src/rtc_i2c.c ****     	rtc_wait_ack();
+ 1719              		.loc 1 366 6 is_stmt 1 discriminator 3 view .LVU476
+ 1720 0044 305D     		ldrb	r0, [r6, r4]	@ zero_extendqisi2
+ 1721 0046 FFF7FEFF 		bl	rtc_send_byte
+ 1722              	.LVL148:
+ 367:Drivers/User_Driver/Src/rtc_i2c.c ****     }
+ 1723              		.loc 1 367 6 discriminator 3 view .LVU477
+ 1724 004a FFF7FEFF 		bl	rtc_wait_ack
+ 1725              	.LVL149:
+ 364:Drivers/User_Driver/Src/rtc_i2c.c ****     {
+ 1726              		.loc 1 364 27 discriminator 3 view .LVU478
+ 364:Drivers/User_Driver/Src/rtc_i2c.c ****     {
+ 1727              		.loc 1 364 28 is_stmt 0 discriminator 3 view .LVU479
+ 1728 004e 0134     		adds	r4, r4, #1
+ 1729              	.LVL150:
+ 364:Drivers/User_Driver/Src/rtc_i2c.c ****     {
+ 1730              		.loc 1 364 28 discriminator 3 view .LVU480
+ 1731 0050 A4B2     		uxth	r4, r4
+ 1732              	.LVL151:
+ 1733              	.L114:
+ 364:Drivers/User_Driver/Src/rtc_i2c.c ****     {
+ 1734              		.loc 1 364 17 is_stmt 1 discriminator 1 view .LVU481
+ 364:Drivers/User_Driver/Src/rtc_i2c.c ****     {
+ 1735              		.loc 1 364 5 is_stmt 0 discriminator 1 view .LVU482
+ 1736 0052 AC42     		cmp	r4, r5
+ 1737 0054 F6D3     		bcc	.L115
+ 369:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 1738              		.loc 1 369 5 is_stmt 1 view .LVU483
+ 1739 0056 FFF7FEFF 		bl	rtc_stop
+ 1740              	.LVL152:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 44
+
+
+ 371:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1741              		.loc 1 371 2 view .LVU484
+ 371:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1742              		.loc 1 371 9 is_stmt 0 view .LVU485
+ 1743 005a DAE7     		b	.L112
+ 1744              		.cfi_endproc
+ 1745              	.LFE253:
+ 1747              		.section	.text.rtc_read_multi_bytes,"ax",%progbits
+ 1748              		.align	1
+ 1749              		.global	rtc_read_multi_bytes
+ 1750              		.syntax unified
+ 1751              		.thumb
+ 1752              		.thumb_func
+ 1754              	rtc_read_multi_bytes:
+ 1755              	.LVL153:
+ 1756              	.LFB254:
+ 373:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 374:Drivers/User_Driver/Src/rtc_i2c.c **** /**
+ 375:Drivers/User_Driver/Src/rtc_i2c.c ****  * @brief Read multiple bytes from slave 
+ 376:Drivers/User_Driver/Src/rtc_i2c.c ****  * 
+ 377:Drivers/User_Driver/Src/rtc_i2c.c ****  */
+ 378:Drivers/User_Driver/Src/rtc_i2c.c **** i2c_exit_code_e rtc_read_multi_bytes(unsigned char dev_addr, unsigned char reg_addr, unsigned char 
+ 379:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 1757              		.loc 1 379 1 is_stmt 1 view -0
+ 1758              		.cfi_startproc
+ 1759              		@ args = 0, pretend = 0, frame = 0
+ 1760              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1761              		.loc 1 379 1 is_stmt 0 view .LVU487
+ 1762 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 1763              	.LCFI28:
+ 1764              		.cfi_def_cfa_offset 24
+ 1765              		.cfi_offset 3, -24
+ 1766              		.cfi_offset 4, -20
+ 1767              		.cfi_offset 5, -16
+ 1768              		.cfi_offset 6, -12
+ 1769              		.cfi_offset 7, -8
+ 1770              		.cfi_offset 14, -4
+ 1771 0002 0446     		mov	r4, r0
+ 1772 0004 0F46     		mov	r7, r1
+ 1773 0006 1646     		mov	r6, r2
+ 1774 0008 1D46     		mov	r5, r3
+ 380:Drivers/User_Driver/Src/rtc_i2c.c **** 	unsigned short i;
+ 1775              		.loc 1 380 2 is_stmt 1 view .LVU488
+ 381:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 382:Drivers/User_Driver/Src/rtc_i2c.c **** 	if(rtc_start() != I2C_OK)
+ 1776              		.loc 1 382 2 view .LVU489
+ 1777              		.loc 1 382 5 is_stmt 0 view .LVU490
+ 1778 000a FFF7FEFF 		bl	rtc_start
+ 1779              	.LVL154:
+ 1780              		.loc 1 382 4 view .LVU491
+ 1781 000e 10B1     		cbz	r0, .L131
+ 383:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_START_FAIL;
+ 1782              		.loc 1 383 10 view .LVU492
+ 1783 0010 0127     		movs	r7, #1
+ 1784              	.L123:
+ 384:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*send device address*/
+ 385:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_send_byte(dev_addr);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 45
+
+
+ 386:Drivers/User_Driver/Src/rtc_i2c.c **** 	if(rtc_wait_ack() != I2C_OK)
+ 387:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 388:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_stop(); 
+ 389:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 390:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 391:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*send register address*/
+ 392:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_send_byte(reg_addr);
+ 393:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (rtc_wait_ack() != I2C_OK)
+ 394:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 395:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_stop(); 
+ 396:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 397:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 398:Drivers/User_Driver/Src/rtc_i2c.c **** 	/*restart and send read device address*/
+ 399:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_start();
+ 400:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_send_byte(dev_addr | 0x01);
+ 401:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_wait_ack();
+ 402:Drivers/User_Driver/Src/rtc_i2c.c **** 	for (i = 0; i < size; i++)
+ 403:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 404:Drivers/User_Driver/Src/rtc_i2c.c **** 		*(buf+i) = rtc_receive_byte();
+ 405:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 406:Drivers/User_Driver/Src/rtc_i2c.c **** 		if (i != size-1) { rtc_ack(); }			
+ 407:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 408:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_nack();
+ 409:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_stop();
+ 410:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 411:Drivers/User_Driver/Src/rtc_i2c.c **** 	return  I2C_OK;
+ 412:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1785              		.loc 1 412 1 view .LVU493
+ 1786 0012 3846     		mov	r0, r7
+ 1787 0014 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 1788              	.LVL155:
+ 1789              	.L131:
+ 385:Drivers/User_Driver/Src/rtc_i2c.c **** 	if(rtc_wait_ack() != I2C_OK)
+ 1790              		.loc 1 385 2 is_stmt 1 view .LVU494
+ 1791 0016 2046     		mov	r0, r4
+ 1792 0018 FFF7FEFF 		bl	rtc_send_byte
+ 1793              	.LVL156:
+ 386:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1794              		.loc 1 386 2 view .LVU495
+ 386:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1795              		.loc 1 386 5 is_stmt 0 view .LVU496
+ 1796 001c FFF7FEFF 		bl	rtc_wait_ack
+ 1797              	.LVL157:
+ 386:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1798              		.loc 1 386 4 view .LVU497
+ 1799 0020 80B9     		cbnz	r0, .L132
+ 392:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (rtc_wait_ack() != I2C_OK)
+ 1800              		.loc 1 392 2 is_stmt 1 view .LVU498
+ 1801 0022 3846     		mov	r0, r7
+ 1802 0024 FFF7FEFF 		bl	rtc_send_byte
+ 1803              	.LVL158:
+ 393:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1804              		.loc 1 393 2 view .LVU499
+ 393:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1805              		.loc 1 393 6 is_stmt 0 view .LVU500
+ 1806 0028 FFF7FEFF 		bl	rtc_wait_ack
+ 1807              	.LVL159:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 46
+
+
+ 393:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1808              		.loc 1 393 5 view .LVU501
+ 1809 002c 0746     		mov	r7, r0
+ 1810 002e 68B9     		cbnz	r0, .L133
+ 399:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_send_byte(dev_addr | 0x01);
+ 1811              		.loc 1 399 2 is_stmt 1 view .LVU502
+ 1812 0030 FFF7FEFF 		bl	rtc_start
+ 1813              	.LVL160:
+ 400:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_wait_ack();
+ 1814              		.loc 1 400 2 view .LVU503
+ 1815 0034 44F00100 		orr	r0, r4, #1
+ 1816 0038 FFF7FEFF 		bl	rtc_send_byte
+ 1817              	.LVL161:
+ 401:Drivers/User_Driver/Src/rtc_i2c.c **** 	for (i = 0; i < size; i++)
+ 1818              		.loc 1 401 2 view .LVU504
+ 1819 003c FFF7FEFF 		bl	rtc_wait_ack
+ 1820              	.LVL162:
+ 402:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1821              		.loc 1 402 2 view .LVU505
+ 402:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1822              		.loc 1 402 9 is_stmt 0 view .LVU506
+ 1823 0040 0024     		movs	r4, #0
+ 402:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1824              		.loc 1 402 2 view .LVU507
+ 1825 0042 09E0     		b	.L126
+ 1826              	.LVL163:
+ 1827              	.L132:
+ 388:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 1828              		.loc 1 388 3 is_stmt 1 view .LVU508
+ 1829 0044 FFF7FEFF 		bl	rtc_stop
+ 1830              	.LVL164:
+ 389:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1831              		.loc 1 389 3 view .LVU509
+ 389:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1832              		.loc 1 389 10 is_stmt 0 view .LVU510
+ 1833 0048 0227     		movs	r7, #2
+ 1834 004a E2E7     		b	.L123
+ 1835              	.L133:
+ 395:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 1836              		.loc 1 395 3 is_stmt 1 view .LVU511
+ 1837 004c FFF7FEFF 		bl	rtc_stop
+ 1838              	.LVL165:
+ 396:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1839              		.loc 1 396 3 view .LVU512
+ 396:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1840              		.loc 1 396 10 is_stmt 0 view .LVU513
+ 1841 0050 0227     		movs	r7, #2
+ 1842 0052 DEE7     		b	.L123
+ 1843              	.LVL166:
+ 1844              	.L127:
+ 402:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1845              		.loc 1 402 24 is_stmt 1 discriminator 2 view .LVU514
+ 402:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1846              		.loc 1 402 25 is_stmt 0 discriminator 2 view .LVU515
+ 1847 0054 0134     		adds	r4, r4, #1
+ 1848              	.LVL167:
+ 402:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 47
+
+
+ 1849              		.loc 1 402 25 discriminator 2 view .LVU516
+ 1850 0056 A4B2     		uxth	r4, r4
+ 1851              	.LVL168:
+ 1852              	.L126:
+ 402:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1853              		.loc 1 402 14 is_stmt 1 discriminator 1 view .LVU517
+ 402:Drivers/User_Driver/Src/rtc_i2c.c **** 	{
+ 1854              		.loc 1 402 2 is_stmt 0 discriminator 1 view .LVU518
+ 1855 0058 AC42     		cmp	r4, r5
+ 1856 005a 08D2     		bcs	.L134
+ 404:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 1857              		.loc 1 404 3 is_stmt 1 view .LVU519
+ 404:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 1858              		.loc 1 404 14 is_stmt 0 view .LVU520
+ 1859 005c FFF7FEFF 		bl	rtc_receive_byte
+ 1860              	.LVL169:
+ 404:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 1861              		.loc 1 404 12 view .LVU521
+ 1862 0060 3055     		strb	r0, [r6, r4]
+ 406:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1863              		.loc 1 406 3 is_stmt 1 view .LVU522
+ 406:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1864              		.loc 1 406 16 is_stmt 0 view .LVU523
+ 1865 0062 6B1E     		subs	r3, r5, #1
+ 406:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1866              		.loc 1 406 6 view .LVU524
+ 1867 0064 9C42     		cmp	r4, r3
+ 1868 0066 F5D0     		beq	.L127
+ 406:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 1869              		.loc 1 406 22 is_stmt 1 discriminator 1 view .LVU525
+ 1870 0068 FFF7FEFF 		bl	rtc_ack
+ 1871              	.LVL170:
+ 1872 006c F2E7     		b	.L127
+ 1873              	.L134:
+ 408:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_stop();
+ 1874              		.loc 1 408 2 view .LVU526
+ 1875 006e FFF7FEFF 		bl	rtc_nack
+ 1876              	.LVL171:
+ 409:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 1877              		.loc 1 409 2 view .LVU527
+ 1878 0072 FFF7FEFF 		bl	rtc_stop
+ 1879              	.LVL172:
+ 411:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1880              		.loc 1 411 2 view .LVU528
+ 411:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1881              		.loc 1 411 10 is_stmt 0 view .LVU529
+ 1882 0076 CCE7     		b	.L123
+ 1883              		.cfi_endproc
+ 1884              	.LFE254:
+ 1886              		.section	.text.rtc_write_lock_on,"ax",%progbits
+ 1887              		.align	1
+ 1888              		.global	rtc_write_lock_on
+ 1889              		.syntax unified
+ 1890              		.thumb
+ 1891              		.thumb_func
+ 1893              	rtc_write_lock_on:
+ 1894              	.LFB255:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 48
+
+
+ 413:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 414:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 415:Drivers/User_Driver/Src/rtc_i2c.c **** uint8_t rtc_write_lock_on(void)
+ 416:Drivers/User_Driver/Src/rtc_i2c.c **** {		
+ 1895              		.loc 1 416 1 is_stmt 1 view -0
+ 1896              		.cfi_startproc
+ 1897              		@ args = 0, pretend = 0, frame = 8
+ 1898              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1899 0000 10B5     		push	{r4, lr}
+ 1900              	.LCFI29:
+ 1901              		.cfi_def_cfa_offset 8
+ 1902              		.cfi_offset 4, -8
+ 1903              		.cfi_offset 14, -4
+ 1904 0002 82B0     		sub	sp, sp, #8
+ 1905              	.LCFI30:
+ 1906              		.cfi_def_cfa_offset 16
+ 417:Drivers/User_Driver/Src/rtc_i2c.c ****     uint8_t buffer;
+ 1907              		.loc 1 417 5 view .LVU531
+ 418:Drivers/User_Driver/Src/rtc_i2c.c ****     buffer = 0x80;
+ 1908              		.loc 1 418 5 view .LVU532
+ 1909              		.loc 1 418 12 is_stmt 0 view .LVU533
+ 1910 0004 8023     		movs	r3, #128
+ 1911 0006 8DF80730 		strb	r3, [sp, #7]
+ 419:Drivers/User_Driver/Src/rtc_i2c.c ****     if (rtc_write_multi_bytes(0x64, 0x10, &buffer, 1) != I2C_OK) {return I2C_NO_ACK;}
+ 1912              		.loc 1 419 5 is_stmt 1 view .LVU534
+ 1913              		.loc 1 419 9 is_stmt 0 view .LVU535
+ 1914 000a 0123     		movs	r3, #1
+ 1915 000c 0DF10702 		add	r2, sp, #7
+ 1916 0010 1021     		movs	r1, #16
+ 1917 0012 6420     		movs	r0, #100
+ 1918 0014 FFF7FEFF 		bl	rtc_write_multi_bytes
+ 1919              	.LVL173:
+ 1920              		.loc 1 419 8 view .LVU536
+ 1921 0018 68B9     		cbnz	r0, .L137
+ 1922 001a 0446     		mov	r4, r0
+ 420:Drivers/User_Driver/Src/rtc_i2c.c ****     buffer = 0xff;
+ 1923              		.loc 1 420 5 is_stmt 1 view .LVU537
+ 1924              		.loc 1 420 12 is_stmt 0 view .LVU538
+ 1925 001c FF23     		movs	r3, #255
+ 1926 001e 8DF80730 		strb	r3, [sp, #7]
+ 421:Drivers/User_Driver/Src/rtc_i2c.c ****     rtc_write_multi_bytes(0x64, 0x0f, &buffer, 1);
+ 1927              		.loc 1 421 5 is_stmt 1 view .LVU539
+ 1928 0022 0123     		movs	r3, #1
+ 1929 0024 0DF10702 		add	r2, sp, #7
+ 1930 0028 0F21     		movs	r1, #15
+ 1931 002a 6420     		movs	r0, #100
+ 1932 002c FFF7FEFF 		bl	rtc_write_multi_bytes
+ 1933              	.LVL174:
+ 422:Drivers/User_Driver/Src/rtc_i2c.c ****     return	I2C_OK;
+ 1934              		.loc 1 422 5 view .LVU540
+ 1935              	.L136:
+ 423:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 1936              		.loc 1 423 1 is_stmt 0 view .LVU541
+ 1937 0030 2046     		mov	r0, r4
+ 1938 0032 02B0     		add	sp, sp, #8
+ 1939              	.LCFI31:
+ 1940              		.cfi_remember_state
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 49
+
+
+ 1941              		.cfi_def_cfa_offset 8
+ 1942              		@ sp needed
+ 1943 0034 10BD     		pop	{r4, pc}
+ 1944              	.L137:
+ 1945              	.LCFI32:
+ 1946              		.cfi_restore_state
+ 419:Drivers/User_Driver/Src/rtc_i2c.c ****     buffer = 0xff;
+ 1947              		.loc 1 419 74 view .LVU542
+ 1948 0036 0224     		movs	r4, #2
+ 1949 0038 FAE7     		b	.L136
+ 1950              		.cfi_endproc
+ 1951              	.LFE255:
+ 1953              		.section	.text.rtc_write_lock_off,"ax",%progbits
+ 1954              		.align	1
+ 1955              		.global	rtc_write_lock_off
+ 1956              		.syntax unified
+ 1957              		.thumb
+ 1958              		.thumb_func
+ 1960              	rtc_write_lock_off:
+ 1961              	.LFB256:
+ 424:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 425:Drivers/User_Driver/Src/rtc_i2c.c **** uint8_t rtc_write_lock_off(void)
+ 426:Drivers/User_Driver/Src/rtc_i2c.c **** {		
+ 1962              		.loc 1 426 1 is_stmt 1 view -0
+ 1963              		.cfi_startproc
+ 1964              		@ args = 0, pretend = 0, frame = 8
+ 1965              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1966 0000 10B5     		push	{r4, lr}
+ 1967              	.LCFI33:
+ 1968              		.cfi_def_cfa_offset 8
+ 1969              		.cfi_offset 4, -8
+ 1970              		.cfi_offset 14, -4
+ 1971 0002 82B0     		sub	sp, sp, #8
+ 1972              	.LCFI34:
+ 1973              		.cfi_def_cfa_offset 16
+ 427:Drivers/User_Driver/Src/rtc_i2c.c ****     uint8_t buffer;
+ 1974              		.loc 1 427 5 view .LVU544
+ 428:Drivers/User_Driver/Src/rtc_i2c.c ****     buffer = 0x7B;
+ 1975              		.loc 1 428 5 view .LVU545
+ 1976              		.loc 1 428 12 is_stmt 0 view .LVU546
+ 1977 0004 7B23     		movs	r3, #123
+ 1978 0006 8DF80730 		strb	r3, [sp, #7]
+ 429:Drivers/User_Driver/Src/rtc_i2c.c ****     if (rtc_write_multi_bytes(0x64, 0x0f, &buffer, 1) != I2C_OK) {return I2C_NO_ACK;}
+ 1979              		.loc 1 429 5 is_stmt 1 view .LVU547
+ 1980              		.loc 1 429 9 is_stmt 0 view .LVU548
+ 1981 000a 0123     		movs	r3, #1
+ 1982 000c 0DF10702 		add	r2, sp, #7
+ 1983 0010 0F21     		movs	r1, #15
+ 1984 0012 6420     		movs	r0, #100
+ 1985 0014 FFF7FEFF 		bl	rtc_write_multi_bytes
+ 1986              	.LVL175:
+ 1987              		.loc 1 429 8 view .LVU549
+ 1988 0018 68B9     		cbnz	r0, .L141
+ 1989 001a 0446     		mov	r4, r0
+ 430:Drivers/User_Driver/Src/rtc_i2c.c ****     buffer = 0x0;
+ 1990              		.loc 1 430 5 is_stmt 1 view .LVU550
+ 1991              		.loc 1 430 12 is_stmt 0 view .LVU551
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 50
+
+
+ 1992 001c 0023     		movs	r3, #0
+ 1993 001e 8DF80730 		strb	r3, [sp, #7]
+ 431:Drivers/User_Driver/Src/rtc_i2c.c ****     rtc_write_multi_bytes(0x64, 0x10, &buffer, 1);
+ 1994              		.loc 1 431 5 is_stmt 1 view .LVU552
+ 1995 0022 0123     		movs	r3, #1
+ 1996 0024 0DF10702 		add	r2, sp, #7
+ 1997 0028 1021     		movs	r1, #16
+ 1998 002a 6420     		movs	r0, #100
+ 1999 002c FFF7FEFF 		bl	rtc_write_multi_bytes
+ 2000              	.LVL176:
+ 432:Drivers/User_Driver/Src/rtc_i2c.c ****     return	I2C_OK;
+ 2001              		.loc 1 432 5 view .LVU553
+ 2002              	.L140:
+ 433:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 2003              		.loc 1 433 1 is_stmt 0 view .LVU554
+ 2004 0030 2046     		mov	r0, r4
+ 2005 0032 02B0     		add	sp, sp, #8
+ 2006              	.LCFI35:
+ 2007              		.cfi_remember_state
+ 2008              		.cfi_def_cfa_offset 8
+ 2009              		@ sp needed
+ 2010 0034 10BD     		pop	{r4, pc}
+ 2011              	.L141:
+ 2012              	.LCFI36:
+ 2013              		.cfi_restore_state
+ 429:Drivers/User_Driver/Src/rtc_i2c.c ****     buffer = 0x0;
+ 2014              		.loc 1 429 74 view .LVU555
+ 2015 0036 0224     		movs	r4, #2
+ 2016 0038 FAE7     		b	.L140
+ 2017              		.cfi_endproc
+ 2018              	.LFE256:
+ 2020              		.section	.text.rtc_download_otp_data,"ax",%progbits
+ 2021              		.align	1
+ 2022              		.global	rtc_download_otp_data
+ 2023              		.syntax unified
+ 2024              		.thumb
+ 2025              		.thumb_func
+ 2027              	rtc_download_otp_data:
+ 2028              	.LVL177:
+ 2029              	.LFB257:
+ 434:Drivers/User_Driver/Src/rtc_i2c.c **** 
+ 435:Drivers/User_Driver/Src/rtc_i2c.c **** uint8_t rtc_download_otp_data(uint8_t* buffer, uint16_t startAddress, uint16_t length)
+ 436:Drivers/User_Driver/Src/rtc_i2c.c **** {
+ 2030              		.loc 1 436 1 is_stmt 1 view -0
+ 2031              		.cfi_startproc
+ 2032              		@ args = 0, pretend = 0, frame = 0
+ 2033              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2034              		.loc 1 436 1 is_stmt 0 view .LVU557
+ 2035 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 2036              	.LCFI37:
+ 2037              		.cfi_def_cfa_offset 24
+ 2038              		.cfi_offset 4, -24
+ 2039              		.cfi_offset 5, -20
+ 2040              		.cfi_offset 6, -16
+ 2041              		.cfi_offset 7, -12
+ 2042              		.cfi_offset 8, -8
+ 2043              		.cfi_offset 14, -4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 51
+
+
+ 2044 0004 0646     		mov	r6, r0
+ 2045 0006 0C46     		mov	r4, r1
+ 2046 0008 1546     		mov	r5, r2
+ 437:Drivers/User_Driver/Src/rtc_i2c.c **** 	int i;
+ 2047              		.loc 1 437 2 is_stmt 1 view .LVU558
+ 438:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (rtc_write_lock_on() != I2C_OK) {
+ 2048              		.loc 1 438 2 view .LVU559
+ 2049              		.loc 1 438 6 is_stmt 0 view .LVU560
+ 2050 000a FFF7FEFF 		bl	rtc_write_lock_on
+ 2051              	.LVL178:
+ 2052              		.loc 1 438 5 view .LVU561
+ 2053 000e 0028     		cmp	r0, #0
+ 2054 0010 4DD1     		bne	.L156
+ 439:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 440:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 441:Drivers/User_Driver/Src/rtc_i2c.c **** 	
+ 442:Drivers/User_Driver/Src/rtc_i2c.c ****     if (rtc_start() != I2C_OK) {
+ 2055              		.loc 1 442 5 is_stmt 1 view .LVU562
+ 2056              		.loc 1 442 9 is_stmt 0 view .LVU563
+ 2057 0012 FFF7FEFF 		bl	rtc_start
+ 2058              	.LVL179:
+ 2059              		.loc 1 442 8 view .LVU564
+ 2060 0016 10B1     		cbz	r0, .L160
+ 443:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_START_FAIL;
+ 2061              		.loc 1 443 10 view .LVU565
+ 2062 0018 4FF00108 		mov	r8, #1
+ 2063 001c 49E0     		b	.L144
+ 2064              	.L160:
+ 444:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 445:Drivers/User_Driver/Src/rtc_i2c.c ****     rtc_send_byte(0x64);
+ 2065              		.loc 1 445 5 is_stmt 1 view .LVU566
+ 2066 001e 6420     		movs	r0, #100
+ 2067 0020 FFF7FEFF 		bl	rtc_send_byte
+ 2068              	.LVL180:
+ 446:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (rtc_wait_ack() != I2C_OK) {
+ 2069              		.loc 1 446 2 view .LVU567
+ 2070              		.loc 1 446 6 is_stmt 0 view .LVU568
+ 2071 0024 FFF7FEFF 		bl	rtc_wait_ack
+ 2072              	.LVL181:
+ 2073              		.loc 1 446 5 view .LVU569
+ 2074 0028 C0B9     		cbnz	r0, .L161
+ 447:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_stop(); 
+ 448:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 449:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 450:Drivers/User_Driver/Src/rtc_i2c.c **** 	if(startAddress > 0xFF) {
+ 2075              		.loc 1 450 2 is_stmt 1 view .LVU570
+ 2076              		.loc 1 450 4 is_stmt 0 view .LVU571
+ 2077 002a FF2C     		cmp	r4, #255
+ 2078 002c 1BD9     		bls	.L146
+ 451:Drivers/User_Driver/Src/rtc_i2c.c ****     	rtc_send_byte(0xff);
+ 2079              		.loc 1 451 6 is_stmt 1 view .LVU572
+ 2080 002e FF20     		movs	r0, #255
+ 2081 0030 FFF7FEFF 		bl	rtc_send_byte
+ 2082              	.LVL182:
+ 2083              	.L147:
+ 452:Drivers/User_Driver/Src/rtc_i2c.c **** 	} else {
+ 453:Drivers/User_Driver/Src/rtc_i2c.c ****     	rtc_send_byte(startAddress);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 52
+
+
+ 454:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 455:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (rtc_wait_ack() != I2C_OK) {
+ 2084              		.loc 1 455 2 view .LVU573
+ 2085              		.loc 1 455 6 is_stmt 0 view .LVU574
+ 2086 0034 FFF7FEFF 		bl	rtc_wait_ack
+ 2087              	.LVL183:
+ 2088              		.loc 1 455 5 view .LVU575
+ 2089 0038 8046     		mov	r8, r0
+ 2090 003a C0B9     		cbnz	r0, .L162
+ 456:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_stop(); 
+ 457:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 458:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 459:Drivers/User_Driver/Src/rtc_i2c.c **** 	if (startAddress > 0xFF) {
+ 2091              		.loc 1 459 2 is_stmt 1 view .LVU576
+ 2092              		.loc 1 459 5 is_stmt 0 view .LVU577
+ 2093 003c FF2C     		cmp	r4, #255
+ 2094 003e 20D8     		bhi	.L158
+ 2095              	.L150:
+ 460:Drivers/User_Driver/Src/rtc_i2c.c **** 		for (i = 0xFF; i < startAddress; i++) {
+ 2096              		.loc 1 460 10 discriminator 1 view .LVU578
+ 2097 0040 0024     		movs	r4, #0
+ 2098              	.L153:
+ 2099              	.LVL184:
+ 461:Drivers/User_Driver/Src/rtc_i2c.c **** 			rtc_send_byte(0xff);
+ 462:Drivers/User_Driver/Src/rtc_i2c.c **** 			if (rtc_wait_ack() != I2C_OK) {
+ 463:Drivers/User_Driver/Src/rtc_i2c.c **** 				rtc_stop(); 
+ 464:Drivers/User_Driver/Src/rtc_i2c.c **** 				return I2C_NO_ACK;
+ 465:Drivers/User_Driver/Src/rtc_i2c.c **** 			}
+ 466:Drivers/User_Driver/Src/rtc_i2c.c **** 		}
+ 467:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 468:Drivers/User_Driver/Src/rtc_i2c.c **** 	for (i = 0; i < length; i++) {				
+ 2100              		.loc 1 468 14 is_stmt 1 discriminator 1 view .LVU579
+ 2101              		.loc 1 468 2 is_stmt 0 discriminator 1 view .LVU580
+ 2102 0042 A542     		cmp	r5, r4
+ 2103 0044 2EDD     		ble	.L163
+ 469:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_send_byte(buffer[i]);
+ 2104              		.loc 1 469 3 is_stmt 1 view .LVU581
+ 2105 0046 305D     		ldrb	r0, [r6, r4]	@ zero_extendqisi2
+ 2106 0048 FFF7FEFF 		bl	rtc_send_byte
+ 2107              	.LVL185:
+ 470:Drivers/User_Driver/Src/rtc_i2c.c **** 		HAL_Delay(1);
+ 2108              		.loc 1 470 3 view .LVU582
+ 2109 004c 0120     		movs	r0, #1
+ 2110 004e FFF7FEFF 		bl	HAL_Delay
+ 2111              	.LVL186:
+ 471:Drivers/User_Driver/Src/rtc_i2c.c **** 		if (rtc_wait_ack() != I2C_OK) {
+ 2112              		.loc 1 471 3 view .LVU583
+ 2113              		.loc 1 471 7 is_stmt 0 view .LVU584
+ 2114 0052 FFF7FEFF 		bl	rtc_wait_ack
+ 2115              	.LVL187:
+ 2116              		.loc 1 471 6 view .LVU585
+ 2117 0056 00BB     		cbnz	r0, .L164
+ 468:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_send_byte(buffer[i]);
+ 2118              		.loc 1 468 26 is_stmt 1 discriminator 2 view .LVU586
+ 468:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_send_byte(buffer[i]);
+ 2119              		.loc 1 468 27 is_stmt 0 discriminator 2 view .LVU587
+ 2120 0058 0134     		adds	r4, r4, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 53
+
+
+ 2121              	.LVL188:
+ 468:Drivers/User_Driver/Src/rtc_i2c.c **** 		rtc_send_byte(buffer[i]);
+ 2122              		.loc 1 468 27 discriminator 2 view .LVU588
+ 2123 005a F2E7     		b	.L153
+ 2124              	.LVL189:
+ 2125              	.L161:
+ 447:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 2126              		.loc 1 447 3 is_stmt 1 view .LVU589
+ 2127 005c FFF7FEFF 		bl	rtc_stop
+ 2128              	.LVL190:
+ 448:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 2129              		.loc 1 448 3 view .LVU590
+ 448:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 2130              		.loc 1 448 10 is_stmt 0 view .LVU591
+ 2131 0060 4FF00208 		mov	r8, #2
+ 2132 0064 25E0     		b	.L144
+ 2133              	.L146:
+ 453:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 2134              		.loc 1 453 6 is_stmt 1 view .LVU592
+ 2135 0066 E0B2     		uxtb	r0, r4
+ 2136 0068 FFF7FEFF 		bl	rtc_send_byte
+ 2137              	.LVL191:
+ 2138 006c E2E7     		b	.L147
+ 2139              	.L162:
+ 456:Drivers/User_Driver/Src/rtc_i2c.c **** 		return I2C_NO_ACK;
+ 2140              		.loc 1 456 3 view .LVU593
+ 2141 006e FFF7FEFF 		bl	rtc_stop
+ 2142              	.LVL192:
+ 457:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 2143              		.loc 1 457 3 view .LVU594
+ 457:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 2144              		.loc 1 457 10 is_stmt 0 view .LVU595
+ 2145 0072 4FF00208 		mov	r8, #2
+ 2146 0076 1CE0     		b	.L144
+ 2147              	.LVL193:
+ 2148              	.L165:
+ 463:Drivers/User_Driver/Src/rtc_i2c.c **** 				return I2C_NO_ACK;
+ 2149              		.loc 1 463 5 is_stmt 1 view .LVU596
+ 2150 0078 FFF7FEFF 		bl	rtc_stop
+ 2151              	.LVL194:
+ 464:Drivers/User_Driver/Src/rtc_i2c.c **** 			}
+ 2152              		.loc 1 464 5 view .LVU597
+ 464:Drivers/User_Driver/Src/rtc_i2c.c **** 			}
+ 2153              		.loc 1 464 12 is_stmt 0 view .LVU598
+ 2154 007c 4FF00208 		mov	r8, #2
+ 2155 0080 17E0     		b	.L144
+ 2156              	.LVL195:
+ 2157              	.L158:
+ 460:Drivers/User_Driver/Src/rtc_i2c.c **** 			rtc_send_byte(0xff);
+ 2158              		.loc 1 460 10 view .LVU599
+ 2159 0082 FF27     		movs	r7, #255
+ 2160              	.L149:
+ 2161              	.LVL196:
+ 460:Drivers/User_Driver/Src/rtc_i2c.c **** 			rtc_send_byte(0xff);
+ 2162              		.loc 1 460 18 is_stmt 1 discriminator 1 view .LVU600
+ 460:Drivers/User_Driver/Src/rtc_i2c.c **** 			rtc_send_byte(0xff);
+ 2163              		.loc 1 460 3 is_stmt 0 discriminator 1 view .LVU601
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 54
+
+
+ 2164 0084 BC42     		cmp	r4, r7
+ 2165 0086 DBDD     		ble	.L150
+ 461:Drivers/User_Driver/Src/rtc_i2c.c **** 			if (rtc_wait_ack() != I2C_OK) {
+ 2166              		.loc 1 461 4 is_stmt 1 view .LVU602
+ 2167 0088 FF20     		movs	r0, #255
+ 2168 008a FFF7FEFF 		bl	rtc_send_byte
+ 2169              	.LVL197:
+ 462:Drivers/User_Driver/Src/rtc_i2c.c **** 				rtc_stop(); 
+ 2170              		.loc 1 462 4 view .LVU603
+ 462:Drivers/User_Driver/Src/rtc_i2c.c **** 				rtc_stop(); 
+ 2171              		.loc 1 462 8 is_stmt 0 view .LVU604
+ 2172 008e FFF7FEFF 		bl	rtc_wait_ack
+ 2173              	.LVL198:
+ 462:Drivers/User_Driver/Src/rtc_i2c.c **** 				rtc_stop(); 
+ 2174              		.loc 1 462 7 view .LVU605
+ 2175 0092 0028     		cmp	r0, #0
+ 2176 0094 F0D1     		bne	.L165
+ 460:Drivers/User_Driver/Src/rtc_i2c.c **** 			rtc_send_byte(0xff);
+ 2177              		.loc 1 460 36 is_stmt 1 discriminator 2 view .LVU606
+ 460:Drivers/User_Driver/Src/rtc_i2c.c **** 			rtc_send_byte(0xff);
+ 2178              		.loc 1 460 37 is_stmt 0 discriminator 2 view .LVU607
+ 2179 0096 0137     		adds	r7, r7, #1
+ 2180              	.LVL199:
+ 460:Drivers/User_Driver/Src/rtc_i2c.c **** 			rtc_send_byte(0xff);
+ 2181              		.loc 1 460 37 discriminator 2 view .LVU608
+ 2182 0098 F4E7     		b	.L149
+ 2183              	.LVL200:
+ 2184              	.L164:
+ 472:Drivers/User_Driver/Src/rtc_i2c.c **** 			rtc_stop(); 
+ 2185              		.loc 1 472 4 is_stmt 1 view .LVU609
+ 2186 009a FFF7FEFF 		bl	rtc_stop
+ 2187              	.LVL201:
+ 473:Drivers/User_Driver/Src/rtc_i2c.c **** 			return I2C_NO_ACK;
+ 2188              		.loc 1 473 4 view .LVU610
+ 2189              		.loc 1 473 11 is_stmt 0 view .LVU611
+ 2190 009e 4FF00208 		mov	r8, #2
+ 2191 00a2 06E0     		b	.L144
+ 2192              	.L163:
+ 474:Drivers/User_Driver/Src/rtc_i2c.c **** 		}
+ 475:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 476:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_stop(); 
+ 2193              		.loc 1 476 2 is_stmt 1 view .LVU612
+ 2194 00a4 FFF7FEFF 		bl	rtc_stop
+ 2195              	.LVL202:
+ 477:Drivers/User_Driver/Src/rtc_i2c.c **** 	
+ 478:Drivers/User_Driver/Src/rtc_i2c.c **** 	rtc_write_lock_off();
+ 2196              		.loc 1 478 2 view .LVU613
+ 2197 00a8 FFF7FEFF 		bl	rtc_write_lock_off
+ 2198              	.LVL203:
+ 479:Drivers/User_Driver/Src/rtc_i2c.c **** 	return I2C_OK;
+ 2199              		.loc 1 479 2 view .LVU614
+ 2200              		.loc 1 479 9 is_stmt 0 view .LVU615
+ 2201 00ac 01E0     		b	.L144
+ 2202              	.LVL204:
+ 2203              	.L156:
+ 439:Drivers/User_Driver/Src/rtc_i2c.c **** 	}
+ 2204              		.loc 1 439 10 view .LVU616
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 55
+
+
+ 2205 00ae 4FF00208 		mov	r8, #2
+ 2206              	.L144:
+ 480:Drivers/User_Driver/Src/rtc_i2c.c **** }
+ 2207              		.loc 1 480 1 view .LVU617
+ 2208 00b2 4046     		mov	r0, r8
+ 2209 00b4 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 2210              		.loc 1 480 1 view .LVU618
+ 2211              		.cfi_endproc
+ 2212              	.LFE257:
+ 2214              		.global	g_state
+ 2215              		.global	soft_rtc_delay
+ 2216              		.section	.rodata
+ 2217              		.align	2
+ 2218              		.set	.LANCHOR2,. + 0
+ 2219              	.LC0:
+ 2220 0000 0000     		.ascii	"\000\000"
+ 2221 0002 0001     		.ascii	"\000\001"
+ 2222 0004 0100     		.ascii	"\001\000"
+ 2223 0006 0101     		.ascii	"\001\001"
+ 2224 0008 0200     		.ascii	"\002\000"
+ 2225 000a 0201     		.ascii	"\002\001"
+ 2226 000c 0300     		.ascii	"\003\000"
+ 2227 000e 0301     		.ascii	"\003\001"
+ 2228 0010 0400     		.ascii	"\004\000"
+ 2229 0012 0401     		.ascii	"\004\001"
+ 2230 0014 0002     		.ascii	"\000\002"
+ 2231 0016 0003     		.ascii	"\000\003"
+ 2232 0018 0102     		.ascii	"\001\002"
+ 2233 001a 0103     		.ascii	"\001\003"
+ 2234 001c 0202     		.ascii	"\002\002"
+ 2235 001e 0203     		.ascii	"\002\003"
+ 2236 0020 0302     		.ascii	"\003\002"
+ 2237 0022 0303     		.ascii	"\003\003"
+ 2238 0024 0402     		.ascii	"\004\002"
+ 2239 0026 0403     		.ascii	"\004\003"
+ 2240 0028 0004     		.ascii	"\000\004"
+ 2241 002a 0005     		.ascii	"\000\005"
+ 2242 002c 0104     		.ascii	"\001\004"
+ 2243 002e 0105     		.ascii	"\001\005"
+ 2244 0030 0204     		.ascii	"\002\004"
+ 2245 0032 0205     		.ascii	"\002\005"
+ 2246 0034 0304     		.ascii	"\003\004"
+ 2247 0036 0305     		.ascii	"\003\005"
+ 2248 0038 0404     		.ascii	"\004\004"
+ 2249 003a 0405     		.ascii	"\004\005"
+ 2250 003c 0006     		.ascii	"\000\006"
+ 2251 003e 0007     		.ascii	"\000\007"
+ 2252 0040 0106     		.ascii	"\001\006"
+ 2253 0042 0107     		.ascii	"\001\007"
+ 2254 0044 0206     		.ascii	"\002\006"
+ 2255 0046 0207     		.ascii	"\002\007"
+ 2256 0048 0306     		.ascii	"\003\006"
+ 2257 004a 0307     		.ascii	"\003\007"
+ 2258 004c 0406     		.ascii	"\004\006"
+ 2259 004e 0407     		.ascii	"\004\007"
+ 2260 0050 0500     		.ascii	"\005\000"
+ 2261 0052 0501     		.ascii	"\005\001"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 56
+
+
+ 2262 0054 0600     		.ascii	"\006\000"
+ 2263 0056 0601     		.ascii	"\006\001"
+ 2264 0058 0700     		.ascii	"\007\000"
+ 2265 005a 0701     		.ascii	"\007\001"
+ 2266 005c 0800     		.ascii	"\010\000"
+ 2267 005e 0801     		.ascii	"\010\001"
+ 2268 0060 0900     		.ascii	"\011\000"
+ 2269 0062 0901     		.ascii	"\011\001"
+ 2270 0064 0502     		.ascii	"\005\002"
+ 2271 0066 0503     		.ascii	"\005\003"
+ 2272 0068 0602     		.ascii	"\006\002"
+ 2273 006a 0603     		.ascii	"\006\003"
+ 2274 006c 0702     		.ascii	"\007\002"
+ 2275 006e 0703     		.ascii	"\007\003"
+ 2276 0070 0802     		.ascii	"\010\002"
+ 2277 0072 0803     		.ascii	"\010\003"
+ 2278 0074 0902     		.ascii	"\011\002"
+ 2279 0076 0903     		.ascii	"\011\003"
+ 2280 0078 0504     		.ascii	"\005\004"
+ 2281 007a 0505     		.ascii	"\005\005"
+ 2282 007c 0604     		.ascii	"\006\004"
+ 2283 007e 0605     		.ascii	"\006\005"
+ 2284 0080 0704     		.ascii	"\007\004"
+ 2285 0082 0705     		.ascii	"\007\005"
+ 2286 0084 0804     		.ascii	"\010\004"
+ 2287 0086 0805     		.ascii	"\010\005"
+ 2288 0088 0904     		.ascii	"\011\004"
+ 2289 008a 0905     		.ascii	"\011\005"
+ 2290 008c 0506     		.ascii	"\005\006"
+ 2291 008e 0507     		.ascii	"\005\007"
+ 2292 0090 0606     		.ascii	"\006\006"
+ 2293 0092 0607     		.ascii	"\006\007"
+ 2294 0094 0706     		.ascii	"\007\006"
+ 2295 0096 0707     		.ascii	"\007\007"
+ 2296 0098 0806     		.ascii	"\010\006"
+ 2297 009a 0807     		.ascii	"\010\007"
+ 2298 009c 0906     		.ascii	"\011\006"
+ 2299 009e 0907     		.ascii	"\011\007"
+ 2300 00a0 0A00     		.ascii	"\012\000"
+ 2301 00a2 0A01     		.ascii	"\012\001"
+ 2302 00a4 0A02     		.ascii	"\012\002"
+ 2303 00a6 0A03     		.ascii	"\012\003"
+ 2304 00a8 0B00     		.ascii	"\013\000"
+ 2305 00aa 0B01     		.ascii	"\013\001"
+ 2306 00ac 0B02     		.ascii	"\013\002"
+ 2307 00ae 0B03     		.ascii	"\013\003"
+ 2308 00b0 0C00     		.ascii	"\014\000"
+ 2309 00b2 0C01     		.ascii	"\014\001"
+ 2310 00b4 0A04     		.ascii	"\012\004"
+ 2311 00b6 0A05     		.ascii	"\012\005"
+ 2312 00b8 0A06     		.ascii	"\012\006"
+ 2313 00ba 0A07     		.ascii	"\012\007"
+ 2314 00bc 0B04     		.ascii	"\013\004"
+ 2315 00be 0B05     		.ascii	"\013\005"
+ 2316 00c0 0B06     		.ascii	"\013\006"
+ 2317 00c2 0B07     		.ascii	"\013\007"
+ 2318 00c4 0C02     		.ascii	"\014\002"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 57
+
+
+ 2319 00c6 0C03     		.ascii	"\014\003"
+ 2320              		.section	.bss.g_i2c,"aw",%nobits
+ 2321              		.align	2
+ 2322              		.set	.LANCHOR0,. + 0
+ 2325              	g_i2c:
+ 2326 0000 00000000 		.space	24
+ 2326      00000000 
+ 2326      00000000 
+ 2326      00000000 
+ 2326      00000000 
+ 2327              		.section	.bss.g_state,"aw",%nobits
+ 2328              		.set	.LANCHOR1,. + 0
+ 2331              	g_state:
+ 2332 0000 00       		.space	1
+ 2333              		.section	.data.soft_rtc_delay,"aw"
+ 2334              		.align	1
+ 2335              		.set	.LANCHOR3,. + 0
+ 2338              	soft_rtc_delay:
+ 2339 0000 5802     		.short	600
+ 2340              		.text
+ 2341              	.Letext0:
+ 2342              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 2343              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 2344              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 2345              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 2346              		.file 6 "Drivers/User_Driver/Inc/soft_i2c.h"
+ 2347              		.file 7 "Drivers/User_Driver/Inc/rtc_i2c.h"
+ 2348              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 2349              		.file 9 "<built-in>"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 58
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 rtc_i2c.c
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:20     .text.rtc_read_sda:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:25     .text.rtc_read_sda:00000000 rtc_read_sda
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:76     .text.rtc_read_sda:00000020 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:82     .text.set_switch_channel:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:88     .text.set_switch_channel:00000000 set_switch_channel
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:187    .text.set_switch_channel:00000090 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:194    .text.rtc_set_channel:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:200    .text.rtc_set_channel:00000000 rtc_set_channel
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:281    .text.rtc_set_channel:00000050 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:291    .text.rtc_sda_h:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:297    .text.rtc_sda_h:00000000 rtc_sda_h
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:337    .text.rtc_sda_h:00000028 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:343    .text.rtc_sda_l:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:349    .text.rtc_sda_l:00000000 rtc_sda_l
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:389    .text.rtc_sda_l:00000028 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:395    .text.rtc_scl_h:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:401    .text.rtc_scl_h:00000000 rtc_scl_h
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:424    .text.rtc_scl_h:00000010 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:429    .text.rtc_scl_l:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:435    .text.rtc_scl_l:00000000 rtc_scl_l
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:458    .text.rtc_scl_l:00000010 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:463    .text.rtc_start:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:469    .text.rtc_start:00000000 rtc_start
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:646    .text.rtc_start:00000074 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:655    .text.rtc_stop:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:661    .text.rtc_stop:00000000 rtc_stop
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:792    .text.rtc_stop:0000005c $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:801    .text.rtc_ack:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:807    .text.rtc_ack:00000000 rtc_ack
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:936    .text.rtc_ack:00000048 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:941    .text.rtc_nack:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:947    .text.rtc_nack:00000000 rtc_nack
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1025   .text.rtc_nack:0000002c $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1030   .text.rtc_wait_ack:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1036   .text.rtc_wait_ack:00000000 rtc_wait_ack
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1214   .text.rtc_wait_ack:00000084 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1223   .text.rtc_send_byte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1229   .text.rtc_send_byte:00000000 rtc_send_byte
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1378   .text.rtc_send_byte:0000005c $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1383   .text.rtc_receive_byte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1389   .text.rtc_receive_byte:00000000 rtc_receive_byte
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1626   .text.rtc_receive_byte:000000a4 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1635   .text.rtc_write_multi_bytes:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1641   .text.rtc_write_multi_bytes:00000000 rtc_write_multi_bytes
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1748   .text.rtc_read_multi_bytes:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1754   .text.rtc_read_multi_bytes:00000000 rtc_read_multi_bytes
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1887   .text.rtc_write_lock_on:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1893   .text.rtc_write_lock_on:00000000 rtc_write_lock_on
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1954   .text.rtc_write_lock_off:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:1960   .text.rtc_write_lock_off:00000000 rtc_write_lock_off
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:2021   .text.rtc_download_otp_data:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:2027   .text.rtc_download_otp_data:00000000 rtc_download_otp_data
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:2331   .bss.g_state:00000000 g_state
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:2338   .data.soft_rtc_delay:00000000 soft_rtc_delay
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:2217   .rodata:00000000 $d
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s 			page 59
+
+
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:2321   .bss.g_i2c:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:2325   .bss.g_i2c:00000000 g_i2c
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:2332   .bss.g_state:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccYOrDX2.s:2334   .data.soft_rtc_delay:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_ReadPin
+memcpy
+HAL_GPIO_WritePin
+HAL_GPIO_Init
+HAL_Delay

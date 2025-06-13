@@ -1,0 +1,3786 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"manager.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.manager_set_mode,"ax",%progbits
+  20              		.align	1
+  21              		.global	manager_set_mode
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	manager_set_mode:
+  27              	.LVL0:
+  28              	.LFB235:
+  29              		.file 1 "App/Src/manager.c"
+   1:App/Src/manager.c **** #include "main.h"
+   2:App/Src/manager.c **** #include "manager.h"
+   3:App/Src/manager.c **** #include "current.h"
+   4:App/Src/manager.c **** #include "voltage.h"
+   5:App/Src/manager.c **** #include "temp.h"
+   6:App/Src/manager.c **** #include "flash.h"
+   7:App/Src/manager.c **** #include "log.h"
+   8:App/Src/manager.c **** #include "task.h"
+   9:App/Src/manager.c **** #include "rtc.h"
+  10:App/Src/manager.c **** #include "calculate.h"
+  11:App/Src/manager.c **** #include <string.h>
+  12:App/Src/manager.c **** #include "power.h"
+  13:App/Src/manager.c **** #include "drv_wave1006.h"
+  14:App/Src/manager.c **** 
+  15:App/Src/manager.c **** #define SD8800_CENTER_TEMP_UP                   30//30¡æ
+  16:App/Src/manager.c **** #define SD8800_CENTER_TEMP_DOWN                 15//15¡æ
+  17:App/Src/manager.c **** 
+  18:App/Src/manager.c **** typedef struct {
+  19:App/Src/manager.c ****     uint8_t number;
+  20:App/Src/manager.c ****     float temp[MAX_CHIP_NUMBER];
+  21:App/Src/manager.c ****     float cap[MAX_CHIP_NUMBER];
+  22:App/Src/manager.c ****     uint8_t flag[MAX_CHIP_NUMBER];
+  23:App/Src/manager.c **** }TestOneData;
+  24:App/Src/manager.c **** 
+  25:App/Src/manager.c **** static uint8_t g_testMode = FREE_MODE;
+  26:App/Src/manager.c **** CapAdjust g_capAdjust = {0};
+  27:App/Src/manager.c **** static TestOneData g_oneData = {0};
+  28:App/Src/manager.c **** uint8_t g_testFlag[MAX_CHIP_NUMBER] = {0};
+  29:App/Src/manager.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 2
+
+
+  30:App/Src/manager.c **** void manager_set_mode(uint8_t mode)
+  31:App/Src/manager.c **** {
+  30              		.loc 1 31 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  32:App/Src/manager.c ****     g_testMode = mode;
+  35              		.loc 1 32 5 view .LVU1
+  36              		.loc 1 32 16 is_stmt 0 view .LVU2
+  37 0000 014B     		ldr	r3, .L2
+  38 0002 1870     		strb	r0, [r3]
+  33:App/Src/manager.c **** }
+  39              		.loc 1 33 1 view .LVU3
+  40 0004 7047     		bx	lr
+  41              	.L3:
+  42 0006 00BF     		.align	2
+  43              	.L2:
+  44 0008 00000000 		.word	.LANCHOR0
+  45              		.cfi_endproc
+  46              	.LFE235:
+  48              		.section	.text.manager_get_mode,"ax",%progbits
+  49              		.align	1
+  50              		.global	manager_get_mode
+  51              		.syntax unified
+  52              		.thumb
+  53              		.thumb_func
+  55              	manager_get_mode:
+  56              	.LFB236:
+  34:App/Src/manager.c **** 
+  35:App/Src/manager.c **** uint8_t manager_get_mode(void)
+  36:App/Src/manager.c **** {
+  57              		.loc 1 36 1 is_stmt 1 view -0
+  58              		.cfi_startproc
+  59              		@ args = 0, pretend = 0, frame = 0
+  60              		@ frame_needed = 0, uses_anonymous_args = 0
+  61              		@ link register save eliminated.
+  37:App/Src/manager.c ****     return g_testMode;
+  62              		.loc 1 37 5 view .LVU5
+  38:App/Src/manager.c **** }
+  63              		.loc 1 38 1 is_stmt 0 view .LVU6
+  64 0000 014B     		ldr	r3, .L5
+  65 0002 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+  66 0004 7047     		bx	lr
+  67              	.L6:
+  68 0006 00BF     		.align	2
+  69              	.L5:
+  70 0008 00000000 		.word	.LANCHOR0
+  71              		.cfi_endproc
+  72              	.LFE236:
+  74              		.global	__aeabi_ui2d
+  75              		.global	__aeabi_dmul
+  76              		.global	__aeabi_d2uiz
+  77              		.section	.rodata.system_voltage_test.str1.4,"aMS",%progbits,1
+  78              		.align	2
+  79              	.LC0:
+  80 0000 332E3356 		.ascii	"3.3V:%dmV,\000"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 3
+
+
+  80      3A25646D 
+  80      562C00
+  81 000b 00       		.align	2
+  82              	.LC1:
+  83 000c 35563A25 		.ascii	"5V:%dmV,\000"
+  83      646D562C 
+  83      00
+  84              		.section	.text.system_voltage_test,"ax",%progbits
+  85              		.align	1
+  86              		.global	system_voltage_test
+  87              		.syntax unified
+  88              		.thumb
+  89              		.thumb_func
+  91              	system_voltage_test:
+  92              	.LFB237:
+  39:App/Src/manager.c **** 
+  40:App/Src/manager.c **** 
+  41:App/Src/manager.c **** uint8_t system_voltage_test(void)
+  42:App/Src/manager.c **** {
+  93              		.loc 1 42 1 is_stmt 1 view -0
+  94              		.cfi_startproc
+  95              		@ args = 0, pretend = 0, frame = 0
+  96              		@ frame_needed = 0, uses_anonymous_args = 0
+  97 0000 10B5     		push	{r4, lr}
+  98              	.LCFI0:
+  99              		.cfi_def_cfa_offset 8
+ 100              		.cfi_offset 4, -8
+ 101              		.cfi_offset 14, -4
+  43:App/Src/manager.c **** 	uint32_t voltage;
+ 102              		.loc 1 43 2 view .LVU8
+  44:App/Src/manager.c ****     uint8_t result = 0;
+ 103              		.loc 1 44 5 view .LVU9
+ 104              	.LVL1:
+  45:App/Src/manager.c **** 	voltage = ststem_voltage(CHANNEL_3V3) * 3300 * 4.6 / 4096;
+ 105              		.loc 1 45 2 view .LVU10
+ 106              		.loc 1 45 12 is_stmt 0 view .LVU11
+ 107 0002 0020     		movs	r0, #0
+ 108 0004 FFF7FEFF 		bl	ststem_voltage
+ 109              	.LVL2:
+ 110              		.loc 1 45 40 view .LVU12
+ 111 0008 40F6E444 		movw	r4, #3300
+ 112              		.loc 1 45 47 view .LVU13
+ 113 000c 04FB00F0 		mul	r0, r4, r0
+ 114 0010 FFF7FEFF 		bl	__aeabi_ui2d
+ 115              	.LVL3:
+ 116 0014 14A3     		adr	r3, .L9
+ 117 0016 D3E90023 		ldrd	r2, [r3]
+ 118 001a FFF7FEFF 		bl	__aeabi_dmul
+ 119              	.LVL4:
+ 120              		.loc 1 45 53 view .LVU14
+ 121 001e 0022     		movs	r2, #0
+ 122 0020 134B     		ldr	r3, .L9+8
+ 123 0022 FFF7FEFF 		bl	__aeabi_dmul
+ 124              	.LVL5:
+ 125              		.loc 1 45 10 view .LVU15
+ 126 0026 FFF7FEFF 		bl	__aeabi_d2uiz
+ 127              	.LVL6:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 4
+
+
+ 128 002a 0146     		mov	r1, r0
+ 129              	.LVL7:
+  46:App/Src/manager.c **** 	log_printf("3.3V:%dmV,", voltage);
+ 130              		.loc 1 46 2 is_stmt 1 view .LVU16
+ 131 002c 1148     		ldr	r0, .L9+12
+ 132              	.LVL8:
+ 133              		.loc 1 46 2 is_stmt 0 view .LVU17
+ 134 002e FFF7FEFF 		bl	log_printf
+ 135              	.LVL9:
+  47:App/Src/manager.c ****     if (voltage < 3000 && voltage > 3500) {result++;}
+ 136              		.loc 1 47 5 is_stmt 1 view .LVU18
+  48:App/Src/manager.c **** 	voltage = ststem_voltage(CHANNEL_5V) * 3300 * 4.6 / 4096;
+ 137              		.loc 1 48 2 view .LVU19
+ 138              		.loc 1 48 12 is_stmt 0 view .LVU20
+ 139 0032 0820     		movs	r0, #8
+ 140 0034 FFF7FEFF 		bl	ststem_voltage
+ 141              	.LVL10:
+ 142              		.loc 1 48 46 view .LVU21
+ 143 0038 04FB00F0 		mul	r0, r4, r0
+ 144 003c FFF7FEFF 		bl	__aeabi_ui2d
+ 145              	.LVL11:
+ 146 0040 09A3     		adr	r3, .L9
+ 147 0042 D3E90023 		ldrd	r2, [r3]
+ 148 0046 FFF7FEFF 		bl	__aeabi_dmul
+ 149              	.LVL12:
+ 150              		.loc 1 48 52 view .LVU22
+ 151 004a 0022     		movs	r2, #0
+ 152 004c 084B     		ldr	r3, .L9+8
+ 153 004e FFF7FEFF 		bl	__aeabi_dmul
+ 154              	.LVL13:
+ 155              		.loc 1 48 10 view .LVU23
+ 156 0052 FFF7FEFF 		bl	__aeabi_d2uiz
+ 157              	.LVL14:
+ 158 0056 0146     		mov	r1, r0
+ 159              	.LVL15:
+  49:App/Src/manager.c **** 	log_printf("5V:%dmV,", voltage);
+ 160              		.loc 1 49 2 is_stmt 1 view .LVU24
+ 161 0058 0748     		ldr	r0, .L9+16
+ 162              	.LVL16:
+ 163              		.loc 1 49 2 is_stmt 0 view .LVU25
+ 164 005a FFF7FEFF 		bl	log_printf
+ 165              	.LVL17:
+  50:App/Src/manager.c ****     if (voltage < 4500 && voltage > 5500) {result++;}
+ 166              		.loc 1 50 5 is_stmt 1 view .LVU26
+  51:App/Src/manager.c ****     return result;
+ 167              		.loc 1 51 5 view .LVU27
+  52:App/Src/manager.c **** } 
+ 168              		.loc 1 52 1 is_stmt 0 view .LVU28
+ 169 005e 0020     		movs	r0, #0
+ 170 0060 10BD     		pop	{r4, pc}
+ 171              	.L10:
+ 172 0062 00BFAFF3 		.align	3
+ 172      0080
+ 173              	.L9:
+ 174 0068 66666666 		.word	1717986918
+ 175 006c 66661240 		.word	1074947686
+ 176 0070 0000303F 		.word	1060110336
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 5
+
+
+ 177 0074 00000000 		.word	.LC0
+ 178 0078 0C000000 		.word	.LC1
+ 179              		.cfi_endproc
+ 180              	.LFE237:
+ 182              		.section	.rodata.check_history_download.str1.4,"aMS",%progbits,1
+ 183              		.align	2
+ 184              	.LC2:
+ 185 0000 63686563 		.ascii	"check id is download\012\000"
+ 185      6B206964 
+ 185      20697320 
+ 185      646F776E 
+ 185      6C6F6164 
+ 186              		.section	.text.check_history_download,"ax",%progbits
+ 187              		.align	1
+ 188              		.global	check_history_download
+ 189              		.syntax unified
+ 190              		.thumb
+ 191              		.thumb_func
+ 193              	check_history_download:
+ 194              	.LVL18:
+ 195              	.LFB238:
+  53:App/Src/manager.c **** 
+  54:App/Src/manager.c **** uint8_t check_history_download(uint8_t number)
+  55:App/Src/manager.c **** {
+ 196              		.loc 1 55 1 is_stmt 1 view -0
+ 197              		.cfi_startproc
+ 198              		@ args = 0, pretend = 0, frame = 8
+ 199              		@ frame_needed = 0, uses_anonymous_args = 0
+ 200              		.loc 1 55 1 is_stmt 0 view .LVU30
+ 201 0000 00B5     		push	{lr}
+ 202              	.LCFI1:
+ 203              		.cfi_def_cfa_offset 4
+ 204              		.cfi_offset 14, -4
+ 205 0002 83B0     		sub	sp, sp, #12
+ 206              	.LCFI2:
+ 207              		.cfi_def_cfa_offset 16
+  56:App/Src/manager.c ****     uint8_t buffer[2] = {0};
+ 208              		.loc 1 56 5 is_stmt 1 view .LVU31
+ 209              		.loc 1 56 13 is_stmt 0 view .LVU32
+ 210 0004 0023     		movs	r3, #0
+ 211 0006 ADF80430 		strh	r3, [sp, #4]	@ movhi
+  57:App/Src/manager.c **** 	rtc_set_channel(number, RTC_INIT_1006);
+ 212              		.loc 1 57 2 is_stmt 1 view .LVU33
+ 213 000a 0121     		movs	r1, #1
+ 214 000c FFF7FEFF 		bl	rtc_set_channel
+ 215              	.LVL19:
+  58:App/Src/manager.c ****     rtc_read_multi_bytes(0x64, 0xb2, buffer, 2);
+ 216              		.loc 1 58 5 view .LVU34
+ 217 0010 0223     		movs	r3, #2
+ 218 0012 01AA     		add	r2, sp, #4
+ 219 0014 B221     		movs	r1, #178
+ 220 0016 6420     		movs	r0, #100
+ 221 0018 FFF7FEFF 		bl	rtc_read_multi_bytes
+ 222              	.LVL20:
+  59:App/Src/manager.c ****     if (buffer[0] == 24 || buffer[1] != 0) {
+ 223              		.loc 1 59 5 view .LVU35
+ 224              		.loc 1 59 15 is_stmt 0 view .LVU36
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 6
+
+
+ 225 001c 9DF80430 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 226              		.loc 1 59 8 view .LVU37
+ 227 0020 182B     		cmp	r3, #24
+ 228 0022 05D0     		beq	.L12
+ 229              		.loc 1 59 34 discriminator 1 view .LVU38
+ 230 0024 9DF80500 		ldrb	r0, [sp, #5]	@ zero_extendqisi2
+ 231              		.loc 1 59 25 discriminator 1 view .LVU39
+ 232 0028 10B9     		cbnz	r0, .L12
+ 233              	.L13:
+  60:App/Src/manager.c ****         log_printf("check id is download\n");
+  61:App/Src/manager.c ****         return 1;
+  62:App/Src/manager.c ****     }
+  63:App/Src/manager.c ****     return 0;
+  64:App/Src/manager.c **** }
+ 234              		.loc 1 64 1 view .LVU40
+ 235 002a 03B0     		add	sp, sp, #12
+ 236              	.LCFI3:
+ 237              		.cfi_remember_state
+ 238              		.cfi_def_cfa_offset 4
+ 239              		@ sp needed
+ 240 002c 5DF804FB 		ldr	pc, [sp], #4
+ 241              	.L12:
+ 242              	.LCFI4:
+ 243              		.cfi_restore_state
+  60:App/Src/manager.c ****         log_printf("check id is download\n");
+ 244              		.loc 1 60 9 is_stmt 1 view .LVU41
+ 245 0030 0248     		ldr	r0, .L15
+ 246 0032 FFF7FEFF 		bl	log_printf
+ 247              	.LVL21:
+  61:App/Src/manager.c ****     }
+ 248              		.loc 1 61 9 view .LVU42
+  61:App/Src/manager.c ****     }
+ 249              		.loc 1 61 16 is_stmt 0 view .LVU43
+ 250 0036 0120     		movs	r0, #1
+ 251 0038 F7E7     		b	.L13
+ 252              	.L16:
+ 253 003a 00BF     		.align	2
+ 254              	.L15:
+ 255 003c 00000000 		.word	.LC2
+ 256              		.cfi_endproc
+ 257              	.LFE238:
+ 259              		.global	__aeabi_f2d
+ 260              		.section	.rodata.system_manage_temp.str1.4,"aMS",%progbits,1
+ 261              		.align	2
+ 262              	.LC3:
+ 263 0000 74656D70 		.ascii	"temp1 value %.1fC\012\000"
+ 263      31207661 
+ 263      6C756520 
+ 263      252E3166 
+ 263      430A00
+ 264 0013 00       		.align	2
+ 265              	.LC4:
+ 266 0014 63686563 		.ascii	"check system temp is error, test stop.\012\000"
+ 266      6B207379 
+ 266      7374656D 
+ 266      2074656D 
+ 266      70206973 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 7
+
+
+ 267              		.align	2
+ 268              	.LC5:
+ 269 003c 6D657373 		.ascii	"message:\317\265\315\263\316\302\266\310\263\254\267"
+ 269      6167653A 
+ 269      CFB5CDB3 
+ 269      CEC2B6C8 
+ 269      B3ACB7
+ 270 004f B6CEA70A 		.ascii	"\266\316\247\012\000"
+ 270      00
+ 271              		.align	2
+ 272              	.LC6:
+ 273 0054 63686563 		.ascii	"check system votage is error, test stop.\012\000"
+ 273      6B207379 
+ 273      7374656D 
+ 273      20766F74 
+ 273      61676520 
+ 274 007e 0000     		.align	2
+ 275              	.LC7:
+ 276 0080 6D657373 		.ascii	"message:\260\345\274\376\265\347\321\271\263\254\267"
+ 276      6167653A 
+ 276      B0E5BCFE 
+ 276      B5E7D1B9 
+ 276      B3ACB7
+ 277 0093 B6CEA70A 		.ascii	"\266\316\247\012\000"
+ 277      00
+ 278              		.align	2
+ 279              	.LC8:
+ 280 0098 6D657373 		.ascii	"message:\325\375\324\332\274\306\313\343config\012\000"
+ 280      6167653A 
+ 280      D5FDD4DA 
+ 280      BCC6CBE3 
+ 280      636F6E66 
+ 281              		.align	2
+ 282              	.LC9:
+ 283 00b0 74656D70 		.ascii	"temp offset:chip%d history success!\012\000"
+ 283      206F6666 
+ 283      7365743A 
+ 283      63686970 
+ 283      25642068 
+ 284 00d5 000000   		.align	2
+ 285              	.LC10:
+ 286 00d8 63686970 		.ascii	"chip%d enter testmode fail\012\000"
+ 286      25642065 
+ 286      6E746572 
+ 286      20746573 
+ 286      746D6F64 
+ 287              		.align	2
+ 288              	.LC11:
+ 289 00f4 63686970 		.ascii	"chip%d temp adc: %.1f, offset:%d\012\000"
+ 289      25642074 
+ 289      656D7020 
+ 289      6164633A 
+ 289      20252E31 
+ 290 0116 0000     		.align	2
+ 291              	.LC12:
+ 292 0118 6F6B4E75 		.ascii	"okNumber:%d chipName:%d\012\000"
+ 292      6D626572 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 8
+
+
+ 292      3A256420 
+ 292      63686970 
+ 292      4E616D65 
+ 293 0131 000000   		.align	2
+ 294              	.LC13:
+ 295 0134 73797374 		.ascii	"system set rtc temp config end, success:%d.\012\000"
+ 295      656D2073 
+ 295      65742072 
+ 295      74632074 
+ 295      656D7020 
+ 296              		.section	.text.system_manage_temp,"ax",%progbits
+ 297              		.align	1
+ 298              		.global	system_manage_temp
+ 299              		.syntax unified
+ 300              		.thumb
+ 301              		.thumb_func
+ 303              	system_manage_temp:
+ 304              	.LFB239:
+  65:App/Src/manager.c **** 
+  66:App/Src/manager.c **** int system_manage_temp(void)
+  67:App/Src/manager.c **** {
+ 305              		.loc 1 67 1 is_stmt 1 view -0
+ 306              		.cfi_startproc
+ 307              		@ args = 0, pretend = 0, frame = 336
+ 308              		@ frame_needed = 0, uses_anonymous_args = 0
+ 309 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 310              	.LCFI5:
+ 311              		.cfi_def_cfa_offset 36
+ 312              		.cfi_offset 4, -36
+ 313              		.cfi_offset 5, -32
+ 314              		.cfi_offset 6, -28
+ 315              		.cfi_offset 7, -24
+ 316              		.cfi_offset 8, -20
+ 317              		.cfi_offset 9, -16
+ 318              		.cfi_offset 10, -12
+ 319              		.cfi_offset 11, -8
+ 320              		.cfi_offset 14, -4
+ 321 0004 2DED028B 		vpush.64	{d8}
+ 322              	.LCFI6:
+ 323              		.cfi_def_cfa_offset 44
+ 324              		.cfi_offset 80, -44
+ 325              		.cfi_offset 81, -40
+ 326 0008 D7B0     		sub	sp, sp, #348
+ 327              	.LCFI7:
+ 328              		.cfi_def_cfa_offset 392
+  68:App/Src/manager.c **** 	float temp;
+ 329              		.loc 1 68 2 view .LVU45
+  69:App/Src/manager.c ****     int i;
+ 330              		.loc 1 69 5 view .LVU46
+  70:App/Src/manager.c ****     float rtc_temp;
+ 331              		.loc 1 70 5 view .LVU47
+  71:App/Src/manager.c ****     uint8_t config[MAX_CHIP_NUMBER] = {0};
+ 332              		.loc 1 71 5 view .LVU48
+ 333              		.loc 1 71 13 is_stmt 0 view .LVU49
+ 334 000a 0024     		movs	r4, #0
+ 335 000c 3D94     		str	r4, [sp, #244]
+ 336 000e 6022     		movs	r2, #96
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 9
+
+
+ 337 0010 2146     		mov	r1, r4
+ 338 0012 3EA8     		add	r0, sp, #248
+ 339 0014 FFF7FEFF 		bl	memset
+ 340              	.LVL22:
+  72:App/Src/manager.c ****     // uint8_t flag[MAX_CHIP_NUMBER] = {0};
+  73:App/Src/manager.c ****     uint8_t stepCount;
+ 341              		.loc 1 73 5 is_stmt 1 view .LVU50
+  74:App/Src/manager.c ****     TestResult tempTest = {0};
+ 342              		.loc 1 74 5 view .LVU51
+ 343              		.loc 1 74 16 is_stmt 0 view .LVU52
+ 344 0018 EC22     		movs	r2, #236
+ 345 001a 2146     		mov	r1, r4
+ 346 001c 02A8     		add	r0, sp, #8
+ 347 001e FFF7FEFF 		bl	memset
+ 348              	.LVL23:
+  75:App/Src/manager.c **** 
+  76:App/Src/manager.c **** //step 1: read system temp ship, and check system voltage ok
+  77:App/Src/manager.c **** 	temp = temp_read_value(1);
+ 349              		.loc 1 77 2 is_stmt 1 view .LVU53
+ 350              		.loc 1 77 9 is_stmt 0 view .LVU54
+ 351 0022 0120     		movs	r0, #1
+ 352 0024 FFF7FEFF 		bl	temp_read_value
+ 353              	.LVL24:
+ 354 0028 B0EE408A 		vmov.f32	s16, s0
+ 355              	.LVL25:
+  78:App/Src/manager.c ****     log_printf("temp1 value %.1fC\n", temp);
+ 356              		.loc 1 78 5 is_stmt 1 view .LVU55
+ 357 002c 10EE100A 		vmov	r0, s0
+ 358 0030 FFF7FEFF 		bl	__aeabi_f2d
+ 359              	.LVL26:
+ 360              		.loc 1 78 5 is_stmt 0 view .LVU56
+ 361 0034 0246     		mov	r2, r0
+ 362 0036 0B46     		mov	r3, r1
+ 363 0038 6648     		ldr	r0, .L35
+ 364 003a FFF7FEFF 		bl	log_printf
+ 365              	.LVL27:
+  79:App/Src/manager.c ****     if (temp > SD8800_CENTER_TEMP_UP || temp < SD8800_CENTER_TEMP_DOWN) {
+ 366              		.loc 1 79 5 is_stmt 1 view .LVU57
+ 367              		.loc 1 79 8 is_stmt 0 view .LVU58
+ 368 003e F3EE0E7A 		vmov.f32	s15, #3.0e+1
+ 369 0042 B4EEE78A 		vcmpe.f32	s16, s15
+ 370 0046 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 371 004a 14DC     		bgt	.L18
+ 372              		.loc 1 79 38 discriminator 1 view .LVU59
+ 373 004c F2EE0E7A 		vmov.f32	s15, #1.5e+1
+ 374 0050 B4EEE78A 		vcmpe.f32	s16, s15
+ 375 0054 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 376 0058 0DD4     		bmi	.L18
+  80:App/Src/manager.c ****         log_printf("check system temp is error, test stop.\n");
+  81:App/Src/manager.c ****         ControlPrintf("message:ÏµÍ³ÎÂ¶È³¬·¶Î§\n");
+  82:App/Src/manager.c ****         return -1;
+  83:App/Src/manager.c ****     } 
+  84:App/Src/manager.c ****     if (system_voltage_test() > 0) {
+ 377              		.loc 1 84 5 is_stmt 1 view .LVU60
+ 378              		.loc 1 84 9 is_stmt 0 view .LVU61
+ 379 005a FFF7FEFF 		bl	system_voltage_test
+ 380              	.LVL28:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 10
+
+
+ 381              		.loc 1 84 8 view .LVU62
+ 382 005e 0746     		mov	r7, r0
+ 383 0060 90B9     		cbnz	r0, .L31
+  85:App/Src/manager.c ****         log_printf("check system votage is error, test stop.\n");
+  86:App/Src/manager.c ****         ControlPrintf("message:°å¼þµçÑ¹³¬·¶Î§\n");
+  87:App/Src/manager.c ****         return -2;
+  88:App/Src/manager.c ****     }
+  89:App/Src/manager.c **** //step 2: read rtc group config and check, read rtc group temp, calculate group temp config
+  90:App/Src/manager.c ****     ControlPrintf("message:ÕýÔÚ¼ÆËãconfig\n");
+ 384              		.loc 1 90 5 is_stmt 1 view .LVU63
+ 385 0062 5D48     		ldr	r0, .L35+4
+ 386 0064 FFF7FEFF 		bl	ControlPrintf
+ 387              	.LVL29:
+  91:App/Src/manager.c ****     flash_test_flag_manage(g_testFlag, FLAG_TEMP, FLASH_FLAG_READ);
+ 388              		.loc 1 91 5 view .LVU64
+ 389 0068 0022     		movs	r2, #0
+ 390 006a 1146     		mov	r1, r2
+ 391 006c 5B48     		ldr	r0, .L35+8
+ 392 006e FFF7FEFF 		bl	flash_test_flag_manage
+ 393              	.LVL30:
+  92:App/Src/manager.c ****     stepCount = 0;
+ 394              		.loc 1 92 5 view .LVU65
+  93:App/Src/manager.c ****     for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 395              		.loc 1 93 5 view .LVU66
+ 396              		.loc 1 93 12 is_stmt 0 view .LVU67
+ 397 0072 0024     		movs	r4, #0
+ 398              		.loc 1 93 5 view .LVU68
+ 399 0074 35E0     		b	.L23
+ 400              	.LVL31:
+ 401              	.L18:
+  80:App/Src/manager.c ****         ControlPrintf("message:ÏµÍ³ÎÂ¶È³¬·¶Î§\n");
+ 402              		.loc 1 80 9 is_stmt 1 view .LVU69
+ 403 0076 5A48     		ldr	r0, .L35+12
+ 404 0078 FFF7FEFF 		bl	log_printf
+ 405              	.LVL32:
+  81:App/Src/manager.c ****         return -1;
+ 406              		.loc 1 81 9 view .LVU70
+ 407 007c 5948     		ldr	r0, .L35+16
+ 408 007e FFF7FEFF 		bl	ControlPrintf
+ 409              	.LVL33:
+  82:App/Src/manager.c ****     } 
+ 410              		.loc 1 82 9 view .LVU71
+  82:App/Src/manager.c ****     } 
+ 411              		.loc 1 82 16 is_stmt 0 view .LVU72
+ 412 0082 4FF0FF35 		mov	r5, #-1
+ 413 0086 9FE0     		b	.L17
+ 414              	.L31:
+  85:App/Src/manager.c ****         ControlPrintf("message:°å¼þµçÑ¹³¬·¶Î§\n");
+ 415              		.loc 1 85 9 is_stmt 1 view .LVU73
+ 416 0088 5748     		ldr	r0, .L35+20
+ 417 008a FFF7FEFF 		bl	log_printf
+ 418              	.LVL34:
+  86:App/Src/manager.c ****         return -2;
+ 419              		.loc 1 86 9 view .LVU74
+ 420 008e 5748     		ldr	r0, .L35+24
+ 421 0090 FFF7FEFF 		bl	ControlPrintf
+ 422              	.LVL35:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 11
+
+
+  87:App/Src/manager.c ****     }
+ 423              		.loc 1 87 9 view .LVU75
+  87:App/Src/manager.c ****     }
+ 424              		.loc 1 87 16 is_stmt 0 view .LVU76
+ 425 0094 6FF00105 		mvn	r5, #1
+ 426 0098 96E0     		b	.L17
+ 427              	.LVL36:
+ 428              	.L33:
+  94:App/Src/manager.c ****         if (g_testFlag[i] == 1) {
+  95:App/Src/manager.c ****             log_printf("temp offset:chip%d history success!\n", i + 1);
+ 429              		.loc 1 95 13 is_stmt 1 view .LVU77
+ 430 009a 651C     		adds	r5, r4, #1
+ 431 009c 544E     		ldr	r6, .L35+28
+ 432 009e 2946     		mov	r1, r5
+ 433 00a0 3046     		mov	r0, r6
+ 434 00a2 FFF7FEFF 		bl	log_printf
+ 435              	.LVL37:
+  96:App/Src/manager.c ****             UsbPrintf("temp offset:chip%d history success!\n", i + 1);
+ 436              		.loc 1 96 13 view .LVU78
+ 437 00a6 2946     		mov	r1, r5
+ 438 00a8 3046     		mov	r0, r6
+ 439 00aa FFF7FEFF 		bl	UsbPrintf
+ 440              	.LVL38:
+  97:App/Src/manager.c ****             stepCount++;
+ 441              		.loc 1 97 13 view .LVU79
+ 442              		.loc 1 97 22 is_stmt 0 view .LVU80
+ 443 00ae 0137     		adds	r7, r7, #1
+ 444              	.LVL39:
+ 445              		.loc 1 97 22 view .LVU81
+ 446 00b0 FFB2     		uxtb	r7, r7
+ 447              	.LVL40:
+  98:App/Src/manager.c ****             continue;
+ 448              		.loc 1 98 13 is_stmt 1 view .LVU82
+ 449 00b2 15E0     		b	.L25
+ 450              	.L34:
+  99:App/Src/manager.c ****         }
+ 100:App/Src/manager.c **** 	    temp = temp_read_value(1);
+ 101:App/Src/manager.c ****         tempTest.setTemp = temp;
+ 102:App/Src/manager.c **** 	    rtc_group_power(i + 1, POWER_CAP_TEST);
+ 103:App/Src/manager.c ****         HAL_Delay(500);
+ 104:App/Src/manager.c ****         if (check_history_download(i + 1) > 0) { continue; }
+ 105:App/Src/manager.c ****         if (rtc_8800_adc_testmode(i + 1) != I2C_OK) { 
+ 106:App/Src/manager.c ****             rtc_1006_exit_testmode(i + 1);
+ 451              		.loc 1 106 13 view .LVU83
+ 452 00b4 2846     		mov	r0, r5
+ 453 00b6 FFF7FEFF 		bl	rtc_1006_exit_testmode
+ 454              	.LVL41:
+ 107:App/Src/manager.c **** 	        log_printf("chip%d enter testmode fail\n", i + 1);
+ 455              		.loc 1 107 10 view .LVU84
+ 456 00ba 651C     		adds	r5, r4, #1
+ 457 00bc 4D4E     		ldr	r6, .L35+32
+ 458 00be 2946     		mov	r1, r5
+ 459 00c0 3046     		mov	r0, r6
+ 460 00c2 FFF7FEFF 		bl	log_printf
+ 461              	.LVL42:
+ 108:App/Src/manager.c **** 	        UsbPrintf("chip%d enter testmode fail\n", i + 1);
+ 462              		.loc 1 108 10 view .LVU85
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 12
+
+
+ 463 00c6 2946     		mov	r1, r5
+ 464 00c8 3046     		mov	r0, r6
+ 465 00ca FFF7FEFF 		bl	UsbPrintf
+ 466              	.LVL43:
+ 109:App/Src/manager.c ****             continue;
+ 467              		.loc 1 109 13 view .LVU86
+ 468 00ce 07E0     		b	.L25
+ 469              	.LVL44:
+ 470              	.L27:
+ 110:App/Src/manager.c ****         } else {
+ 111:App/Src/manager.c ****             HAL_Delay(10);
+ 112:App/Src/manager.c ****             rtc_temp = system_get_rtc_temp(); 
+ 113:App/Src/manager.c ****             config[i] = rtc_convert_temp_offset(rtc_temp, temp);
+ 114:App/Src/manager.c ****             log_printf("chip%d temp adc: %.1f, offset:%d\n", i + 1, rtc_temp, config[i]);
+ 115:App/Src/manager.c ****             UsbPrintf("chip%d temp adc: %.1f, offset:%d\n", i + 1, rtc_temp, config[i]);
+ 116:App/Src/manager.c ****             if (config[i] >= RTC_TEMP_OFFSET_MIN && config[i] <= RTC_TEMP_OFFSET_MAX) {
+ 117:App/Src/manager.c ****                 g_testFlag[i] = 1;
+ 118:App/Src/manager.c ****                 stepCount++;
+ 119:App/Src/manager.c ****                 tempTest.tempConfig = config[i];
+ 120:App/Src/manager.c ****                 flash_test_data_write_add(&tempTest, i + 1, SET_TEMP);
+ 121:App/Src/manager.c ****                 flash_test_data_write_add(&tempTest, i + 1, TEMP_CONFIG);
+ 122:App/Src/manager.c ****             }
+ 123:App/Src/manager.c ****             rtc_1006_exit_testmode(i + 1);
+ 471              		.loc 1 123 13 view .LVU87
+ 472 00d0 2846     		mov	r0, r5
+ 473 00d2 FFF7FEFF 		bl	rtc_1006_exit_testmode
+ 474              	.LVL45:
+ 124:App/Src/manager.c ****         }
+ 125:App/Src/manager.c ****         ControlPrintf("okNumber:%d chipName:%d\n", stepCount, i + 1);
+ 475              		.loc 1 125 9 view .LVU88
+ 476 00d6 5246     		mov	r2, r10
+ 477 00d8 3946     		mov	r1, r7
+ 478 00da 4748     		ldr	r0, .L35+36
+ 479 00dc FFF7FEFF 		bl	ControlPrintf
+ 480              	.LVL46:
+ 481              	.L25:
+  93:App/Src/manager.c ****         if (g_testFlag[i] == 1) {
+ 482              		.loc 1 93 38 discriminator 2 view .LVU89
+  93:App/Src/manager.c ****         if (g_testFlag[i] == 1) {
+ 483              		.loc 1 93 39 is_stmt 0 discriminator 2 view .LVU90
+ 484 00e0 0134     		adds	r4, r4, #1
+ 485              	.LVL47:
+ 486              	.L23:
+  93:App/Src/manager.c ****         if (g_testFlag[i] == 1) {
+ 487              		.loc 1 93 17 is_stmt 1 discriminator 1 view .LVU91
+  93:App/Src/manager.c ****         if (g_testFlag[i] == 1) {
+ 488              		.loc 1 93 5 is_stmt 0 discriminator 1 view .LVU92
+ 489 00e2 632C     		cmp	r4, #99
+ 490 00e4 61DC     		bgt	.L32
+  94:App/Src/manager.c ****             log_printf("temp offset:chip%d history success!\n", i + 1);
+ 491              		.loc 1 94 9 is_stmt 1 view .LVU93
+  94:App/Src/manager.c ****             log_printf("temp offset:chip%d history success!\n", i + 1);
+ 492              		.loc 1 94 23 is_stmt 0 view .LVU94
+ 493 00e6 3D4B     		ldr	r3, .L35+8
+ 494 00e8 1B5D     		ldrb	r3, [r3, r4]	@ zero_extendqisi2
+  94:App/Src/manager.c ****             log_printf("temp offset:chip%d history success!\n", i + 1);
+ 495              		.loc 1 94 12 view .LVU95
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 13
+
+
+ 496 00ea 012B     		cmp	r3, #1
+ 497 00ec D5D0     		beq	.L33
+ 100:App/Src/manager.c ****         tempTest.setTemp = temp;
+ 498              		.loc 1 100 6 is_stmt 1 view .LVU96
+ 100:App/Src/manager.c ****         tempTest.setTemp = temp;
+ 499              		.loc 1 100 13 is_stmt 0 view .LVU97
+ 500 00ee 0120     		movs	r0, #1
+ 501 00f0 FFF7FEFF 		bl	temp_read_value
+ 502              	.LVL48:
+ 503 00f4 B0EE408A 		vmov.f32	s16, s0
+ 504              	.LVL49:
+ 101:App/Src/manager.c **** 	    rtc_group_power(i + 1, POWER_CAP_TEST);
+ 505              		.loc 1 101 9 is_stmt 1 view .LVU98
+ 101:App/Src/manager.c **** 	    rtc_group_power(i + 1, POWER_CAP_TEST);
+ 506              		.loc 1 101 26 is_stmt 0 view .LVU99
+ 507 00f8 FCEEC07A 		vcvt.u32.f32	s15, s0
+ 508 00fc 17EE903A 		vmov	r3, s15	@ int
+ 509 0100 8DF83830 		strb	r3, [sp, #56]
+ 102:App/Src/manager.c ****         HAL_Delay(500);
+ 510              		.loc 1 102 6 is_stmt 1 view .LVU100
+ 511 0104 651C     		adds	r5, r4, #1
+ 512 0106 EDB2     		uxtb	r5, r5
+ 513 0108 0421     		movs	r1, #4
+ 514 010a 2846     		mov	r0, r5
+ 515 010c FFF7FEFF 		bl	rtc_group_power
+ 516              	.LVL50:
+ 103:App/Src/manager.c ****         if (check_history_download(i + 1) > 0) { continue; }
+ 517              		.loc 1 103 9 view .LVU101
+ 518 0110 4FF4FA70 		mov	r0, #500
+ 519 0114 FFF7FEFF 		bl	HAL_Delay
+ 520              	.LVL51:
+ 104:App/Src/manager.c ****         if (rtc_8800_adc_testmode(i + 1) != I2C_OK) { 
+ 521              		.loc 1 104 9 view .LVU102
+ 104:App/Src/manager.c ****         if (rtc_8800_adc_testmode(i + 1) != I2C_OK) { 
+ 522              		.loc 1 104 13 is_stmt 0 view .LVU103
+ 523 0118 2846     		mov	r0, r5
+ 524 011a FFF7FEFF 		bl	check_history_download
+ 525              	.LVL52:
+ 104:App/Src/manager.c ****         if (rtc_8800_adc_testmode(i + 1) != I2C_OK) { 
+ 526              		.loc 1 104 12 view .LVU104
+ 527 011e 0028     		cmp	r0, #0
+ 528 0120 DED1     		bne	.L25
+ 105:App/Src/manager.c ****             rtc_1006_exit_testmode(i + 1);
+ 529              		.loc 1 105 9 is_stmt 1 view .LVU105
+ 105:App/Src/manager.c ****             rtc_1006_exit_testmode(i + 1);
+ 530              		.loc 1 105 13 is_stmt 0 view .LVU106
+ 531 0122 2846     		mov	r0, r5
+ 532 0124 FFF7FEFF 		bl	rtc_8800_adc_testmode
+ 533              	.LVL53:
+ 105:App/Src/manager.c ****             rtc_1006_exit_testmode(i + 1);
+ 534              		.loc 1 105 12 view .LVU107
+ 535 0128 0028     		cmp	r0, #0
+ 536 012a C3D1     		bne	.L34
+ 111:App/Src/manager.c ****             rtc_temp = system_get_rtc_temp(); 
+ 537              		.loc 1 111 13 is_stmt 1 view .LVU108
+ 538 012c 0A20     		movs	r0, #10
+ 539 012e FFF7FEFF 		bl	HAL_Delay
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 14
+
+
+ 540              	.LVL54:
+ 112:App/Src/manager.c ****             config[i] = rtc_convert_temp_offset(rtc_temp, temp);
+ 541              		.loc 1 112 13 view .LVU109
+ 112:App/Src/manager.c ****             config[i] = rtc_convert_temp_offset(rtc_temp, temp);
+ 542              		.loc 1 112 24 is_stmt 0 view .LVU110
+ 543 0132 FFF7FEFF 		bl	system_get_rtc_temp
+ 544              	.LVL55:
+ 545 0136 10EE108A 		vmov	r8, s0
+ 546              	.LVL56:
+ 113:App/Src/manager.c ****             log_printf("chip%d temp adc: %.1f, offset:%d\n", i + 1, rtc_temp, config[i]);
+ 547              		.loc 1 113 13 is_stmt 1 view .LVU111
+ 113:App/Src/manager.c ****             log_printf("chip%d temp adc: %.1f, offset:%d\n", i + 1, rtc_temp, config[i]);
+ 548              		.loc 1 113 25 is_stmt 0 view .LVU112
+ 549 013a F0EE480A 		vmov.f32	s1, s16
+ 550 013e FFF7FEFF 		bl	rtc_convert_temp_offset
+ 551              	.LVL57:
+ 552 0142 0646     		mov	r6, r0
+ 113:App/Src/manager.c ****             log_printf("chip%d temp adc: %.1f, offset:%d\n", i + 1, rtc_temp, config[i]);
+ 553              		.loc 1 113 23 view .LVU113
+ 554 0144 04F5AC73 		add	r3, r4, #344
+ 555 0148 6B44     		add	r3, sp, r3
+ 556 014a 03F8640C 		strb	r0, [r3, #-100]
+ 114:App/Src/manager.c ****             UsbPrintf("chip%d temp adc: %.1f, offset:%d\n", i + 1, rtc_temp, config[i]);
+ 557              		.loc 1 114 13 is_stmt 1 view .LVU114
+ 558 014e 04F1010A 		add	r10, r4, #1
+ 559 0152 4046     		mov	r0, r8	@ float
+ 560 0154 FFF7FEFF 		bl	__aeabi_f2d
+ 561              	.LVL58:
+ 562 0158 8046     		mov	r8, r0
+ 563              	.LVL59:
+ 114:App/Src/manager.c ****             UsbPrintf("chip%d temp adc: %.1f, offset:%d\n", i + 1, rtc_temp, config[i]);
+ 564              		.loc 1 114 13 is_stmt 0 view .LVU115
+ 565 015a 8946     		mov	r9, r1
+ 566 015c DFF8A0B0 		ldr	fp, .L35+44
+ 567 0160 0096     		str	r6, [sp]
+ 568 0162 0246     		mov	r2, r0
+ 569 0164 0B46     		mov	r3, r1
+ 570 0166 5146     		mov	r1, r10
+ 571 0168 5846     		mov	r0, fp
+ 572 016a FFF7FEFF 		bl	log_printf
+ 573              	.LVL60:
+ 115:App/Src/manager.c ****             if (config[i] >= RTC_TEMP_OFFSET_MIN && config[i] <= RTC_TEMP_OFFSET_MAX) {
+ 574              		.loc 1 115 13 is_stmt 1 view .LVU116
+ 575 016e 0096     		str	r6, [sp]
+ 576 0170 4246     		mov	r2, r8
+ 577 0172 4B46     		mov	r3, r9
+ 578 0174 5146     		mov	r1, r10
+ 579 0176 5846     		mov	r0, fp
+ 580 0178 FFF7FEFF 		bl	UsbPrintf
+ 581              	.LVL61:
+ 116:App/Src/manager.c ****                 g_testFlag[i] = 1;
+ 582              		.loc 1 116 13 view .LVU117
+ 116:App/Src/manager.c ****                 g_testFlag[i] = 1;
+ 583              		.loc 1 116 50 is_stmt 0 view .LVU118
+ 584 017c A6F13203 		sub	r3, r6, #50
+ 585 0180 DBB2     		uxtb	r3, r3
+ 116:App/Src/manager.c ****                 g_testFlag[i] = 1;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 15
+
+
+ 586              		.loc 1 116 16 view .LVU119
+ 587 0182 5A2B     		cmp	r3, #90
+ 588 0184 A4D8     		bhi	.L27
+ 117:App/Src/manager.c ****                 stepCount++;
+ 589              		.loc 1 117 17 is_stmt 1 view .LVU120
+ 117:App/Src/manager.c ****                 stepCount++;
+ 590              		.loc 1 117 31 is_stmt 0 view .LVU121
+ 591 0186 154B     		ldr	r3, .L35+8
+ 592 0188 0122     		movs	r2, #1
+ 593 018a 1A55     		strb	r2, [r3, r4]
+ 118:App/Src/manager.c ****                 tempTest.tempConfig = config[i];
+ 594              		.loc 1 118 17 is_stmt 1 view .LVU122
+ 118:App/Src/manager.c ****                 tempTest.tempConfig = config[i];
+ 595              		.loc 1 118 26 is_stmt 0 view .LVU123
+ 596 018c 1744     		add	r7, r7, r2
+ 597              	.LVL62:
+ 118:App/Src/manager.c ****                 tempTest.tempConfig = config[i];
+ 598              		.loc 1 118 26 view .LVU124
+ 599 018e FFB2     		uxtb	r7, r7
+ 600              	.LVL63:
+ 119:App/Src/manager.c ****                 flash_test_data_write_add(&tempTest, i + 1, SET_TEMP);
+ 601              		.loc 1 119 17 is_stmt 1 view .LVU125
+ 119:App/Src/manager.c ****                 flash_test_data_write_add(&tempTest, i + 1, SET_TEMP);
+ 602              		.loc 1 119 37 is_stmt 0 view .LVU126
+ 603 0190 8DF83960 		strb	r6, [sp, #57]
+ 120:App/Src/manager.c ****                 flash_test_data_write_add(&tempTest, i + 1, TEMP_CONFIG);
+ 604              		.loc 1 120 17 is_stmt 1 view .LVU127
+ 605 0194 3022     		movs	r2, #48
+ 606 0196 2946     		mov	r1, r5
+ 607 0198 02A8     		add	r0, sp, #8
+ 608 019a FFF7FEFF 		bl	flash_test_data_write_add
+ 609              	.LVL64:
+ 121:App/Src/manager.c ****             }
+ 610              		.loc 1 121 17 view .LVU128
+ 611 019e 3122     		movs	r2, #49
+ 612 01a0 2946     		mov	r1, r5
+ 613 01a2 02A8     		add	r0, sp, #8
+ 614 01a4 FFF7FEFF 		bl	flash_test_data_write_add
+ 615              	.LVL65:
+ 616 01a8 92E7     		b	.L27
+ 617              	.L32:
+ 126:App/Src/manager.c ****     }
+ 127:App/Src/manager.c ****     
+ 128:App/Src/manager.c ****     flash_test_flag_manage(g_testFlag, FLAG_TEMP, FLASH_FLAG_WRITE_ADD);
+ 618              		.loc 1 128 5 view .LVU129
+ 619 01aa 0122     		movs	r2, #1
+ 620 01ac 0021     		movs	r1, #0
+ 621 01ae 0B48     		ldr	r0, .L35+8
+ 622 01b0 FFF7FEFF 		bl	flash_test_flag_manage
+ 623              	.LVL66:
+ 129:App/Src/manager.c ****     log_printf("system set rtc temp config end, success:%d.\n", stepCount);
+ 624              		.loc 1 129 5 view .LVU130
+ 625 01b4 3D46     		mov	r5, r7
+ 626 01b6 114C     		ldr	r4, .L35+40
+ 627              	.LVL67:
+ 628              		.loc 1 129 5 is_stmt 0 view .LVU131
+ 629 01b8 3946     		mov	r1, r7
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 16
+
+
+ 630 01ba 2046     		mov	r0, r4
+ 631 01bc FFF7FEFF 		bl	log_printf
+ 632              	.LVL68:
+ 130:App/Src/manager.c ****     UsbPrintf("system set rtc temp config end, success:%d.\n", stepCount);
+ 633              		.loc 1 130 5 is_stmt 1 view .LVU132
+ 634 01c0 3946     		mov	r1, r7
+ 635 01c2 2046     		mov	r0, r4
+ 636 01c4 FFF7FEFF 		bl	UsbPrintf
+ 637              	.LVL69:
+ 131:App/Src/manager.c ****     return stepCount;
+ 638              		.loc 1 131 5 view .LVU133
+ 639              	.L17:
+ 132:App/Src/manager.c **** }
+ 640              		.loc 1 132 1 is_stmt 0 view .LVU134
+ 641 01c8 2846     		mov	r0, r5
+ 642 01ca 57B0     		add	sp, sp, #348
+ 643              	.LCFI8:
+ 644              		.cfi_def_cfa_offset 44
+ 645              		@ sp needed
+ 646 01cc BDEC028B 		vldm	sp!, {d8}
+ 647              	.LCFI9:
+ 648              		.cfi_restore 80
+ 649              		.cfi_restore 81
+ 650              		.cfi_def_cfa_offset 36
+ 651              	.LVL70:
+ 652              		.loc 1 132 1 view .LVU135
+ 653 01d0 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 654              	.L36:
+ 655              		.align	2
+ 656              	.L35:
+ 657 01d4 00000000 		.word	.LC3
+ 658 01d8 98000000 		.word	.LC8
+ 659 01dc 00000000 		.word	.LANCHOR1
+ 660 01e0 14000000 		.word	.LC4
+ 661 01e4 3C000000 		.word	.LC5
+ 662 01e8 54000000 		.word	.LC6
+ 663 01ec 80000000 		.word	.LC7
+ 664 01f0 B0000000 		.word	.LC9
+ 665 01f4 D8000000 		.word	.LC10
+ 666 01f8 18010000 		.word	.LC12
+ 667 01fc 34010000 		.word	.LC13
+ 668 0200 F4000000 		.word	.LC11
+ 669              		.cfi_endproc
+ 670              	.LFE239:
+ 672              		.section	.rodata.system_manage_download_cap.str1.4,"aMS",%progbits,1
+ 673              		.align	2
+ 674              	.LC14:
+ 675 0000 63686970 		.ascii	"chip %d history success\012\000"
+ 675      20256420 
+ 675      68697374 
+ 675      6F727920 
+ 675      73756363 
+ 676 0019 000000   		.align	2
+ 677              	.LC15:
+ 678 001c 6F6B4E75 		.ascii	"okNumber:%d chipName:%d message:success\012\000"
+ 678      6D626572 
+ 678      3A256420 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 17
+
+
+ 678      63686970 
+ 678      4E616D65 
+ 679 0045 000000   		.align	2
+ 680              	.LC16:
+ 681 0048 63686970 		.ascii	"chip %d download success!\012\000"
+ 681      20256420 
+ 681      646F776E 
+ 681      6C6F6164 
+ 681      20737563 
+ 682 0063 00       		.align	2
+ 683              	.LC17:
+ 684 0064 63686970 		.ascii	"chip %d download fail!!!\012\000"
+ 684      20256420 
+ 684      646F776E 
+ 684      6C6F6164 
+ 684      20666169 
+ 685 007e 0000     		.align	2
+ 686              	.LC18:
+ 687 0080 6F6B4E75 		.ascii	"okNumber:%d chipName:%d message:fail\012\000"
+ 687      6D626572 
+ 687      3A256420 
+ 687      63686970 
+ 687      4E616D65 
+ 688              		.section	.text.system_manage_download_cap,"ax",%progbits
+ 689              		.align	1
+ 690              		.global	system_manage_download_cap
+ 691              		.syntax unified
+ 692              		.thumb
+ 693              		.thumb_func
+ 695              	system_manage_download_cap:
+ 696              	.LFB240:
+ 133:App/Src/manager.c **** 
+ 134:App/Src/manager.c **** 
+ 135:App/Src/manager.c **** //ÏÂÔØº¯Êý
+ 136:App/Src/manager.c **** //ÏÈ×öÏÂÔØÇ°µÄ¼ì²é¹¤×÷
+ 137:App/Src/manager.c **** //×îºóµ÷ÓÃdownload_temp_capº¯ÊýÈ¥ÉÕÂ¼
+ 138:App/Src/manager.c **** int system_manage_download_cap(void)
+ 139:App/Src/manager.c **** {
+ 697              		.loc 1 139 1 is_stmt 1 view -0
+ 698              		.cfi_startproc
+ 699              		@ args = 0, pretend = 0, frame = 0
+ 700              		@ frame_needed = 0, uses_anonymous_args = 0
+ 701 0000 70B5     		push	{r4, r5, r6, lr}
+ 702              	.LCFI10:
+ 703              		.cfi_def_cfa_offset 16
+ 704              		.cfi_offset 4, -16
+ 705              		.cfi_offset 5, -12
+ 706              		.cfi_offset 6, -8
+ 707              		.cfi_offset 14, -4
+ 140:App/Src/manager.c ****     int i;
+ 708              		.loc 1 140 5 view .LVU137
+ 141:App/Src/manager.c ****     int count = 0;
+ 709              		.loc 1 141 5 view .LVU138
+ 710              	.LVL71:
+ 142:App/Src/manager.c ****     
+ 143:App/Src/manager.c ****     memset(g_testFlag, 0xff, MAX_CHIP_NUMBER);
+ 711              		.loc 1 143 5 view .LVU139
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 18
+
+
+ 712 0002 254C     		ldr	r4, .L47
+ 713 0004 6422     		movs	r2, #100
+ 714 0006 FF21     		movs	r1, #255
+ 715 0008 2046     		mov	r0, r4
+ 716 000a FFF7FEFF 		bl	memset
+ 717              	.LVL72:
+ 144:App/Src/manager.c ****     flash_test_flag_manage(g_testFlag, FLAG_TEMPLOAD, FLASH_FLAG_READ);
+ 718              		.loc 1 144 5 view .LVU140
+ 719 000e 0022     		movs	r2, #0
+ 720 0010 0321     		movs	r1, #3
+ 721 0012 2046     		mov	r0, r4
+ 722 0014 FFF7FEFF 		bl	flash_test_flag_manage
+ 723              	.LVL73:
+ 145:App/Src/manager.c ****     for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 724              		.loc 1 145 5 view .LVU141
+ 141:App/Src/manager.c ****     
+ 725              		.loc 1 141 9 is_stmt 0 view .LVU142
+ 726 0018 0025     		movs	r5, #0
+ 727              		.loc 1 145 12 view .LVU143
+ 728 001a 2C46     		mov	r4, r5
+ 729              		.loc 1 145 5 view .LVU144
+ 730 001c 19E0     		b	.L38
+ 731              	.LVL74:
+ 732              	.L46:
+ 146:App/Src/manager.c ****         if (g_testFlag[i] == '1') {
+ 147:App/Src/manager.c ****             log_printf("chip %d history success\n", i + 1);
+ 733              		.loc 1 147 13 is_stmt 1 view .LVU145
+ 734 001e 661C     		adds	r6, r4, #1
+ 735 0020 3146     		mov	r1, r6
+ 736 0022 1E48     		ldr	r0, .L47+4
+ 737 0024 FFF7FEFF 		bl	log_printf
+ 738              	.LVL75:
+ 148:App/Src/manager.c **** 			ControlPrintf("okNumber:%d chipName:%d message:success\n", count, i + 1);
+ 739              		.loc 1 148 4 view .LVU146
+ 740 0028 3246     		mov	r2, r6
+ 741 002a 2946     		mov	r1, r5
+ 742 002c 1C48     		ldr	r0, .L47+8
+ 743 002e FFF7FEFF 		bl	ControlPrintf
+ 744              	.LVL76:
+ 149:App/Src/manager.c ****             count++;
+ 745              		.loc 1 149 13 view .LVU147
+ 746              		.loc 1 149 18 is_stmt 0 view .LVU148
+ 747 0032 0135     		adds	r5, r5, #1
+ 748              	.LVL77:
+ 150:App/Src/manager.c ****             continue;
+ 749              		.loc 1 150 13 is_stmt 1 view .LVU149
+ 750 0034 0CE0     		b	.L40
+ 751              	.L41:
+ 151:App/Src/manager.c ****         }
+ 152:App/Src/manager.c **** 
+ 153:App/Src/manager.c **** #if (VERSION_SELECT == VERSION_SD8804)
+ 154:App/Src/manager.c ****         if (sd8804_write_otp(i + 1) != 0) {
+ 155:App/Src/manager.c **** #else
+ 156:App/Src/manager.c ****         if (sd8800_write_otp(i + 1) != 0) {
+ 157:App/Src/manager.c **** #endif
+ 158:App/Src/manager.c ****             count++;
+ 159:App/Src/manager.c ****             g_testFlag[i] = '1';
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 19
+
+
+ 160:App/Src/manager.c ****             log_printf("chip %d download success!\n", i + 1);
+ 161:App/Src/manager.c **** 			ControlPrintf("okNumber:%d chipName:%d\n", count, i + 1);
+ 162:App/Src/manager.c ****         } else {//Ö»¶Ô±¾´ÎÉÕÐ´³É¹¦µÄ×ö¼ÇÂ¼£¬Ê§°ÜµÄ²»¸ÄÐ´£¬Áô´ýÖØ¸´³¢ÊÔÉÕÐ´
+ 163:App/Src/manager.c ****             log_printf("chip %d download fail!!!\n", i + 1);
+ 752              		.loc 1 163 13 view .LVU150
+ 753 0036 661C     		adds	r6, r4, #1
+ 754 0038 3146     		mov	r1, r6
+ 755 003a 1A48     		ldr	r0, .L47+12
+ 756 003c FFF7FEFF 		bl	log_printf
+ 757              	.LVL78:
+ 164:App/Src/manager.c **** 			ControlPrintf("okNumber:%d chipName:%d message:fail\n", count, i + 1);
+ 758              		.loc 1 164 4 view .LVU151
+ 759 0040 3246     		mov	r2, r6
+ 760 0042 2946     		mov	r1, r5
+ 761 0044 1848     		ldr	r0, .L47+16
+ 762 0046 FFF7FEFF 		bl	ControlPrintf
+ 763              	.LVL79:
+ 764              	.L42:
+ 165:App/Src/manager.c ****         }
+ 166:App/Src/manager.c **** 
+ 167:App/Src/manager.c ****         HAL_Delay(100);
+ 765              		.loc 1 167 9 view .LVU152
+ 766 004a 6420     		movs	r0, #100
+ 767 004c FFF7FEFF 		bl	HAL_Delay
+ 768              	.LVL80:
+ 769              	.L40:
+ 145:App/Src/manager.c ****         if (g_testFlag[i] == '1') {
+ 770              		.loc 1 145 38 discriminator 2 view .LVU153
+ 145:App/Src/manager.c ****         if (g_testFlag[i] == '1') {
+ 771              		.loc 1 145 39 is_stmt 0 discriminator 2 view .LVU154
+ 772 0050 0134     		adds	r4, r4, #1
+ 773              	.LVL81:
+ 774              	.L38:
+ 145:App/Src/manager.c ****         if (g_testFlag[i] == '1') {
+ 775              		.loc 1 145 17 is_stmt 1 discriminator 1 view .LVU155
+ 145:App/Src/manager.c ****         if (g_testFlag[i] == '1') {
+ 776              		.loc 1 145 5 is_stmt 0 discriminator 1 view .LVU156
+ 777 0052 632C     		cmp	r4, #99
+ 778 0054 18DC     		bgt	.L45
+ 146:App/Src/manager.c ****             log_printf("chip %d history success\n", i + 1);
+ 779              		.loc 1 146 9 is_stmt 1 view .LVU157
+ 146:App/Src/manager.c ****             log_printf("chip %d history success\n", i + 1);
+ 780              		.loc 1 146 23 is_stmt 0 view .LVU158
+ 781 0056 104B     		ldr	r3, .L47
+ 782 0058 1B5D     		ldrb	r3, [r3, r4]	@ zero_extendqisi2
+ 146:App/Src/manager.c ****             log_printf("chip %d history success\n", i + 1);
+ 783              		.loc 1 146 12 view .LVU159
+ 784 005a 312B     		cmp	r3, #49
+ 785 005c DFD0     		beq	.L46
+ 156:App/Src/manager.c **** #endif
+ 786              		.loc 1 156 9 is_stmt 1 view .LVU160
+ 156:App/Src/manager.c **** #endif
+ 787              		.loc 1 156 13 is_stmt 0 view .LVU161
+ 788 005e 601C     		adds	r0, r4, #1
+ 789 0060 C0B2     		uxtb	r0, r0
+ 790 0062 FFF7FEFF 		bl	sd8800_write_otp
+ 791              	.LVL82:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 20
+
+
+ 156:App/Src/manager.c **** #endif
+ 792              		.loc 1 156 12 view .LVU162
+ 793 0066 0028     		cmp	r0, #0
+ 794 0068 E5D0     		beq	.L41
+ 158:App/Src/manager.c ****             g_testFlag[i] = '1';
+ 795              		.loc 1 158 13 is_stmt 1 view .LVU163
+ 158:App/Src/manager.c ****             g_testFlag[i] = '1';
+ 796              		.loc 1 158 18 is_stmt 0 view .LVU164
+ 797 006a 0135     		adds	r5, r5, #1
+ 798              	.LVL83:
+ 159:App/Src/manager.c ****             log_printf("chip %d download success!\n", i + 1);
+ 799              		.loc 1 159 13 is_stmt 1 view .LVU165
+ 159:App/Src/manager.c ****             log_printf("chip %d download success!\n", i + 1);
+ 800              		.loc 1 159 27 is_stmt 0 view .LVU166
+ 801 006c 0A4B     		ldr	r3, .L47
+ 802 006e 3122     		movs	r2, #49
+ 803 0070 1A55     		strb	r2, [r3, r4]
+ 160:App/Src/manager.c **** 			ControlPrintf("okNumber:%d chipName:%d\n", count, i + 1);
+ 804              		.loc 1 160 13 is_stmt 1 view .LVU167
+ 805 0072 661C     		adds	r6, r4, #1
+ 806 0074 3146     		mov	r1, r6
+ 807 0076 0D48     		ldr	r0, .L47+20
+ 808 0078 FFF7FEFF 		bl	log_printf
+ 809              	.LVL84:
+ 161:App/Src/manager.c ****         } else {//Ö»¶Ô±¾´ÎÉÕÐ´³É¹¦µÄ×ö¼ÇÂ¼£¬Ê§°ÜµÄ²»¸ÄÐ´£¬Áô´ýÖØ¸´³¢ÊÔÉÕÐ´
+ 810              		.loc 1 161 4 view .LVU168
+ 811 007c 3246     		mov	r2, r6
+ 812 007e 2946     		mov	r1, r5
+ 813 0080 0B48     		ldr	r0, .L47+24
+ 814 0082 FFF7FEFF 		bl	ControlPrintf
+ 815              	.LVL85:
+ 816 0086 E0E7     		b	.L42
+ 817              	.L45:
+ 168:App/Src/manager.c ****     }
+ 169:App/Src/manager.c ****     
+ 170:App/Src/manager.c ****     flash_test_flag_manage(g_testFlag, FLAG_TEMPLOAD, FLASH_FLAG_WRITE_ADD);
+ 818              		.loc 1 170 5 view .LVU169
+ 819 0088 0122     		movs	r2, #1
+ 820 008a 0321     		movs	r1, #3
+ 821 008c 0248     		ldr	r0, .L47
+ 822 008e FFF7FEFF 		bl	flash_test_flag_manage
+ 823              	.LVL86:
+ 171:App/Src/manager.c ****     return count;
+ 824              		.loc 1 171 5 view .LVU170
+ 172:App/Src/manager.c **** }
+ 825              		.loc 1 172 1 is_stmt 0 view .LVU171
+ 826 0092 2846     		mov	r0, r5
+ 827 0094 70BD     		pop	{r4, r5, r6, pc}
+ 828              	.LVL87:
+ 829              	.L48:
+ 830              		.loc 1 172 1 view .LVU172
+ 831 0096 00BF     		.align	2
+ 832              	.L47:
+ 833 0098 00000000 		.word	.LANCHOR1
+ 834 009c 00000000 		.word	.LC14
+ 835 00a0 1C000000 		.word	.LC15
+ 836 00a4 64000000 		.word	.LC17
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 21
+
+
+ 837 00a8 80000000 		.word	.LC18
+ 838 00ac 48000000 		.word	.LC16
+ 839 00b0 18010000 		.word	.LC12
+ 840              		.cfi_endproc
+ 841              	.LFE240:
+ 843              		.section	.rodata.system_set_int.str1.4,"aMS",%progbits,1
+ 844              		.align	2
+ 845              	.LC19:
+ 846 0000 74657374 		.ascii	"test chip %d\012\000"
+ 846      20636869 
+ 846      70202564 
+ 846      0A00
+ 847              		.section	.text.system_set_int,"ax",%progbits
+ 848              		.align	1
+ 849              		.global	system_set_int
+ 850              		.syntax unified
+ 851              		.thumb
+ 852              		.thumb_func
+ 854              	system_set_int:
+ 855              	.LVL88:
+ 856              	.LFB241:
+ 173:App/Src/manager.c **** 
+ 174:App/Src/manager.c **** void system_set_int(uint8_t channel)
+ 175:App/Src/manager.c **** {
+ 857              		.loc 1 175 1 is_stmt 1 view -0
+ 858              		.cfi_startproc
+ 859              		@ args = 0, pretend = 0, frame = 0
+ 860              		@ frame_needed = 0, uses_anonymous_args = 0
+ 861              		.loc 1 175 1 is_stmt 0 view .LVU174
+ 862 0000 10B5     		push	{r4, lr}
+ 863              	.LCFI11:
+ 864              		.cfi_def_cfa_offset 8
+ 865              		.cfi_offset 4, -8
+ 866              		.cfi_offset 14, -4
+ 867 0002 0446     		mov	r4, r0
+ 176:App/Src/manager.c ****     static int lastChannel = -1;
+ 868              		.loc 1 176 5 is_stmt 1 view .LVU175
+ 177:App/Src/manager.c ****     log_printf("test chip %d\n", channel);
+ 869              		.loc 1 177 5 view .LVU176
+ 870 0004 0146     		mov	r1, r0
+ 871 0006 0F48     		ldr	r0, .L55
+ 872              	.LVL89:
+ 873              		.loc 1 177 5 is_stmt 0 view .LVU177
+ 874 0008 FFF7FEFF 		bl	log_printf
+ 875              	.LVL90:
+ 178:App/Src/manager.c ****     if (lastChannel > 0) {
+ 876              		.loc 1 178 5 is_stmt 1 view .LVU178
+ 877              		.loc 1 178 21 is_stmt 0 view .LVU179
+ 878 000c 0E4B     		ldr	r3, .L55+4
+ 879 000e 1868     		ldr	r0, [r3]
+ 880              		.loc 1 178 8 view .LVU180
+ 881 0010 0028     		cmp	r0, #0
+ 882 0012 03DC     		bgt	.L53
+ 883              	.L50:
+ 179:App/Src/manager.c ****         rtc_group_power(lastChannel, POWER_I2C);
+ 180:App/Src/manager.c ****         rtc_disable_int();
+ 181:App/Src/manager.c ****         rtc_1006_exit_testmode(channel);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 22
+
+
+ 182:App/Src/manager.c ****     }
+ 183:App/Src/manager.c ****     
+ 184:App/Src/manager.c ****     if (channel != 0) {
+ 884              		.loc 1 184 5 is_stmt 1 view .LVU181
+ 885              		.loc 1 184 8 is_stmt 0 view .LVU182
+ 886 0014 64B9     		cbnz	r4, .L54
+ 887              	.L51:
+ 185:App/Src/manager.c ****         rtc_group_power(channel, POWER_I2C);
+ 186:App/Src/manager.c ****         rtc_1006_set_testmode(channel);
+ 187:App/Src/manager.c ****         rtc_out_4096();
+ 188:App/Src/manager.c ****     } 
+ 189:App/Src/manager.c ****     lastChannel = channel;
+ 888              		.loc 1 189 5 is_stmt 1 view .LVU183
+ 889              		.loc 1 189 17 is_stmt 0 view .LVU184
+ 890 0016 0C4B     		ldr	r3, .L55+4
+ 891 0018 1C60     		str	r4, [r3]
+ 190:App/Src/manager.c **** }
+ 892              		.loc 1 190 1 view .LVU185
+ 893 001a 10BD     		pop	{r4, pc}
+ 894              	.L53:
+ 179:App/Src/manager.c ****         rtc_group_power(lastChannel, POWER_I2C);
+ 895              		.loc 1 179 9 is_stmt 1 view .LVU186
+ 896 001c 0121     		movs	r1, #1
+ 897 001e C0B2     		uxtb	r0, r0
+ 898 0020 FFF7FEFF 		bl	rtc_group_power
+ 899              	.LVL91:
+ 180:App/Src/manager.c ****         rtc_1006_exit_testmode(channel);
+ 900              		.loc 1 180 9 view .LVU187
+ 901 0024 FFF7FEFF 		bl	rtc_disable_int
+ 902              	.LVL92:
+ 181:App/Src/manager.c ****     }
+ 903              		.loc 1 181 9 view .LVU188
+ 904 0028 2046     		mov	r0, r4
+ 905 002a FFF7FEFF 		bl	rtc_1006_exit_testmode
+ 906              	.LVL93:
+ 907 002e F1E7     		b	.L50
+ 908              	.L54:
+ 185:App/Src/manager.c ****         rtc_1006_set_testmode(channel);
+ 909              		.loc 1 185 9 view .LVU189
+ 910 0030 0121     		movs	r1, #1
+ 911 0032 2046     		mov	r0, r4
+ 912 0034 FFF7FEFF 		bl	rtc_group_power
+ 913              	.LVL94:
+ 186:App/Src/manager.c ****         rtc_out_4096();
+ 914              		.loc 1 186 9 view .LVU190
+ 915 0038 2046     		mov	r0, r4
+ 916 003a FFF7FEFF 		bl	rtc_1006_set_testmode
+ 917              	.LVL95:
+ 187:App/Src/manager.c ****     } 
+ 918              		.loc 1 187 9 view .LVU191
+ 919 003e FFF7FEFF 		bl	rtc_out_4096
+ 920              	.LVL96:
+ 921 0042 E8E7     		b	.L51
+ 922              	.L56:
+ 923              		.align	2
+ 924              	.L55:
+ 925 0044 00000000 		.word	.LC19
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 23
+
+
+ 926 0048 00000000 		.word	.LANCHOR2
+ 927              		.cfi_endproc
+ 928              	.LFE241:
+ 930              		.section	.text.check_system_temp,"ax",%progbits
+ 931              		.align	1
+ 932              		.global	check_system_temp
+ 933              		.syntax unified
+ 934              		.thumb
+ 935              		.thumb_func
+ 937              	check_system_temp:
+ 938              	.LFB242:
+ 191:App/Src/manager.c **** 
+ 192:App/Src/manager.c **** int check_system_temp(void)
+ 193:App/Src/manager.c **** {
+ 939              		.loc 1 193 1 view -0
+ 940              		.cfi_startproc
+ 941              		@ args = 0, pretend = 0, frame = 0
+ 942              		@ frame_needed = 0, uses_anonymous_args = 0
+ 943 0000 08B5     		push	{r3, lr}
+ 944              	.LCFI12:
+ 945              		.cfi_def_cfa_offset 8
+ 946              		.cfi_offset 3, -8
+ 947              		.cfi_offset 14, -4
+ 194:App/Src/manager.c ****     float temp;
+ 948              		.loc 1 194 5 view .LVU193
+ 195:App/Src/manager.c ****     temp = temp_read_value(1);
+ 949              		.loc 1 195 5 view .LVU194
+ 950              		.loc 1 195 12 is_stmt 0 view .LVU195
+ 951 0002 0120     		movs	r0, #1
+ 952 0004 FFF7FEFF 		bl	temp_read_value
+ 953              	.LVL97:
+ 196:App/Src/manager.c ****     int num = 100;
+ 954              		.loc 1 196 5 is_stmt 1 view .LVU196
+ 197:App/Src/manager.c ****     if (-45 <= temp && temp <= -35) {
+ 955              		.loc 1 197 5 view .LVU197
+ 956              		.loc 1 197 8 is_stmt 0 view .LVU198
+ 957 0008 DFED297A 		vldr.32	s15, .L81
+ 958 000c B4EEE70A 		vcmpe.f32	s0, s15
+ 959 0010 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 960 0014 06DB     		blt	.L58
+ 961              		.loc 1 197 21 discriminator 1 view .LVU199
+ 962 0016 DFED277A 		vldr.32	s15, .L81+4
+ 963 001a B4EEE70A 		vcmpe.f32	s0, s15
+ 964 001e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 965 0022 39D9     		bls	.L68
+ 966              	.L58:
+ 198:App/Src/manager.c ****         num = TEST_RTC_TEMP_F40;
+ 199:App/Src/manager.c ****     } else if (-15 <= temp && temp <= -5) {
+ 967              		.loc 1 199 12 is_stmt 1 view .LVU200
+ 968              		.loc 1 199 15 is_stmt 0 view .LVU201
+ 969 0024 FAEE0E7A 		vmov.f32	s15, #-1.5e+1
+ 970 0028 B4EEE70A 		vcmpe.f32	s0, s15
+ 971 002c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 972 0030 06DB     		blt	.L61
+ 973              		.loc 1 199 28 discriminator 1 view .LVU202
+ 974 0032 F9EE047A 		vmov.f32	s15, #-5.0e+0
+ 975 0036 B4EEE70A 		vcmpe.f32	s0, s15
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 24
+
+
+ 976 003a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 977 003e 2DD9     		bls	.L69
+ 978              	.L61:
+ 200:App/Src/manager.c ****         num = TEST_RTC_TEMP_F10;
+ 201:App/Src/manager.c ****     } else  if (20 <= temp && temp <= 40) {
+ 979              		.loc 1 201 13 is_stmt 1 view .LVU203
+ 980              		.loc 1 201 16 is_stmt 0 view .LVU204
+ 981 0040 F3EE047A 		vmov.f32	s15, #2.0e+1
+ 982 0044 B4EEE70A 		vcmpe.f32	s0, s15
+ 983 0048 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 984 004c 06DB     		blt	.L63
+ 985              		.loc 1 201 28 discriminator 1 view .LVU205
+ 986 004e DFED1A7A 		vldr.32	s15, .L81+8
+ 987 0052 B4EEE70A 		vcmpe.f32	s0, s15
+ 988 0056 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 989 005a 21D9     		bls	.L70
+ 990              	.L63:
+ 202:App/Src/manager.c ****         num = TEST_RTC_TEMP_Z29;
+ 203:App/Src/manager.c ****     } else if (55 <= temp && temp <= 65) {
+ 991              		.loc 1 203 12 is_stmt 1 view .LVU206
+ 992              		.loc 1 203 15 is_stmt 0 view .LVU207
+ 993 005c DFED177A 		vldr.32	s15, .L81+12
+ 994 0060 B4EEE70A 		vcmpe.f32	s0, s15
+ 995 0064 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 996 0068 06DB     		blt	.L65
+ 997              		.loc 1 203 27 discriminator 1 view .LVU208
+ 998 006a DFED157A 		vldr.32	s15, .L81+16
+ 999 006e B4EEE70A 		vcmpe.f32	s0, s15
+ 1000 0072 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1001 0076 15D9     		bls	.L71
+ 1002              	.L65:
+ 204:App/Src/manager.c ****         num = TEST_RTC_TEMP_Z60;
+ 205:App/Src/manager.c ****     } else if (80 <= temp && temp <= 90) {
+ 1003              		.loc 1 205 12 is_stmt 1 view .LVU209
+ 1004              		.loc 1 205 15 is_stmt 0 view .LVU210
+ 1005 0078 DFED127A 		vldr.32	s15, .L81+20
+ 1006 007c B4EEE70A 		vcmpe.f32	s0, s15
+ 1007 0080 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1008 0084 10DB     		blt	.L79
+ 1009              		.loc 1 205 27 discriminator 1 view .LVU211
+ 1010 0086 DFED107A 		vldr.32	s15, .L81+24
+ 1011 008a B4EEE70A 		vcmpe.f32	s0, s15
+ 1012 008e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1013 0092 0BD9     		bls	.L73
+ 196:App/Src/manager.c ****     if (-45 <= temp && temp <= -35) {
+ 1014              		.loc 1 196 9 view .LVU212
+ 1015 0094 6420     		movs	r0, #100
+ 1016 0096 00E0     		b	.L57
+ 1017              	.L68:
+ 198:App/Src/manager.c ****     } else if (-15 <= temp && temp <= -5) {
+ 1018              		.loc 1 198 13 view .LVU213
+ 1019 0098 0020     		movs	r0, #0
+ 1020              	.LVL98:
+ 1021              	.L57:
+ 206:App/Src/manager.c ****         num = TEST_RTC_TEMP_Z85;
+ 207:App/Src/manager.c ****     }
+ 208:App/Src/manager.c ****     return num;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 25
+
+
+ 209:App/Src/manager.c **** }
+ 1022              		.loc 1 209 1 view .LVU214
+ 1023 009a 08BD     		pop	{r3, pc}
+ 1024              	.LVL99:
+ 1025              	.L69:
+ 200:App/Src/manager.c ****     } else  if (20 <= temp && temp <= 40) {
+ 1026              		.loc 1 200 13 view .LVU215
+ 1027 009c 0120     		movs	r0, #1
+ 1028 009e FCE7     		b	.L57
+ 1029              	.L70:
+ 202:App/Src/manager.c ****     } else if (55 <= temp && temp <= 65) {
+ 1030              		.loc 1 202 13 view .LVU216
+ 1031 00a0 0220     		movs	r0, #2
+ 1032 00a2 FAE7     		b	.L57
+ 1033              	.L71:
+ 204:App/Src/manager.c ****     } else if (80 <= temp && temp <= 90) {
+ 1034              		.loc 1 204 13 view .LVU217
+ 1035 00a4 0320     		movs	r0, #3
+ 1036 00a6 F8E7     		b	.L57
+ 1037              	.L79:
+ 196:App/Src/manager.c ****     if (-45 <= temp && temp <= -35) {
+ 1038              		.loc 1 196 9 view .LVU218
+ 1039 00a8 6420     		movs	r0, #100
+ 1040 00aa F6E7     		b	.L57
+ 1041              	.L73:
+ 206:App/Src/manager.c ****     }
+ 1042              		.loc 1 206 13 view .LVU219
+ 1043 00ac 0420     		movs	r0, #4
+ 1044              	.LVL100:
+ 208:App/Src/manager.c **** }
+ 1045              		.loc 1 208 5 is_stmt 1 view .LVU220
+ 208:App/Src/manager.c **** }
+ 1046              		.loc 1 208 12 is_stmt 0 view .LVU221
+ 1047 00ae F4E7     		b	.L57
+ 1048              	.L82:
+ 1049              		.align	2
+ 1050              	.L81:
+ 1051 00b0 000034C2 		.word	-1036779520
+ 1052 00b4 00000CC2 		.word	-1039400960
+ 1053 00b8 00002042 		.word	1109393408
+ 1054 00bc 00005C42 		.word	1113325568
+ 1055 00c0 00008242 		.word	1115815936
+ 1056 00c4 0000A042 		.word	1117782016
+ 1057 00c8 0000B442 		.word	1119092736
+ 1058              		.cfi_endproc
+ 1059              	.LFE242:
+ 1061              		.section	.text.systm_cap_save_buffer,"ax",%progbits
+ 1062              		.align	1
+ 1063              		.global	systm_cap_save_buffer
+ 1064              		.syntax unified
+ 1065              		.thumb
+ 1066              		.thumb_func
+ 1068              	systm_cap_save_buffer:
+ 1069              	.LVL101:
+ 1070              	.LFB243:
+ 210:App/Src/manager.c **** 
+ 211:App/Src/manager.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 26
+
+
+ 212:App/Src/manager.c **** void systm_cap_save_buffer(uint8_t rtcNumber, float testTemp, float testCap)
+ 213:App/Src/manager.c **** {
+ 1071              		.loc 1 213 1 is_stmt 1 view -0
+ 1072              		.cfi_startproc
+ 1073              		@ args = 0, pretend = 0, frame = 0
+ 1074              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1075              		@ link register save eliminated.
+ 214:App/Src/manager.c ****     int i;
+ 1076              		.loc 1 214 5 view .LVU223
+ 215:App/Src/manager.c **** 
+ 216:App/Src/manager.c ****     if (rtcNumber == 0) {
+ 1077              		.loc 1 216 5 view .LVU224
+ 1078              		.loc 1 216 8 is_stmt 0 view .LVU225
+ 1079 0000 0246     		mov	r2, r0
+ 1080 0002 C8B1     		cbz	r0, .L88
+ 217:App/Src/manager.c ****         for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 218:App/Src/manager.c ****            g_oneData.flag[i] = CAP_ADJUST_DEFAULT;
+ 219:App/Src/manager.c ****         }
+ 220:App/Src/manager.c ****     } else {
+ 221:App/Src/manager.c ****         g_oneData.flag[rtcNumber - 1] = CAP_ADJUST_SUCCESS;
+ 1081              		.loc 1 221 9 is_stmt 1 view .LVU226
+ 1082              		.loc 1 221 34 is_stmt 0 view .LVU227
+ 1083 0004 411E     		subs	r1, r0, #1
+ 1084              		.loc 1 221 39 view .LVU228
+ 1085 0006 0D4B     		ldr	r3, .L90
+ 1086 0008 5818     		adds	r0, r3, r1
+ 1087              	.LVL102:
+ 1088              		.loc 1 221 39 view .LVU229
+ 1089 000a 4FF0020C 		mov	ip, #2
+ 1090 000e 80F824C3 		strb	ip, [r0, #804]
+ 222:App/Src/manager.c ****         g_oneData.temp[rtcNumber - 1] = testTemp;
+ 1091              		.loc 1 222 9 is_stmt 1 view .LVU230
+ 1092              		.loc 1 222 39 is_stmt 0 view .LVU231
+ 1093 0012 03EB8101 		add	r1, r3, r1, lsl #2
+ 1094 0016 81ED010A 		vstr.32	s0, [r1, #4]
+ 223:App/Src/manager.c ****         g_oneData.cap[rtcNumber - 1] = testCap;
+ 1095              		.loc 1 223 9 is_stmt 1 view .LVU232
+ 1096              		.loc 1 223 38 is_stmt 0 view .LVU233
+ 1097 001a 6332     		adds	r2, r2, #99
+ 1098 001c 03EB8203 		add	r3, r3, r2, lsl #2
+ 1099 0020 C3ED010A 		vstr.32	s1, [r3, #4]
+ 224:App/Src/manager.c ****     }
+ 225:App/Src/manager.c **** }
+ 1100              		.loc 1 225 1 view .LVU234
+ 1101 0024 7047     		bx	lr
+ 1102              	.LVL103:
+ 1103              	.L86:
+ 218:App/Src/manager.c ****         }
+ 1104              		.loc 1 218 12 is_stmt 1 discriminator 3 view .LVU235
+ 218:App/Src/manager.c ****         }
+ 1105              		.loc 1 218 30 is_stmt 0 discriminator 3 view .LVU236
+ 1106 0026 054A     		ldr	r2, .L90
+ 1107 0028 1A44     		add	r2, r2, r3
+ 1108 002a 0021     		movs	r1, #0
+ 1109 002c 82F82413 		strb	r1, [r2, #804]
+ 217:App/Src/manager.c ****            g_oneData.flag[i] = CAP_ADJUST_DEFAULT;
+ 1110              		.loc 1 217 42 is_stmt 1 discriminator 3 view .LVU237
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 27
+
+
+ 217:App/Src/manager.c ****            g_oneData.flag[i] = CAP_ADJUST_DEFAULT;
+ 1111              		.loc 1 217 43 is_stmt 0 discriminator 3 view .LVU238
+ 1112 0030 0133     		adds	r3, r3, #1
+ 1113              	.LVL104:
+ 1114              	.L84:
+ 217:App/Src/manager.c ****            g_oneData.flag[i] = CAP_ADJUST_DEFAULT;
+ 1115              		.loc 1 217 21 is_stmt 1 discriminator 1 view .LVU239
+ 217:App/Src/manager.c ****            g_oneData.flag[i] = CAP_ADJUST_DEFAULT;
+ 1116              		.loc 1 217 9 is_stmt 0 discriminator 1 view .LVU240
+ 1117 0032 632B     		cmp	r3, #99
+ 1118 0034 F7DD     		ble	.L86
+ 1119 0036 7047     		bx	lr
+ 1120              	.LVL105:
+ 1121              	.L88:
+ 217:App/Src/manager.c ****            g_oneData.flag[i] = CAP_ADJUST_DEFAULT;
+ 1122              		.loc 1 217 16 view .LVU241
+ 1123 0038 0023     		movs	r3, #0
+ 1124 003a FAE7     		b	.L84
+ 1125              	.L91:
+ 1126              		.align	2
+ 1127              	.L90:
+ 1128 003c 00000000 		.word	.LANCHOR3
+ 1129              		.cfi_endproc
+ 1130              	.LFE243:
+ 1132              		.section	.text.system_check_test_dot,"ax",%progbits
+ 1133              		.align	1
+ 1134              		.global	system_check_test_dot
+ 1135              		.syntax unified
+ 1136              		.thumb
+ 1137              		.thumb_func
+ 1139              	system_check_test_dot:
+ 1140              	.LVL106:
+ 1141              	.LFB244:
+ 226:App/Src/manager.c **** 
+ 227:App/Src/manager.c **** uint8_t system_check_test_dot(uint8_t rtcNumber, uint8_t testNumber)
+ 228:App/Src/manager.c **** {
+ 1142              		.loc 1 228 1 is_stmt 1 view -0
+ 1143              		.cfi_startproc
+ 1144              		@ args = 0, pretend = 0, frame = 8
+ 1145              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1146              		.loc 1 228 1 is_stmt 0 view .LVU243
+ 1147 0000 00B5     		push	{lr}
+ 1148              	.LCFI13:
+ 1149              		.cfi_def_cfa_offset 4
+ 1150              		.cfi_offset 14, -4
+ 1151 0002 83B0     		sub	sp, sp, #12
+ 1152              	.LCFI14:
+ 1153              		.cfi_def_cfa_offset 16
+ 1154 0004 0B46     		mov	r3, r1
+ 229:App/Src/manager.c ****     uint32_t address;
+ 1155              		.loc 1 229 5 is_stmt 1 view .LVU244
+ 230:App/Src/manager.c ****     uint8_t buffer[4] = {0};
+ 1156              		.loc 1 230 5 view .LVU245
+ 1157              		.loc 1 230 13 is_stmt 0 view .LVU246
+ 1158 0006 0022     		movs	r2, #0
+ 1159 0008 0192     		str	r2, [sp, #4]
+ 231:App/Src/manager.c ****     
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 28
+
+
+ 232:App/Src/manager.c ****     address = TEST_RESULT_START_ADDR + (rtcNumber - 1) * TEST_RESULT_ONE_SIZE + TEST_DOT_TEMP + tes
+ 1160              		.loc 1 232 5 is_stmt 1 view .LVU247
+ 1161              		.loc 1 232 38 is_stmt 0 view .LVU248
+ 1162 000a 0730     		adds	r0, r0, #7
+ 1163              	.LVL107:
+ 1164              		.loc 1 232 38 view .LVU249
+ 1165 000c 4002     		lsls	r0, r0, #9
+ 1166              		.loc 1 232 79 view .LVU250
+ 1167 000e 0830     		adds	r0, r0, #8
+ 1168              	.LVL108:
+ 233:App/Src/manager.c ****     flash_read_data(address, buffer, 4);
+ 1169              		.loc 1 233 5 is_stmt 1 view .LVU251
+ 1170 0010 0422     		movs	r2, #4
+ 1171 0012 0DEB0201 		add	r1, sp, r2
+ 1172              	.LVL109:
+ 1173              		.loc 1 233 5 is_stmt 0 view .LVU252
+ 1174 0016 00EB8300 		add	r0, r0, r3, lsl #2
+ 1175              	.LVL110:
+ 1176              		.loc 1 233 5 view .LVU253
+ 1177 001a FFF7FEFF 		bl	flash_read_data
+ 1178              	.LVL111:
+ 234:App/Src/manager.c ****     if (buffer[0] != 0xff || buffer[1] != 0xff || buffer[2] != 0xff || buffer[3] != 0xff) { return 
+ 1179              		.loc 1 234 5 is_stmt 1 view .LVU254
+ 1180              		.loc 1 234 15 is_stmt 0 view .LVU255
+ 1181 001e 9DF80430 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 1182              		.loc 1 234 8 view .LVU256
+ 1183 0022 FF2B     		cmp	r3, #255
+ 1184 0024 0DD1     		bne	.L94
+ 1185              		.loc 1 234 36 discriminator 2 view .LVU257
+ 1186 0026 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 1187              		.loc 1 234 27 discriminator 2 view .LVU258
+ 1188 002a FF2B     		cmp	r3, #255
+ 1189 002c 0DD1     		bne	.L95
+ 1190              		.loc 1 234 57 discriminator 4 view .LVU259
+ 1191 002e 9DF80630 		ldrb	r3, [sp, #6]	@ zero_extendqisi2
+ 1192              		.loc 1 234 48 discriminator 4 view .LVU260
+ 1193 0032 FF2B     		cmp	r3, #255
+ 1194 0034 0BD1     		bne	.L96
+ 1195              		.loc 1 234 78 discriminator 6 view .LVU261
+ 1196 0036 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 1197              		.loc 1 234 69 discriminator 6 view .LVU262
+ 1198 003a FF2B     		cmp	r3, #255
+ 1199 003c 09D1     		bne	.L97
+ 235:App/Src/manager.c ****     return 0;
+ 1200              		.loc 1 235 12 view .LVU263
+ 1201 003e 0020     		movs	r0, #0
+ 1202 0040 00E0     		b	.L93
+ 1203              	.L94:
+ 234:App/Src/manager.c ****     if (buffer[0] != 0xff || buffer[1] != 0xff || buffer[2] != 0xff || buffer[3] != 0xff) { return 
+ 1204              		.loc 1 234 100 view .LVU264
+ 1205 0042 0120     		movs	r0, #1
+ 1206              	.L93:
+ 236:App/Src/manager.c **** }
+ 1207              		.loc 1 236 1 view .LVU265
+ 1208 0044 03B0     		add	sp, sp, #12
+ 1209              	.LCFI15:
+ 1210              		.cfi_remember_state
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 29
+
+
+ 1211              		.cfi_def_cfa_offset 4
+ 1212              		@ sp needed
+ 1213 0046 5DF804FB 		ldr	pc, [sp], #4
+ 1214              	.L95:
+ 1215              	.LCFI16:
+ 1216              		.cfi_restore_state
+ 234:App/Src/manager.c ****     if (buffer[0] != 0xff || buffer[1] != 0xff || buffer[2] != 0xff || buffer[3] != 0xff) { return 
+ 1217              		.loc 1 234 100 view .LVU266
+ 1218 004a 0120     		movs	r0, #1
+ 1219 004c FAE7     		b	.L93
+ 1220              	.L96:
+ 1221 004e 0120     		movs	r0, #1
+ 1222 0050 F8E7     		b	.L93
+ 1223              	.L97:
+ 1224 0052 0120     		movs	r0, #1
+ 1225 0054 F6E7     		b	.L93
+ 1226              		.cfi_endproc
+ 1227              	.LFE244:
+ 1229              		.section	.text.system_cap_write_flash,"ax",%progbits
+ 1230              		.align	1
+ 1231              		.global	system_cap_write_flash
+ 1232              		.syntax unified
+ 1233              		.thumb
+ 1234              		.thumb_func
+ 1236              	system_cap_write_flash:
+ 1237              	.LFB245:
+ 237:App/Src/manager.c **** 
+ 238:App/Src/manager.c **** void system_cap_write_flash(void)
+ 239:App/Src/manager.c **** {
+ 1238              		.loc 1 239 1 is_stmt 1 view -0
+ 1239              		.cfi_startproc
+ 1240              		@ args = 0, pretend = 0, frame = 8
+ 1241              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1242 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 1243              	.LCFI17:
+ 1244              		.cfi_def_cfa_offset 20
+ 1245              		.cfi_offset 4, -20
+ 1246              		.cfi_offset 5, -16
+ 1247              		.cfi_offset 6, -12
+ 1248              		.cfi_offset 7, -8
+ 1249              		.cfi_offset 14, -4
+ 1250 0002 83B0     		sub	sp, sp, #12
+ 1251              	.LCFI18:
+ 1252              		.cfi_def_cfa_offset 32
+ 240:App/Src/manager.c ****     uint32_t address;
+ 1253              		.loc 1 240 5 view .LVU268
+ 241:App/Src/manager.c ****     uint8_t buffer[4] = {0};
+ 1254              		.loc 1 241 5 view .LVU269
+ 1255              		.loc 1 241 13 is_stmt 0 view .LVU270
+ 1256 0004 0024     		movs	r4, #0
+ 1257 0006 0194     		str	r4, [sp, #4]
+ 242:App/Src/manager.c ****     int i;
+ 1258              		.loc 1 242 5 is_stmt 1 view .LVU271
+ 243:App/Src/manager.c **** 
+ 244:App/Src/manager.c ****     for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 1259              		.loc 1 244 5 view .LVU272
+ 1260              	.LVL112:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 30
+
+
+ 1261              		.loc 1 244 5 is_stmt 0 view .LVU273
+ 1262 0008 00E0     		b	.L100
+ 1263              	.LVL113:
+ 1264              	.L101:
+ 1265              		.loc 1 244 38 is_stmt 1 discriminator 2 view .LVU274
+ 1266              		.loc 1 244 39 is_stmt 0 discriminator 2 view .LVU275
+ 1267 000a 0134     		adds	r4, r4, #1
+ 1268              	.LVL114:
+ 1269              	.L100:
+ 1270              		.loc 1 244 17 is_stmt 1 discriminator 1 view .LVU276
+ 1271              		.loc 1 244 5 is_stmt 0 discriminator 1 view .LVU277
+ 1272 000c 632C     		cmp	r4, #99
+ 1273 000e 3BDC     		bgt	.L104
+ 245:App/Src/manager.c ****         if (g_oneData.flag[i] != CAP_ADJUST_SUCCESS) { continue; }//²âÊÔ²»³É¹¦£¬²»»áÐ´Èëflash
+ 1274              		.loc 1 245 9 is_stmt 1 view .LVU278
+ 1275              		.loc 1 245 27 is_stmt 0 view .LVU279
+ 1276 0010 1E4B     		ldr	r3, .L105
+ 1277 0012 2344     		add	r3, r3, r4
+ 1278 0014 93F82433 		ldrb	r3, [r3, #804]	@ zero_extendqisi2
+ 1279              		.loc 1 245 12 view .LVU280
+ 1280 0018 022B     		cmp	r3, #2
+ 1281 001a F6D1     		bne	.L101
+ 246:App/Src/manager.c ****         if (system_check_test_dot(i + 1, g_oneData.number) > 0) { continue; }//·ÀÖ¹ÖØ¸´²âÊÔ²»»á¸üÐÂ
+ 1282              		.loc 1 246 9 is_stmt 1 view .LVU281
+ 1283              		.loc 1 246 13 is_stmt 0 view .LVU282
+ 1284 001c 601C     		adds	r0, r4, #1
+ 1285 001e 1B4B     		ldr	r3, .L105
+ 1286 0020 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 1287 0022 C0B2     		uxtb	r0, r0
+ 1288 0024 FFF7FEFF 		bl	system_check_test_dot
+ 1289              	.LVL115:
+ 1290              		.loc 1 246 12 view .LVU283
+ 1291 0028 0028     		cmp	r0, #0
+ 1292 002a EED1     		bne	.L101
+ 247:App/Src/manager.c ****         address = TEST_RESULT_START_ADDR + i * TEST_RESULT_ONE_SIZE + TEST_DOT_TEMP + g_oneData.num
+ 1293              		.loc 1 247 9 is_stmt 1 view .LVU284
+ 1294              		.loc 1 247 42 is_stmt 0 view .LVU285
+ 1295 002c 04F10805 		add	r5, r4, #8
+ 1296 0030 6D02     		lsls	r5, r5, #9
+ 1297              		.loc 1 247 69 view .LVU286
+ 1298 0032 05F10807 		add	r7, r5, #8
+ 1299              		.loc 1 247 96 view .LVU287
+ 1300 0036 154E     		ldr	r6, .L105
+ 1301 0038 3378     		ldrb	r3, [r6]	@ zero_extendqisi2
+ 1302              		.loc 1 247 85 view .LVU288
+ 1303 003a 07EB8307 		add	r7, r7, r3, lsl #2
+ 1304              	.LVL116:
+ 248:App/Src/manager.c ****         float_to_uint8(buffer, &g_oneData.temp[i]);
+ 1305              		.loc 1 248 9 is_stmt 1 view .LVU289
+ 1306 003e 06EB8401 		add	r1, r6, r4, lsl #2
+ 1307 0042 0431     		adds	r1, r1, #4
+ 1308 0044 01A8     		add	r0, sp, #4
+ 1309 0046 FFF7FEFF 		bl	float_to_uint8
+ 1310              	.LVL117:
+ 249:App/Src/manager.c ****         flash_write_data(address, buffer, 4);
+ 1311              		.loc 1 249 9 view .LVU290
+ 1312 004a 0422     		movs	r2, #4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 31
+
+
+ 1313 004c 0DEB0201 		add	r1, sp, r2
+ 1314 0050 3846     		mov	r0, r7
+ 1315 0052 FFF7FEFF 		bl	flash_write_data
+ 1316              	.LVL118:
+ 250:App/Src/manager.c ****         HAL_Delay(5);
+ 1317              		.loc 1 250 9 view .LVU291
+ 1318 0056 0520     		movs	r0, #5
+ 1319 0058 FFF7FEFF 		bl	HAL_Delay
+ 1320              	.LVL119:
+ 251:App/Src/manager.c ****         address = TEST_RESULT_START_ADDR + i * TEST_RESULT_ONE_SIZE + TEST_DOT_CAP + g_oneData.numb
+ 1321              		.loc 1 251 9 view .LVU292
+ 1322              		.loc 1 251 69 is_stmt 0 view .LVU293
+ 1323 005c 1C35     		adds	r5, r5, #28
+ 1324              		.loc 1 251 95 view .LVU294
+ 1325 005e 3378     		ldrb	r3, [r6]	@ zero_extendqisi2
+ 1326              		.loc 1 251 84 view .LVU295
+ 1327 0060 05EB8305 		add	r5, r5, r3, lsl #2
+ 1328              	.LVL120:
+ 252:App/Src/manager.c ****         float_to_uint8(buffer, &g_oneData.cap[i]);
+ 1329              		.loc 1 252 9 is_stmt 1 view .LVU296
+ 1330 0064 04F16401 		add	r1, r4, #100
+ 1331 0068 06EB8101 		add	r1, r6, r1, lsl #2
+ 1332 006c 0431     		adds	r1, r1, #4
+ 1333 006e 01A8     		add	r0, sp, #4
+ 1334 0070 FFF7FEFF 		bl	float_to_uint8
+ 1335              	.LVL121:
+ 253:App/Src/manager.c ****         flash_write_data(address, buffer, 4);
+ 1336              		.loc 1 253 9 view .LVU297
+ 1337 0074 0422     		movs	r2, #4
+ 1338 0076 0DEB0201 		add	r1, sp, r2
+ 1339 007a 2846     		mov	r0, r5
+ 1340 007c FFF7FEFF 		bl	flash_write_data
+ 1341              	.LVL122:
+ 254:App/Src/manager.c ****         HAL_Delay(5);
+ 1342              		.loc 1 254 9 view .LVU298
+ 1343 0080 0520     		movs	r0, #5
+ 1344 0082 FFF7FEFF 		bl	HAL_Delay
+ 1345              	.LVL123:
+ 1346 0086 C0E7     		b	.L101
+ 1347              	.LVL124:
+ 1348              	.L104:
+ 255:App/Src/manager.c ****     }
+ 256:App/Src/manager.c **** }
+ 1349              		.loc 1 256 1 is_stmt 0 view .LVU299
+ 1350 0088 03B0     		add	sp, sp, #12
+ 1351              	.LCFI19:
+ 1352              		.cfi_def_cfa_offset 20
+ 1353              		@ sp needed
+ 1354 008a F0BD     		pop	{r4, r5, r6, r7, pc}
+ 1355              	.LVL125:
+ 1356              	.L106:
+ 1357              		.loc 1 256 1 view .LVU300
+ 1358              		.align	2
+ 1359              	.L105:
+ 1360 008c 00000000 		.word	.LANCHOR3
+ 1361              		.cfi_endproc
+ 1362              	.LFE245:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 32
+
+
+ 1364              		.section	.rodata.system_tool_calculate_sec.str1.4,"aMS",%progbits,1
+ 1365              		.align	2
+ 1366              	.LC20:
+ 1367 0000 1F1C1F1E 		.ascii	"\037\034\037\036\037\036\037\037\036\037\036\037\000"
+ 1367      1F1E1F1F 
+ 1367      1E1F1E1F 
+ 1367      00
+ 1368              		.section	.text.system_tool_calculate_sec,"ax",%progbits
+ 1369              		.align	1
+ 1370              		.global	system_tool_calculate_sec
+ 1371              		.syntax unified
+ 1372              		.thumb
+ 1373              		.thumb_func
+ 1375              	system_tool_calculate_sec:
+ 1376              	.LFB246:
+ 257:App/Src/manager.c **** //¼ÆËã»ùÓÚ2000ÄêÒÔºóµÄÊ±¼äÃë
+ 258:App/Src/manager.c **** int system_tool_calculate_sec(RealTime time)
+ 259:App/Src/manager.c **** {
+ 1377              		.loc 1 259 1 is_stmt 1 view -0
+ 1378              		.cfi_startproc
+ 1379              		@ args = 0, pretend = 0, frame = 24
+ 1380              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1381              		@ link register save eliminated.
+ 1382 0000 86B0     		sub	sp, sp, #24
+ 1383              	.LCFI20:
+ 1384              		.cfi_def_cfa_offset 24
+ 1385 0002 6B46     		mov	r3, sp
+ 1386 0004 83E80300 		stm	r3, {r0, r1}
+ 260:App/Src/manager.c ****     int number;
+ 1387              		.loc 1 260 5 view .LVU302
+ 261:App/Src/manager.c ****     uint8_t dayInMon[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+ 1388              		.loc 1 261 5 view .LVU303
+ 1389              		.loc 1 261 13 is_stmt 0 view .LVU304
+ 1390 0008 244B     		ldr	r3, .L117
+ 1391 000a 93E80700 		ldm	r3, {r0, r1, r2}
+ 1392 000e 06AB     		add	r3, sp, #24
+ 1393 0010 03E90700 		stmdb	r3, {r0, r1, r2}
+ 262:App/Src/manager.c ****     uint8_t i;
+ 1394              		.loc 1 262 5 is_stmt 1 view .LVU305
+ 263:App/Src/manager.c ****     int day = 0; 
+ 1395              		.loc 1 263 5 view .LVU306
+ 1396              	.LVL126:
+ 264:App/Src/manager.c ****     if (time.year >= 100 || time.year == 0) {
+ 1397              		.loc 1 264 5 view .LVU307
+ 1398              		.loc 1 264 13 is_stmt 0 view .LVU308
+ 1399 0014 9DF800C0 		ldrb	ip, [sp]	@ zero_extendqisi2
+ 1400              		.loc 1 264 26 view .LVU309
+ 1401 0018 0CF1FF33 		add	r3, ip, #-1
+ 1402 001c DBB2     		uxtb	r3, r3
+ 1403              		.loc 1 264 8 view .LVU310
+ 1404 001e 622B     		cmp	r3, #98
+ 1405 0020 1BD8     		bhi	.L114
+ 265:App/Src/manager.c ****         day = 0;
+ 266:App/Src/manager.c ****     } else {
+ 267:App/Src/manager.c ****         day = 365 * time.year + ((time.year - 1) / 4);//²¹×ãÈòÄêµÄÌìÊý
+ 1406              		.loc 1 267 9 is_stmt 1 view .LVU311
+ 1407              		.loc 1 267 19 is_stmt 0 view .LVU312
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 33
+
+
+ 1408 0022 40F26D10 		movw	r0, #365
+ 1409 0026 00FB0CF0 		mul	r0, r0, ip
+ 1410              		.loc 1 267 50 view .LVU313
+ 1411 002a BCF10103 		subs	r3, ip, #1
+ 1412 002e 12D4     		bmi	.L116
+ 1413              	.L109:
+ 1414              		.loc 1 267 13 view .LVU314
+ 1415 0030 00EBA300 		add	r0, r0, r3, asr #2
+ 1416              	.LVL127:
+ 1417              	.L108:
+ 265:App/Src/manager.c ****         day = 0;
+ 1418              		.loc 1 265 13 discriminator 1 view .LVU315
+ 1419 0034 0023     		movs	r3, #0
+ 1420              	.L110:
+ 1421              	.LVL128:
+ 268:App/Src/manager.c ****     }
+ 269:App/Src/manager.c ****     for (i = 0; i < 12; i++) {
+ 1422              		.loc 1 269 17 is_stmt 1 discriminator 1 view .LVU316
+ 1423              		.loc 1 269 5 is_stmt 0 discriminator 1 view .LVU317
+ 1424 0036 0B2B     		cmp	r3, #11
+ 1425 0038 11D8     		bhi	.L111
+ 270:App/Src/manager.c ****         if ((i + 1) == time.mon) { break; }
+ 1426              		.loc 1 270 9 is_stmt 1 view .LVU318
+ 1427              		.loc 1 270 16 is_stmt 0 view .LVU319
+ 1428 003a 5A1C     		adds	r2, r3, #1
+ 1429              		.loc 1 270 28 view .LVU320
+ 1430 003c 9DF80110 		ldrb	r1, [sp, #1]	@ zero_extendqisi2
+ 1431              		.loc 1 270 12 view .LVU321
+ 1432 0040 8A42     		cmp	r2, r1
+ 1433 0042 0CD0     		beq	.L111
+ 271:App/Src/manager.c ****         day += dayInMon[i];
+ 1434              		.loc 1 271 9 is_stmt 1 discriminator 2 view .LVU322
+ 1435              		.loc 1 271 24 is_stmt 0 discriminator 2 view .LVU323
+ 1436 0044 03F11802 		add	r2, r3, #24
+ 1437 0048 6A44     		add	r2, sp, r2
+ 1438 004a 12F80C2C 		ldrb	r2, [r2, #-12]	@ zero_extendqisi2
+ 1439              		.loc 1 271 13 discriminator 2 view .LVU324
+ 1440 004e 1044     		add	r0, r0, r2
+ 1441              	.LVL129:
+ 269:App/Src/manager.c ****         if ((i + 1) == time.mon) { break; }
+ 1442              		.loc 1 269 25 is_stmt 1 discriminator 2 view .LVU325
+ 269:App/Src/manager.c ****         if ((i + 1) == time.mon) { break; }
+ 1443              		.loc 1 269 26 is_stmt 0 discriminator 2 view .LVU326
+ 1444 0050 0133     		adds	r3, r3, #1
+ 1445              	.LVL130:
+ 269:App/Src/manager.c ****         if ((i + 1) == time.mon) { break; }
+ 1446              		.loc 1 269 26 discriminator 2 view .LVU327
+ 1447 0052 DBB2     		uxtb	r3, r3
+ 1448              	.LVL131:
+ 269:App/Src/manager.c ****         if ((i + 1) == time.mon) { break; }
+ 1449              		.loc 1 269 26 discriminator 2 view .LVU328
+ 1450 0054 EFE7     		b	.L110
+ 1451              	.LVL132:
+ 1452              	.L116:
+ 267:App/Src/manager.c ****     }
+ 1453              		.loc 1 267 50 view .LVU329
+ 1454 0056 0333     		adds	r3, r3, #3
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 34
+
+
+ 1455 0058 EAE7     		b	.L109
+ 1456              	.L114:
+ 265:App/Src/manager.c ****     } else {
+ 1457              		.loc 1 265 13 view .LVU330
+ 1458 005a 0020     		movs	r0, #0
+ 1459 005c EAE7     		b	.L108
+ 1460              	.LVL133:
+ 1461              	.L111:
+ 272:App/Src/manager.c ****     }
+ 273:App/Src/manager.c ****     day += time.day; 
+ 1462              		.loc 1 273 5 is_stmt 1 view .LVU331
+ 1463              		.loc 1 273 16 is_stmt 0 view .LVU332
+ 1464 005e 9DF80230 		ldrb	r3, [sp, #2]	@ zero_extendqisi2
+ 1465              	.LVL134:
+ 1466              		.loc 1 273 9 view .LVU333
+ 1467 0062 1844     		add	r0, r0, r3
+ 1468              	.LVL135:
+ 274:App/Src/manager.c ****     if ((time.year % 4) == 0 && time.mon >= 3) {
+ 1469              		.loc 1 274 5 is_stmt 1 view .LVU334
+ 1470              		.loc 1 274 8 is_stmt 0 view .LVU335
+ 1471 0064 1CF0030F 		tst	ip, #3
+ 1472 0068 04D1     		bne	.L113
+ 1473              		.loc 1 274 37 discriminator 1 view .LVU336
+ 1474 006a 9DF80130 		ldrb	r3, [sp, #1]	@ zero_extendqisi2
+ 1475              		.loc 1 274 30 discriminator 1 view .LVU337
+ 1476 006e 022B     		cmp	r3, #2
+ 1477 0070 00D9     		bls	.L113
+ 275:App/Src/manager.c ****         day += 1;       //ÈòÔÂ£«1
+ 1478              		.loc 1 275 9 is_stmt 1 view .LVU338
+ 1479              		.loc 1 275 13 is_stmt 0 view .LVU339
+ 1480 0072 0130     		adds	r0, r0, #1
+ 1481              	.LVL136:
+ 1482              	.L113:
+ 276:App/Src/manager.c ****     }
+ 277:App/Src/manager.c ****     number = time.sec + (uint32_t)time.min * 60 + (uint32_t)time.hour * 3600 + day * 24 * 3600;
+ 1483              		.loc 1 277 5 is_stmt 1 view .LVU340
+ 1484              		.loc 1 277 18 is_stmt 0 view .LVU341
+ 1485 0074 9DF80510 		ldrb	r1, [sp, #5]	@ zero_extendqisi2
+ 1486              		.loc 1 277 65 view .LVU342
+ 1487 0078 9DF803C0 		ldrb	ip, [sp, #3]	@ zero_extendqisi2
+ 1488              		.loc 1 277 39 view .LVU343
+ 1489 007c 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+ 1490              		.loc 1 277 44 view .LVU344
+ 1491 0080 C2EB0212 		rsb	r2, r2, r2, lsl #4
+ 1492 0084 9300     		lsls	r3, r2, #2
+ 1493              		.loc 1 277 49 view .LVU345
+ 1494 0086 4FF46162 		mov	r2, #3600
+ 1495 008a 02FB0C33 		mla	r3, r2, ip, r3
+ 1496 008e 0B44     		add	r3, r3, r1
+ 1497              	.LVL137:
+ 278:App/Src/manager.c ****     return number;
+ 1498              		.loc 1 278 5 is_stmt 1 view .LVU346
+ 279:App/Src/manager.c **** }
+ 1499              		.loc 1 279 1 is_stmt 0 view .LVU347
+ 1500 0090 034A     		ldr	r2, .L117+4
+ 1501 0092 02FB0030 		mla	r0, r2, r0, r3
+ 1502              	.LVL138:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 35
+
+
+ 1503              		.loc 1 279 1 view .LVU348
+ 1504 0096 06B0     		add	sp, sp, #24
+ 1505              	.LCFI21:
+ 1506              		.cfi_def_cfa_offset 0
+ 1507              		@ sp needed
+ 1508 0098 7047     		bx	lr
+ 1509              	.L118:
+ 1510 009a 00BF     		.align	2
+ 1511              	.L117:
+ 1512 009c 00000000 		.word	.LC20
+ 1513 00a0 80510100 		.word	86400
+ 1514              		.cfi_endproc
+ 1515              	.LFE246:
+ 1517              		.section	.rodata.system_manage_test_mode.str1.4,"aMS",%progbits,1
+ 1518              		.align	2
+ 1519              	.LC21:
+ 1520 0000 67726F75 		.ascii	"group i2c test:\000"
+ 1520      70206932 
+ 1520      63207465 
+ 1520      73743A00 
+ 1521              		.align	2
+ 1522              	.LC22:
+ 1523 0010 0A00     		.ascii	"\012\000"
+ 1524 0012 0000     		.align	2
+ 1525              	.LC23:
+ 1526 0014 310900   		.ascii	"1\011\000"
+ 1527 0017 00       		.align	2
+ 1528              	.LC24:
+ 1529 0018 300900   		.ascii	"0\011\000"
+ 1530 001b 00       		.align	2
+ 1531              	.LC25:
+ 1532 001c 0A6F6B20 		.ascii	"\012ok sum:%d\012\000"
+ 1532      73756D3A 
+ 1532      25640A00 
+ 1533              		.align	2
+ 1534              	.LC26:
+ 1535 0028 73756363 		.ascii	"success count:%d\012\000"
+ 1535      65737320 
+ 1535      636F756E 
+ 1535      743A2564 
+ 1535      0A00
+ 1536 003a 0000     		.align	2
+ 1537              	.LC27:
+ 1538 003c 6F6B4E75 		.ascii	"okNumber:%d chipName:%d message:\262\342\312\324\315"
+ 1538      6D626572 
+ 1538      3A256420 
+ 1538      63686970 
+ 1538      4E616D65 
+ 1539 0061 EAB3C90A 		.ascii	"\352\263\311\012\000"
+ 1539      00
+ 1540 0066 0000     		.align	2
+ 1541              	.LC28:
+ 1542 0068 6D657373 		.ascii	"message:\262\342\312\324\322\354\263\243\243\254\322"
+ 1542      6167653A 
+ 1542      B2E2CAD4 
+ 1542      D2ECB3A3 
+ 1542      A3ACD2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 36
+
+
+ 1543 007b D1CDA3D6 		.ascii	"\321\315\243\326\271\012\000"
+ 1543      B90A00
+ 1544 0082 0000     		.align	2
+ 1545              	.LC29:
+ 1546 0084 6D657373 		.ascii	"message:\277\252\312\274\275\370\320\320125\266\310"
+ 1546      6167653A 
+ 1546      BFAACABC 
+ 1546      BDF8D0D0 
+ 1546      313235B6 
+ 1547 0099 B2E2CAD4 		.ascii	"\262\342\312\324\000"
+ 1547      00
+ 1548 009e 0000     		.align	2
+ 1549              	.LC30:
+ 1550 00a0 6D657373 		.ascii	"message:125\266\310\262\342\312\324\315\352\263\311"
+ 1550      6167653A 
+ 1550      313235B6 
+ 1550      C8B2E2CA 
+ 1550      D4CDEAB3 
+ 1551 00b5 00       		.ascii	"\000"
+ 1552 00b6 0000     		.align	2
+ 1553              	.LC31:
+ 1554 00b8 73797374 		.ascii	"system temp:%.2f, test dot:%d\012\000"
+ 1554      656D2074 
+ 1554      656D703A 
+ 1554      252E3266 
+ 1554      2C207465 
+ 1555 00d7 00       		.align	2
+ 1556              	.LC32:
+ 1557 00d8 73797374 		.ascii	"system temp %.2f can't test!\012\000"
+ 1557      656D2074 
+ 1557      656D7020 
+ 1557      252E3266 
+ 1557      2063616E 
+ 1558 00f6 0000     		.align	2
+ 1559              	.LC33:
+ 1560 00f8 73746172 		.ascii	"start test chip %d\012\000"
+ 1560      74207465 
+ 1560      73742063 
+ 1560      68697020 
+ 1560      25640A00 
+ 1561              		.align	2
+ 1562              	.LC34:
+ 1563 010c 6F6B4E75 		.ascii	"okNumber:%d message:\265\245\265\343\262\342\312\324"
+ 1563      6D626572 
+ 1563      3A256420 
+ 1563      6D657373 
+ 1563      6167653A 
+ 1564 0128 CDEAB3C9 		.ascii	"\315\352\263\311\012\000"
+ 1564      0A00
+ 1565 012e 0000     		.align	2
+ 1566              	.LC35:
+ 1567 0130 63686970 		.ascii	"chipTemp:%d chipName:%d message:OK\012\000"
+ 1567      54656D70 
+ 1567      3A256420 
+ 1567      63686970 
+ 1567      4E616D65 
+ 1568              		.align	2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 37
+
+
+ 1569              	.LC36:
+ 1570 0154 636F756E 		.ascii	"count:%d, temp:%.1f, cap:%.2f\012\000"
+ 1570      743A2564 
+ 1570      2C207465 
+ 1570      6D703A25 
+ 1570      2E31662C 
+ 1571 0173 00       		.align	2
+ 1572              	.LC37:
+ 1573 0174 63686970 		.ascii	"chipName:%d message:fail!\012\000"
+ 1573      4E616D65 
+ 1573      3A256420 
+ 1573      6D657373 
+ 1573      6167653A 
+ 1574 018f 00       		.align	2
+ 1575              	.LC38:
+ 1576 0190 73797374 		.ascii	"system temp can't test!\012\000"
+ 1576      656D2074 
+ 1576      656D7020 
+ 1576      63616E27 
+ 1576      74207465 
+ 1577 01a9 000000   		.align	2
+ 1578              	.LC39:
+ 1579 01ac 73797374 		.ascii	"system temp test cover!\012\000"
+ 1579      656D2074 
+ 1579      656D7020 
+ 1579      74657374 
+ 1579      20636F76 
+ 1580 01c5 000000   		.align	2
+ 1581              	.LC40:
+ 1582 01c8 63616C63 		.ascii	"calculate success number %d\012\000"
+ 1582      756C6174 
+ 1582      65207375 
+ 1582      63636573 
+ 1582      73206E75 
+ 1583 01e5 000000   		.align	2
+ 1584              	.LC41:
+ 1585 01e8 6F6B4E75 		.ascii	"okNumber:%d chipName:%d message:\274\306\313\343\315"
+ 1585      6D626572 
+ 1585      3A256420 
+ 1585      63686970 
+ 1585      4E616D65 
+ 1586 020d EAB3C9A3 		.ascii	"\352\263\311\243\241\012\000"
+ 1586      A10A00
+ 1587              		.align	2
+ 1588              	.LC42:
+ 1589 0214 646F776E 		.ascii	"download success number %d\012\000"
+ 1589      6C6F6164 
+ 1589      20737563 
+ 1589      63657373 
+ 1589      206E756D 
+ 1590              		.align	2
+ 1591              	.LC43:
+ 1592 0230 6F6B4E75 		.ascii	"okNumber:%d chipName:%d message:\311\325\302\274\315"
+ 1592      6D626572 
+ 1592      3A256420 
+ 1592      63686970 
+ 1592      4E616D65 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 38
+
+
+ 1593 0255 EAB3C9A3 		.ascii	"\352\263\311\243\241\012\000"
+ 1593      A10A00
+ 1594              		.align	2
+ 1595              	.LC44:
+ 1596 025c 6D657373 		.ascii	"message:\324\335\262\273\326\247\263\326\270\303\271"
+ 1596      6167653A 
+ 1596      D4DDB2BB 
+ 1596      D6A7B3D6 
+ 1596      B8C3B9
+ 1597 026f A6C4DC0A 		.ascii	"\246\304\334\012\000"
+ 1597      00
+ 1598              		.section	.text.system_manage_test_mode,"ax",%progbits
+ 1599              		.align	1
+ 1600              		.global	system_manage_test_mode
+ 1601              		.syntax unified
+ 1602              		.thumb
+ 1603              		.thumb_func
+ 1605              	system_manage_test_mode:
+ 1606              	.LFB247:
+ 280:App/Src/manager.c **** 
+ 281:App/Src/manager.c **** void system_manage_test_mode(void)
+ 282:App/Src/manager.c **** {
+ 1607              		.loc 1 282 1 is_stmt 1 view -0
+ 1608              		.cfi_startproc
+ 1609              		@ args = 0, pretend = 0, frame = 0
+ 1610              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1611 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 1612              	.LCFI22:
+ 1613              		.cfi_def_cfa_offset 24
+ 1614              		.cfi_offset 4, -24
+ 1615              		.cfi_offset 5, -20
+ 1616              		.cfi_offset 6, -16
+ 1617              		.cfi_offset 7, -12
+ 1618              		.cfi_offset 8, -8
+ 1619              		.cfi_offset 14, -4
+ 1620 0004 82B0     		sub	sp, sp, #8
+ 1621              	.LCFI23:
+ 1622              		.cfi_def_cfa_offset 32
+ 283:App/Src/manager.c ****     int result;
+ 1623              		.loc 1 283 5 view .LVU350
+ 284:App/Src/manager.c ****     static uint8_t state = 0;
+ 1624              		.loc 1 284 5 view .LVU351
+ 285:App/Src/manager.c ****     static uint8_t count = 0;
+ 1625              		.loc 1 285 5 view .LVU352
+ 286:App/Src/manager.c ****     int i;
+ 1626              		.loc 1 286 5 view .LVU353
+ 287:App/Src/manager.c ****     switch (g_testMode) {
+ 1627              		.loc 1 287 5 view .LVU354
+ 1628 0006 AE4B     		ldr	r3, .L166
+ 1629 0008 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1630 000a 0B2B     		cmp	r3, #11
+ 1631 000c 12D8     		bhi	.L119
+ 1632 000e DFE813F0 		tbh	[pc, r3, lsl #1]
+ 1633              	.L122:
+ 1634 0012 0C00     		.2byte	(.L133-.L122)/2
+ 1635 0014 1400     		.2byte	(.L132-.L122)/2
+ 1636 0016 5600     		.2byte	(.L131-.L122)/2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 39
+
+
+ 1637 0018 6C00     		.2byte	(.L130-.L122)/2
+ 1638 001a BA01     		.2byte	(.L129-.L122)/2
+ 1639 001c FA01     		.2byte	(.L128-.L122)/2
+ 1640 001e 2502     		.2byte	(.L127-.L122)/2
+ 1641 0020 3502     		.2byte	(.L126-.L122)/2
+ 1642 0022 3C02     		.2byte	(.L125-.L122)/2
+ 1643 0024 4302     		.2byte	(.L124-.L122)/2
+ 1644 0026 4A02     		.2byte	(.L123-.L122)/2
+ 1645 0028 5102     		.2byte	(.L121-.L122)/2
+ 1646              		.p2align 1
+ 1647              	.L133:
+ 288:App/Src/manager.c ****         case FREE_MODE:// free mode
+ 289:App/Src/manager.c ****             state = 0;
+ 1648              		.loc 1 289 13 view .LVU355
+ 1649              		.loc 1 289 19 is_stmt 0 view .LVU356
+ 1650 002a 0023     		movs	r3, #0
+ 1651 002c A54A     		ldr	r2, .L166+4
+ 1652 002e 1370     		strb	r3, [r2]
+ 290:App/Src/manager.c ****             count = 0;
+ 1653              		.loc 1 290 13 is_stmt 1 view .LVU357
+ 1654              		.loc 1 290 19 is_stmt 0 view .LVU358
+ 1655 0030 A54A     		ldr	r2, .L166+8
+ 1656 0032 1370     		strb	r3, [r2]
+ 291:App/Src/manager.c ****         break;
+ 1657              		.loc 1 291 9 is_stmt 1 view .LVU359
+ 1658              	.L119:
+ 292:App/Src/manager.c ****         case  FREQ_CONNECT:
+ 293:App/Src/manager.c ****             count = 0;
+ 294:App/Src/manager.c ****             UsbPrintf("group i2c test:");
+ 295:App/Src/manager.c ****             for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 296:App/Src/manager.c ****                 if (i % 10 == 0) { UsbPrintf("\n"); }
+ 297:App/Src/manager.c **** 		        rtc_group_power(i + 1, POWER_I2C);
+ 298:App/Src/manager.c ****                 rtc_set_channel(i + 1, RTC_INIT_1006);
+ 299:App/Src/manager.c ****                 HAL_Delay(5);
+ 300:App/Src/manager.c ****                 if (rtc_read_multi_bytes(RTC_8800_ADDRESS, 0x00, &state, 1)== I2C_OK) {
+ 301:App/Src/manager.c ****                     UsbPrintf("1\t");
+ 302:App/Src/manager.c ****                     count++;
+ 303:App/Src/manager.c ****                 } else {
+ 304:App/Src/manager.c ****                     UsbPrintf("0\t");
+ 305:App/Src/manager.c ****                 }
+ 306:App/Src/manager.c ****             }
+ 307:App/Src/manager.c ****             UsbPrintf("\nok sum:%d\n", count);
+ 308:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 309:App/Src/manager.c ****         break;
+ 310:App/Src/manager.c ****         case TEMP_TEST:
+ 311:App/Src/manager.c ****             result = system_manage_temp();
+ 312:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 313:App/Src/manager.c ****             log_printf("success count:%d\n", result);
+ 314:App/Src/manager.c ****             if (result > 0) {
+ 315:App/Src/manager.c ****                 ControlPrintf("okNumber:%d chipName:%d message:²âÊÔÍê³É\n", result, MAX_CHIP_NUMBER
+ 316:App/Src/manager.c ****             } else {
+ 317:App/Src/manager.c ****                 ControlPrintf("message:²âÊÔÒì³££¬ÒÑÍ£Ö¹\n");
+ 318:App/Src/manager.c ****             }
+ 319:App/Src/manager.c ****         break;
+ 320:App/Src/manager.c ****         case CAP_ADJUST://µ÷ÕûµçÈÝÒÔÊ¹µÃ¸ÃÎÂ¶ÈµãµÄÎó²î×îÐ¡
+ 321:App/Src/manager.c ****             switch (state) {
+ 322:App/Src/manager.c ****                 case 0:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 40
+
+
+ 323:App/Src/manager.c ****                     count = 0;
+ 324:App/Src/manager.c ****                     if (temp_read_value(1) > 115) { //¿Í»§ÄþµÂÊ±´úÌáµÄ125¶È²âÊÔ£¬Êµ¼Ê²»½øÐÐ²âÊÔ
+ 325:App/Src/manager.c **** 	                    ControlPrintf("message:¿ªÊ¼½øÐÐ125¶È²âÊÔ");
+ 326:App/Src/manager.c ****                         HAL_Delay(1500);
+ 327:App/Src/manager.c **** 	                    ControlPrintf("message:125¶È²âÊÔÍê³É");
+ 328:App/Src/manager.c ****                         g_testMode = FREE_MODE;
+ 329:App/Src/manager.c ****                         break;
+ 330:App/Src/manager.c ****                     }
+ 331:App/Src/manager.c ****                     g_oneData.number = check_system_temp();
+ 332:App/Src/manager.c ****                     UsbPrintf("system temp:%.2f, test dot:%d\n", temp_read_value(1), g_oneData.numb
+ 333:App/Src/manager.c ****                     if (g_oneData.number > TEST_RTC_TEMP_Z85) {
+ 334:App/Src/manager.c ****                         g_testMode = FREE_MODE;
+ 335:App/Src/manager.c ****                         log_printf("system temp %.2f can't test!\n", temp_read_value(1));
+ 336:App/Src/manager.c ****                     } else {
+ 337:App/Src/manager.c ****                         state = 1;
+ 338:App/Src/manager.c ****                         systm_cap_save_buffer(0, 0, 0);//init buffer
+ 339:App/Src/manager.c ****                         memset(g_testFlag, 0xff, MAX_CHIP_NUMBER);
+ 340:App/Src/manager.c ****                         flash_test_flag_manage(g_testFlag, FLAG_TEST_DOT, FLASH_FLAG_READ);
+ 341:App/Src/manager.c ****                         if (g_oneData.number == TEST_RTC_TEMP_Z85) {
+ 342:App/Src/manager.c ****                             AddOneTestNumberFlash();
+ 343:App/Src/manager.c ****                         }
+ 344:App/Src/manager.c ****                     }
+ 345:App/Src/manager.c ****                 break;
+ 346:App/Src/manager.c ****                 case 1:
+ 347:App/Src/manager.c ****                     count++;
+ 348:App/Src/manager.c ****                     if (count <= MAX_CHIP_NUMBER) {
+ 349:App/Src/manager.c ****                         if (system_check_test_dot(count, g_oneData.number) > 0) { break; }
+ 350:App/Src/manager.c ****                         log_printf("start test chip %d\n", count);
+ 351:App/Src/manager.c ****                         UsbPrintf("start test chip %d\n", count);
+ 352:App/Src/manager.c ****                         g_capAdjust.flag = CAP_ADJUST_DEFAULT;
+ 353:App/Src/manager.c ****                         g_capAdjust.count = count;
+ 354:App/Src/manager.c ****                         rtc_group_power(count, POWER_CAP_TEST);
+ 355:App/Src/manager.c ****                         HAL_Delay(500);
+ 356:App/Src/manager.c ****                         if (check_history_download(count) > 0) { break; }
+ 357:App/Src/manager.c ****                         rtc_8800_adc_testmode(count);
+ 358:App/Src/manager.c ****                         HAL_Delay(50);
+ 359:App/Src/manager.c ****                         g_capAdjust.temp = system_get_rtc_temp();
+ 360:App/Src/manager.c ****                         rtc_1006_exit_testmode(count);
+ 361:App/Src/manager.c ****                         rtc_1006_set_testmode(count);
+ 362:App/Src/manager.c ****                         rtc_out_4096();
+ 363:App/Src/manager.c ****                         rtc_freq_test(FREQ_TEST_STARTING);
+ 364:App/Src/manager.c ****                         state = 2;
+ 365:App/Src/manager.c ****                     } else {
+ 366:App/Src/manager.c ****                         system_cap_write_flash();//write flash
+ 367:App/Src/manager.c ****                         flash_test_flag_manage(g_testFlag, FLAG_TEST_DOT, FLASH_FLAG_WRITE_ADD);
+ 368:App/Src/manager.c ****                         result = 0;
+ 369:App/Src/manager.c ****                         for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 370:App/Src/manager.c ****                             if ((g_testFlag[i] & (0x01 << g_oneData.number)) == 0) { result++; }
+ 371:App/Src/manager.c ****                         }
+ 372:App/Src/manager.c ****                         ControlPrintf("okNumber:%d message:µ¥µã²âÊÔÍê³É\n", result, count);
+ 373:App/Src/manager.c ****                         g_testMode = FREE_MODE;
+ 374:App/Src/manager.c ****                         log_printf("success count:%d\n", result);
+ 375:App/Src/manager.c ****                         UsbPrintf("success count:%d\n", result);
+ 376:App/Src/manager.c ****                     }
+ 377:App/Src/manager.c ****                 break;
+ 378:App/Src/manager.c ****                 case 2:
+ 379:App/Src/manager.c ****                     if (g_capAdjust.flag != CAP_ADJUST_DEFAULT) {//Ö»Òª×´Ì¬¸Ä±ä£¬¾Í½øÐÐÏÂÒ»¸öÐ¾Æ¬²â
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 41
+
+
+ 380:App/Src/manager.c ****                         state = 1;
+ 381:App/Src/manager.c ****                         if (g_capAdjust.flag == CAP_ADJUST_SUCCESS) {//ÏÈ½øÐÐ1´ÎÊý¾ÝÐ£Ñé£¬ÈôÐ£Ñé²»º
+ 382:App/Src/manager.c ****                             systm_cap_save_buffer(count, g_capAdjust.temp, g_capAdjust.cap);// save
+ 383:App/Src/manager.c ****                             ControlPrintf("chipTemp:%d chipName:%d message:OK\n", (int)g_capAdjust.
+ 384:App/Src/manager.c ****                             log_printf("count:%d, temp:%.1f, cap:%.2f\n", count, g_capAdjust.temp, 
+ 385:App/Src/manager.c ****                             g_testFlag[count - 1] &= (~(0x01 << g_oneData.number));//¶ÔÄ³Ò»¸öÐ¾Æ¬µÄ
+ 386:App/Src/manager.c ****                         } else {
+ 387:App/Src/manager.c ****                             ControlPrintf("chipName:%d message:fail!\n", count);
+ 388:App/Src/manager.c ****                         }
+ 389:App/Src/manager.c ****                         rtc_disable_int();
+ 390:App/Src/manager.c ****                         rtc_1006_exit_testmode(count);
+ 391:App/Src/manager.c ****                     }
+ 392:App/Src/manager.c ****                 break;
+ 393:App/Src/manager.c ****                 default:break;
+ 394:App/Src/manager.c ****             }
+ 395:App/Src/manager.c ****         break;
+ 396:App/Src/manager.c ****         case CAP_ADJUST_COVER:
+ 397:App/Src/manager.c ****             g_oneData.number = check_system_temp();
+ 398:App/Src/manager.c ****             if (g_oneData.number > TEST_RTC_TEMP_Z85) {
+ 399:App/Src/manager.c ****                 g_testMode = FREE_MODE;
+ 400:App/Src/manager.c ****                 log_printf("system temp can't test!\n");
+ 401:App/Src/manager.c ****                 ControlPrintf("message:ÏµÍ³ÎÂ¶È³¬·¶Î§\n");
+ 402:App/Src/manager.c ****                 log_printf("system temp %.2f can't test!\n", temp_read_value(1));
+ 403:App/Src/manager.c ****             } else {
+ 404:App/Src/manager.c ****                 log_printf("system temp test cover!\n");
+ 405:App/Src/manager.c ****                 flash_test_data_clear(g_oneData.number + FLASH_CLEAR_DOT_0);
+ 406:App/Src/manager.c ****                 flash_test_flag_manage(g_testFlag, FLAG_TEST_DOT, FLASH_FLAG_READ);
+ 407:App/Src/manager.c ****                 for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 408:App/Src/manager.c ****                     g_testFlag[i] |= (0x01 << g_oneData.number);
+ 409:App/Src/manager.c ****                 }
+ 410:App/Src/manager.c ****                 flash_test_flag_manage(g_testFlag, FLAG_TEST_DOT, FLASH_FLAG_WRITE_COVER);
+ 411:App/Src/manager.c ****                 g_testMode = CAP_ADJUST;
+ 412:App/Src/manager.c ****             }
+ 413:App/Src/manager.c ****         break;
+ 414:App/Src/manager.c ****         case CALCULATE:
+ 415:App/Src/manager.c ****             count = 0;
+ 416:App/Src/manager.c ****             for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 417:App/Src/manager.c ****                 if (rtc_calculate_cap(i + 1) != 0) {
+ 418:App/Src/manager.c ****                     count++;
+ 419:App/Src/manager.c ****                     g_testFlag[i] = '1';
+ 420:App/Src/manager.c ****                 } else {
+ 421:App/Src/manager.c ****                     g_testFlag[i] = 0xff;
+ 422:App/Src/manager.c ****                 }
+ 423:App/Src/manager.c ****             }
+ 424:App/Src/manager.c ****             flash_test_flag_manage(g_testFlag, FLAG_CALCULATE, FLASH_FLAG_WRITE_ADD);
+ 425:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 426:App/Src/manager.c ****             log_printf("calculate success number %d\n", count);
+ 427:App/Src/manager.c **** 			ControlPrintf("okNumber:%d chipName:%d message:¼ÆËãÍê³É£¡\n", count, MAX_CHIP_NUMBER);
+ 428:App/Src/manager.c ****         break;
+ 429:App/Src/manager.c ****         case CAP_DOWNLOAD:
+ 430:App/Src/manager.c ****             result = system_manage_download_cap();
+ 431:App/Src/manager.c ****             log_printf("download success number %d\n", result);
+ 432:App/Src/manager.c **** 			ControlPrintf("okNumber:%d chipName:%d message:ÉÕÂ¼Íê³É£¡\n", result, MAX_CHIP_NUMBER);
+ 433:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 434:App/Src/manager.c ****         break;
+ 435:App/Src/manager.c ****         case SYNC_RTC_TIME:
+ 436:App/Src/manager.c **** 			ControlPrintf("message:ÔÝ²»Ö§³Ö¸Ã¹¦ÄÜ\n");
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 42
+
+
+ 437:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 438:App/Src/manager.c ****         break;
+ 439:App/Src/manager.c ****         case CHECK_ERROR_TIME:
+ 440:App/Src/manager.c **** 			ControlPrintf("message:ÔÝ²»Ö§³Ö¸Ã¹¦ÄÜ\n");
+ 441:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 442:App/Src/manager.c ****         break;
+ 443:App/Src/manager.c ****         case MACHINE_TEST://½ö²âÊÔ£¬²»Ð´Èë
+ 444:App/Src/manager.c **** 			ControlPrintf("message:ÔÝ²»Ö§³Ö¸Ã¹¦ÄÜ\n");
+ 445:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 446:App/Src/manager.c ****         break;
+ 447:App/Src/manager.c ****         case MACHINE_COVER://ÏÈÇå¿Õ£¬²âÊÔºóÐ´Èë
+ 448:App/Src/manager.c **** 			ControlPrintf("message:ÔÝ²»Ö§³Ö¸Ã¹¦ÄÜ\n");
+ 449:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 450:App/Src/manager.c ****         break;
+ 451:App/Src/manager.c ****         case MACHINE_WRITE://²âÊÔºóÐ´Èë
+ 452:App/Src/manager.c **** 			ControlPrintf("message:ÔÝ²»Ö§³Ö¸Ã¹¦ÄÜ\n");
+ 453:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 454:App/Src/manager.c ****         break;
+ 455:App/Src/manager.c ****         default: break;
+ 456:App/Src/manager.c ****     }
+ 457:App/Src/manager.c **** }
+ 1659              		.loc 1 457 1 is_stmt 0 view .LVU360
+ 1660 0034 02B0     		add	sp, sp, #8
+ 1661              	.LCFI24:
+ 1662              		.cfi_remember_state
+ 1663              		.cfi_def_cfa_offset 24
+ 1664              		@ sp needed
+ 1665 0036 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 1666              	.L132:
+ 1667              	.LCFI25:
+ 1668              		.cfi_restore_state
+ 293:App/Src/manager.c ****             UsbPrintf("group i2c test:");
+ 1669              		.loc 1 293 13 is_stmt 1 view .LVU361
+ 293:App/Src/manager.c ****             UsbPrintf("group i2c test:");
+ 1670              		.loc 1 293 19 is_stmt 0 view .LVU362
+ 1671 003a 0024     		movs	r4, #0
+ 1672 003c A24B     		ldr	r3, .L166+8
+ 1673 003e 1C70     		strb	r4, [r3]
+ 294:App/Src/manager.c ****             for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 1674              		.loc 1 294 13 is_stmt 1 view .LVU363
+ 1675 0040 A248     		ldr	r0, .L166+12
+ 1676 0042 FFF7FEFF 		bl	UsbPrintf
+ 1677              	.LVL139:
+ 295:App/Src/manager.c ****                 if (i % 10 == 0) { UsbPrintf("\n"); }
+ 1678              		.loc 1 295 13 view .LVU364
+ 295:App/Src/manager.c ****                 if (i % 10 == 0) { UsbPrintf("\n"); }
+ 1679              		.loc 1 295 13 is_stmt 0 view .LVU365
+ 1680 0046 07E0     		b	.L134
+ 1681              	.LVL140:
+ 1682              	.L162:
+ 296:App/Src/manager.c **** 		        rtc_group_power(i + 1, POWER_I2C);
+ 1683              		.loc 1 296 36 is_stmt 1 discriminator 1 view .LVU366
+ 1684 0048 A148     		ldr	r0, .L166+16
+ 1685 004a FFF7FEFF 		bl	UsbPrintf
+ 1686              	.LVL141:
+ 1687 004e 10E0     		b	.L135
+ 1688              	.L136:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 43
+
+
+ 304:App/Src/manager.c ****                 }
+ 1689              		.loc 1 304 21 view .LVU367
+ 1690 0050 A048     		ldr	r0, .L166+20
+ 1691 0052 FFF7FEFF 		bl	UsbPrintf
+ 1692              	.LVL142:
+ 1693              	.L137:
+ 295:App/Src/manager.c ****                 if (i % 10 == 0) { UsbPrintf("\n"); }
+ 1694              		.loc 1 295 46 discriminator 2 view .LVU368
+ 295:App/Src/manager.c ****                 if (i % 10 == 0) { UsbPrintf("\n"); }
+ 1695              		.loc 1 295 47 is_stmt 0 discriminator 2 view .LVU369
+ 1696 0056 0134     		adds	r4, r4, #1
+ 1697              	.LVL143:
+ 1698              	.L134:
+ 295:App/Src/manager.c ****                 if (i % 10 == 0) { UsbPrintf("\n"); }
+ 1699              		.loc 1 295 25 is_stmt 1 discriminator 1 view .LVU370
+ 295:App/Src/manager.c ****                 if (i % 10 == 0) { UsbPrintf("\n"); }
+ 1700              		.loc 1 295 13 is_stmt 0 discriminator 1 view .LVU371
+ 1701 0058 632C     		cmp	r4, #99
+ 1702 005a 27DC     		bgt	.L161
+ 296:App/Src/manager.c **** 		        rtc_group_power(i + 1, POWER_I2C);
+ 1703              		.loc 1 296 17 is_stmt 1 view .LVU372
+ 296:App/Src/manager.c **** 		        rtc_group_power(i + 1, POWER_I2C);
+ 1704              		.loc 1 296 23 is_stmt 0 view .LVU373
+ 1705 005c 9E4A     		ldr	r2, .L166+24
+ 1706 005e 82FB0432 		smull	r3, r2, r2, r4
+ 1707 0062 E317     		asrs	r3, r4, #31
+ 1708 0064 C3EBA203 		rsb	r3, r3, r2, asr #2
+ 1709 0068 03EB8303 		add	r3, r3, r3, lsl #2
+ 296:App/Src/manager.c **** 		        rtc_group_power(i + 1, POWER_I2C);
+ 1710              		.loc 1 296 20 view .LVU374
+ 1711 006c B4EB430F 		cmp	r4, r3, lsl #1
+ 1712 0070 EAD0     		beq	.L162
+ 1713              	.L135:
+ 297:App/Src/manager.c ****                 rtc_set_channel(i + 1, RTC_INIT_1006);
+ 1714              		.loc 1 297 11 is_stmt 1 view .LVU375
+ 1715 0072 651C     		adds	r5, r4, #1
+ 1716 0074 EDB2     		uxtb	r5, r5
+ 1717 0076 0121     		movs	r1, #1
+ 1718 0078 2846     		mov	r0, r5
+ 1719 007a FFF7FEFF 		bl	rtc_group_power
+ 1720              	.LVL144:
+ 298:App/Src/manager.c ****                 HAL_Delay(5);
+ 1721              		.loc 1 298 17 view .LVU376
+ 1722 007e 0121     		movs	r1, #1
+ 1723 0080 2846     		mov	r0, r5
+ 1724 0082 FFF7FEFF 		bl	rtc_set_channel
+ 1725              	.LVL145:
+ 299:App/Src/manager.c ****                 if (rtc_read_multi_bytes(RTC_8800_ADDRESS, 0x00, &state, 1)== I2C_OK) {
+ 1726              		.loc 1 299 17 view .LVU377
+ 1727 0086 0520     		movs	r0, #5
+ 1728 0088 FFF7FEFF 		bl	HAL_Delay
+ 1729              	.LVL146:
+ 300:App/Src/manager.c ****                     UsbPrintf("1\t");
+ 1730              		.loc 1 300 17 view .LVU378
+ 300:App/Src/manager.c ****                     UsbPrintf("1\t");
+ 1731              		.loc 1 300 21 is_stmt 0 view .LVU379
+ 1732 008c 0123     		movs	r3, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 44
+
+
+ 1733 008e 8D4A     		ldr	r2, .L166+4
+ 1734 0090 0021     		movs	r1, #0
+ 1735 0092 6420     		movs	r0, #100
+ 1736 0094 FFF7FEFF 		bl	rtc_read_multi_bytes
+ 1737              	.LVL147:
+ 300:App/Src/manager.c ****                     UsbPrintf("1\t");
+ 1738              		.loc 1 300 20 view .LVU380
+ 1739 0098 0028     		cmp	r0, #0
+ 1740 009a D9D1     		bne	.L136
+ 301:App/Src/manager.c ****                     count++;
+ 1741              		.loc 1 301 21 is_stmt 1 view .LVU381
+ 1742 009c 8F48     		ldr	r0, .L166+28
+ 1743 009e FFF7FEFF 		bl	UsbPrintf
+ 1744              	.LVL148:
+ 302:App/Src/manager.c ****                 } else {
+ 1745              		.loc 1 302 21 view .LVU382
+ 302:App/Src/manager.c ****                 } else {
+ 1746              		.loc 1 302 26 is_stmt 0 view .LVU383
+ 1747 00a2 894A     		ldr	r2, .L166+8
+ 1748 00a4 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 1749 00a6 0133     		adds	r3, r3, #1
+ 1750 00a8 1370     		strb	r3, [r2]
+ 1751 00aa D4E7     		b	.L137
+ 1752              	.L161:
+ 307:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 1753              		.loc 1 307 13 is_stmt 1 view .LVU384
+ 1754 00ac 864B     		ldr	r3, .L166+8
+ 1755 00ae 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 1756 00b0 8B48     		ldr	r0, .L166+32
+ 1757 00b2 FFF7FEFF 		bl	UsbPrintf
+ 1758              	.LVL149:
+ 308:App/Src/manager.c ****         break;
+ 1759              		.loc 1 308 13 view .LVU385
+ 308:App/Src/manager.c ****         break;
+ 1760              		.loc 1 308 24 is_stmt 0 view .LVU386
+ 1761 00b6 824B     		ldr	r3, .L166
+ 1762 00b8 0022     		movs	r2, #0
+ 1763 00ba 1A70     		strb	r2, [r3]
+ 309:App/Src/manager.c ****         case TEMP_TEST:
+ 1764              		.loc 1 309 9 is_stmt 1 view .LVU387
+ 1765 00bc BAE7     		b	.L119
+ 1766              	.LVL150:
+ 1767              	.L131:
+ 311:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 1768              		.loc 1 311 13 view .LVU388
+ 311:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 1769              		.loc 1 311 22 is_stmt 0 view .LVU389
+ 1770 00be FFF7FEFF 		bl	system_manage_temp
+ 1771              	.LVL151:
+ 1772 00c2 0446     		mov	r4, r0
+ 1773              	.LVL152:
+ 312:App/Src/manager.c ****             log_printf("success count:%d\n", result);
+ 1774              		.loc 1 312 13 is_stmt 1 view .LVU390
+ 312:App/Src/manager.c ****             log_printf("success count:%d\n", result);
+ 1775              		.loc 1 312 24 is_stmt 0 view .LVU391
+ 1776 00c4 7E4B     		ldr	r3, .L166
+ 1777 00c6 0022     		movs	r2, #0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 45
+
+
+ 1778 00c8 1A70     		strb	r2, [r3]
+ 313:App/Src/manager.c ****             if (result > 0) {
+ 1779              		.loc 1 313 13 is_stmt 1 view .LVU392
+ 1780 00ca 0146     		mov	r1, r0
+ 1781 00cc 8548     		ldr	r0, .L166+36
+ 1782              	.LVL153:
+ 313:App/Src/manager.c ****             if (result > 0) {
+ 1783              		.loc 1 313 13 is_stmt 0 view .LVU393
+ 1784 00ce FFF7FEFF 		bl	log_printf
+ 1785              	.LVL154:
+ 314:App/Src/manager.c ****                 ControlPrintf("okNumber:%d chipName:%d message:²âÊÔÍê³É\n", result, MAX_CHIP_NUMBER
+ 1786              		.loc 1 314 13 is_stmt 1 view .LVU394
+ 314:App/Src/manager.c ****                 ControlPrintf("okNumber:%d chipName:%d message:²âÊÔÍê³É\n", result, MAX_CHIP_NUMBER
+ 1787              		.loc 1 314 16 is_stmt 0 view .LVU395
+ 1788 00d2 002C     		cmp	r4, #0
+ 1789 00d4 05DD     		ble	.L139
+ 315:App/Src/manager.c ****             } else {
+ 1790              		.loc 1 315 17 is_stmt 1 view .LVU396
+ 1791 00d6 6422     		movs	r2, #100
+ 1792 00d8 2146     		mov	r1, r4
+ 1793 00da 8348     		ldr	r0, .L166+40
+ 1794 00dc FFF7FEFF 		bl	ControlPrintf
+ 1795              	.LVL155:
+ 1796 00e0 A8E7     		b	.L119
+ 1797              	.L139:
+ 317:App/Src/manager.c ****             }
+ 1798              		.loc 1 317 17 view .LVU397
+ 1799 00e2 8248     		ldr	r0, .L166+44
+ 1800 00e4 FFF7FEFF 		bl	ControlPrintf
+ 1801              	.LVL156:
+ 1802 00e8 A4E7     		b	.L119
+ 1803              	.LVL157:
+ 1804              	.L130:
+ 321:App/Src/manager.c ****                 case 0:
+ 1805              		.loc 1 321 13 view .LVU398
+ 1806 00ea 764B     		ldr	r3, .L166+4
+ 1807 00ec 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1808 00ee 012B     		cmp	r3, #1
+ 1809 00f0 61D0     		beq	.L140
+ 1810 00f2 022B     		cmp	r3, #2
+ 1811 00f4 00F0CD80 		beq	.L141
+ 1812 00f8 002B     		cmp	r3, #0
+ 1813 00fa 9BD1     		bne	.L119
+ 323:App/Src/manager.c ****                     if (temp_read_value(1) > 115) { //¿Í»§ÄþµÂÊ±´úÌáµÄ125¶È²âÊÔ£¬Êµ¼Ê²»½øÐÐ²âÊÔ
+ 1814              		.loc 1 323 21 view .LVU399
+ 323:App/Src/manager.c ****                     if (temp_read_value(1) > 115) { //¿Í»§ÄþµÂÊ±´úÌáµÄ125¶È²âÊÔ£¬Êµ¼Ê²»½øÐÐ²âÊÔ
+ 1815              		.loc 1 323 27 is_stmt 0 view .LVU400
+ 1816 00fc 724B     		ldr	r3, .L166+8
+ 1817 00fe 0022     		movs	r2, #0
+ 1818 0100 1A70     		strb	r2, [r3]
+ 324:App/Src/manager.c **** 	                    ControlPrintf("message:¿ªÊ¼½øÐÐ125¶È²âÊÔ");
+ 1819              		.loc 1 324 21 is_stmt 1 view .LVU401
+ 324:App/Src/manager.c **** 	                    ControlPrintf("message:¿ªÊ¼½øÐÐ125¶È²âÊÔ");
+ 1820              		.loc 1 324 25 is_stmt 0 view .LVU402
+ 1821 0102 0120     		movs	r0, #1
+ 1822 0104 FFF7FEFF 		bl	temp_read_value
+ 1823              	.LVL158:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 46
+
+
+ 324:App/Src/manager.c **** 	                    ControlPrintf("message:¿ªÊ¼½øÐÐ125¶È²âÊÔ");
+ 1824              		.loc 1 324 24 view .LVU403
+ 1825 0108 DFED797A 		vldr.32	s15, .L166+48
+ 1826 010c B4EEE70A 		vcmpe.f32	s0, s15
+ 1827 0110 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1828 0114 0DDD     		ble	.L159
+ 325:App/Src/manager.c ****                         HAL_Delay(1500);
+ 1829              		.loc 1 325 22 is_stmt 1 view .LVU404
+ 1830 0116 7748     		ldr	r0, .L166+52
+ 1831 0118 FFF7FEFF 		bl	ControlPrintf
+ 1832              	.LVL159:
+ 326:App/Src/manager.c **** 	                    ControlPrintf("message:125¶È²âÊÔÍê³É");
+ 1833              		.loc 1 326 25 view .LVU405
+ 1834 011c 40F2DC50 		movw	r0, #1500
+ 1835 0120 FFF7FEFF 		bl	HAL_Delay
+ 1836              	.LVL160:
+ 327:App/Src/manager.c ****                         g_testMode = FREE_MODE;
+ 1837              		.loc 1 327 22 view .LVU406
+ 1838 0124 7448     		ldr	r0, .L166+56
+ 1839 0126 FFF7FEFF 		bl	ControlPrintf
+ 1840              	.LVL161:
+ 328:App/Src/manager.c ****                         break;
+ 1841              		.loc 1 328 25 view .LVU407
+ 328:App/Src/manager.c ****                         break;
+ 1842              		.loc 1 328 36 is_stmt 0 view .LVU408
+ 1843 012a 654B     		ldr	r3, .L166
+ 1844 012c 0022     		movs	r2, #0
+ 1845 012e 1A70     		strb	r2, [r3]
+ 329:App/Src/manager.c ****                     }
+ 1846              		.loc 1 329 25 is_stmt 1 view .LVU409
+ 1847 0130 80E7     		b	.L119
+ 1848              	.L159:
+ 331:App/Src/manager.c ****                     UsbPrintf("system temp:%.2f, test dot:%d\n", temp_read_value(1), g_oneData.numb
+ 1849              		.loc 1 331 21 view .LVU410
+ 331:App/Src/manager.c ****                     UsbPrintf("system temp:%.2f, test dot:%d\n", temp_read_value(1), g_oneData.numb
+ 1850              		.loc 1 331 40 is_stmt 0 view .LVU411
+ 1851 0132 FFF7FEFF 		bl	check_system_temp
+ 1852              	.LVL162:
+ 331:App/Src/manager.c ****                     UsbPrintf("system temp:%.2f, test dot:%d\n", temp_read_value(1), g_oneData.numb
+ 1853              		.loc 1 331 38 view .LVU412
+ 1854 0136 714C     		ldr	r4, .L166+60
+ 1855 0138 2070     		strb	r0, [r4]
+ 332:App/Src/manager.c ****                     if (g_oneData.number > TEST_RTC_TEMP_Z85) {
+ 1856              		.loc 1 332 21 is_stmt 1 view .LVU413
+ 332:App/Src/manager.c ****                     if (g_oneData.number > TEST_RTC_TEMP_Z85) {
+ 1857              		.loc 1 332 66 is_stmt 0 view .LVU414
+ 1858 013a 0120     		movs	r0, #1
+ 1859 013c FFF7FEFF 		bl	temp_read_value
+ 1860              	.LVL163:
+ 1861 0140 10EE100A 		vmov	r0, s0
+ 332:App/Src/manager.c ****                     if (g_oneData.number > TEST_RTC_TEMP_Z85) {
+ 1862              		.loc 1 332 95 view .LVU415
+ 1863 0144 2578     		ldrb	r5, [r4]	@ zero_extendqisi2
+ 332:App/Src/manager.c ****                     if (g_oneData.number > TEST_RTC_TEMP_Z85) {
+ 1864              		.loc 1 332 21 view .LVU416
+ 1865 0146 FFF7FEFF 		bl	__aeabi_f2d
+ 1866              	.LVL164:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 47
+
+
+ 1867 014a 0246     		mov	r2, r0
+ 1868 014c 0B46     		mov	r3, r1
+ 1869 014e 0095     		str	r5, [sp]
+ 1870 0150 6B48     		ldr	r0, .L166+64
+ 1871 0152 FFF7FEFF 		bl	UsbPrintf
+ 1872              	.LVL165:
+ 333:App/Src/manager.c ****                         g_testMode = FREE_MODE;
+ 1873              		.loc 1 333 21 is_stmt 1 view .LVU417
+ 333:App/Src/manager.c ****                         g_testMode = FREE_MODE;
+ 1874              		.loc 1 333 34 is_stmt 0 view .LVU418
+ 1875 0156 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 333:App/Src/manager.c ****                         g_testMode = FREE_MODE;
+ 1876              		.loc 1 333 24 view .LVU419
+ 1877 0158 042B     		cmp	r3, #4
+ 1878 015a 0FD9     		bls	.L144
+ 334:App/Src/manager.c ****                         log_printf("system temp %.2f can't test!\n", temp_read_value(1));
+ 1879              		.loc 1 334 25 is_stmt 1 view .LVU420
+ 334:App/Src/manager.c ****                         log_printf("system temp %.2f can't test!\n", temp_read_value(1));
+ 1880              		.loc 1 334 36 is_stmt 0 view .LVU421
+ 1881 015c 584B     		ldr	r3, .L166
+ 1882 015e 0022     		movs	r2, #0
+ 1883 0160 1A70     		strb	r2, [r3]
+ 335:App/Src/manager.c ****                     } else {
+ 1884              		.loc 1 335 25 is_stmt 1 view .LVU422
+ 335:App/Src/manager.c ****                     } else {
+ 1885              		.loc 1 335 70 is_stmt 0 view .LVU423
+ 1886 0162 0120     		movs	r0, #1
+ 1887 0164 FFF7FEFF 		bl	temp_read_value
+ 1888              	.LVL166:
+ 1889 0168 10EE100A 		vmov	r0, s0
+ 335:App/Src/manager.c ****                     } else {
+ 1890              		.loc 1 335 25 view .LVU424
+ 1891 016c FFF7FEFF 		bl	__aeabi_f2d
+ 1892              	.LVL167:
+ 1893 0170 0246     		mov	r2, r0
+ 1894 0172 0B46     		mov	r3, r1
+ 1895 0174 6348     		ldr	r0, .L166+68
+ 1896 0176 FFF7FEFF 		bl	log_printf
+ 1897              	.LVL168:
+ 1898 017a 5BE7     		b	.L119
+ 1899              	.L144:
+ 337:App/Src/manager.c ****                         systm_cap_save_buffer(0, 0, 0);//init buffer
+ 1900              		.loc 1 337 25 is_stmt 1 view .LVU425
+ 337:App/Src/manager.c ****                         systm_cap_save_buffer(0, 0, 0);//init buffer
+ 1901              		.loc 1 337 31 is_stmt 0 view .LVU426
+ 1902 017c 0125     		movs	r5, #1
+ 1903 017e 514B     		ldr	r3, .L166+4
+ 1904 0180 1D70     		strb	r5, [r3]
+ 338:App/Src/manager.c ****                         memset(g_testFlag, 0xff, MAX_CHIP_NUMBER);
+ 1905              		.loc 1 338 25 is_stmt 1 view .LVU427
+ 1906 0182 9FED610A 		vldr.32	s0, .L166+72
+ 1907 0186 F0EE400A 		vmov.f32	s1, s0
+ 1908 018a 0020     		movs	r0, #0
+ 1909 018c FFF7FEFF 		bl	systm_cap_save_buffer
+ 1910              	.LVL169:
+ 339:App/Src/manager.c ****                         flash_test_flag_manage(g_testFlag, FLAG_TEST_DOT, FLASH_FLAG_READ);
+ 1911              		.loc 1 339 25 view .LVU428
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 48
+
+
+ 1912 0190 5E4C     		ldr	r4, .L166+76
+ 1913 0192 6422     		movs	r2, #100
+ 1914 0194 FF21     		movs	r1, #255
+ 1915 0196 2046     		mov	r0, r4
+ 1916 0198 FFF7FEFF 		bl	memset
+ 1917              	.LVL170:
+ 340:App/Src/manager.c ****                         if (g_oneData.number == TEST_RTC_TEMP_Z85) {
+ 1918              		.loc 1 340 25 view .LVU429
+ 1919 019c 0022     		movs	r2, #0
+ 1920 019e 2946     		mov	r1, r5
+ 1921 01a0 2046     		mov	r0, r4
+ 1922 01a2 FFF7FEFF 		bl	flash_test_flag_manage
+ 1923              	.LVL171:
+ 341:App/Src/manager.c ****                             AddOneTestNumberFlash();
+ 1924              		.loc 1 341 25 view .LVU430
+ 341:App/Src/manager.c ****                             AddOneTestNumberFlash();
+ 1925              		.loc 1 341 38 is_stmt 0 view .LVU431
+ 1926 01a6 554B     		ldr	r3, .L166+60
+ 1927 01a8 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 341:App/Src/manager.c ****                             AddOneTestNumberFlash();
+ 1928              		.loc 1 341 28 view .LVU432
+ 1929 01aa 042B     		cmp	r3, #4
+ 1930 01ac 7FF442AF 		bne	.L119
+ 342:App/Src/manager.c ****                         }
+ 1931              		.loc 1 342 29 is_stmt 1 view .LVU433
+ 1932 01b0 FFF7FEFF 		bl	AddOneTestNumberFlash
+ 1933              	.LVL172:
+ 1934 01b4 3EE7     		b	.L119
+ 1935              	.L140:
+ 347:App/Src/manager.c ****                     if (count <= MAX_CHIP_NUMBER) {
+ 1936              		.loc 1 347 21 view .LVU434
+ 347:App/Src/manager.c ****                     if (count <= MAX_CHIP_NUMBER) {
+ 1937              		.loc 1 347 26 is_stmt 0 view .LVU435
+ 1938 01b6 444B     		ldr	r3, .L166+8
+ 1939 01b8 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 1940 01ba 0130     		adds	r0, r0, #1
+ 1941 01bc C0B2     		uxtb	r0, r0
+ 1942 01be 1870     		strb	r0, [r3]
+ 348:App/Src/manager.c ****                         if (system_check_test_dot(count, g_oneData.number) > 0) { break; }
+ 1943              		.loc 1 348 21 is_stmt 1 view .LVU436
+ 348:App/Src/manager.c ****                         if (system_check_test_dot(count, g_oneData.number) > 0) { break; }
+ 1944              		.loc 1 348 24 is_stmt 0 view .LVU437
+ 1945 01c0 6428     		cmp	r0, #100
+ 1946 01c2 3CD8     		bhi	.L145
+ 349:App/Src/manager.c ****                         log_printf("start test chip %d\n", count);
+ 1947              		.loc 1 349 25 is_stmt 1 view .LVU438
+ 349:App/Src/manager.c ****                         log_printf("start test chip %d\n", count);
+ 1948              		.loc 1 349 29 is_stmt 0 view .LVU439
+ 1949 01c4 4D4B     		ldr	r3, .L166+60
+ 1950 01c6 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 1951 01c8 FFF7FEFF 		bl	system_check_test_dot
+ 1952              	.LVL173:
+ 349:App/Src/manager.c ****                         log_printf("start test chip %d\n", count);
+ 1953              		.loc 1 349 28 view .LVU440
+ 1954 01cc 0028     		cmp	r0, #0
+ 1955 01ce 7FF431AF 		bne	.L119
+ 350:App/Src/manager.c ****                         UsbPrintf("start test chip %d\n", count);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 49
+
+
+ 1956              		.loc 1 350 25 is_stmt 1 view .LVU441
+ 1957 01d2 3D4C     		ldr	r4, .L166+8
+ 1958 01d4 4E4D     		ldr	r5, .L166+80
+ 1959 01d6 2178     		ldrb	r1, [r4]	@ zero_extendqisi2
+ 1960 01d8 2846     		mov	r0, r5
+ 1961 01da FFF7FEFF 		bl	log_printf
+ 1962              	.LVL174:
+ 351:App/Src/manager.c ****                         g_capAdjust.flag = CAP_ADJUST_DEFAULT;
+ 1963              		.loc 1 351 25 view .LVU442
+ 1964 01de 2178     		ldrb	r1, [r4]	@ zero_extendqisi2
+ 1965 01e0 2846     		mov	r0, r5
+ 1966 01e2 FFF7FEFF 		bl	UsbPrintf
+ 1967              	.LVL175:
+ 352:App/Src/manager.c ****                         g_capAdjust.count = count;
+ 1968              		.loc 1 352 25 view .LVU443
+ 352:App/Src/manager.c ****                         g_capAdjust.count = count;
+ 1969              		.loc 1 352 42 is_stmt 0 view .LVU444
+ 1970 01e6 4B4B     		ldr	r3, .L166+84
+ 1971 01e8 0022     		movs	r2, #0
+ 1972 01ea 1A70     		strb	r2, [r3]
+ 353:App/Src/manager.c ****                         rtc_group_power(count, POWER_CAP_TEST);
+ 1973              		.loc 1 353 25 is_stmt 1 view .LVU445
+ 353:App/Src/manager.c ****                         rtc_group_power(count, POWER_CAP_TEST);
+ 1974              		.loc 1 353 43 is_stmt 0 view .LVU446
+ 1975 01ec 2078     		ldrb	r0, [r4]	@ zero_extendqisi2
+ 1976 01ee 1874     		strb	r0, [r3, #16]
+ 354:App/Src/manager.c ****                         HAL_Delay(500);
+ 1977              		.loc 1 354 25 is_stmt 1 view .LVU447
+ 1978 01f0 0421     		movs	r1, #4
+ 1979 01f2 FFF7FEFF 		bl	rtc_group_power
+ 1980              	.LVL176:
+ 355:App/Src/manager.c ****                         if (check_history_download(count) > 0) { break; }
+ 1981              		.loc 1 355 25 view .LVU448
+ 1982 01f6 4FF4FA70 		mov	r0, #500
+ 1983 01fa FFF7FEFF 		bl	HAL_Delay
+ 1984              	.LVL177:
+ 356:App/Src/manager.c ****                         rtc_8800_adc_testmode(count);
+ 1985              		.loc 1 356 25 view .LVU449
+ 356:App/Src/manager.c ****                         rtc_8800_adc_testmode(count);
+ 1986              		.loc 1 356 29 is_stmt 0 view .LVU450
+ 1987 01fe 2078     		ldrb	r0, [r4]	@ zero_extendqisi2
+ 1988 0200 FFF7FEFF 		bl	check_history_download
+ 1989              	.LVL178:
+ 356:App/Src/manager.c ****                         rtc_8800_adc_testmode(count);
+ 1990              		.loc 1 356 28 view .LVU451
+ 1991 0204 0028     		cmp	r0, #0
+ 1992 0206 7FF415AF 		bne	.L119
+ 357:App/Src/manager.c ****                         HAL_Delay(50);
+ 1993              		.loc 1 357 25 is_stmt 1 view .LVU452
+ 1994 020a 2078     		ldrb	r0, [r4]	@ zero_extendqisi2
+ 1995 020c FFF7FEFF 		bl	rtc_8800_adc_testmode
+ 1996              	.LVL179:
+ 358:App/Src/manager.c ****                         g_capAdjust.temp = system_get_rtc_temp();
+ 1997              		.loc 1 358 25 view .LVU453
+ 1998 0210 3220     		movs	r0, #50
+ 1999 0212 FFF7FEFF 		bl	HAL_Delay
+ 2000              	.LVL180:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 50
+
+
+ 359:App/Src/manager.c ****                         rtc_1006_exit_testmode(count);
+ 2001              		.loc 1 359 25 view .LVU454
+ 359:App/Src/manager.c ****                         rtc_1006_exit_testmode(count);
+ 2002              		.loc 1 359 44 is_stmt 0 view .LVU455
+ 2003 0216 FFF7FEFF 		bl	system_get_rtc_temp
+ 2004              	.LVL181:
+ 359:App/Src/manager.c ****                         rtc_1006_exit_testmode(count);
+ 2005              		.loc 1 359 42 view .LVU456
+ 2006 021a 3E4B     		ldr	r3, .L166+84
+ 2007 021c 83ED020A 		vstr.32	s0, [r3, #8]
+ 360:App/Src/manager.c ****                         rtc_1006_set_testmode(count);
+ 2008              		.loc 1 360 25 is_stmt 1 view .LVU457
+ 2009 0220 2078     		ldrb	r0, [r4]	@ zero_extendqisi2
+ 2010 0222 FFF7FEFF 		bl	rtc_1006_exit_testmode
+ 2011              	.LVL182:
+ 361:App/Src/manager.c ****                         rtc_out_4096();
+ 2012              		.loc 1 361 25 view .LVU458
+ 2013 0226 2078     		ldrb	r0, [r4]	@ zero_extendqisi2
+ 2014 0228 FFF7FEFF 		bl	rtc_1006_set_testmode
+ 2015              	.LVL183:
+ 362:App/Src/manager.c ****                         rtc_freq_test(FREQ_TEST_STARTING);
+ 2016              		.loc 1 362 25 view .LVU459
+ 2017 022c FFF7FEFF 		bl	rtc_out_4096
+ 2018              	.LVL184:
+ 363:App/Src/manager.c ****                         state = 2;
+ 2019              		.loc 1 363 25 view .LVU460
+ 2020 0230 0120     		movs	r0, #1
+ 2021 0232 FFF7FEFF 		bl	rtc_freq_test
+ 2022              	.LVL185:
+ 364:App/Src/manager.c ****                     } else {
+ 2023              		.loc 1 364 25 view .LVU461
+ 364:App/Src/manager.c ****                     } else {
+ 2024              		.loc 1 364 31 is_stmt 0 view .LVU462
+ 2025 0236 234B     		ldr	r3, .L166+4
+ 2026 0238 0222     		movs	r2, #2
+ 2027 023a 1A70     		strb	r2, [r3]
+ 2028 023c FAE6     		b	.L119
+ 2029              	.L145:
+ 366:App/Src/manager.c ****                         flash_test_flag_manage(g_testFlag, FLAG_TEST_DOT, FLASH_FLAG_WRITE_ADD);
+ 2030              		.loc 1 366 25 is_stmt 1 view .LVU463
+ 2031 023e FFF7FEFF 		bl	system_cap_write_flash
+ 2032              	.LVL186:
+ 367:App/Src/manager.c ****                         result = 0;
+ 2033              		.loc 1 367 25 view .LVU464
+ 2034 0242 0122     		movs	r2, #1
+ 2035 0244 1146     		mov	r1, r2
+ 2036 0246 3148     		ldr	r0, .L166+76
+ 2037 0248 FFF7FEFF 		bl	flash_test_flag_manage
+ 2038              	.LVL187:
+ 368:App/Src/manager.c ****                         for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 2039              		.loc 1 368 25 view .LVU465
+ 369:App/Src/manager.c ****                             if ((g_testFlag[i] & (0x01 << g_oneData.number)) == 0) { result++; }
+ 2040              		.loc 1 369 25 view .LVU466
+ 369:App/Src/manager.c ****                             if ((g_testFlag[i] & (0x01 << g_oneData.number)) == 0) { result++; }
+ 2041              		.loc 1 369 32 is_stmt 0 view .LVU467
+ 2042 024c 0023     		movs	r3, #0
+ 368:App/Src/manager.c ****                         for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 51
+
+
+ 2043              		.loc 1 368 32 view .LVU468
+ 2044 024e 1C46     		mov	r4, r3
+ 369:App/Src/manager.c ****                             if ((g_testFlag[i] & (0x01 << g_oneData.number)) == 0) { result++; }
+ 2045              		.loc 1 369 25 view .LVU469
+ 2046 0250 00E0     		b	.L146
+ 2047              	.LVL188:
+ 2048              	.L147:
+ 369:App/Src/manager.c ****                             if ((g_testFlag[i] & (0x01 << g_oneData.number)) == 0) { result++; }
+ 2049              		.loc 1 369 58 is_stmt 1 discriminator 2 view .LVU470
+ 369:App/Src/manager.c ****                             if ((g_testFlag[i] & (0x01 << g_oneData.number)) == 0) { result++; }
+ 2050              		.loc 1 369 59 is_stmt 0 discriminator 2 view .LVU471
+ 2051 0252 0133     		adds	r3, r3, #1
+ 2052              	.LVL189:
+ 2053              	.L146:
+ 369:App/Src/manager.c ****                             if ((g_testFlag[i] & (0x01 << g_oneData.number)) == 0) { result++; }
+ 2054              		.loc 1 369 37 is_stmt 1 discriminator 1 view .LVU472
+ 369:App/Src/manager.c ****                             if ((g_testFlag[i] & (0x01 << g_oneData.number)) == 0) { result++; }
+ 2055              		.loc 1 369 25 is_stmt 0 discriminator 1 view .LVU473
+ 2056 0254 632B     		cmp	r3, #99
+ 2057 0256 09DC     		bgt	.L163
+ 370:App/Src/manager.c ****                         }
+ 2058              		.loc 1 370 29 is_stmt 1 view .LVU474
+ 370:App/Src/manager.c ****                         }
+ 2059              		.loc 1 370 44 is_stmt 0 view .LVU475
+ 2060 0258 2C4A     		ldr	r2, .L166+76
+ 2061 025a D25C     		ldrb	r2, [r2, r3]	@ zero_extendqisi2
+ 370:App/Src/manager.c ****                         }
+ 2062              		.loc 1 370 68 view .LVU476
+ 2063 025c 2749     		ldr	r1, .L166+60
+ 2064 025e 0978     		ldrb	r1, [r1]	@ zero_extendqisi2
+ 370:App/Src/manager.c ****                         }
+ 2065              		.loc 1 370 78 view .LVU477
+ 2066 0260 0A41     		asrs	r2, r2, r1
+ 370:App/Src/manager.c ****                         }
+ 2067              		.loc 1 370 32 view .LVU478
+ 2068 0262 12F0010F 		tst	r2, #1
+ 2069 0266 F4D1     		bne	.L147
+ 370:App/Src/manager.c ****                         }
+ 2070              		.loc 1 370 86 is_stmt 1 discriminator 1 view .LVU479
+ 370:App/Src/manager.c ****                         }
+ 2071              		.loc 1 370 92 is_stmt 0 discriminator 1 view .LVU480
+ 2072 0268 0134     		adds	r4, r4, #1
+ 2073              	.LVL190:
+ 370:App/Src/manager.c ****                         }
+ 2074              		.loc 1 370 92 discriminator 1 view .LVU481
+ 2075 026a F2E7     		b	.L147
+ 2076              	.L163:
+ 372:App/Src/manager.c ****                         g_testMode = FREE_MODE;
+ 2077              		.loc 1 372 25 is_stmt 1 view .LVU482
+ 2078 026c 164B     		ldr	r3, .L166+8
+ 2079              	.LVL191:
+ 372:App/Src/manager.c ****                         g_testMode = FREE_MODE;
+ 2080              		.loc 1 372 25 is_stmt 0 view .LVU483
+ 2081 026e 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
+ 2082 0270 2146     		mov	r1, r4
+ 2083 0272 2948     		ldr	r0, .L166+88
+ 2084 0274 FFF7FEFF 		bl	ControlPrintf
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 52
+
+
+ 2085              	.LVL192:
+ 373:App/Src/manager.c ****                         log_printf("success count:%d\n", result);
+ 2086              		.loc 1 373 25 is_stmt 1 view .LVU484
+ 373:App/Src/manager.c ****                         log_printf("success count:%d\n", result);
+ 2087              		.loc 1 373 36 is_stmt 0 view .LVU485
+ 2088 0278 114B     		ldr	r3, .L166
+ 2089 027a 0022     		movs	r2, #0
+ 2090 027c 1A70     		strb	r2, [r3]
+ 374:App/Src/manager.c ****                         UsbPrintf("success count:%d\n", result);
+ 2091              		.loc 1 374 25 is_stmt 1 view .LVU486
+ 2092 027e 194D     		ldr	r5, .L166+36
+ 2093 0280 2146     		mov	r1, r4
+ 2094 0282 2846     		mov	r0, r5
+ 2095 0284 FFF7FEFF 		bl	log_printf
+ 2096              	.LVL193:
+ 375:App/Src/manager.c ****                     }
+ 2097              		.loc 1 375 25 view .LVU487
+ 2098 0288 2146     		mov	r1, r4
+ 2099 028a 2846     		mov	r0, r5
+ 2100 028c FFF7FEFF 		bl	UsbPrintf
+ 2101              	.LVL194:
+ 2102 0290 D0E6     		b	.L119
+ 2103              	.LVL195:
+ 2104              	.L141:
+ 379:App/Src/manager.c ****                         state = 1;
+ 2105              		.loc 1 379 21 view .LVU488
+ 379:App/Src/manager.c ****                         state = 1;
+ 2106              		.loc 1 379 36 is_stmt 0 view .LVU489
+ 2107 0292 204B     		ldr	r3, .L166+84
+ 2108 0294 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 379:App/Src/manager.c ****                         state = 1;
+ 2109              		.loc 1 379 24 view .LVU490
+ 2110 0296 002B     		cmp	r3, #0
+ 2111 0298 3FF4CCAE 		beq	.L119
+ 380:App/Src/manager.c ****                         if (g_capAdjust.flag == CAP_ADJUST_SUCCESS) {//ÏÈ½øÐÐ1´ÎÊý¾ÝÐ£Ñé£¬ÈôÐ£Ñé²»º
+ 2112              		.loc 1 380 25 is_stmt 1 view .LVU491
+ 380:App/Src/manager.c ****                         if (g_capAdjust.flag == CAP_ADJUST_SUCCESS) {//ÏÈ½øÐÐ1´ÎÊý¾ÝÐ£Ñé£¬ÈôÐ£Ñé²»º
+ 2113              		.loc 1 380 31 is_stmt 0 view .LVU492
+ 2114 029c 094A     		ldr	r2, .L166+4
+ 2115 029e 0121     		movs	r1, #1
+ 2116 02a0 1170     		strb	r1, [r2]
+ 381:App/Src/manager.c ****                             systm_cap_save_buffer(count, g_capAdjust.temp, g_capAdjust.cap);// save
+ 2117              		.loc 1 381 25 is_stmt 1 view .LVU493
+ 381:App/Src/manager.c ****                             systm_cap_save_buffer(count, g_capAdjust.temp, g_capAdjust.cap);// save
+ 2118              		.loc 1 381 28 is_stmt 0 view .LVU494
+ 2119 02a2 022B     		cmp	r3, #2
+ 2120 02a4 3CD0     		beq	.L164
+ 387:App/Src/manager.c ****                         }
+ 2121              		.loc 1 387 29 is_stmt 1 view .LVU495
+ 2122 02a6 084B     		ldr	r3, .L166+8
+ 2123 02a8 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 2124 02aa 1C48     		ldr	r0, .L166+92
+ 2125 02ac FFF7FEFF 		bl	ControlPrintf
+ 2126              	.LVL196:
+ 2127              	.L150:
+ 389:App/Src/manager.c ****                         rtc_1006_exit_testmode(count);
+ 2128              		.loc 1 389 25 view .LVU496
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 53
+
+
+ 2129 02b0 FFF7FEFF 		bl	rtc_disable_int
+ 2130              	.LVL197:
+ 390:App/Src/manager.c ****                     }
+ 2131              		.loc 1 390 25 view .LVU497
+ 2132 02b4 044B     		ldr	r3, .L166+8
+ 2133 02b6 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 2134 02b8 FFF7FEFF 		bl	rtc_1006_exit_testmode
+ 2135              	.LVL198:
+ 2136 02bc BAE6     		b	.L119
+ 2137              	.L167:
+ 2138 02be 00BF     		.align	2
+ 2139              	.L166:
+ 2140 02c0 00000000 		.word	.LANCHOR0
+ 2141 02c4 00000000 		.word	.LANCHOR4
+ 2142 02c8 00000000 		.word	.LANCHOR5
+ 2143 02cc 00000000 		.word	.LC21
+ 2144 02d0 10000000 		.word	.LC22
+ 2145 02d4 18000000 		.word	.LC24
+ 2146 02d8 67666666 		.word	1717986919
+ 2147 02dc 14000000 		.word	.LC23
+ 2148 02e0 1C000000 		.word	.LC25
+ 2149 02e4 28000000 		.word	.LC26
+ 2150 02e8 3C000000 		.word	.LC27
+ 2151 02ec 68000000 		.word	.LC28
+ 2152 02f0 0000E642 		.word	1122369536
+ 2153 02f4 84000000 		.word	.LC29
+ 2154 02f8 A0000000 		.word	.LC30
+ 2155 02fc 00000000 		.word	.LANCHOR3
+ 2156 0300 B8000000 		.word	.LC31
+ 2157 0304 D8000000 		.word	.LC32
+ 2158 0308 00000000 		.word	0
+ 2159 030c 00000000 		.word	.LANCHOR1
+ 2160 0310 F8000000 		.word	.LC33
+ 2161 0314 00000000 		.word	.LANCHOR6
+ 2162 0318 0C010000 		.word	.LC34
+ 2163 031c 74010000 		.word	.LC37
+ 2164              	.L164:
+ 382:App/Src/manager.c ****                             ControlPrintf("chipTemp:%d chipName:%d message:OK\n", (int)g_capAdjust.
+ 2165              		.loc 1 382 29 view .LVU498
+ 2166 0320 684C     		ldr	r4, .L168
+ 2167 0322 694D     		ldr	r5, .L168+4
+ 2168 0324 D4ED010A 		vldr.32	s1, [r4, #4]
+ 2169 0328 94ED020A 		vldr.32	s0, [r4, #8]
+ 2170 032c 2878     		ldrb	r0, [r5]	@ zero_extendqisi2
+ 2171 032e FFF7FEFF 		bl	systm_cap_save_buffer
+ 2172              	.LVL199:
+ 383:App/Src/manager.c ****                             log_printf("count:%d, temp:%.1f, cap:%.2f\n", count, g_capAdjust.temp, 
+ 2173              		.loc 1 383 29 view .LVU499
+ 383:App/Src/manager.c ****                             log_printf("count:%d, temp:%.1f, cap:%.2f\n", count, g_capAdjust.temp, 
+ 2174              		.loc 1 383 99 is_stmt 0 view .LVU500
+ 2175 0332 D4ED027A 		vldr.32	s15, [r4, #8]
+ 383:App/Src/manager.c ****                             log_printf("count:%d, temp:%.1f, cap:%.2f\n", count, g_capAdjust.temp, 
+ 2176              		.loc 1 383 29 view .LVU501
+ 2177 0336 2A78     		ldrb	r2, [r5]	@ zero_extendqisi2
+ 2178 0338 FDEEE77A 		vcvt.s32.f32	s15, s15
+ 2179 033c 17EE901A 		vmov	r1, s15	@ int
+ 2180 0340 6248     		ldr	r0, .L168+8
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 54
+
+
+ 2181 0342 FFF7FEFF 		bl	ControlPrintf
+ 2182              	.LVL200:
+ 384:App/Src/manager.c ****                             g_testFlag[count - 1] &= (~(0x01 << g_oneData.number));//¶ÔÄ³Ò»¸öÐ¾Æ¬µÄ
+ 2183              		.loc 1 384 29 is_stmt 1 view .LVU502
+ 384:App/Src/manager.c ****                             g_testFlag[count - 1] &= (~(0x01 << g_oneData.number));//¶ÔÄ³Ò»¸öÐ¾Æ¬µÄ
+ 2184              		.loc 1 384 111 is_stmt 0 view .LVU503
+ 2185 0346 D4F80480 		ldr	r8, [r4, #4]	@ float
+ 384:App/Src/manager.c ****                             g_testFlag[count - 1] &= (~(0x01 << g_oneData.number));//¶ÔÄ³Ò»¸öÐ¾Æ¬µÄ
+ 2186              		.loc 1 384 29 view .LVU504
+ 2187 034a A068     		ldr	r0, [r4, #8]	@ float
+ 2188 034c FFF7FEFF 		bl	__aeabi_f2d
+ 2189              	.LVL201:
+ 2190 0350 0646     		mov	r6, r0
+ 2191 0352 0F46     		mov	r7, r1
+ 2192 0354 2C78     		ldrb	r4, [r5]	@ zero_extendqisi2
+ 2193 0356 4046     		mov	r0, r8	@ float
+ 2194 0358 FFF7FEFF 		bl	__aeabi_f2d
+ 2195              	.LVL202:
+ 2196 035c CDE90001 		strd	r0, [sp]
+ 2197 0360 3246     		mov	r2, r6
+ 2198 0362 3B46     		mov	r3, r7
+ 2199 0364 2146     		mov	r1, r4
+ 2200 0366 5A48     		ldr	r0, .L168+12
+ 2201 0368 FFF7FEFF 		bl	log_printf
+ 2202              	.LVL203:
+ 385:App/Src/manager.c ****                         } else {
+ 2203              		.loc 1 385 29 is_stmt 1 view .LVU505
+ 385:App/Src/manager.c ****                         } else {
+ 2204              		.loc 1 385 51 is_stmt 0 view .LVU506
+ 2205 036c 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 2206 036e 013B     		subs	r3, r3, #1
+ 385:App/Src/manager.c ****                         } else {
+ 2207              		.loc 1 385 74 view .LVU507
+ 2208 0370 584A     		ldr	r2, .L168+16
+ 2209 0372 1178     		ldrb	r1, [r2]	@ zero_extendqisi2
+ 385:App/Src/manager.c ****                         } else {
+ 2210              		.loc 1 385 62 view .LVU508
+ 2211 0374 0122     		movs	r2, #1
+ 2212 0376 02FA01F1 		lsl	r1, r2, r1
+ 385:App/Src/manager.c ****                         } else {
+ 2213              		.loc 1 385 51 view .LVU509
+ 2214 037a 5748     		ldr	r0, .L168+20
+ 2215 037c C25C     		ldrb	r2, [r0, r3]	@ zero_extendqisi2
+ 2216 037e 22EA0102 		bic	r2, r2, r1
+ 2217 0382 C254     		strb	r2, [r0, r3]
+ 2218 0384 94E7     		b	.L150
+ 2219              	.L129:
+ 397:App/Src/manager.c ****             if (g_oneData.number > TEST_RTC_TEMP_Z85) {
+ 2220              		.loc 1 397 13 is_stmt 1 view .LVU510
+ 397:App/Src/manager.c ****             if (g_oneData.number > TEST_RTC_TEMP_Z85) {
+ 2221              		.loc 1 397 32 is_stmt 0 view .LVU511
+ 2222 0386 FFF7FEFF 		bl	check_system_temp
+ 2223              	.LVL204:
+ 397:App/Src/manager.c ****             if (g_oneData.number > TEST_RTC_TEMP_Z85) {
+ 2224              		.loc 1 397 30 view .LVU512
+ 2225 038a C3B2     		uxtb	r3, r0
+ 2226 038c 514A     		ldr	r2, .L168+16
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 55
+
+
+ 2227 038e 1370     		strb	r3, [r2]
+ 398:App/Src/manager.c ****                 g_testMode = FREE_MODE;
+ 2228              		.loc 1 398 13 is_stmt 1 view .LVU513
+ 398:App/Src/manager.c ****                 g_testMode = FREE_MODE;
+ 2229              		.loc 1 398 16 is_stmt 0 view .LVU514
+ 2230 0390 042B     		cmp	r3, #4
+ 2231 0392 15D9     		bls	.L151
+ 399:App/Src/manager.c ****                 log_printf("system temp can't test!\n");
+ 2232              		.loc 1 399 17 is_stmt 1 view .LVU515
+ 399:App/Src/manager.c ****                 log_printf("system temp can't test!\n");
+ 2233              		.loc 1 399 28 is_stmt 0 view .LVU516
+ 2234 0394 514B     		ldr	r3, .L168+24
+ 2235 0396 0022     		movs	r2, #0
+ 2236 0398 1A70     		strb	r2, [r3]
+ 400:App/Src/manager.c ****                 ControlPrintf("message:ÏµÍ³ÎÂ¶È³¬·¶Î§\n");
+ 2237              		.loc 1 400 17 is_stmt 1 view .LVU517
+ 2238 039a 5148     		ldr	r0, .L168+28
+ 2239 039c FFF7FEFF 		bl	log_printf
+ 2240              	.LVL205:
+ 401:App/Src/manager.c ****                 log_printf("system temp %.2f can't test!\n", temp_read_value(1));
+ 2241              		.loc 1 401 17 view .LVU518
+ 2242 03a0 5048     		ldr	r0, .L168+32
+ 2243 03a2 FFF7FEFF 		bl	ControlPrintf
+ 2244              	.LVL206:
+ 402:App/Src/manager.c ****             } else {
+ 2245              		.loc 1 402 17 view .LVU519
+ 402:App/Src/manager.c ****             } else {
+ 2246              		.loc 1 402 62 is_stmt 0 view .LVU520
+ 2247 03a6 0120     		movs	r0, #1
+ 2248 03a8 FFF7FEFF 		bl	temp_read_value
+ 2249              	.LVL207:
+ 2250 03ac 10EE100A 		vmov	r0, s0
+ 402:App/Src/manager.c ****             } else {
+ 2251              		.loc 1 402 17 view .LVU521
+ 2252 03b0 FFF7FEFF 		bl	__aeabi_f2d
+ 2253              	.LVL208:
+ 2254 03b4 0246     		mov	r2, r0
+ 2255 03b6 0B46     		mov	r3, r1
+ 2256 03b8 4B48     		ldr	r0, .L168+36
+ 2257 03ba FFF7FEFF 		bl	log_printf
+ 2258              	.LVL209:
+ 2259 03be 39E6     		b	.L119
+ 2260              	.L151:
+ 404:App/Src/manager.c ****                 flash_test_data_clear(g_oneData.number + FLASH_CLEAR_DOT_0);
+ 2261              		.loc 1 404 17 is_stmt 1 view .LVU522
+ 2262 03c0 4A48     		ldr	r0, .L168+40
+ 2263 03c2 FFF7FEFF 		bl	log_printf
+ 2264              	.LVL210:
+ 405:App/Src/manager.c ****                 flash_test_flag_manage(g_testFlag, FLAG_TEST_DOT, FLASH_FLAG_READ);
+ 2265              		.loc 1 405 17 view .LVU523
+ 2266 03c6 434B     		ldr	r3, .L168+16
+ 2267 03c8 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 2268 03ca FFF7FEFF 		bl	flash_test_data_clear
+ 2269              	.LVL211:
+ 406:App/Src/manager.c ****                 for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 2270              		.loc 1 406 17 view .LVU524
+ 2271 03ce 0022     		movs	r2, #0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 56
+
+
+ 2272 03d0 0121     		movs	r1, #1
+ 2273 03d2 4148     		ldr	r0, .L168+20
+ 2274 03d4 FFF7FEFF 		bl	flash_test_flag_manage
+ 2275              	.LVL212:
+ 407:App/Src/manager.c ****                     g_testFlag[i] |= (0x01 << g_oneData.number);
+ 2276              		.loc 1 407 17 view .LVU525
+ 407:App/Src/manager.c ****                     g_testFlag[i] |= (0x01 << g_oneData.number);
+ 2277              		.loc 1 407 24 is_stmt 0 view .LVU526
+ 2278 03d8 0023     		movs	r3, #0
+ 407:App/Src/manager.c ****                     g_testFlag[i] |= (0x01 << g_oneData.number);
+ 2279              		.loc 1 407 17 view .LVU527
+ 2280 03da 09E0     		b	.L152
+ 2281              	.LVL213:
+ 2282              	.L153:
+ 408:App/Src/manager.c ****                 }
+ 2283              		.loc 1 408 21 is_stmt 1 discriminator 3 view .LVU528
+ 408:App/Src/manager.c ****                 }
+ 2284              		.loc 1 408 56 is_stmt 0 discriminator 3 view .LVU529
+ 2285 03dc 3D4A     		ldr	r2, .L168+16
+ 2286 03de 1178     		ldrb	r1, [r2]	@ zero_extendqisi2
+ 408:App/Src/manager.c ****                 }
+ 2287              		.loc 1 408 44 discriminator 3 view .LVU530
+ 2288 03e0 0122     		movs	r2, #1
+ 2289 03e2 02FA01F1 		lsl	r1, r2, r1
+ 408:App/Src/manager.c ****                 }
+ 2290              		.loc 1 408 35 discriminator 3 view .LVU531
+ 2291 03e6 3C48     		ldr	r0, .L168+20
+ 2292 03e8 C25C     		ldrb	r2, [r0, r3]	@ zero_extendqisi2
+ 2293 03ea 0A43     		orrs	r2, r2, r1
+ 2294 03ec C254     		strb	r2, [r0, r3]
+ 407:App/Src/manager.c ****                     g_testFlag[i] |= (0x01 << g_oneData.number);
+ 2295              		.loc 1 407 50 is_stmt 1 discriminator 3 view .LVU532
+ 407:App/Src/manager.c ****                     g_testFlag[i] |= (0x01 << g_oneData.number);
+ 2296              		.loc 1 407 51 is_stmt 0 discriminator 3 view .LVU533
+ 2297 03ee 0133     		adds	r3, r3, #1
+ 2298              	.LVL214:
+ 2299              	.L152:
+ 407:App/Src/manager.c ****                     g_testFlag[i] |= (0x01 << g_oneData.number);
+ 2300              		.loc 1 407 29 is_stmt 1 discriminator 1 view .LVU534
+ 407:App/Src/manager.c ****                     g_testFlag[i] |= (0x01 << g_oneData.number);
+ 2301              		.loc 1 407 17 is_stmt 0 discriminator 1 view .LVU535
+ 2302 03f0 632B     		cmp	r3, #99
+ 2303 03f2 F3DD     		ble	.L153
+ 410:App/Src/manager.c ****                 g_testMode = CAP_ADJUST;
+ 2304              		.loc 1 410 17 is_stmt 1 view .LVU536
+ 2305 03f4 0222     		movs	r2, #2
+ 2306 03f6 0121     		movs	r1, #1
+ 2307 03f8 3748     		ldr	r0, .L168+20
+ 2308 03fa FFF7FEFF 		bl	flash_test_flag_manage
+ 2309              	.LVL215:
+ 411:App/Src/manager.c ****             }
+ 2310              		.loc 1 411 17 view .LVU537
+ 411:App/Src/manager.c ****             }
+ 2311              		.loc 1 411 28 is_stmt 0 view .LVU538
+ 2312 03fe 374B     		ldr	r3, .L168+24
+ 2313 0400 0322     		movs	r2, #3
+ 2314 0402 1A70     		strb	r2, [r3]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 57
+
+
+ 2315 0404 16E6     		b	.L119
+ 2316              	.L128:
+ 415:App/Src/manager.c ****             for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 2317              		.loc 1 415 13 is_stmt 1 view .LVU539
+ 415:App/Src/manager.c ****             for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 2318              		.loc 1 415 19 is_stmt 0 view .LVU540
+ 2319 0406 0024     		movs	r4, #0
+ 2320 0408 2F4B     		ldr	r3, .L168+4
+ 2321 040a 1C70     		strb	r4, [r3]
+ 416:App/Src/manager.c ****                 if (rtc_calculate_cap(i + 1) != 0) {
+ 2322              		.loc 1 416 13 is_stmt 1 view .LVU541
+ 2323              	.LVL216:
+ 416:App/Src/manager.c ****                 if (rtc_calculate_cap(i + 1) != 0) {
+ 2324              		.loc 1 416 13 is_stmt 0 view .LVU542
+ 2325 040c 03E0     		b	.L154
+ 2326              	.LVL217:
+ 2327              	.L155:
+ 421:App/Src/manager.c ****                 }
+ 2328              		.loc 1 421 21 is_stmt 1 view .LVU543
+ 421:App/Src/manager.c ****                 }
+ 2329              		.loc 1 421 35 is_stmt 0 view .LVU544
+ 2330 040e 324B     		ldr	r3, .L168+20
+ 2331 0410 FF22     		movs	r2, #255
+ 2332 0412 1A55     		strb	r2, [r3, r4]
+ 2333              	.L156:
+ 416:App/Src/manager.c ****                 if (rtc_calculate_cap(i + 1) != 0) {
+ 2334              		.loc 1 416 46 is_stmt 1 discriminator 2 view .LVU545
+ 416:App/Src/manager.c ****                 if (rtc_calculate_cap(i + 1) != 0) {
+ 2335              		.loc 1 416 47 is_stmt 0 discriminator 2 view .LVU546
+ 2336 0414 0134     		adds	r4, r4, #1
+ 2337              	.LVL218:
+ 2338              	.L154:
+ 416:App/Src/manager.c ****                 if (rtc_calculate_cap(i + 1) != 0) {
+ 2339              		.loc 1 416 25 is_stmt 1 discriminator 1 view .LVU547
+ 416:App/Src/manager.c ****                 if (rtc_calculate_cap(i + 1) != 0) {
+ 2340              		.loc 1 416 13 is_stmt 0 discriminator 1 view .LVU548
+ 2341 0416 632C     		cmp	r4, #99
+ 2342 0418 0DDC     		bgt	.L165
+ 417:App/Src/manager.c ****                     count++;
+ 2343              		.loc 1 417 17 is_stmt 1 view .LVU549
+ 417:App/Src/manager.c ****                     count++;
+ 2344              		.loc 1 417 21 is_stmt 0 view .LVU550
+ 2345 041a 601C     		adds	r0, r4, #1
+ 2346 041c C0B2     		uxtb	r0, r0
+ 2347 041e FFF7FEFF 		bl	rtc_calculate_cap
+ 2348              	.LVL219:
+ 417:App/Src/manager.c ****                     count++;
+ 2349              		.loc 1 417 20 view .LVU551
+ 2350 0422 0028     		cmp	r0, #0
+ 2351 0424 F3D0     		beq	.L155
+ 418:App/Src/manager.c ****                     g_testFlag[i] = '1';
+ 2352              		.loc 1 418 21 is_stmt 1 view .LVU552
+ 418:App/Src/manager.c ****                     g_testFlag[i] = '1';
+ 2353              		.loc 1 418 26 is_stmt 0 view .LVU553
+ 2354 0426 284A     		ldr	r2, .L168+4
+ 2355 0428 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 2356 042a 0133     		adds	r3, r3, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 58
+
+
+ 2357 042c 1370     		strb	r3, [r2]
+ 419:App/Src/manager.c ****                 } else {
+ 2358              		.loc 1 419 21 is_stmt 1 view .LVU554
+ 419:App/Src/manager.c ****                 } else {
+ 2359              		.loc 1 419 35 is_stmt 0 view .LVU555
+ 2360 042e 2A4B     		ldr	r3, .L168+20
+ 2361 0430 3122     		movs	r2, #49
+ 2362 0432 1A55     		strb	r2, [r3, r4]
+ 2363 0434 EEE7     		b	.L156
+ 2364              	.L165:
+ 424:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 2365              		.loc 1 424 13 is_stmt 1 view .LVU556
+ 2366 0436 0122     		movs	r2, #1
+ 2367 0438 0221     		movs	r1, #2
+ 2368 043a 2748     		ldr	r0, .L168+20
+ 2369 043c FFF7FEFF 		bl	flash_test_flag_manage
+ 2370              	.LVL220:
+ 425:App/Src/manager.c ****             log_printf("calculate success number %d\n", count);
+ 2371              		.loc 1 425 13 view .LVU557
+ 425:App/Src/manager.c ****             log_printf("calculate success number %d\n", count);
+ 2372              		.loc 1 425 24 is_stmt 0 view .LVU558
+ 2373 0440 264B     		ldr	r3, .L168+24
+ 2374 0442 0022     		movs	r2, #0
+ 2375 0444 1A70     		strb	r2, [r3]
+ 426:App/Src/manager.c **** 			ControlPrintf("okNumber:%d chipName:%d message:¼ÆËãÍê³É£¡\n", count, MAX_CHIP_NUMBER);
+ 2376              		.loc 1 426 13 is_stmt 1 view .LVU559
+ 2377 0446 204C     		ldr	r4, .L168+4
+ 2378              	.LVL221:
+ 426:App/Src/manager.c **** 			ControlPrintf("okNumber:%d chipName:%d message:¼ÆËãÍê³É£¡\n", count, MAX_CHIP_NUMBER);
+ 2379              		.loc 1 426 13 is_stmt 0 view .LVU560
+ 2380 0448 2178     		ldrb	r1, [r4]	@ zero_extendqisi2
+ 2381 044a 2948     		ldr	r0, .L168+44
+ 2382 044c FFF7FEFF 		bl	log_printf
+ 2383              	.LVL222:
+ 427:App/Src/manager.c ****         break;
+ 2384              		.loc 1 427 4 is_stmt 1 view .LVU561
+ 2385 0450 6422     		movs	r2, #100
+ 2386 0452 2178     		ldrb	r1, [r4]	@ zero_extendqisi2
+ 2387 0454 2748     		ldr	r0, .L168+48
+ 2388 0456 FFF7FEFF 		bl	ControlPrintf
+ 2389              	.LVL223:
+ 428:App/Src/manager.c ****         case CAP_DOWNLOAD:
+ 2390              		.loc 1 428 9 view .LVU562
+ 2391 045a EBE5     		b	.L119
+ 2392              	.L127:
+ 430:App/Src/manager.c ****             log_printf("download success number %d\n", result);
+ 2393              		.loc 1 430 13 view .LVU563
+ 430:App/Src/manager.c ****             log_printf("download success number %d\n", result);
+ 2394              		.loc 1 430 22 is_stmt 0 view .LVU564
+ 2395 045c FFF7FEFF 		bl	system_manage_download_cap
+ 2396              	.LVL224:
+ 2397 0460 0446     		mov	r4, r0
+ 2398              	.LVL225:
+ 431:App/Src/manager.c **** 			ControlPrintf("okNumber:%d chipName:%d message:ÉÕÂ¼Íê³É£¡\n", result, MAX_CHIP_NUMBER);
+ 2399              		.loc 1 431 13 is_stmt 1 view .LVU565
+ 2400 0462 0146     		mov	r1, r0
+ 2401 0464 2448     		ldr	r0, .L168+52
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 59
+
+
+ 2402              	.LVL226:
+ 431:App/Src/manager.c **** 			ControlPrintf("okNumber:%d chipName:%d message:ÉÕÂ¼Íê³É£¡\n", result, MAX_CHIP_NUMBER);
+ 2403              		.loc 1 431 13 is_stmt 0 view .LVU566
+ 2404 0466 FFF7FEFF 		bl	log_printf
+ 2405              	.LVL227:
+ 432:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 2406              		.loc 1 432 4 is_stmt 1 view .LVU567
+ 2407 046a 6422     		movs	r2, #100
+ 2408 046c 2146     		mov	r1, r4
+ 2409 046e 2348     		ldr	r0, .L168+56
+ 2410 0470 FFF7FEFF 		bl	ControlPrintf
+ 2411              	.LVL228:
+ 433:App/Src/manager.c ****         break;
+ 2412              		.loc 1 433 13 view .LVU568
+ 433:App/Src/manager.c ****         break;
+ 2413              		.loc 1 433 24 is_stmt 0 view .LVU569
+ 2414 0474 194B     		ldr	r3, .L168+24
+ 2415 0476 0022     		movs	r2, #0
+ 2416 0478 1A70     		strb	r2, [r3]
+ 434:App/Src/manager.c ****         case SYNC_RTC_TIME:
+ 2417              		.loc 1 434 9 is_stmt 1 view .LVU570
+ 2418 047a DBE5     		b	.L119
+ 2419              	.LVL229:
+ 2420              	.L126:
+ 436:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 2421              		.loc 1 436 4 view .LVU571
+ 2422 047c 2048     		ldr	r0, .L168+60
+ 2423 047e FFF7FEFF 		bl	ControlPrintf
+ 2424              	.LVL230:
+ 437:App/Src/manager.c ****         break;
+ 2425              		.loc 1 437 13 view .LVU572
+ 437:App/Src/manager.c ****         break;
+ 2426              		.loc 1 437 24 is_stmt 0 view .LVU573
+ 2427 0482 164B     		ldr	r3, .L168+24
+ 2428 0484 0022     		movs	r2, #0
+ 2429 0486 1A70     		strb	r2, [r3]
+ 438:App/Src/manager.c ****         case CHECK_ERROR_TIME:
+ 2430              		.loc 1 438 9 is_stmt 1 view .LVU574
+ 2431 0488 D4E5     		b	.L119
+ 2432              	.L125:
+ 440:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 2433              		.loc 1 440 4 view .LVU575
+ 2434 048a 1D48     		ldr	r0, .L168+60
+ 2435 048c FFF7FEFF 		bl	ControlPrintf
+ 2436              	.LVL231:
+ 441:App/Src/manager.c ****         break;
+ 2437              		.loc 1 441 13 view .LVU576
+ 441:App/Src/manager.c ****         break;
+ 2438              		.loc 1 441 24 is_stmt 0 view .LVU577
+ 2439 0490 124B     		ldr	r3, .L168+24
+ 2440 0492 0022     		movs	r2, #0
+ 2441 0494 1A70     		strb	r2, [r3]
+ 442:App/Src/manager.c ****         case MACHINE_TEST://½ö²âÊÔ£¬²»Ð´Èë
+ 2442              		.loc 1 442 9 is_stmt 1 view .LVU578
+ 2443 0496 CDE5     		b	.L119
+ 2444              	.L124:
+ 444:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 60
+
+
+ 2445              		.loc 1 444 4 view .LVU579
+ 2446 0498 1948     		ldr	r0, .L168+60
+ 2447 049a FFF7FEFF 		bl	ControlPrintf
+ 2448              	.LVL232:
+ 445:App/Src/manager.c ****         break;
+ 2449              		.loc 1 445 13 view .LVU580
+ 445:App/Src/manager.c ****         break;
+ 2450              		.loc 1 445 24 is_stmt 0 view .LVU581
+ 2451 049e 0F4B     		ldr	r3, .L168+24
+ 2452 04a0 0022     		movs	r2, #0
+ 2453 04a2 1A70     		strb	r2, [r3]
+ 446:App/Src/manager.c ****         case MACHINE_COVER://ÏÈÇå¿Õ£¬²âÊÔºóÐ´Èë
+ 2454              		.loc 1 446 9 is_stmt 1 view .LVU582
+ 2455 04a4 C6E5     		b	.L119
+ 2456              	.L123:
+ 448:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 2457              		.loc 1 448 4 view .LVU583
+ 2458 04a6 1648     		ldr	r0, .L168+60
+ 2459 04a8 FFF7FEFF 		bl	ControlPrintf
+ 2460              	.LVL233:
+ 449:App/Src/manager.c ****         break;
+ 2461              		.loc 1 449 13 view .LVU584
+ 449:App/Src/manager.c ****         break;
+ 2462              		.loc 1 449 24 is_stmt 0 view .LVU585
+ 2463 04ac 0B4B     		ldr	r3, .L168+24
+ 2464 04ae 0022     		movs	r2, #0
+ 2465 04b0 1A70     		strb	r2, [r3]
+ 450:App/Src/manager.c ****         case MACHINE_WRITE://²âÊÔºóÐ´Èë
+ 2466              		.loc 1 450 9 is_stmt 1 view .LVU586
+ 2467 04b2 BFE5     		b	.L119
+ 2468              	.L121:
+ 452:App/Src/manager.c ****             g_testMode = FREE_MODE;
+ 2469              		.loc 1 452 4 view .LVU587
+ 2470 04b4 1248     		ldr	r0, .L168+60
+ 2471 04b6 FFF7FEFF 		bl	ControlPrintf
+ 2472              	.LVL234:
+ 453:App/Src/manager.c ****         break;
+ 2473              		.loc 1 453 13 view .LVU588
+ 453:App/Src/manager.c ****         break;
+ 2474              		.loc 1 453 24 is_stmt 0 view .LVU589
+ 2475 04ba 084B     		ldr	r3, .L168+24
+ 2476 04bc 0022     		movs	r2, #0
+ 2477 04be 1A70     		strb	r2, [r3]
+ 454:App/Src/manager.c ****         default: break;
+ 2478              		.loc 1 454 9 is_stmt 1 view .LVU590
+ 2479              		.loc 1 457 1 is_stmt 0 view .LVU591
+ 2480 04c0 B8E5     		b	.L119
+ 2481              	.L169:
+ 2482 04c2 00BF     		.align	2
+ 2483              	.L168:
+ 2484 04c4 00000000 		.word	.LANCHOR6
+ 2485 04c8 00000000 		.word	.LANCHOR5
+ 2486 04cc 30010000 		.word	.LC35
+ 2487 04d0 54010000 		.word	.LC36
+ 2488 04d4 00000000 		.word	.LANCHOR3
+ 2489 04d8 00000000 		.word	.LANCHOR1
+ 2490 04dc 00000000 		.word	.LANCHOR0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 61
+
+
+ 2491 04e0 90010000 		.word	.LC38
+ 2492 04e4 3C000000 		.word	.LC5
+ 2493 04e8 D8000000 		.word	.LC32
+ 2494 04ec AC010000 		.word	.LC39
+ 2495 04f0 C8010000 		.word	.LC40
+ 2496 04f4 E8010000 		.word	.LC41
+ 2497 04f8 14020000 		.word	.LC42
+ 2498 04fc 30020000 		.word	.LC43
+ 2499 0500 5C020000 		.word	.LC44
+ 2500              		.cfi_endproc
+ 2501              	.LFE247:
+ 2503              		.global	g_testFlag
+ 2504              		.global	g_capAdjust
+ 2505              		.section	.bss.count.0,"aw",%nobits
+ 2506              		.set	.LANCHOR5,. + 0
+ 2509              	count.0:
+ 2510 0000 00       		.space	1
+ 2511              		.section	.bss.g_capAdjust,"aw",%nobits
+ 2512              		.align	2
+ 2513              		.set	.LANCHOR6,. + 0
+ 2516              	g_capAdjust:
+ 2517 0000 00000000 		.space	20
+ 2517      00000000 
+ 2517      00000000 
+ 2517      00000000 
+ 2517      00000000 
+ 2518              		.section	.bss.g_oneData,"aw",%nobits
+ 2519              		.align	2
+ 2520              		.set	.LANCHOR3,. + 0
+ 2523              	g_oneData:
+ 2524 0000 00000000 		.space	904
+ 2524      00000000 
+ 2524      00000000 
+ 2524      00000000 
+ 2524      00000000 
+ 2525              		.section	.bss.g_testFlag,"aw",%nobits
+ 2526              		.align	2
+ 2527              		.set	.LANCHOR1,. + 0
+ 2530              	g_testFlag:
+ 2531 0000 00000000 		.space	100
+ 2531      00000000 
+ 2531      00000000 
+ 2531      00000000 
+ 2531      00000000 
+ 2532              		.section	.bss.g_testMode,"aw",%nobits
+ 2533              		.set	.LANCHOR0,. + 0
+ 2536              	g_testMode:
+ 2537 0000 00       		.space	1
+ 2538              		.section	.bss.state.1,"aw",%nobits
+ 2539              		.set	.LANCHOR4,. + 0
+ 2542              	state.1:
+ 2543 0000 00       		.space	1
+ 2544              		.section	.data.lastChannel.2,"aw"
+ 2545              		.align	2
+ 2546              		.set	.LANCHOR2,. + 0
+ 2549              	lastChannel.2:
+ 2550 0000 FFFFFFFF 		.word	-1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 62
+
+
+ 2551              		.text
+ 2552              	.Letext0:
+ 2553              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 2554              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 2555              		.file 4 "Core/Inc/main.h"
+ 2556              		.file 5 "App/Inc/manager.h"
+ 2557              		.file 6 "Device/Inc/flash.h"
+ 2558              		.file 7 "Drivers/User_Driver/Inc/soft_i2c.h"
+ 2559              		.file 8 "Drivers/User_Driver/Inc/rtc_i2c.h"
+ 2560              		.file 9 "App/Inc/calculate.h"
+ 2561              		.file 10 "Device/Inc/power.h"
+ 2562              		.file 11 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 2563              		.file 12 "Device/Inc/temp.h"
+ 2564              		.file 13 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-non
+ 2565              		.file 14 "Device/Inc/rtc.h"
+ 2566              		.file 15 "App/Inc/task.h"
+ 2567              		.file 16 "Device/Inc/drv_wave1006.h"
+ 2568              		.file 17 "Device/Inc/voltage.h"
+ 2569              		.file 18 "<built-in>"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 63
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 manager.c
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:20     .text.manager_set_mode:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:26     .text.manager_set_mode:00000000 manager_set_mode
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:44     .text.manager_set_mode:00000008 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:49     .text.manager_get_mode:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:55     .text.manager_get_mode:00000000 manager_get_mode
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:70     .text.manager_get_mode:00000008 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:78     .rodata.system_voltage_test.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:85     .text.system_voltage_test:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:91     .text.system_voltage_test:00000000 system_voltage_test
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:174    .text.system_voltage_test:00000068 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:183    .rodata.check_history_download.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:187    .text.check_history_download:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:193    .text.check_history_download:00000000 check_history_download
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:255    .text.check_history_download:0000003c $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:261    .rodata.system_manage_temp.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:297    .text.system_manage_temp:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:303    .text.system_manage_temp:00000000 system_manage_temp
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:657    .text.system_manage_temp:000001d4 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:673    .rodata.system_manage_download_cap.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:689    .text.system_manage_download_cap:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:695    .text.system_manage_download_cap:00000000 system_manage_download_cap
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:833    .text.system_manage_download_cap:00000098 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:844    .rodata.system_set_int.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:848    .text.system_set_int:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:854    .text.system_set_int:00000000 system_set_int
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:925    .text.system_set_int:00000044 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:931    .text.check_system_temp:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:937    .text.check_system_temp:00000000 check_system_temp
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1051   .text.check_system_temp:000000b0 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1062   .text.systm_cap_save_buffer:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1068   .text.systm_cap_save_buffer:00000000 systm_cap_save_buffer
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1128   .text.systm_cap_save_buffer:0000003c $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1133   .text.system_check_test_dot:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1139   .text.system_check_test_dot:00000000 system_check_test_dot
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1230   .text.system_cap_write_flash:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1236   .text.system_cap_write_flash:00000000 system_cap_write_flash
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1360   .text.system_cap_write_flash:0000008c $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1365   .rodata.system_tool_calculate_sec.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1369   .text.system_tool_calculate_sec:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1375   .text.system_tool_calculate_sec:00000000 system_tool_calculate_sec
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1512   .text.system_tool_calculate_sec:0000009c $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1518   .rodata.system_manage_test_mode.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1599   .text.system_manage_test_mode:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1605   .text.system_manage_test_mode:00000000 system_manage_test_mode
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1634   .text.system_manage_test_mode:00000012 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:1646   .text.system_manage_test_mode:0000002a $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2140   .text.system_manage_test_mode:000002c0 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2166   .text.system_manage_test_mode:00000320 $t
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2484   .text.system_manage_test_mode:000004c4 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2530   .bss.g_testFlag:00000000 g_testFlag
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2516   .bss.g_capAdjust:00000000 g_capAdjust
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2509   .bss.count.0:00000000 count.0
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2510   .bss.count.0:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2512   .bss.g_capAdjust:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2519   .bss.g_oneData:00000000 $d
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJEshSp.s 			page 64
+
+
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2523   .bss.g_oneData:00000000 g_oneData
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2526   .bss.g_testFlag:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2536   .bss.g_testMode:00000000 g_testMode
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2537   .bss.g_testMode:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2542   .bss.state.1:00000000 state.1
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2543   .bss.state.1:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2545   .data.lastChannel.2:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJEshSp.s:2549   .data.lastChannel.2:00000000 lastChannel.2
+
+UNDEFINED SYMBOLS
+__aeabi_ui2d
+__aeabi_dmul
+__aeabi_d2uiz
+ststem_voltage
+log_printf
+rtc_set_channel
+rtc_read_multi_bytes
+__aeabi_f2d
+memset
+temp_read_value
+ControlPrintf
+flash_test_flag_manage
+UsbPrintf
+rtc_1006_exit_testmode
+rtc_group_power
+HAL_Delay
+rtc_8800_adc_testmode
+system_get_rtc_temp
+rtc_convert_temp_offset
+flash_test_data_write_add
+sd8800_write_otp
+rtc_disable_int
+rtc_1006_set_testmode
+rtc_out_4096
+flash_read_data
+float_to_uint8
+flash_write_data
+AddOneTestNumberFlash
+rtc_freq_test
+flash_test_data_clear
+rtc_calculate_cap

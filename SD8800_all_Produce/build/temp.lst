@@ -1,0 +1,217 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccmvbsJe.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"temp.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.temp_read_value,"ax",%progbits
+  20              		.align	1
+  21              		.global	temp_read_value
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	temp_read_value:
+  27              	.LVL0:
+  28              	.LFB235:
+  29              		.file 1 "Device/Src/temp.c"
+   1:Device/Src/temp.c **** #include "main.h"
+   2:Device/Src/temp.c **** #include "temp.h"
+   3:Device/Src/temp.c **** #include "soft_i2c.h"
+   4:Device/Src/temp.c **** 
+   5:Device/Src/temp.c **** float temp_read_value(unsigned char channel)
+   6:Device/Src/temp.c **** {
+  30              		.loc 1 6 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 8
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 6 1 is_stmt 0 view .LVU1
+  35 0000 00B5     		push	{lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 4
+  38              		.cfi_offset 14, -4
+  39 0002 83B0     		sub	sp, sp, #12
+  40              	.LCFI1:
+  41              		.cfi_def_cfa_offset 16
+   7:Device/Src/temp.c ****     uint16_t value = 0;
+  42              		.loc 1 7 5 is_stmt 1 view .LVU2
+  43              	.LVL1:
+   8:Device/Src/temp.c ****     float temp;
+  44              		.loc 1 8 5 view .LVU3
+   9:Device/Src/temp.c ****     unsigned char buff[2] = {0};
+  45              		.loc 1 9 5 view .LVU4
+  46              		.loc 1 9 19 is_stmt 0 view .LVU5
+  47 0004 0023     		movs	r3, #0
+  48 0006 ADF80430 		strh	r3, [sp, #4]	@ movhi
+  10:Device/Src/temp.c ****     
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccmvbsJe.s 			page 2
+
+
+  11:Device/Src/temp.c ****     // i2c_change_channel(0);
+  12:Device/Src/temp.c ****     if (channel == 1) {
+  49              		.loc 1 12 5 is_stmt 1 view .LVU6
+  50              		.loc 1 12 8 is_stmt 0 view .LVU7
+  51 000a 0128     		cmp	r0, #1
+  52 000c 06D0     		beq	.L9
+  13:Device/Src/temp.c ****         i2c_read_multi_bytes(TEMP_1_ADDRESS, 0, buff, 2);
+  14:Device/Src/temp.c ****     } else if (channel == 2) {
+  53              		.loc 1 14 12 is_stmt 1 view .LVU8
+  54              		.loc 1 14 15 is_stmt 0 view .LVU9
+  55 000e 0228     		cmp	r0, #2
+  56 0010 0BD0     		beq	.L10
+  15:Device/Src/temp.c ****         i2c_read_multi_bytes(TEMP_2_ADDRESS, 0, buff, 2);
+  16:Device/Src/temp.c ****     } else {
+  17:Device/Src/temp.c ****         return 255;
+  57              		.loc 1 17 16 view .LVU10
+  58 0012 9FED190A 		vldr.32	s0, .L12
+  59              	.LVL2:
+  60              	.L1:
+  18:Device/Src/temp.c ****     }
+  19:Device/Src/temp.c ****     value = buff[0];
+  20:Device/Src/temp.c ****     value = (value * 256 + buff[1]) / 16;
+  21:Device/Src/temp.c ****     if (buff[0] & 0x80) {
+  22:Device/Src/temp.c ****         temp = ((float)value - 4096) / 16;
+  23:Device/Src/temp.c ****     } else {
+  24:Device/Src/temp.c ****         temp = (float)value / 16; 
+  25:Device/Src/temp.c ****     }
+  26:Device/Src/temp.c ****     return temp;
+  27:Device/Src/temp.c **** }
+  61              		.loc 1 27 1 view .LVU11
+  62 0016 03B0     		add	sp, sp, #12
+  63              	.LCFI2:
+  64              		.cfi_remember_state
+  65              		.cfi_def_cfa_offset 4
+  66              		@ sp needed
+  67 0018 5DF804FB 		ldr	pc, [sp], #4
+  68              	.LVL3:
+  69              	.L9:
+  70              	.LCFI3:
+  71              		.cfi_restore_state
+  13:Device/Src/temp.c ****     } else if (channel == 2) {
+  72              		.loc 1 13 9 is_stmt 1 view .LVU12
+  73 001c 0223     		movs	r3, #2
+  74 001e 01AA     		add	r2, sp, #4
+  75 0020 0021     		movs	r1, #0
+  76 0022 9020     		movs	r0, #144
+  77              	.LVL4:
+  13:Device/Src/temp.c ****     } else if (channel == 2) {
+  78              		.loc 1 13 9 is_stmt 0 view .LVU13
+  79 0024 FFF7FEFF 		bl	i2c_read_multi_bytes
+  80              	.LVL5:
+  81 0028 05E0     		b	.L3
+  82              	.LVL6:
+  83              	.L10:
+  15:Device/Src/temp.c ****         i2c_read_multi_bytes(TEMP_2_ADDRESS, 0, buff, 2);
+  84              		.loc 1 15 9 is_stmt 1 view .LVU14
+  85 002a 0223     		movs	r3, #2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccmvbsJe.s 			page 3
+
+
+  86 002c 01AA     		add	r2, sp, #4
+  87 002e 0021     		movs	r1, #0
+  88 0030 9220     		movs	r0, #146
+  89              	.LVL7:
+  15:Device/Src/temp.c ****         i2c_read_multi_bytes(TEMP_2_ADDRESS, 0, buff, 2);
+  90              		.loc 1 15 9 is_stmt 0 view .LVU15
+  91 0032 FFF7FEFF 		bl	i2c_read_multi_bytes
+  92              	.LVL8:
+  93              	.L3:
+  19:Device/Src/temp.c ****     value = (value * 256 + buff[1]) / 16;
+  94              		.loc 1 19 5 is_stmt 1 view .LVU16
+  19:Device/Src/temp.c ****     value = (value * 256 + buff[1]) / 16;
+  95              		.loc 1 19 17 is_stmt 0 view .LVU17
+  96 0036 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+  97              	.LVL9:
+  20:Device/Src/temp.c ****     if (buff[0] & 0x80) {
+  98              		.loc 1 20 5 is_stmt 1 view .LVU18
+  20:Device/Src/temp.c ****     if (buff[0] & 0x80) {
+  99              		.loc 1 20 32 is_stmt 0 view .LVU19
+ 100 003a 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+  20:Device/Src/temp.c ****     if (buff[0] & 0x80) {
+ 101              		.loc 1 20 37 view .LVU20
+ 102 003e 03EB0223 		add	r3, r3, r2, lsl #8
+  20:Device/Src/temp.c ****     if (buff[0] & 0x80) {
+ 103              		.loc 1 20 11 view .LVU21
+ 104 0042 1B09     		lsrs	r3, r3, #4
+ 105              	.LVL10:
+  21:Device/Src/temp.c ****         temp = ((float)value - 4096) / 16;
+ 106              		.loc 1 21 5 is_stmt 1 view .LVU22
+  21:Device/Src/temp.c ****         temp = ((float)value - 4096) / 16;
+ 107              		.loc 1 21 8 is_stmt 0 view .LVU23
+ 108 0044 12F0800F 		tst	r2, #128
+ 109 0048 08D1     		bne	.L11
+  24:Device/Src/temp.c ****     }
+ 110              		.loc 1 24 9 is_stmt 1 view .LVU24
+  24:Device/Src/temp.c ****     }
+ 111              		.loc 1 24 16 is_stmt 0 view .LVU25
+ 112 004a 07EE903A 		vmov	s15, r3	@ int
+ 113 004e B8EE670A 		vcvt.f32.u32	s0, s15
+  24:Device/Src/temp.c ****     }
+ 114              		.loc 1 24 14 view .LVU26
+ 115 0052 DFED0A7A 		vldr.32	s15, .L12+4
+ 116 0056 20EE270A 		vmul.f32	s0, s0, s15
+ 117              	.LVL11:
+  24:Device/Src/temp.c ****     }
+ 118              		.loc 1 24 14 view .LVU27
+ 119 005a DCE7     		b	.L1
+ 120              	.LVL12:
+ 121              	.L11:
+  22:Device/Src/temp.c ****     } else {
+ 122              		.loc 1 22 9 is_stmt 1 view .LVU28
+  22:Device/Src/temp.c ****     } else {
+ 123              		.loc 1 22 17 is_stmt 0 view .LVU29
+ 124 005c 07EE903A 		vmov	s15, r3	@ int
+ 125 0060 B8EE670A 		vcvt.f32.u32	s0, s15
+  22:Device/Src/temp.c ****     } else {
+ 126              		.loc 1 22 30 view .LVU30
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccmvbsJe.s 			page 4
+
+
+ 127 0064 DFED067A 		vldr.32	s15, .L12+8
+ 128 0068 30EE670A 		vsub.f32	s0, s0, s15
+  22:Device/Src/temp.c ****     } else {
+ 129              		.loc 1 22 14 view .LVU31
+ 130 006c DFED037A 		vldr.32	s15, .L12+4
+ 131 0070 20EE270A 		vmul.f32	s0, s0, s15
+ 132              	.LVL13:
+  22:Device/Src/temp.c ****     } else {
+ 133              		.loc 1 22 14 view .LVU32
+ 134 0074 CFE7     		b	.L1
+ 135              	.L13:
+ 136 0076 00BF     		.align	2
+ 137              	.L12:
+ 138 0078 00007F43 		.word	1132396544
+ 139 007c 0000803D 		.word	1031798784
+ 140 0080 00008045 		.word	1166016512
+ 141              		.cfi_endproc
+ 142              	.LFE235:
+ 144              		.text
+ 145              	.Letext0:
+ 146              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 147              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 148              		.file 4 "Drivers/User_Driver/Inc/soft_i2c.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccmvbsJe.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 temp.c
+C:\Users\84759\AppData\Local\Temp\ccmvbsJe.s:20     .text.temp_read_value:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccmvbsJe.s:26     .text.temp_read_value:00000000 temp_read_value
+C:\Users\84759\AppData\Local\Temp\ccmvbsJe.s:138    .text.temp_read_value:00000078 $d
+
+UNDEFINED SYMBOLS
+i2c_read_multi_bytes

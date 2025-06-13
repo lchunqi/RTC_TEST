@@ -1,0 +1,1326 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"power.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.rtc_group_vdd,"ax",%progbits
+  20              		.align	1
+  21              		.global	rtc_group_vdd
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	rtc_group_vdd:
+  27              	.LVL0:
+  28              	.LFB235:
+  29              		.file 1 "Device/Src/power.c"
+   1:Device/Src/power.c **** #include "main.h"
+   2:Device/Src/power.c **** #include "power.h"
+   3:Device/Src/power.c **** #include "rtc_i2c.h"
+   4:Device/Src/power.c **** #include "rtc.h"
+   5:Device/Src/power.c **** #include "current.h"
+   6:Device/Src/power.c **** 
+   7:Device/Src/power.c **** extern DAC_HandleTypeDef hdac;
+   8:Device/Src/power.c **** void rtc_group_vdd(uint8_t mode) 
+   9:Device/Src/power.c **** {
+  30              		.loc 1 9 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 9 1 is_stmt 0 view .LVU1
+  35 0000 08B5     		push	{r3, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 8
+  38              		.cfi_offset 3, -8
+  39              		.cfi_offset 14, -4
+  10:Device/Src/power.c ****     if (mode == 0) {
+  40              		.loc 1 10 5 is_stmt 1 view .LVU2
+  41              		.loc 1 10 8 is_stmt 0 view .LVU3
+  42 0002 48B9     		cbnz	r0, .L2
+  11:Device/Src/power.c ****         HAL_GPIO_WritePin(GPIOE, GPIO_PIN_14, GPIO_PIN_RESET);//3.3V 
+  43              		.loc 1 11 9 is_stmt 1 view .LVU4
+  44 0004 0022     		movs	r2, #0
+  45 0006 4FF48041 		mov	r1, #16384
+  46 000a 00F18040 		add	r0, r0, #1073741824
+  47              	.LVL1:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 2
+
+
+  48              		.loc 1 11 9 is_stmt 0 view .LVU5
+  49 000e 00F50430 		add	r0, r0, #135168
+  50 0012 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  51              	.LVL2:
+  52              	.L1:
+  12:Device/Src/power.c ****     } else {
+  13:Device/Src/power.c ****         HAL_GPIO_WritePin(GPIOE, GPIO_PIN_14, GPIO_PIN_SET);//5V 
+  14:Device/Src/power.c ****     }
+  15:Device/Src/power.c **** }
+  53              		.loc 1 15 1 view .LVU6
+  54 0016 08BD     		pop	{r3, pc}
+  55              	.LVL3:
+  56              	.L2:
+  13:Device/Src/power.c ****     }
+  57              		.loc 1 13 9 is_stmt 1 view .LVU7
+  58 0018 0122     		movs	r2, #1
+  59 001a 4FF48041 		mov	r1, #16384
+  60 001e 0248     		ldr	r0, .L5
+  61              	.LVL4:
+  13:Device/Src/power.c ****     }
+  62              		.loc 1 13 9 is_stmt 0 view .LVU8
+  63 0020 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  64              	.LVL5:
+  65              		.loc 1 15 1 view .LVU9
+  66 0024 F7E7     		b	.L1
+  67              	.L6:
+  68 0026 00BF     		.align	2
+  69              	.L5:
+  70 0028 00100240 		.word	1073876992
+  71              		.cfi_endproc
+  72              	.LFE235:
+  74              		.section	.text.rtc_vertical_control,"ax",%progbits
+  75              		.align	1
+  76              		.global	rtc_vertical_control
+  77              		.syntax unified
+  78              		.thumb
+  79              		.thumb_func
+  81              	rtc_vertical_control:
+  82              	.LVL6:
+  83              	.LFB236:
+  16:Device/Src/power.c **** 
+  17:Device/Src/power.c **** void rtc_vertical_control(uint8_t lineNum, uint8_t mode)
+  18:Device/Src/power.c **** {
+  84              		.loc 1 18 1 is_stmt 1 view -0
+  85              		.cfi_startproc
+  86              		@ args = 0, pretend = 0, frame = 0
+  87              		@ frame_needed = 0, uses_anonymous_args = 0
+  88              		.loc 1 18 1 is_stmt 0 view .LVU11
+  89 0000 10B5     		push	{r4, lr}
+  90              	.LCFI1:
+  91              		.cfi_def_cfa_offset 8
+  92              		.cfi_offset 4, -8
+  93              		.cfi_offset 14, -4
+  19:Device/Src/power.c ****     if (mode == ALL_CLOSE) {
+  94              		.loc 1 19 5 is_stmt 1 view .LVU12
+  95              		.loc 1 19 8 is_stmt 0 view .LVU13
+  96 0002 79B1     		cbz	r1, .L13
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 3
+
+
+  97 0004 0446     		mov	r4, r0
+  20:Device/Src/power.c ****         HAL_GPIO_WritePin(GPIOD, 0x03ff, GPIO_PIN_SET);
+  21:Device/Src/power.c ****     } else if (mode == ALL_OPEN) {
+  98              		.loc 1 21 12 is_stmt 1 view .LVU14
+  99              		.loc 1 21 15 is_stmt 0 view .LVU15
+ 100 0006 0129     		cmp	r1, #1
+ 101 0008 13D0     		beq	.L14
+  22:Device/Src/power.c ****         HAL_GPIO_WritePin(GPIOD, 0x03ff, GPIO_PIN_RESET);
+  23:Device/Src/power.c ****     } else if (mode == ONE_OPEN_OTHER_CLOSE) {
+ 102              		.loc 1 23 12 is_stmt 1 view .LVU16
+ 103              		.loc 1 23 15 is_stmt 0 view .LVU17
+ 104 000a 0229     		cmp	r1, #2
+ 105 000c 18D0     		beq	.L15
+  24:Device/Src/power.c ****         rtc_vertical_control(lineNum, ALL_CLOSE);
+  25:Device/Src/power.c ****         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0 << lineNum, GPIO_PIN_RESET);
+  26:Device/Src/power.c ****     } else {
+  27:Device/Src/power.c ****         rtc_vertical_control(lineNum, ALL_OPEN);
+ 106              		.loc 1 27 9 is_stmt 1 view .LVU18
+ 107 000e 0121     		movs	r1, #1
+ 108              	.LVL7:
+ 109              		.loc 1 27 9 is_stmt 0 view .LVU19
+ 110 0010 FFF7FEFF 		bl	rtc_vertical_control
+ 111              	.LVL8:
+  28:Device/Src/power.c ****         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0 << lineNum, GPIO_PIN_SET);
+ 112              		.loc 1 28 9 is_stmt 1 view .LVU20
+ 113              		.loc 1 28 45 is_stmt 0 view .LVU21
+ 114 0014 0122     		movs	r2, #1
+ 115 0016 02FA04F1 		lsl	r1, r2, r4
+ 116              		.loc 1 28 9 view .LVU22
+ 117 001a 89B2     		uxth	r1, r1
+ 118 001c 0E48     		ldr	r0, .L16
+ 119 001e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 120              	.LVL9:
+ 121              	.L7:
+  29:Device/Src/power.c ****     }
+  30:Device/Src/power.c **** }
+ 122              		.loc 1 30 1 view .LVU23
+ 123 0022 10BD     		pop	{r4, pc}
+ 124              	.LVL10:
+ 125              	.L13:
+  20:Device/Src/power.c ****     } else if (mode == ALL_OPEN) {
+ 126              		.loc 1 20 9 is_stmt 1 view .LVU24
+ 127 0024 0122     		movs	r2, #1
+ 128 0026 40F2FF31 		movw	r1, #1023
+ 129              	.LVL11:
+  20:Device/Src/power.c ****     } else if (mode == ALL_OPEN) {
+ 130              		.loc 1 20 9 is_stmt 0 view .LVU25
+ 131 002a 0B48     		ldr	r0, .L16
+ 132              	.LVL12:
+  20:Device/Src/power.c ****     } else if (mode == ALL_OPEN) {
+ 133              		.loc 1 20 9 view .LVU26
+ 134 002c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 135              	.LVL13:
+ 136 0030 F7E7     		b	.L7
+ 137              	.LVL14:
+ 138              	.L14:
+  22:Device/Src/power.c ****     } else if (mode == ONE_OPEN_OTHER_CLOSE) {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 4
+
+
+ 139              		.loc 1 22 9 is_stmt 1 view .LVU27
+ 140 0032 0022     		movs	r2, #0
+ 141 0034 40F2FF31 		movw	r1, #1023
+ 142              	.LVL15:
+  22:Device/Src/power.c ****     } else if (mode == ONE_OPEN_OTHER_CLOSE) {
+ 143              		.loc 1 22 9 is_stmt 0 view .LVU28
+ 144 0038 0748     		ldr	r0, .L16
+ 145              	.LVL16:
+  22:Device/Src/power.c ****     } else if (mode == ONE_OPEN_OTHER_CLOSE) {
+ 146              		.loc 1 22 9 view .LVU29
+ 147 003a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 148              	.LVL17:
+ 149 003e F0E7     		b	.L7
+ 150              	.LVL18:
+ 151              	.L15:
+  24:Device/Src/power.c ****         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0 << lineNum, GPIO_PIN_RESET);
+ 152              		.loc 1 24 9 is_stmt 1 view .LVU30
+ 153 0040 0021     		movs	r1, #0
+ 154              	.LVL19:
+  24:Device/Src/power.c ****         HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0 << lineNum, GPIO_PIN_RESET);
+ 155              		.loc 1 24 9 is_stmt 0 view .LVU31
+ 156 0042 FFF7FEFF 		bl	rtc_vertical_control
+ 157              	.LVL20:
+  25:Device/Src/power.c ****     } else {
+ 158              		.loc 1 25 9 is_stmt 1 view .LVU32
+  25:Device/Src/power.c ****     } else {
+ 159              		.loc 1 25 45 is_stmt 0 view .LVU33
+ 160 0046 0121     		movs	r1, #1
+ 161 0048 A140     		lsls	r1, r1, r4
+  25:Device/Src/power.c ****     } else {
+ 162              		.loc 1 25 9 view .LVU34
+ 163 004a 0022     		movs	r2, #0
+ 164 004c 89B2     		uxth	r1, r1
+ 165 004e 0248     		ldr	r0, .L16
+ 166 0050 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 167              	.LVL21:
+ 168 0054 E5E7     		b	.L7
+ 169              	.L17:
+ 170 0056 00BF     		.align	2
+ 171              	.L16:
+ 172 0058 000C0240 		.word	1073875968
+ 173              		.cfi_endproc
+ 174              	.LFE236:
+ 176              		.section	.text.rtc_horizontal_vdd_control,"ax",%progbits
+ 177              		.align	1
+ 178              		.global	rtc_horizontal_vdd_control
+ 179              		.syntax unified
+ 180              		.thumb
+ 181              		.thumb_func
+ 183              	rtc_horizontal_vdd_control:
+ 184              	.LVL22:
+ 185              	.LFB237:
+  31:Device/Src/power.c **** 
+  32:Device/Src/power.c **** void rtc_horizontal_vdd_control(uint8_t lineNum, uint8_t mode)
+  33:Device/Src/power.c **** {
+ 186              		.loc 1 33 1 is_stmt 1 view -0
+ 187              		.cfi_startproc
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 5
+
+
+ 188              		@ args = 0, pretend = 0, frame = 0
+ 189              		@ frame_needed = 0, uses_anonymous_args = 0
+ 190              		.loc 1 33 1 is_stmt 0 view .LVU36
+ 191 0000 10B5     		push	{r4, lr}
+ 192              	.LCFI2:
+ 193              		.cfi_def_cfa_offset 8
+ 194              		.cfi_offset 4, -8
+ 195              		.cfi_offset 14, -4
+  34:Device/Src/power.c ****     if (mode == ALL_CLOSE) {
+ 196              		.loc 1 34 5 is_stmt 1 view .LVU37
+ 197              		.loc 1 34 8 is_stmt 0 view .LVU38
+ 198 0002 91B1     		cbz	r1, .L26
+ 199 0004 0446     		mov	r4, r0
+  35:Device/Src/power.c ****         HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_8 | G
+  36:Device/Src/power.c ****     } else if (mode == ALL_OPEN) {
+ 200              		.loc 1 36 12 is_stmt 1 view .LVU39
+ 201              		.loc 1 36 15 is_stmt 0 view .LVU40
+ 202 0006 0129     		cmp	r1, #1
+ 203 0008 16D0     		beq	.L27
+  37:Device/Src/power.c ****         HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_8 | G
+  38:Device/Src/power.c ****     } else if (mode == ONE_OPEN_OTHER_CLOSE) {
+ 204              		.loc 1 38 12 is_stmt 1 view .LVU41
+ 205              		.loc 1 38 15 is_stmt 0 view .LVU42
+ 206 000a 0229     		cmp	r1, #2
+ 207 000c 1BD0     		beq	.L28
+  39:Device/Src/power.c ****         rtc_horizontal_vdd_control(lineNum, ALL_CLOSE);
+  40:Device/Src/power.c ****         if (lineNum <= 5) {
+  41:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8 << lineNum, GPIO_PIN_RESET);
+  42:Device/Src/power.c ****         } else {
+  43:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2 << (lineNum - 6), GPIO_PIN_RESET);
+  44:Device/Src/power.c ****         }
+  45:Device/Src/power.c ****     } else {
+  46:Device/Src/power.c ****         rtc_horizontal_vdd_control(lineNum, ALL_OPEN);
+ 208              		.loc 1 46 9 is_stmt 1 view .LVU43
+ 209 000e 0121     		movs	r1, #1
+ 210              	.LVL23:
+ 211              		.loc 1 46 9 is_stmt 0 view .LVU44
+ 212 0010 FFF7FEFF 		bl	rtc_horizontal_vdd_control
+ 213              	.LVL24:
+  47:Device/Src/power.c ****         if (lineNum <= 5) {
+ 214              		.loc 1 47 9 is_stmt 1 view .LVU45
+ 215              		.loc 1 47 12 is_stmt 0 view .LVU46
+ 216 0014 052C     		cmp	r4, #5
+ 217 0016 2DD8     		bhi	.L24
+  48:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8 << lineNum, GPIO_PIN_SET);
+ 218              		.loc 1 48 13 is_stmt 1 view .LVU47
+ 219              		.loc 1 48 49 is_stmt 0 view .LVU48
+ 220 0018 4FF48071 		mov	r1, #256
+ 221 001c A140     		lsls	r1, r1, r4
+ 222              		.loc 1 48 13 view .LVU49
+ 223 001e 0122     		movs	r2, #1
+ 224 0020 89B2     		uxth	r1, r1
+ 225 0022 1948     		ldr	r0, .L29
+ 226 0024 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 227              	.LVL25:
+ 228 0028 05E0     		b	.L18
+ 229              	.LVL26:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 6
+
+
+ 230              	.L26:
+  35:Device/Src/power.c ****     } else if (mode == ALL_OPEN) {
+ 231              		.loc 1 35 9 is_stmt 1 view .LVU50
+ 232 002a 0122     		movs	r2, #1
+ 233 002c 43F63C71 		movw	r1, #16188
+ 234              	.LVL27:
+  35:Device/Src/power.c ****     } else if (mode == ALL_OPEN) {
+ 235              		.loc 1 35 9 is_stmt 0 view .LVU51
+ 236 0030 1548     		ldr	r0, .L29
+ 237              	.LVL28:
+  35:Device/Src/power.c ****     } else if (mode == ALL_OPEN) {
+ 238              		.loc 1 35 9 view .LVU52
+ 239 0032 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 240              	.LVL29:
+ 241              	.L18:
+  49:Device/Src/power.c ****         } else {
+  50:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2 << (lineNum - 6), GPIO_PIN_SET);
+  51:Device/Src/power.c ****         }
+  52:Device/Src/power.c ****     }
+  53:Device/Src/power.c **** }
+ 242              		.loc 1 53 1 view .LVU53
+ 243 0036 10BD     		pop	{r4, pc}
+ 244              	.LVL30:
+ 245              	.L27:
+  37:Device/Src/power.c ****     } else if (mode == ONE_OPEN_OTHER_CLOSE) {
+ 246              		.loc 1 37 9 is_stmt 1 view .LVU54
+ 247 0038 0022     		movs	r2, #0
+ 248 003a 43F63C71 		movw	r1, #16188
+ 249              	.LVL31:
+  37:Device/Src/power.c ****     } else if (mode == ONE_OPEN_OTHER_CLOSE) {
+ 250              		.loc 1 37 9 is_stmt 0 view .LVU55
+ 251 003e 1248     		ldr	r0, .L29
+ 252              	.LVL32:
+  37:Device/Src/power.c ****     } else if (mode == ONE_OPEN_OTHER_CLOSE) {
+ 253              		.loc 1 37 9 view .LVU56
+ 254 0040 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 255              	.LVL33:
+ 256 0044 F7E7     		b	.L18
+ 257              	.LVL34:
+ 258              	.L28:
+  39:Device/Src/power.c ****         if (lineNum <= 5) {
+ 259              		.loc 1 39 9 is_stmt 1 view .LVU57
+ 260 0046 0021     		movs	r1, #0
+ 261              	.LVL35:
+  39:Device/Src/power.c ****         if (lineNum <= 5) {
+ 262              		.loc 1 39 9 is_stmt 0 view .LVU58
+ 263 0048 FFF7FEFF 		bl	rtc_horizontal_vdd_control
+ 264              	.LVL36:
+  40:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8 << lineNum, GPIO_PIN_RESET);
+ 265              		.loc 1 40 9 is_stmt 1 view .LVU59
+  40:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8 << lineNum, GPIO_PIN_RESET);
+ 266              		.loc 1 40 12 is_stmt 0 view .LVU60
+ 267 004c 052C     		cmp	r4, #5
+ 268 004e 08D8     		bhi	.L23
+  41:Device/Src/power.c ****         } else {
+ 269              		.loc 1 41 13 is_stmt 1 view .LVU61
+  41:Device/Src/power.c ****         } else {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 7
+
+
+ 270              		.loc 1 41 49 is_stmt 0 view .LVU62
+ 271 0050 4FF48071 		mov	r1, #256
+ 272 0054 A140     		lsls	r1, r1, r4
+  41:Device/Src/power.c ****         } else {
+ 273              		.loc 1 41 13 view .LVU63
+ 274 0056 0022     		movs	r2, #0
+ 275 0058 89B2     		uxth	r1, r1
+ 276 005a 0B48     		ldr	r0, .L29
+ 277 005c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 278              	.LVL37:
+ 279 0060 E9E7     		b	.L18
+ 280              	.L23:
+  43:Device/Src/power.c ****         }
+ 281              		.loc 1 43 13 is_stmt 1 view .LVU64
+  43:Device/Src/power.c ****         }
+ 282              		.loc 1 43 61 is_stmt 0 view .LVU65
+ 283 0062 063C     		subs	r4, r4, #6
+  43:Device/Src/power.c ****         }
+ 284              		.loc 1 43 49 view .LVU66
+ 285 0064 0421     		movs	r1, #4
+ 286 0066 A140     		lsls	r1, r1, r4
+  43:Device/Src/power.c ****         }
+ 287              		.loc 1 43 13 view .LVU67
+ 288 0068 0022     		movs	r2, #0
+ 289 006a 89B2     		uxth	r1, r1
+ 290 006c 0648     		ldr	r0, .L29
+ 291 006e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 292              	.LVL38:
+ 293 0072 E0E7     		b	.L18
+ 294              	.L24:
+  50:Device/Src/power.c ****         }
+ 295              		.loc 1 50 13 is_stmt 1 view .LVU68
+  50:Device/Src/power.c ****         }
+ 296              		.loc 1 50 61 is_stmt 0 view .LVU69
+ 297 0074 063C     		subs	r4, r4, #6
+  50:Device/Src/power.c ****         }
+ 298              		.loc 1 50 49 view .LVU70
+ 299 0076 0421     		movs	r1, #4
+ 300 0078 A140     		lsls	r1, r1, r4
+  50:Device/Src/power.c ****         }
+ 301              		.loc 1 50 13 view .LVU71
+ 302 007a 0122     		movs	r2, #1
+ 303 007c 89B2     		uxth	r1, r1
+ 304 007e 0248     		ldr	r0, .L29
+ 305 0080 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 306              	.LVL39:
+ 307              		.loc 1 53 1 view .LVU72
+ 308 0084 D7E7     		b	.L18
+ 309              	.L30:
+ 310 0086 00BF     		.align	2
+ 311              	.L29:
+ 312 0088 00100240 		.word	1073876992
+ 313              		.cfi_endproc
+ 314              	.LFE237:
+ 316              		.section	.text.rtc_horizontal_bat_control,"ax",%progbits
+ 317              		.align	1
+ 318              		.global	rtc_horizontal_bat_control
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 8
+
+
+ 319              		.syntax unified
+ 320              		.thumb
+ 321              		.thumb_func
+ 323              	rtc_horizontal_bat_control:
+ 324              	.LVL40:
+ 325              	.LFB238:
+  54:Device/Src/power.c **** 
+  55:Device/Src/power.c **** void rtc_horizontal_bat_control(uint8_t lineNum, uint8_t mode)
+  56:Device/Src/power.c **** {
+ 326              		.loc 1 56 1 is_stmt 1 view -0
+ 327              		.cfi_startproc
+ 328              		@ args = 0, pretend = 0, frame = 0
+ 329              		@ frame_needed = 0, uses_anonymous_args = 0
+ 330              		.loc 1 56 1 is_stmt 0 view .LVU74
+ 331 0000 10B5     		push	{r4, lr}
+ 332              	.LCFI3:
+ 333              		.cfi_def_cfa_offset 8
+ 334              		.cfi_offset 4, -8
+ 335              		.cfi_offset 14, -4
+  57:Device/Src/power.c ****     if (mode == ALL_CLOSE) {
+ 336              		.loc 1 57 5 is_stmt 1 view .LVU75
+ 337              		.loc 1 57 8 is_stmt 0 view .LVU76
+ 338 0002 89B1     		cbz	r1, .L39
+ 339 0004 0446     		mov	r4, r0
+  58:Device/Src/power.c ****         HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|
+  59:Device/Src/power.c ****     } else if (mode == ALL_OPEN) {
+ 340              		.loc 1 59 12 is_stmt 1 view .LVU77
+ 341              		.loc 1 59 15 is_stmt 0 view .LVU78
+ 342 0006 0129     		cmp	r1, #1
+ 343 0008 15D0     		beq	.L40
+  60:Device/Src/power.c ****         HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|
+  61:Device/Src/power.c ****     } else if (mode == ONE_OPEN_OTHER_CLOSE) {
+ 344              		.loc 1 61 12 is_stmt 1 view .LVU79
+ 345              		.loc 1 61 15 is_stmt 0 view .LVU80
+ 346 000a 0229     		cmp	r1, #2
+ 347 000c 1AD0     		beq	.L41
+  62:Device/Src/power.c ****         rtc_horizontal_bat_control(lineNum, ALL_CLOSE);
+  63:Device/Src/power.c ****         if (lineNum <= 7) {
+  64:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2 << lineNum, GPIO_PIN_RESET);
+  65:Device/Src/power.c ****         } else {
+  66:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12 << (lineNum - 8), GPIO_PIN_RESET);
+  67:Device/Src/power.c ****         }
+  68:Device/Src/power.c ****     } else {
+  69:Device/Src/power.c ****         rtc_horizontal_bat_control(lineNum, ALL_OPEN);
+ 348              		.loc 1 69 9 is_stmt 1 view .LVU81
+ 349 000e 0121     		movs	r1, #1
+ 350              	.LVL41:
+ 351              		.loc 1 69 9 is_stmt 0 view .LVU82
+ 352 0010 FFF7FEFF 		bl	rtc_horizontal_bat_control
+ 353              	.LVL42:
+  70:Device/Src/power.c ****         if (lineNum <= 7) {
+ 354              		.loc 1 70 9 is_stmt 1 view .LVU83
+ 355              		.loc 1 70 12 is_stmt 0 view .LVU84
+ 356 0014 072C     		cmp	r4, #7
+ 357 0016 2CD8     		bhi	.L37
+  71:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2 << lineNum, GPIO_PIN_SET);
+ 358              		.loc 1 71 13 is_stmt 1 view .LVU85
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 9
+
+
+ 359              		.loc 1 71 49 is_stmt 0 view .LVU86
+ 360 0018 0421     		movs	r1, #4
+ 361 001a A140     		lsls	r1, r1, r4
+ 362              		.loc 1 71 13 view .LVU87
+ 363 001c 0122     		movs	r2, #1
+ 364 001e 89B2     		uxth	r1, r1
+ 365 0020 1948     		ldr	r0, .L42
+ 366 0022 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 367              	.LVL43:
+ 368 0026 05E0     		b	.L31
+ 369              	.LVL44:
+ 370              	.L39:
+  58:Device/Src/power.c ****     } else if (mode == ALL_OPEN) {
+ 371              		.loc 1 58 9 is_stmt 1 view .LVU88
+ 372 0028 0122     		movs	r2, #1
+ 373 002a 43F2FC31 		movw	r1, #13308
+ 374              	.LVL45:
+  58:Device/Src/power.c ****     } else if (mode == ALL_OPEN) {
+ 375              		.loc 1 58 9 is_stmt 0 view .LVU89
+ 376 002e 1648     		ldr	r0, .L42
+ 377              	.LVL46:
+  58:Device/Src/power.c ****     } else if (mode == ALL_OPEN) {
+ 378              		.loc 1 58 9 view .LVU90
+ 379 0030 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 380              	.LVL47:
+ 381              	.L31:
+  72:Device/Src/power.c ****         } else {
+  73:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12 << (lineNum - 8), GPIO_PIN_SET);
+  74:Device/Src/power.c ****         }
+  75:Device/Src/power.c ****     }
+  76:Device/Src/power.c **** }
+ 382              		.loc 1 76 1 view .LVU91
+ 383 0034 10BD     		pop	{r4, pc}
+ 384              	.LVL48:
+ 385              	.L40:
+  60:Device/Src/power.c ****     } else if (mode == ONE_OPEN_OTHER_CLOSE) {
+ 386              		.loc 1 60 9 is_stmt 1 view .LVU92
+ 387 0036 0022     		movs	r2, #0
+ 388 0038 43F2FC31 		movw	r1, #13308
+ 389              	.LVL49:
+  60:Device/Src/power.c ****     } else if (mode == ONE_OPEN_OTHER_CLOSE) {
+ 390              		.loc 1 60 9 is_stmt 0 view .LVU93
+ 391 003c 1248     		ldr	r0, .L42
+ 392              	.LVL50:
+  60:Device/Src/power.c ****     } else if (mode == ONE_OPEN_OTHER_CLOSE) {
+ 393              		.loc 1 60 9 view .LVU94
+ 394 003e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 395              	.LVL51:
+ 396 0042 F7E7     		b	.L31
+ 397              	.LVL52:
+ 398              	.L41:
+  62:Device/Src/power.c ****         if (lineNum <= 7) {
+ 399              		.loc 1 62 9 is_stmt 1 view .LVU95
+ 400 0044 0021     		movs	r1, #0
+ 401              	.LVL53:
+  62:Device/Src/power.c ****         if (lineNum <= 7) {
+ 402              		.loc 1 62 9 is_stmt 0 view .LVU96
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 10
+
+
+ 403 0046 FFF7FEFF 		bl	rtc_horizontal_bat_control
+ 404              	.LVL54:
+  63:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2 << lineNum, GPIO_PIN_RESET);
+ 405              		.loc 1 63 9 is_stmt 1 view .LVU97
+  63:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2 << lineNum, GPIO_PIN_RESET);
+ 406              		.loc 1 63 12 is_stmt 0 view .LVU98
+ 407 004a 072C     		cmp	r4, #7
+ 408 004c 07D8     		bhi	.L36
+  64:Device/Src/power.c ****         } else {
+ 409              		.loc 1 64 13 is_stmt 1 view .LVU99
+  64:Device/Src/power.c ****         } else {
+ 410              		.loc 1 64 49 is_stmt 0 view .LVU100
+ 411 004e 0421     		movs	r1, #4
+ 412 0050 A140     		lsls	r1, r1, r4
+  64:Device/Src/power.c ****         } else {
+ 413              		.loc 1 64 13 view .LVU101
+ 414 0052 0022     		movs	r2, #0
+ 415 0054 89B2     		uxth	r1, r1
+ 416 0056 0C48     		ldr	r0, .L42
+ 417 0058 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 418              	.LVL55:
+ 419 005c EAE7     		b	.L31
+ 420              	.L36:
+  66:Device/Src/power.c ****         }
+ 421              		.loc 1 66 13 is_stmt 1 view .LVU102
+  66:Device/Src/power.c ****         }
+ 422              		.loc 1 66 62 is_stmt 0 view .LVU103
+ 423 005e 083C     		subs	r4, r4, #8
+  66:Device/Src/power.c ****         }
+ 424              		.loc 1 66 50 view .LVU104
+ 425 0060 4FF48051 		mov	r1, #4096
+ 426 0064 A140     		lsls	r1, r1, r4
+  66:Device/Src/power.c ****         }
+ 427              		.loc 1 66 13 view .LVU105
+ 428 0066 0022     		movs	r2, #0
+ 429 0068 89B2     		uxth	r1, r1
+ 430 006a 0748     		ldr	r0, .L42
+ 431 006c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 432              	.LVL56:
+ 433 0070 E0E7     		b	.L31
+ 434              	.L37:
+  73:Device/Src/power.c ****         }
+ 435              		.loc 1 73 13 is_stmt 1 view .LVU106
+  73:Device/Src/power.c ****         }
+ 436              		.loc 1 73 62 is_stmt 0 view .LVU107
+ 437 0072 083C     		subs	r4, r4, #8
+  73:Device/Src/power.c ****         }
+ 438              		.loc 1 73 50 view .LVU108
+ 439 0074 4FF48051 		mov	r1, #4096
+ 440 0078 A140     		lsls	r1, r1, r4
+  73:Device/Src/power.c ****         }
+ 441              		.loc 1 73 13 view .LVU109
+ 442 007a 0122     		movs	r2, #1
+ 443 007c 89B2     		uxth	r1, r1
+ 444 007e 0248     		ldr	r0, .L42
+ 445 0080 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 446              	.LVL57:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 11
+
+
+ 447              		.loc 1 76 1 view .LVU110
+ 448 0084 D6E7     		b	.L31
+ 449              	.L43:
+ 450 0086 00BF     		.align	2
+ 451              	.L42:
+ 452 0088 00040240 		.word	1073873920
+ 453              		.cfi_endproc
+ 454              	.LFE238:
+ 456              		.global	__aeabi_f2d
+ 457              		.global	__aeabi_dmul
+ 458              		.global	__aeabi_ddiv
+ 459              		.global	__aeabi_d2uiz
+ 460              		.section	.text.rtc_otp_power,"ax",%progbits
+ 461              		.align	1
+ 462              		.global	rtc_otp_power
+ 463              		.syntax unified
+ 464              		.thumb
+ 465              		.thumb_func
+ 467              	rtc_otp_power:
+ 468              	.LVL58:
+ 469              	.LFB239:
+  77:Device/Src/power.c **** 
+  78:Device/Src/power.c **** uint8_t rtc_otp_power(float vol)//ÅäÖÃdacµçÑ¹
+  79:Device/Src/power.c **** {
+ 470              		.loc 1 79 1 is_stmt 1 view -0
+ 471              		.cfi_startproc
+ 472              		@ args = 0, pretend = 0, frame = 0
+ 473              		@ frame_needed = 0, uses_anonymous_args = 0
+ 474              		.loc 1 79 1 is_stmt 0 view .LVU112
+ 475 0000 10B5     		push	{r4, lr}
+ 476              	.LCFI4:
+ 477              		.cfi_def_cfa_offset 8
+ 478              		.cfi_offset 4, -8
+ 479              		.cfi_offset 14, -4
+ 480 0002 10EE100A 		vmov	r0, s0
+  80:Device/Src/power.c ****     HAL_DAC_SetValue(&hdac, DAC1_CHANNEL_1, DAC_ALIGN_12B_R, vol / L2722_GAIN / 3.3 * 4096);
+ 481              		.loc 1 80 5 is_stmt 1 view .LVU113
+ 482              		.loc 1 80 66 is_stmt 0 view .LVU114
+ 483 0006 FFF7FEFF 		bl	__aeabi_f2d
+ 484              	.LVL59:
+ 485              		.loc 1 80 66 view .LVU115
+ 486 000a 0022     		movs	r2, #0
+ 487 000c 104B     		ldr	r3, .L46+8
+ 488 000e FFF7FEFF 		bl	__aeabi_dmul
+ 489              	.LVL60:
+ 490              		.loc 1 80 79 view .LVU116
+ 491 0012 0DA3     		adr	r3, .L46
+ 492 0014 D3E90023 		ldrd	r2, [r3]
+ 493 0018 FFF7FEFF 		bl	__aeabi_ddiv
+ 494              	.LVL61:
+ 495              		.loc 1 80 85 view .LVU117
+ 496 001c 0022     		movs	r2, #0
+ 497 001e 0D4B     		ldr	r3, .L46+12
+ 498 0020 FFF7FEFF 		bl	__aeabi_dmul
+ 499              	.LVL62:
+ 500              		.loc 1 80 5 view .LVU118
+ 501 0024 FFF7FEFF 		bl	__aeabi_d2uiz
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 12
+
+
+ 502              	.LVL63:
+ 503 0028 0346     		mov	r3, r0
+ 504 002a 0B4C     		ldr	r4, .L46+16
+ 505 002c 0022     		movs	r2, #0
+ 506 002e 1146     		mov	r1, r2
+ 507 0030 2046     		mov	r0, r4
+ 508 0032 FFF7FEFF 		bl	HAL_DAC_SetValue
+ 509              	.LVL64:
+  81:Device/Src/power.c ****     HAL_DAC_Start(&hdac, DAC1_CHANNEL_1);
+ 510              		.loc 1 81 5 is_stmt 1 view .LVU119
+ 511 0036 0021     		movs	r1, #0
+ 512 0038 2046     		mov	r0, r4
+ 513 003a FFF7FEFF 		bl	HAL_DAC_Start
+ 514              	.LVL65:
+  82:Device/Src/power.c ****     return 1;
+ 515              		.loc 1 82 5 view .LVU120
+  83:Device/Src/power.c **** }
+ 516              		.loc 1 83 1 is_stmt 0 view .LVU121
+ 517 003e 0120     		movs	r0, #1
+ 518 0040 10BD     		pop	{r4, pc}
+ 519              	.L47:
+ 520 0042 00BFAFF3 		.align	3
+ 520      0080
+ 521              	.L46:
+ 522 0048 66666666 		.word	1717986918
+ 523 004c 66660A40 		.word	1074423398
+ 524 0050 0000D03F 		.word	1070596096
+ 525 0054 0000B040 		.word	1085276160
+ 526 0058 00000000 		.word	hdac
+ 527              		.cfi_endproc
+ 528              	.LFE239:
+ 530              		.section	.text.rtc_group_power,"ax",%progbits
+ 531              		.align	1
+ 532              		.global	rtc_group_power
+ 533              		.syntax unified
+ 534              		.thumb
+ 535              		.thumb_func
+ 537              	rtc_group_power:
+ 538              	.LVL66:
+ 539              	.LFB240:
+  84:Device/Src/power.c **** 
+  85:Device/Src/power.c **** void rtc_group_power(uint8_t channel, uint8_t mode)
+  86:Device/Src/power.c **** {
+ 540              		.loc 1 86 1 is_stmt 1 view -0
+ 541              		.cfi_startproc
+ 542              		@ args = 0, pretend = 0, frame = 0
+ 543              		@ frame_needed = 0, uses_anonymous_args = 0
+ 544              		.loc 1 86 1 is_stmt 0 view .LVU123
+ 545 0000 70B5     		push	{r4, r5, r6, lr}
+ 546              	.LCFI5:
+ 547              		.cfi_def_cfa_offset 16
+ 548              		.cfi_offset 4, -16
+ 549              		.cfi_offset 5, -12
+ 550              		.cfi_offset 6, -8
+ 551              		.cfi_offset 14, -4
+  87:Device/Src/power.c ****     if (channel < 1) { channel = 1; }
+ 552              		.loc 1 87 5 is_stmt 1 view .LVU124
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 13
+
+
+ 553              		.loc 1 87 8 is_stmt 0 view .LVU125
+ 554 0002 20B1     		cbz	r0, .L57
+ 555 0004 0446     		mov	r4, r0
+  88:Device/Src/power.c ****     if (channel > 100) { channel = 100; }
+ 556              		.loc 1 88 5 is_stmt 1 view .LVU126
+ 557              		.loc 1 88 8 is_stmt 0 view .LVU127
+ 558 0006 6428     		cmp	r0, #100
+ 559 0008 02D9     		bls	.L49
+ 560              		.loc 1 88 34 view .LVU128
+ 561 000a 6424     		movs	r4, #100
+ 562 000c 00E0     		b	.L49
+ 563              	.L57:
+  87:Device/Src/power.c ****     if (channel < 1) { channel = 1; }
+ 564              		.loc 1 87 32 view .LVU129
+ 565 000e 0124     		movs	r4, #1
+ 566              	.L49:
+ 567              	.LVL67:
+  89:Device/Src/power.c ****     switch (mode) {
+ 568              		.loc 1 89 5 is_stmt 1 view .LVU130
+ 569 0010 0429     		cmp	r1, #4
+ 570 0012 2BD8     		bhi	.L48
+ 571 0014 DFE801F0 		tbb	[pc, r1]
+ 572              	.L52:
+ 573 0018 03       		.byte	(.L56-.L52)/2
+ 574 0019 2B       		.byte	(.L55-.L52)/2
+ 575 001a 62       		.byte	(.L54-.L52)/2
+ 576 001b 9F       		.byte	(.L53-.L52)/2
+ 577 001c DC       		.byte	(.L51-.L52)/2
+ 578 001d 00       		.p2align 1
+ 579              	.L56:
+  90:Device/Src/power.c ****         case POWER_OFF:  //Ö»ÄÜ¿ØÖÆÄ³¸öÐ¾Æ¬µÄËùÓÐÒý½ÅÀ­µÍ£¬ÆäËûÐ¾Æ¬Òý½ÅÎªÐü¿Õ
+  91:Device/Src/power.c ****             rtc_horizontal_bat_control(0, ALL_CLOSE);
+ 580              		.loc 1 91 13 view .LVU131
+ 581 001e 0021     		movs	r1, #0
+ 582              	.LVL68:
+ 583              		.loc 1 91 13 is_stmt 0 view .LVU132
+ 584 0020 0846     		mov	r0, r1
+ 585 0022 FFF7FEFF 		bl	rtc_horizontal_bat_control
+ 586              	.LVL69:
+  92:Device/Src/power.c ****             rtc_horizontal_vdd_control(0, ALL_CLOSE);
+ 587              		.loc 1 92 13 is_stmt 1 view .LVU133
+ 588 0026 0021     		movs	r1, #0
+ 589 0028 0846     		mov	r0, r1
+ 590 002a FFF7FEFF 		bl	rtc_horizontal_vdd_control
+ 591              	.LVL70:
+  93:Device/Src/power.c ****             rtc_vertical_control(0, ALL_CLOSE);
+ 592              		.loc 1 93 13 view .LVU134
+ 593 002e 0021     		movs	r1, #0
+ 594 0030 0846     		mov	r0, r1
+ 595 0032 FFF7FEFF 		bl	rtc_vertical_control
+ 596              	.LVL71:
+  94:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);//INT À­µÍ
+ 597              		.loc 1 94 13 view .LVU135
+ 598 0036 874D     		ldr	r5, .L60
+ 599 0038 0022     		movs	r2, #0
+ 600 003a 8021     		movs	r1, #128
+ 601 003c 2846     		mov	r0, r5
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 14
+
+
+ 602 003e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 603              	.LVL72:
+  95:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);//
+ 604              		.loc 1 95 13 view .LVU136
+ 605 0042 0022     		movs	r2, #0
+ 606 0044 0121     		movs	r1, #1
+ 607 0046 2846     		mov	r0, r5
+ 608 0048 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 609              	.LVL73:
+  96:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);//SDA À­µÍ
+ 610              		.loc 1 96 13 view .LVU137
+ 611 004c 0122     		movs	r2, #1
+ 612 004e 4FF40041 		mov	r1, #32768
+ 613 0052 8148     		ldr	r0, .L60+4
+ 614 0054 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 615              	.LVL74:
+  97:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);//CLK FREQ À­µÍ
+ 616              		.loc 1 97 13 view .LVU138
+ 617 0058 0022     		movs	r2, #0
+ 618 005a 4FF44041 		mov	r1, #49152
+ 619 005e 7F48     		ldr	r0, .L60+8
+ 620 0060 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 621              	.LVL75:
+  98:Device/Src/power.c ****             set_switch_channel(channel - 1);//Ä£Äâ¿ª¹ØÑ¡ÖÐÄ³Ò»¸öÐ¾Æ¬
+ 622              		.loc 1 98 13 view .LVU139
+ 623 0064 601E     		subs	r0, r4, #1
+ 624 0066 C0B2     		uxtb	r0, r0
+ 625 0068 FFF7FEFF 		bl	set_switch_channel
+ 626              	.LVL76:
+  99:Device/Src/power.c ****         break;
+ 627              		.loc 1 99 9 view .LVU140
+ 628              	.L48:
+ 100:Device/Src/power.c ****         case POWER_I2C:  //I2CÍ¨ÐÅÄ£Ê½£¬Ò²¾ÍÊÇÕý³£Ä£Ê½
+ 101:Device/Src/power.c **** #if (VERSION_SELECT == VERSION_SD8801)    
+ 102:Device/Src/power.c ****             rtc_horizontal_vdd_control(0, ALL_OPEN);
+ 103:Device/Src/power.c ****             rtc_horizontal_bat_control(0, ALL_CLOSE);//batteryÍ¨Â·¹Ø±Õ
+ 104:Device/Src/power.c **** #else 
+ 105:Device/Src/power.c ****             rtc_horizontal_bat_control(0, ALL_OPEN);
+ 106:Device/Src/power.c ****             rtc_horizontal_vdd_control(0, ALL_CLOSE);
+ 107:Device/Src/power.c **** #endif
+ 108:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_RESET);//VDD´ò¿ª
+ 109:Device/Src/power.c ****             rtc_vertical_control(0, ALL_OPEN);//È«²¿ÁÐ´ò¿ª
+ 110:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_6, GPIO_PIN_RESET);//VCE¹Ø±Õ
+ 111:Device/Src/power.c ****             rtc_otp_power(3.3);//Êä³ö3.3V
+ 112:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);//INTÀ­¸ß
+ 113:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);//
+ 114:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);//SDA À­¸ß
+ 115:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_SET);//CLK FREQ À­¸ß
+ 116:Device/Src/power.c ****             set_switch_channel(channel - 1);
+ 117:Device/Src/power.c ****         break;
+ 118:Device/Src/power.c ****         case POWER_BAT_I:    //BATµçÁ÷²âÊÔÄ£Ê½  V1.2°æ±¾¿ÉÒÔ²âÊÔbatµçÁ÷£¬V1.3ÒÔºó²»ÄÜ²â£¬ÓÃÓÚÇÐ»»88
+ 119:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);//¿ª¹ØÑ¡Ôñ2.5V
+ 120:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);//INT À­µÍ
+ 121:Device/Src/power.c **** 
+ 122:Device/Src/power.c ****             rtc_horizontal_bat_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 123:Device/Src/power.c ****             rtc_horizontal_vdd_control(0, ALL_CLOSE);
+ 124:Device/Src/power.c ****             rtc_vertical_control((channel - 1) % NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 15
+
+
+ 125:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);//INT À­µÍ
+ 126:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);//
+ 127:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);//SDA À­µÍ
+ 128:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);//CLK FREQ À­µÍ
+ 129:Device/Src/power.c ****             set_switch_channel(channel - 1);//Ä£Äâ¿ª¹ØÑ¡ÖÐÄ³Ò»¸öÐ¾Æ¬
+ 130:Device/Src/power.c ****         break;
+ 131:Device/Src/power.c ****         case POWER_VDD_I:    //VDDµçÁ÷²âÊÔÄ£Ê½            ÓÃÓÚÇÐ»»8800ºÍ8801µÄVDDÒý½Å£¬¼´8801µÄVDD
+ 132:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);//¿ª¹ØÑ¡Ôñ2.5V
+ 133:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);//INT À­µÍ
+ 134:Device/Src/power.c **** 
+ 135:Device/Src/power.c ****             rtc_horizontal_vdd_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 136:Device/Src/power.c ****             rtc_horizontal_bat_control(0, ALL_CLOSE);//batteryÍ¨Â·¹Ø±Õ
+ 137:Device/Src/power.c ****             rtc_vertical_control((channel - 1) % NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 138:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);//INT À­µÍ
+ 139:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);//
+ 140:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);//SDA À­µÍ
+ 141:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);//CLK FREQ À­µÍ
+ 142:Device/Src/power.c ****             set_switch_channel(channel - 1);//Ä£Äâ¿ª¹ØÑ¡ÖÐÄ³Ò»¸öÐ¾Æ¬
+ 143:Device/Src/power.c ****         break;
+ 144:Device/Src/power.c ****         case POWER_CAP_TEST:  //ÎÂÏäÄÚ²¿²âÊÔ£¬Ö»´ò¿ª1¸öÐ¾Æ¬µÄ¹©µç
+ 145:Device/Src/power.c **** #if (VERSION_SELECT == VERSION_SD8801)    
+ 146:Device/Src/power.c ****             rtc_horizontal_vdd_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 147:Device/Src/power.c ****             rtc_horizontal_bat_control(0, ALL_CLOSE);//batteryÍ¨Â·¹Ø±Õ
+ 148:Device/Src/power.c **** #else 
+ 149:Device/Src/power.c ****             rtc_horizontal_bat_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 150:Device/Src/power.c ****             rtc_horizontal_vdd_control(0, ALL_CLOSE);
+ 151:Device/Src/power.c **** #endif
+ 152:Device/Src/power.c ****             rtc_vertical_control((channel - 1) % NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);//Ñ¡ÔñÁÐ¿ª¹
+ 153:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_RESET);//VDD´ò¿ª
+ 154:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_6, GPIO_PIN_RESET);//VCE¹Ø±Õ
+ 155:Device/Src/power.c ****             rtc_otp_power(3.3);//Êä³ö3.3V£¬·ÀÖ¹µçÑ¹µ¹¹àµ½¼ÄÉú¶þ¼«¹Ü
+ 156:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);//INTÀ­¸ß
+ 157:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);//
+ 158:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);//SDA À­¸ß
+ 159:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_SET);//CLK FREQ À­¸ß
+ 160:Device/Src/power.c ****             set_switch_channel(channel - 1);
+ 161:Device/Src/power.c ****         break;
+ 162:Device/Src/power.c ****         default:break;
+ 163:Device/Src/power.c ****     }
+ 164:Device/Src/power.c **** }...
+ 629              		.loc 1 164 1 is_stmt 0 view .LVU141
+ 630 006c 70BD     		pop	{r4, r5, r6, pc}
+ 631              	.LVL77:
+ 632              	.L55:
+ 105:Device/Src/power.c ****             rtc_horizontal_bat_control(0, ALL_OPEN);
+ 633              		.loc 1 105 13 is_stmt 1 view .LVU142
+ 634 006e 0121     		movs	r1, #1
+ 635              	.LVL78:
+ 105:Device/Src/power.c ****             rtc_horizontal_bat_control(0, ALL_OPEN);
+ 636              		.loc 1 105 13 is_stmt 0 view .LVU143
+ 637 0070 0020     		movs	r0, #0
+ 638 0072 FFF7FEFF 		bl	rtc_horizontal_bat_control
+ 639              	.LVL79:
+ 106:Device/Src/power.c ****             rtc_horizontal_vdd_control(0, ALL_CLOSE);
+ 640              		.loc 1 106 13 is_stmt 1 view .LVU144
+ 641 0076 0021     		movs	r1, #0
+ 642 0078 0846     		mov	r0, r1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 16
+
+
+ 643 007a FFF7FEFF 		bl	rtc_horizontal_vdd_control
+ 644              	.LVL80:
+ 108:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_RESET);//VDD´ò¿ª
+ 645              		.loc 1 108 13 view .LVU145
+ 646 007e 754D     		ldr	r5, .L60
+ 647 0080 0022     		movs	r2, #0
+ 648 0082 4FF40041 		mov	r1, #32768
+ 649 0086 2846     		mov	r0, r5
+ 650 0088 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 651              	.LVL81:
+ 109:Device/Src/power.c ****             rtc_vertical_control(0, ALL_OPEN);//È«²¿ÁÐ´ò¿ª
+ 652              		.loc 1 109 13 view .LVU146
+ 653 008c 0121     		movs	r1, #1
+ 654 008e 0020     		movs	r0, #0
+ 655 0090 FFF7FEFF 		bl	rtc_vertical_control
+ 656              	.LVL82:
+ 110:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_6, GPIO_PIN_RESET);//VCE¹Ø±Õ
+ 657              		.loc 1 110 13 view .LVU147
+ 658 0094 0022     		movs	r2, #0
+ 659 0096 4021     		movs	r1, #64
+ 660 0098 2846     		mov	r0, r5
+ 661 009a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 662              	.LVL83:
+ 111:Device/Src/power.c ****             rtc_otp_power(3.3);//Êä³ö3.3V
+ 663              		.loc 1 111 13 view .LVU148
+ 664 009e 9FED700A 		vldr.32	s0, .L60+12
+ 665 00a2 FFF7FEFF 		bl	rtc_otp_power
+ 666              	.LVL84:
+ 112:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);//INTÀ­¸ß
+ 667              		.loc 1 112 13 view .LVU149
+ 668 00a6 0122     		movs	r2, #1
+ 669 00a8 8021     		movs	r1, #128
+ 670 00aa 2846     		mov	r0, r5
+ 671 00ac FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 672              	.LVL85:
+ 113:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);//
+ 673              		.loc 1 113 13 view .LVU150
+ 674 00b0 0022     		movs	r2, #0
+ 675 00b2 0121     		movs	r1, #1
+ 676 00b4 2846     		mov	r0, r5
+ 677 00b6 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 678              	.LVL86:
+ 114:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);//SDA À­¸ß
+ 679              		.loc 1 114 13 view .LVU151
+ 680 00ba 0022     		movs	r2, #0
+ 681 00bc 4FF40041 		mov	r1, #32768
+ 682 00c0 6548     		ldr	r0, .L60+4
+ 683 00c2 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 684              	.LVL87:
+ 115:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_SET);//CLK FREQ À­¸ß
+ 685              		.loc 1 115 13 view .LVU152
+ 686 00c6 0122     		movs	r2, #1
+ 687 00c8 4FF44041 		mov	r1, #49152
+ 688 00cc 6348     		ldr	r0, .L60+8
+ 689 00ce FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 690              	.LVL88:
+ 116:Device/Src/power.c ****             set_switch_channel(channel - 1);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 17
+
+
+ 691              		.loc 1 116 13 view .LVU153
+ 692 00d2 601E     		subs	r0, r4, #1
+ 693 00d4 C0B2     		uxtb	r0, r0
+ 694 00d6 FFF7FEFF 		bl	set_switch_channel
+ 695              	.LVL89:
+ 117:Device/Src/power.c ****         break;
+ 696              		.loc 1 117 9 view .LVU154
+ 697 00da C7E7     		b	.L48
+ 698              	.LVL90:
+ 699              	.L54:
+ 119:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);//¿ª¹ØÑ¡Ôñ2.5V
+ 700              		.loc 1 119 13 view .LVU155
+ 701 00dc 5D4E     		ldr	r6, .L60
+ 702 00de 0122     		movs	r2, #1
+ 703 00e0 4FF40041 		mov	r1, #32768
+ 704              	.LVL91:
+ 119:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);//¿ª¹ØÑ¡Ôñ2.5V
+ 705              		.loc 1 119 13 is_stmt 0 view .LVU156
+ 706 00e4 3046     		mov	r0, r6
+ 707 00e6 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 708              	.LVL92:
+ 120:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);//INT À­µÍ
+ 709              		.loc 1 120 13 is_stmt 1 view .LVU157
+ 710 00ea 0022     		movs	r2, #0
+ 711 00ec 8021     		movs	r1, #128
+ 712 00ee 3046     		mov	r0, r6
+ 713 00f0 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 714              	.LVL93:
+ 122:Device/Src/power.c ****             rtc_horizontal_bat_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 715              		.loc 1 122 13 view .LVU158
+ 122:Device/Src/power.c ****             rtc_horizontal_bat_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 716              		.loc 1 122 49 is_stmt 0 view .LVU159
+ 717 00f4 013C     		subs	r4, r4, #1
+ 718              	.LVL94:
+ 122:Device/Src/power.c ****             rtc_horizontal_bat_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 719              		.loc 1 122 54 view .LVU160
+ 720 00f6 5B48     		ldr	r0, .L60+16
+ 721 00f8 80FB0430 		smull	r3, r0, r0, r4
+ 722 00fc E517     		asrs	r5, r4, #31
+ 723 00fe C5EBA005 		rsb	r5, r5, r0, asr #2
+ 122:Device/Src/power.c ****             rtc_horizontal_bat_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 724              		.loc 1 122 13 view .LVU161
+ 725 0102 0221     		movs	r1, #2
+ 726 0104 E8B2     		uxtb	r0, r5
+ 727 0106 FFF7FEFF 		bl	rtc_horizontal_bat_control
+ 728              	.LVL95:
+ 123:Device/Src/power.c ****             rtc_horizontal_vdd_control(0, ALL_CLOSE);
+ 729              		.loc 1 123 13 is_stmt 1 view .LVU162
+ 730 010a 0021     		movs	r1, #0
+ 731 010c 0846     		mov	r0, r1
+ 732 010e FFF7FEFF 		bl	rtc_horizontal_vdd_control
+ 733              	.LVL96:
+ 124:Device/Src/power.c ****             rtc_vertical_control((channel - 1) % NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 734              		.loc 1 124 13 view .LVU163
+ 124:Device/Src/power.c ****             rtc_vertical_control((channel - 1) % NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 735              		.loc 1 124 48 is_stmt 0 view .LVU164
+ 736 0112 05EB8505 		add	r5, r5, r5, lsl #2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 18
+
+
+ 737 0116 A4EB4500 		sub	r0, r4, r5, lsl #1
+ 124:Device/Src/power.c ****             rtc_vertical_control((channel - 1) % NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 738              		.loc 1 124 13 view .LVU165
+ 739 011a 0221     		movs	r1, #2
+ 740 011c C0B2     		uxtb	r0, r0
+ 741 011e FFF7FEFF 		bl	rtc_vertical_control
+ 742              	.LVL97:
+ 125:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);//INT À­µÍ
+ 743              		.loc 1 125 13 is_stmt 1 view .LVU166
+ 744 0122 0022     		movs	r2, #0
+ 745 0124 8021     		movs	r1, #128
+ 746 0126 3046     		mov	r0, r6
+ 747 0128 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 748              	.LVL98:
+ 126:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);//
+ 749              		.loc 1 126 13 view .LVU167
+ 750 012c 0022     		movs	r2, #0
+ 751 012e 0121     		movs	r1, #1
+ 752 0130 3046     		mov	r0, r6
+ 753 0132 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 754              	.LVL99:
+ 127:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);//SDA À­µÍ
+ 755              		.loc 1 127 13 view .LVU168
+ 756 0136 0122     		movs	r2, #1
+ 757 0138 4FF40041 		mov	r1, #32768
+ 758 013c 4648     		ldr	r0, .L60+4
+ 759 013e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 760              	.LVL100:
+ 128:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);//CLK FREQ À­µÍ
+ 761              		.loc 1 128 13 view .LVU169
+ 762 0142 0022     		movs	r2, #0
+ 763 0144 4FF44041 		mov	r1, #49152
+ 764 0148 4448     		ldr	r0, .L60+8
+ 765 014a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 766              	.LVL101:
+ 129:Device/Src/power.c ****             set_switch_channel(channel - 1);//Ä£Äâ¿ª¹ØÑ¡ÖÐÄ³Ò»¸öÐ¾Æ¬
+ 767              		.loc 1 129 13 view .LVU170
+ 768 014e E0B2     		uxtb	r0, r4
+ 769 0150 FFF7FEFF 		bl	set_switch_channel
+ 770              	.LVL102:
+ 130:Device/Src/power.c ****         break;
+ 771              		.loc 1 130 9 view .LVU171
+ 772 0154 8AE7     		b	.L48
+ 773              	.LVL103:
+ 774              	.L53:
+ 132:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);//¿ª¹ØÑ¡Ôñ2.5V
+ 775              		.loc 1 132 13 view .LVU172
+ 776 0156 3F4E     		ldr	r6, .L60
+ 777 0158 0122     		movs	r2, #1
+ 778 015a 4FF40041 		mov	r1, #32768
+ 779              	.LVL104:
+ 132:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);//¿ª¹ØÑ¡Ôñ2.5V
+ 780              		.loc 1 132 13 is_stmt 0 view .LVU173
+ 781 015e 3046     		mov	r0, r6
+ 782 0160 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 783              	.LVL105:
+ 133:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);//INT À­µÍ
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 19
+
+
+ 784              		.loc 1 133 13 is_stmt 1 view .LVU174
+ 785 0164 0022     		movs	r2, #0
+ 786 0166 8021     		movs	r1, #128
+ 787 0168 3046     		mov	r0, r6
+ 788 016a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 789              	.LVL106:
+ 135:Device/Src/power.c ****             rtc_horizontal_vdd_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 790              		.loc 1 135 13 view .LVU175
+ 135:Device/Src/power.c ****             rtc_horizontal_vdd_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 791              		.loc 1 135 49 is_stmt 0 view .LVU176
+ 792 016e 013C     		subs	r4, r4, #1
+ 793              	.LVL107:
+ 135:Device/Src/power.c ****             rtc_horizontal_vdd_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 794              		.loc 1 135 54 view .LVU177
+ 795 0170 3C48     		ldr	r0, .L60+16
+ 796 0172 80FB0430 		smull	r3, r0, r0, r4
+ 797 0176 E517     		asrs	r5, r4, #31
+ 798 0178 C5EBA005 		rsb	r5, r5, r0, asr #2
+ 135:Device/Src/power.c ****             rtc_horizontal_vdd_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 799              		.loc 1 135 13 view .LVU178
+ 800 017c 0221     		movs	r1, #2
+ 801 017e E8B2     		uxtb	r0, r5
+ 802 0180 FFF7FEFF 		bl	rtc_horizontal_vdd_control
+ 803              	.LVL108:
+ 136:Device/Src/power.c ****             rtc_horizontal_bat_control(0, ALL_CLOSE);//batteryÍ¨Â·¹Ø±Õ
+ 804              		.loc 1 136 13 is_stmt 1 view .LVU179
+ 805 0184 0021     		movs	r1, #0
+ 806 0186 0846     		mov	r0, r1
+ 807 0188 FFF7FEFF 		bl	rtc_horizontal_bat_control
+ 808              	.LVL109:
+ 137:Device/Src/power.c ****             rtc_vertical_control((channel - 1) % NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 809              		.loc 1 137 13 view .LVU180
+ 137:Device/Src/power.c ****             rtc_vertical_control((channel - 1) % NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 810              		.loc 1 137 48 is_stmt 0 view .LVU181
+ 811 018c 05EB8505 		add	r5, r5, r5, lsl #2
+ 812 0190 A4EB4500 		sub	r0, r4, r5, lsl #1
+ 137:Device/Src/power.c ****             rtc_vertical_control((channel - 1) % NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 813              		.loc 1 137 13 view .LVU182
+ 814 0194 0221     		movs	r1, #2
+ 815 0196 C0B2     		uxtb	r0, r0
+ 816 0198 FFF7FEFF 		bl	rtc_vertical_control
+ 817              	.LVL110:
+ 138:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);//INT À­µÍ
+ 818              		.loc 1 138 13 is_stmt 1 view .LVU183
+ 819 019c 0022     		movs	r2, #0
+ 820 019e 8021     		movs	r1, #128
+ 821 01a0 3046     		mov	r0, r6
+ 822 01a2 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 823              	.LVL111:
+ 139:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);//
+ 824              		.loc 1 139 13 view .LVU184
+ 825 01a6 0022     		movs	r2, #0
+ 826 01a8 0121     		movs	r1, #1
+ 827 01aa 3046     		mov	r0, r6
+ 828 01ac FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 829              	.LVL112:
+ 140:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);//SDA À­µÍ
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 20
+
+
+ 830              		.loc 1 140 13 view .LVU185
+ 831 01b0 0122     		movs	r2, #1
+ 832 01b2 4FF40041 		mov	r1, #32768
+ 833 01b6 2848     		ldr	r0, .L60+4
+ 834 01b8 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 835              	.LVL113:
+ 141:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);//CLK FREQ À­µÍ
+ 836              		.loc 1 141 13 view .LVU186
+ 837 01bc 0022     		movs	r2, #0
+ 838 01be 4FF44041 		mov	r1, #49152
+ 839 01c2 2648     		ldr	r0, .L60+8
+ 840 01c4 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 841              	.LVL114:
+ 142:Device/Src/power.c ****             set_switch_channel(channel - 1);//Ä£Äâ¿ª¹ØÑ¡ÖÐÄ³Ò»¸öÐ¾Æ¬
+ 842              		.loc 1 142 13 view .LVU187
+ 843 01c8 E0B2     		uxtb	r0, r4
+ 844 01ca FFF7FEFF 		bl	set_switch_channel
+ 845              	.LVL115:
+ 143:Device/Src/power.c ****         break;
+ 846              		.loc 1 143 9 view .LVU188
+ 847 01ce 4DE7     		b	.L48
+ 848              	.LVL116:
+ 849              	.L51:
+ 149:Device/Src/power.c ****             rtc_horizontal_bat_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 850              		.loc 1 149 13 view .LVU189
+ 149:Device/Src/power.c ****             rtc_horizontal_bat_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 851              		.loc 1 149 49 is_stmt 0 view .LVU190
+ 852 01d0 013C     		subs	r4, r4, #1
+ 853              	.LVL117:
+ 149:Device/Src/power.c ****             rtc_horizontal_bat_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 854              		.loc 1 149 54 view .LVU191
+ 855 01d2 2448     		ldr	r0, .L60+16
+ 856 01d4 80FB0430 		smull	r3, r0, r0, r4
+ 857 01d8 E517     		asrs	r5, r4, #31
+ 858 01da C5EBA005 		rsb	r5, r5, r0, asr #2
+ 149:Device/Src/power.c ****             rtc_horizontal_bat_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 859              		.loc 1 149 13 view .LVU192
+ 860 01de 0221     		movs	r1, #2
+ 861              	.LVL118:
+ 149:Device/Src/power.c ****             rtc_horizontal_bat_control((channel - 1) / NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);
+ 862              		.loc 1 149 13 view .LVU193
+ 863 01e0 E8B2     		uxtb	r0, r5
+ 864 01e2 FFF7FEFF 		bl	rtc_horizontal_bat_control
+ 865              	.LVL119:
+ 150:Device/Src/power.c ****             rtc_horizontal_vdd_control(0, ALL_CLOSE);
+ 866              		.loc 1 150 13 is_stmt 1 view .LVU194
+ 867 01e6 0021     		movs	r1, #0
+ 868 01e8 0846     		mov	r0, r1
+ 869 01ea FFF7FEFF 		bl	rtc_horizontal_vdd_control
+ 870              	.LVL120:
+ 152:Device/Src/power.c ****             rtc_vertical_control((channel - 1) % NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);//Ñ¡ÔñÁÐ¿ª¹
+ 871              		.loc 1 152 13 view .LVU195
+ 152:Device/Src/power.c ****             rtc_vertical_control((channel - 1) % NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);//Ñ¡ÔñÁÐ¿ª¹
+ 872              		.loc 1 152 48 is_stmt 0 view .LVU196
+ 873 01ee 05EB8505 		add	r5, r5, r5, lsl #2
+ 874 01f2 A4EB4500 		sub	r0, r4, r5, lsl #1
+ 152:Device/Src/power.c ****             rtc_vertical_control((channel - 1) % NUMBER_VERTICAL, ONE_OPEN_OTHER_CLOSE);//Ñ¡ÔñÁÐ¿ª¹
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 21
+
+
+ 875              		.loc 1 152 13 view .LVU197
+ 876 01f6 0221     		movs	r1, #2
+ 877 01f8 C0B2     		uxtb	r0, r0
+ 878 01fa FFF7FEFF 		bl	rtc_vertical_control
+ 879              	.LVL121:
+ 153:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_RESET);//VDD´ò¿ª
+ 880              		.loc 1 153 13 is_stmt 1 view .LVU198
+ 881 01fe 154D     		ldr	r5, .L60
+ 882 0200 0022     		movs	r2, #0
+ 883 0202 4FF40041 		mov	r1, #32768
+ 884 0206 2846     		mov	r0, r5
+ 885 0208 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 886              	.LVL122:
+ 154:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_6, GPIO_PIN_RESET);//VCE¹Ø±Õ
+ 887              		.loc 1 154 13 view .LVU199
+ 888 020c 0022     		movs	r2, #0
+ 889 020e 4021     		movs	r1, #64
+ 890 0210 2846     		mov	r0, r5
+ 891 0212 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 892              	.LVL123:
+ 155:Device/Src/power.c ****             rtc_otp_power(3.3);//Êä³ö3.3V£¬·ÀÖ¹µçÑ¹µ¹¹àµ½¼ÄÉú¶þ¼«¹Ü
+ 893              		.loc 1 155 13 view .LVU200
+ 894 0216 9FED120A 		vldr.32	s0, .L60+12
+ 895 021a FFF7FEFF 		bl	rtc_otp_power
+ 896              	.LVL124:
+ 156:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);//INTÀ­¸ß
+ 897              		.loc 1 156 13 view .LVU201
+ 898 021e 0122     		movs	r2, #1
+ 899 0220 8021     		movs	r1, #128
+ 900 0222 2846     		mov	r0, r5
+ 901 0224 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 902              	.LVL125:
+ 157:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);//
+ 903              		.loc 1 157 13 view .LVU202
+ 904 0228 0022     		movs	r2, #0
+ 905 022a 0121     		movs	r1, #1
+ 906 022c 2846     		mov	r0, r5
+ 907 022e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 908              	.LVL126:
+ 158:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);//SDA À­¸ß
+ 909              		.loc 1 158 13 view .LVU203
+ 910 0232 0022     		movs	r2, #0
+ 911 0234 4FF40041 		mov	r1, #32768
+ 912 0238 0748     		ldr	r0, .L60+4
+ 913 023a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 914              	.LVL127:
+ 159:Device/Src/power.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_SET);//CLK FREQ À­¸ß
+ 915              		.loc 1 159 13 view .LVU204
+ 916 023e 0122     		movs	r2, #1
+ 917 0240 4FF44041 		mov	r1, #49152
+ 918 0244 0548     		ldr	r0, .L60+8
+ 919 0246 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 920              	.LVL128:
+ 160:Device/Src/power.c ****             set_switch_channel(channel - 1);
+ 921              		.loc 1 160 13 view .LVU205
+ 922 024a E0B2     		uxtb	r0, r4
+ 923 024c FFF7FEFF 		bl	set_switch_channel
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 22
+
+
+ 924              	.LVL129:
+ 161:Device/Src/power.c ****         break;
+ 925              		.loc 1 161 9 view .LVU206
+ 926              		.loc 1 164 1 is_stmt 0 view .LVU207
+ 927 0250 0CE7     		b	.L48
+ 928              	.L61:
+ 929 0252 00BF     		.align	2
+ 930              	.L60:
+ 931 0254 00100240 		.word	1073876992
+ 932 0258 00040240 		.word	1073873920
+ 933 025c 000C0240 		.word	1073875968
+ 934 0260 33335340 		.word	1079194419
+ 935 0264 67666666 		.word	1717986919
+ 936              		.cfi_endproc
+ 937              	.LFE240:
+ 939              		.text
+ 940              	.Letext0:
+ 941              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 942              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 943              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 944              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 945              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 946              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 947              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dac.h"
+ 948              		.file 9 "Device/Inc/power.h"
+ 949              		.file 10 "Drivers/User_Driver/Inc/rtc_i2c.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s 			page 23
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 power.c
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:20     .text.rtc_group_vdd:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:26     .text.rtc_group_vdd:00000000 rtc_group_vdd
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:70     .text.rtc_group_vdd:00000028 $d
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:75     .text.rtc_vertical_control:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:81     .text.rtc_vertical_control:00000000 rtc_vertical_control
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:172    .text.rtc_vertical_control:00000058 $d
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:177    .text.rtc_horizontal_vdd_control:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:183    .text.rtc_horizontal_vdd_control:00000000 rtc_horizontal_vdd_control
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:312    .text.rtc_horizontal_vdd_control:00000088 $d
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:317    .text.rtc_horizontal_bat_control:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:323    .text.rtc_horizontal_bat_control:00000000 rtc_horizontal_bat_control
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:452    .text.rtc_horizontal_bat_control:00000088 $d
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:461    .text.rtc_otp_power:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:467    .text.rtc_otp_power:00000000 rtc_otp_power
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:522    .text.rtc_otp_power:00000048 $d
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:531    .text.rtc_group_power:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:537    .text.rtc_group_power:00000000 rtc_group_power
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:573    .text.rtc_group_power:00000018 $d
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:931    .text.rtc_group_power:00000254 $d
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:578    .text.rtc_group_power:0000001d $d
+C:\Users\84759\AppData\Local\Temp\ccOVLdQj.s:578    .text.rtc_group_power:0000001e $t
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+__aeabi_f2d
+__aeabi_dmul
+__aeabi_ddiv
+__aeabi_d2uiz
+HAL_DAC_SetValue
+HAL_DAC_Start
+hdac
+set_switch_channel
