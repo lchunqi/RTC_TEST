@@ -1,0 +1,629 @@
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccpl93LP.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"log.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.rodata.log_list_init.str1.4,"aMS",%progbits,1
+  20              		.align	2
+  21              	.LC0:
+  22 0000 666C6173 		.ascii	"flash init fail\012\000"
+  22      6820696E 
+  22      69742066 
+  22      61696C0A 
+  22      00
+  23 0011 000000   		.align	2
+  24              	.LC1:
+  25 0014 6C6F6720 		.ascii	"log use pages %d/%d\012\000"
+  25      75736520 
+  25      70616765 
+  25      73202564 
+  25      2F25640A 
+  26              		.section	.text.log_list_init,"ax",%progbits
+  27              		.align	1
+  28              		.global	log_list_init
+  29              		.syntax unified
+  30              		.thumb
+  31              		.thumb_func
+  33              	log_list_init:
+  34              	.LFB238:
+  35              		.file 1 "App/Src/log.c"
+   1:App/Src/log.c **** #include "main.h"
+   2:App/Src/log.c **** #include "flash.h"
+   3:App/Src/log.c **** #include "log.h"
+   4:App/Src/log.c **** #include <stdio.h>
+   5:App/Src/log.c **** #include <stdarg.h>
+   6:App/Src/log.c **** #include <string.h>
+   7:App/Src/log.c **** 
+   8:App/Src/log.c **** uint8_t g_printfBuffer[LOG_MAX_BUFFER] = {0};
+   9:App/Src/log.c **** uint32_t g_nextPage = 0; 
+  10:App/Src/log.c **** 
+  11:App/Src/log.c **** int log_list_init(void)
+  12:App/Src/log.c **** {
+  36              		.loc 1 12 1 view -0
+  37              		.cfi_startproc
+  38              		@ args = 0, pretend = 0, frame = 256
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccpl93LP.s 			page 2
+
+
+  39              		@ frame_needed = 0, uses_anonymous_args = 0
+  40 0000 30B5     		push	{r4, r5, lr}
+  41              	.LCFI0:
+  42              		.cfi_def_cfa_offset 12
+  43              		.cfi_offset 4, -12
+  44              		.cfi_offset 5, -8
+  45              		.cfi_offset 14, -4
+  46 0002 C1B0     		sub	sp, sp, #260
+  47              	.LCFI1:
+  48              		.cfi_def_cfa_offset 272
+  13:App/Src/log.c ****     uint32_t list_addr = LOG_LIST_ADDR;
+  49              		.loc 1 13 5 view .LVU1
+  50              	.LVL0:
+  14:App/Src/log.c ****     uint8_t buffer[PAGE_SIZE] = {0};
+  51              		.loc 1 14 5 view .LVU2
+  52              		.loc 1 14 13 is_stmt 0 view .LVU3
+  53 0004 0024     		movs	r4, #0
+  54 0006 0094     		str	r4, [sp]
+  55 0008 FC22     		movs	r2, #252
+  56 000a 2146     		mov	r1, r4
+  57 000c 01A8     		add	r0, sp, #4
+  58 000e FFF7FEFF 		bl	memset
+  59              	.LVL1:
+  15:App/Src/log.c ****     uint16_t i, j;
+  60              		.loc 1 15 5 is_stmt 1 view .LVU4
+  16:App/Src/log.c ****     g_nextPage = 0;
+  61              		.loc 1 16 5 view .LVU5
+  62              		.loc 1 16 16 is_stmt 0 view .LVU6
+  63 0012 244B     		ldr	r3, .L13
+  64 0014 1C60     		str	r4, [r3]
+  17:App/Src/log.c ****     if (flash_read_data(list_addr, buffer, PAGE_SIZE) != 1) {
+  65              		.loc 1 17 5 is_stmt 1 view .LVU7
+  66              		.loc 1 17 9 is_stmt 0 view .LVU8
+  67 0016 4FF48072 		mov	r2, #256
+  68 001a 6946     		mov	r1, sp
+  69 001c 4FF48030 		mov	r0, #65536
+  70 0020 FFF7FEFF 		bl	flash_read_data
+  71              	.LVL2:
+  72              		.loc 1 17 8 view .LVU9
+  73 0024 0128     		cmp	r0, #1
+  74 0026 09D1     		bne	.L10
+  18:App/Src/log.c ****         UsbPrintf("flash init fail\n");
+  19:App/Src/log.c ****         return -1;
+  20:App/Src/log.c ****     }
+  21:App/Src/log.c ****     memset(buffer, 0, PAGE_SIZE);
+  75              		.loc 1 21 5 is_stmt 1 view .LVU10
+  76 0028 4FF48072 		mov	r2, #256
+  77 002c 0021     		movs	r1, #0
+  78 002e 6846     		mov	r0, sp
+  79 0030 FFF7FEFF 		bl	memset
+  80              	.LVL3:
+  22:App/Src/log.c ****     for (i = 0; i < LOG_MAX_PAGE - 1; i += PAGE_SIZE) {
+  81              		.loc 1 22 5 view .LVU11
+  82              		.loc 1 22 12 is_stmt 0 view .LVU12
+  83 0034 0024     		movs	r4, #0
+  13:App/Src/log.c ****     uint8_t buffer[PAGE_SIZE] = {0};
+  84              		.loc 1 13 14 view .LVU13
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccpl93LP.s 			page 3
+
+
+  85 0036 4FF48035 		mov	r5, #65536
+  86              		.loc 1 22 5 view .LVU14
+  87 003a 1DE0     		b	.L4
+  88              	.LVL4:
+  89              	.L10:
+  18:App/Src/log.c ****         UsbPrintf("flash init fail\n");
+  90              		.loc 1 18 9 is_stmt 1 view .LVU15
+  91 003c 1A48     		ldr	r0, .L13+4
+  92 003e FFF7FEFF 		bl	UsbPrintf
+  93              	.LVL5:
+  19:App/Src/log.c ****     }
+  94              		.loc 1 19 9 view .LVU16
+  19:App/Src/log.c ****     }
+  95              		.loc 1 19 16 is_stmt 0 view .LVU17
+  96 0042 4FF0FF30 		mov	r0, #-1
+  97 0046 2BE0     		b	.L1
+  98              	.LVL6:
+  99              	.L6:
+  23:App/Src/log.c ****         flash_read_data(list_addr, buffer, PAGE_SIZE);
+  24:App/Src/log.c ****         for (j = 0; j < PAGE_SIZE; j++) {
+ 100              		.loc 1 24 36 is_stmt 1 discriminator 2 view .LVU18
+ 101              		.loc 1 24 37 is_stmt 0 discriminator 2 view .LVU19
+ 102 0048 0133     		adds	r3, r3, #1
+ 103              	.LVL7:
+ 104              		.loc 1 24 37 discriminator 2 view .LVU20
+ 105 004a 9BB2     		uxth	r3, r3
+ 106              	.LVL8:
+ 107              	.L5:
+ 108              		.loc 1 24 21 is_stmt 1 discriminator 1 view .LVU21
+ 109              		.loc 1 24 9 is_stmt 0 discriminator 1 view .LVU22
+ 110 004c FF2B     		cmp	r3, #255
+ 111 004e 08D8     		bhi	.L11
+  25:App/Src/log.c ****             if (buffer[j] == 'w') {
+ 112              		.loc 1 25 13 is_stmt 1 view .LVU23
+ 113              		.loc 1 25 23 is_stmt 0 view .LVU24
+ 114 0050 1DF80320 		ldrb	r2, [sp, r3]	@ zero_extendqisi2
+ 115              		.loc 1 25 16 view .LVU25
+ 116 0054 772A     		cmp	r2, #119
+ 117 0056 F7D1     		bne	.L6
+  26:App/Src/log.c ****                 g_nextPage = i + j + 1;
+ 118              		.loc 1 26 17 is_stmt 1 view .LVU26
+ 119              		.loc 1 26 32 is_stmt 0 view .LVU27
+ 120 0058 E218     		adds	r2, r4, r3
+ 121              		.loc 1 26 36 view .LVU28
+ 122 005a 0132     		adds	r2, r2, #1
+ 123              		.loc 1 26 28 view .LVU29
+ 124 005c 1149     		ldr	r1, .L13
+ 125 005e 0A60     		str	r2, [r1]
+ 126 0060 F2E7     		b	.L6
+ 127              	.L11:
+  27:App/Src/log.c ****             }
+  28:App/Src/log.c ****         }
+  29:App/Src/log.c ****         list_addr += PAGE_SIZE;
+ 128              		.loc 1 29 9 is_stmt 1 discriminator 2 view .LVU30
+ 129              		.loc 1 29 19 is_stmt 0 discriminator 2 view .LVU31
+ 130 0062 05F58075 		add	r5, r5, #256
+ 131              	.LVL9:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccpl93LP.s 			page 4
+
+
+  30:App/Src/log.c ****         memset(buffer, 0, PAGE_SIZE);
+ 132              		.loc 1 30 9 is_stmt 1 discriminator 2 view .LVU32
+ 133 0066 4FF48072 		mov	r2, #256
+ 134 006a 0021     		movs	r1, #0
+ 135 006c 6846     		mov	r0, sp
+ 136 006e FFF7FEFF 		bl	memset
+ 137              	.LVL10:
+  22:App/Src/log.c ****         flash_read_data(list_addr, buffer, PAGE_SIZE);
+ 138              		.loc 1 22 39 discriminator 2 view .LVU33
+  22:App/Src/log.c ****         flash_read_data(list_addr, buffer, PAGE_SIZE);
+ 139              		.loc 1 22 41 is_stmt 0 discriminator 2 view .LVU34
+ 140 0072 04F58074 		add	r4, r4, #256
+ 141              	.LVL11:
+  22:App/Src/log.c ****         flash_read_data(list_addr, buffer, PAGE_SIZE);
+ 142              		.loc 1 22 41 discriminator 2 view .LVU35
+ 143 0076 A4B2     		uxth	r4, r4
+ 144              	.LVL12:
+ 145              	.L4:
+  22:App/Src/log.c ****         flash_read_data(list_addr, buffer, PAGE_SIZE);
+ 146              		.loc 1 22 17 is_stmt 1 discriminator 1 view .LVU36
+  22:App/Src/log.c ****         flash_read_data(list_addr, buffer, PAGE_SIZE);
+ 147              		.loc 1 22 5 is_stmt 0 discriminator 1 view .LVU37
+ 148 0078 4FF6FE53 		movw	r3, #65022
+ 149 007c 9C42     		cmp	r4, r3
+ 150 007e 07D8     		bhi	.L12
+  23:App/Src/log.c ****         for (j = 0; j < PAGE_SIZE; j++) {
+ 151              		.loc 1 23 9 is_stmt 1 view .LVU38
+ 152 0080 4FF48072 		mov	r2, #256
+ 153 0084 6946     		mov	r1, sp
+ 154 0086 2846     		mov	r0, r5
+ 155 0088 FFF7FEFF 		bl	flash_read_data
+ 156              	.LVL13:
+  24:App/Src/log.c ****             if (buffer[j] == 'w') {
+ 157              		.loc 1 24 9 view .LVU39
+  24:App/Src/log.c ****             if (buffer[j] == 'w') {
+ 158              		.loc 1 24 16 is_stmt 0 view .LVU40
+ 159 008c 0023     		movs	r3, #0
+  24:App/Src/log.c ****             if (buffer[j] == 'w') {
+ 160              		.loc 1 24 9 view .LVU41
+ 161 008e DDE7     		b	.L5
+ 162              	.LVL14:
+ 163              	.L12:
+  31:App/Src/log.c ****     }
+  32:App/Src/log.c **** 	UsbPrintf("log use pages %d/%d\n", g_nextPage, LOG_MAX_PAGE);
+ 164              		.loc 1 32 2 is_stmt 1 view .LVU42
+ 165 0090 044C     		ldr	r4, .L13
+ 166              	.LVL15:
+ 167              		.loc 1 32 2 is_stmt 0 view .LVU43
+ 168 0092 4FF47E42 		mov	r2, #65024
+ 169 0096 2168     		ldr	r1, [r4]
+ 170 0098 0448     		ldr	r0, .L13+8
+ 171 009a FFF7FEFF 		bl	UsbPrintf
+ 172              	.LVL16:
+  33:App/Src/log.c ****     return g_nextPage;
+ 173              		.loc 1 33 5 is_stmt 1 view .LVU44
+ 174              		.loc 1 33 12 is_stmt 0 view .LVU45
+ 175 009e 2068     		ldr	r0, [r4]
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccpl93LP.s 			page 5
+
+
+ 176              	.LVL17:
+ 177              	.L1:
+  34:App/Src/log.c **** }
+ 178              		.loc 1 34 1 view .LVU46
+ 179 00a0 41B0     		add	sp, sp, #260
+ 180              	.LCFI2:
+ 181              		.cfi_def_cfa_offset 12
+ 182              		@ sp needed
+ 183 00a2 30BD     		pop	{r4, r5, pc}
+ 184              	.L14:
+ 185              		.align	2
+ 186              	.L13:
+ 187 00a4 00000000 		.word	.LANCHOR0
+ 188 00a8 00000000 		.word	.LC0
+ 189 00ac 14000000 		.word	.LC1
+ 190              		.cfi_endproc
+ 191              	.LFE238:
+ 193              		.section	.text.get_log_record_pages,"ax",%progbits
+ 194              		.align	1
+ 195              		.global	get_log_record_pages
+ 196              		.syntax unified
+ 197              		.thumb
+ 198              		.thumb_func
+ 200              	get_log_record_pages:
+ 201              	.LFB239:
+  35:App/Src/log.c **** 
+  36:App/Src/log.c **** uint32_t get_log_record_pages(void)
+  37:App/Src/log.c **** {
+ 202              		.loc 1 37 1 is_stmt 1 view -0
+ 203              		.cfi_startproc
+ 204              		@ args = 0, pretend = 0, frame = 0
+ 205              		@ frame_needed = 0, uses_anonymous_args = 0
+ 206              		@ link register save eliminated.
+  38:App/Src/log.c ****     return g_nextPage + 1;
+ 207              		.loc 1 38 5 view .LVU48
+ 208              		.loc 1 38 23 is_stmt 0 view .LVU49
+ 209 0000 014B     		ldr	r3, .L16
+ 210 0002 1868     		ldr	r0, [r3]
+  39:App/Src/log.c **** }
+ 211              		.loc 1 39 1 view .LVU50
+ 212 0004 0130     		adds	r0, r0, #1
+ 213 0006 7047     		bx	lr
+ 214              	.L17:
+ 215              		.align	2
+ 216              	.L16:
+ 217 0008 00000000 		.word	.LANCHOR0
+ 218              		.cfi_endproc
+ 219              	.LFE239:
+ 221              		.section	.text.log_list_write,"ax",%progbits
+ 222              		.align	1
+ 223              		.global	log_list_write
+ 224              		.syntax unified
+ 225              		.thumb
+ 226              		.thumb_func
+ 228              	log_list_write:
+ 229              	.LVL18:
+ 230              	.LFB240:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccpl93LP.s 			page 6
+
+
+  40:App/Src/log.c **** 
+  41:App/Src/log.c **** void log_list_write(uint32_t pageNumber)
+  42:App/Src/log.c **** {
+ 231              		.loc 1 42 1 is_stmt 1 view -0
+ 232              		.cfi_startproc
+ 233              		@ args = 0, pretend = 0, frame = 8
+ 234              		@ frame_needed = 0, uses_anonymous_args = 0
+ 235              		.loc 1 42 1 is_stmt 0 view .LVU52
+ 236 0000 00B5     		push	{lr}
+ 237              	.LCFI3:
+ 238              		.cfi_def_cfa_offset 4
+ 239              		.cfi_offset 14, -4
+ 240 0002 83B0     		sub	sp, sp, #12
+ 241              	.LCFI4:
+ 242              		.cfi_def_cfa_offset 16
+  43:App/Src/log.c ****     uint8_t buffer = 'w';
+ 243              		.loc 1 43 5 is_stmt 1 view .LVU53
+ 244              		.loc 1 43 13 is_stmt 0 view .LVU54
+ 245 0004 7723     		movs	r3, #119
+ 246 0006 8DF80730 		strb	r3, [sp, #7]
+  44:App/Src/log.c **** 
+  45:App/Src/log.c ****     flash_write_data(LOG_LIST_ADDR + pageNumber, &buffer, 1);
+ 247              		.loc 1 45 5 is_stmt 1 view .LVU55
+ 248 000a 0122     		movs	r2, #1
+ 249 000c 0DF10701 		add	r1, sp, #7
+ 250 0010 00F58030 		add	r0, r0, #65536
+ 251              	.LVL19:
+ 252              		.loc 1 45 5 is_stmt 0 view .LVU56
+ 253 0014 FFF7FEFF 		bl	flash_write_data
+ 254              	.LVL20:
+  46:App/Src/log.c **** }
+ 255              		.loc 1 46 1 view .LVU57
+ 256 0018 03B0     		add	sp, sp, #12
+ 257              	.LCFI5:
+ 258              		.cfi_def_cfa_offset 4
+ 259              		@ sp needed
+ 260 001a 5DF804FB 		ldr	pc, [sp], #4
+ 261              		.cfi_endproc
+ 262              	.LFE240:
+ 264              		.section	.text.log_buffer_write,"ax",%progbits
+ 265              		.align	1
+ 266              		.global	log_buffer_write
+ 267              		.syntax unified
+ 268              		.thumb
+ 269              		.thumb_func
+ 271              	log_buffer_write:
+ 272              	.LFB241:
+  47:App/Src/log.c **** 
+  48:App/Src/log.c **** void log_buffer_write(void)
+  49:App/Src/log.c **** {
+ 273              		.loc 1 49 1 is_stmt 1 view -0
+ 274              		.cfi_startproc
+ 275              		@ args = 0, pretend = 0, frame = 0
+ 276              		@ frame_needed = 0, uses_anonymous_args = 0
+ 277 0000 70B5     		push	{r4, r5, r6, lr}
+ 278              	.LCFI6:
+ 279              		.cfi_def_cfa_offset 16
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccpl93LP.s 			page 7
+
+
+ 280              		.cfi_offset 4, -16
+ 281              		.cfi_offset 5, -12
+ 282              		.cfi_offset 6, -8
+ 283              		.cfi_offset 14, -4
+  50:App/Src/log.c ****     static uint16_t logLength = 0;
+ 284              		.loc 1 50 5 view .LVU59
+  51:App/Src/log.c ****     uint16_t bufferLength = 0;
+ 285              		.loc 1 51 5 view .LVU60
+ 286              	.LVL21:
+  52:App/Src/log.c **** 
+  53:App/Src/log.c ****     bufferLength = strlen((char*)g_printfBuffer);
+ 287              		.loc 1 53 5 view .LVU61
+ 288              		.loc 1 53 20 is_stmt 0 view .LVU62
+ 289 0002 1648     		ldr	r0, .L24
+ 290 0004 FFF7FEFF 		bl	strlen
+ 291              	.LVL22:
+ 292              		.loc 1 53 18 view .LVU63
+ 293 0008 84B2     		uxth	r4, r0
+ 294              	.LVL23:
+  54:App/Src/log.c ****     if (logLength  + bufferLength >  PAGE_SIZE) {
+ 295              		.loc 1 54 5 is_stmt 1 view .LVU64
+ 296              		.loc 1 54 20 is_stmt 0 view .LVU65
+ 297 000a 154B     		ldr	r3, .L24+4
+ 298 000c 1B88     		ldrh	r3, [r3]
+ 299 000e 1844     		add	r0, r0, r3
+ 300              		.loc 1 54 8 view .LVU66
+ 301 0010 B0F5807F 		cmp	r0, #256
+ 302 0014 0BDD     		ble	.L21
+  55:App/Src/log.c ****         if (g_nextPage >= (LOG_MAX_PAGE - 1))  { 
+ 303              		.loc 1 55 9 is_stmt 1 view .LVU67
+ 304              		.loc 1 55 24 is_stmt 0 view .LVU68
+ 305 0016 134B     		ldr	r3, .L24+8
+ 306 0018 1B68     		ldr	r3, [r3]
+ 307              		.loc 1 55 12 view .LVU69
+ 308 001a 4FF6FE52 		movw	r2, #65022
+ 309 001e 9342     		cmp	r3, r2
+ 310 0020 1AD8     		bhi	.L20
+  56:App/Src/log.c ****             return;
+  57:App/Src/log.c ****         }
+  58:App/Src/log.c ****         g_nextPage++; 
+ 311              		.loc 1 58 9 is_stmt 1 view .LVU70
+ 312              		.loc 1 58 19 is_stmt 0 view .LVU71
+ 313 0022 0133     		adds	r3, r3, #1
+ 314 0024 0F4A     		ldr	r2, .L24+8
+ 315 0026 1360     		str	r3, [r2]
+  59:App/Src/log.c ****         logLength = 0;
+ 316              		.loc 1 59 9 is_stmt 1 view .LVU72
+ 317              		.loc 1 59 19 is_stmt 0 view .LVU73
+ 318 0028 0D4B     		ldr	r3, .L24+4
+ 319 002a 0022     		movs	r2, #0
+ 320 002c 1A80     		strh	r2, [r3]	@ movhi
+ 321              	.L21:
+  60:App/Src/log.c ****     } 
+  61:App/Src/log.c ****     flash_write_data(LOG_START_ADDR + (g_nextPage * PAGE_SIZE) + logLength, g_printfBuffer, bufferL
+ 322              		.loc 1 61 5 is_stmt 1 view .LVU74
+ 323              		.loc 1 61 37 is_stmt 0 view .LVU75
+ 324 002e 0D4E     		ldr	r6, .L24+8
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccpl93LP.s 			page 8
+
+
+ 325 0030 3068     		ldr	r0, [r6]
+ 326 0032 00F50070 		add	r0, r0, #512
+ 327              		.loc 1 61 5 view .LVU76
+ 328 0036 0A4D     		ldr	r5, .L24+4
+ 329 0038 2B88     		ldrh	r3, [r5]
+ 330 003a 2246     		mov	r2, r4
+ 331 003c 0749     		ldr	r1, .L24
+ 332 003e 03EB0020 		add	r0, r3, r0, lsl #8
+ 333 0042 FFF7FEFF 		bl	flash_write_data
+ 334              	.LVL24:
+  62:App/Src/log.c ****     HAL_Delay(2);//
+ 335              		.loc 1 62 5 is_stmt 1 view .LVU77
+ 336 0046 0220     		movs	r0, #2
+ 337 0048 FFF7FEFF 		bl	HAL_Delay
+ 338              	.LVL25:
+  63:App/Src/log.c ****     log_list_write(g_nextPage);
+ 339              		.loc 1 63 5 view .LVU78
+ 340 004c 3068     		ldr	r0, [r6]
+ 341 004e FFF7FEFF 		bl	log_list_write
+ 342              	.LVL26:
+  64:App/Src/log.c ****     logLength += bufferLength;
+ 343              		.loc 1 64 5 view .LVU79
+ 344              		.loc 1 64 15 is_stmt 0 view .LVU80
+ 345 0052 2B88     		ldrh	r3, [r5]
+ 346 0054 1C44     		add	r4, r4, r3
+ 347              	.LVL27:
+ 348              		.loc 1 64 15 view .LVU81
+ 349 0056 2C80     		strh	r4, [r5]	@ movhi
+ 350              	.L20:
+  65:App/Src/log.c **** }
+ 351              		.loc 1 65 1 view .LVU82
+ 352 0058 70BD     		pop	{r4, r5, r6, pc}
+ 353              	.L25:
+ 354 005a 00BF     		.align	2
+ 355              	.L24:
+ 356 005c 00000000 		.word	.LANCHOR1
+ 357 0060 00000000 		.word	.LANCHOR2
+ 358 0064 00000000 		.word	.LANCHOR0
+ 359              		.cfi_endproc
+ 360              	.LFE241:
+ 362              		.section	.text.log_printf,"ax",%progbits
+ 363              		.align	1
+ 364              		.global	log_printf
+ 365              		.syntax unified
+ 366              		.thumb
+ 367              		.thumb_func
+ 369              	log_printf:
+ 370              	.LVL28:
+ 371              	.LFB242:
+  66:App/Src/log.c **** 
+  67:App/Src/log.c **** void log_printf(char* fmt,...)
+  68:App/Src/log.c **** {
+ 372              		.loc 1 68 1 is_stmt 1 view -0
+ 373              		.cfi_startproc
+ 374              		@ args = 4, pretend = 16, frame = 8
+ 375              		@ frame_needed = 0, uses_anonymous_args = 1
+ 376              		.loc 1 68 1 is_stmt 0 view .LVU84
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccpl93LP.s 			page 9
+
+
+ 377 0000 0FB4     		push	{r0, r1, r2, r3}
+ 378              	.LCFI7:
+ 379              		.cfi_def_cfa_offset 16
+ 380              		.cfi_offset 0, -16
+ 381              		.cfi_offset 1, -12
+ 382              		.cfi_offset 2, -8
+ 383              		.cfi_offset 3, -4
+ 384 0002 F0B5     		push	{r4, r5, r6, r7, lr}
+ 385              	.LCFI8:
+ 386              		.cfi_def_cfa_offset 36
+ 387              		.cfi_offset 4, -36
+ 388              		.cfi_offset 5, -32
+ 389              		.cfi_offset 6, -28
+ 390              		.cfi_offset 7, -24
+ 391              		.cfi_offset 14, -20
+ 392 0004 83B0     		sub	sp, sp, #12
+ 393              	.LCFI9:
+ 394              		.cfi_def_cfa_offset 48
+ 395 0006 08AC     		add	r4, sp, #32
+ 396 0008 54F8047B 		ldr	r7, [r4], #4
+  69:App/Src/log.c **** 	va_list ap;
+ 397              		.loc 1 69 2 is_stmt 1 view .LVU85
+  70:App/Src/log.c **** 	memset(g_printfBuffer, 0, LOG_MAX_BUFFER);
+ 398              		.loc 1 70 2 view .LVU86
+ 399 000c 0A4D     		ldr	r5, .L28
+ 400 000e 4026     		movs	r6, #64
+ 401 0010 3246     		mov	r2, r6
+ 402 0012 0021     		movs	r1, #0
+ 403 0014 2846     		mov	r0, r5
+ 404 0016 FFF7FEFF 		bl	memset
+ 405              	.LVL29:
+  71:App/Src/log.c **** 	va_start(ap, fmt);//
+ 406              		.loc 1 71 2 view .LVU87
+ 407 001a 0194     		str	r4, [sp, #4]
+  72:App/Src/log.c **** 	vsnprintf((char*)g_printfBuffer, LOG_MAX_BUFFER, fmt, ap);//
+ 408              		.loc 1 72 2 view .LVU88
+ 409 001c 2346     		mov	r3, r4
+ 410 001e 3A46     		mov	r2, r7
+ 411 0020 3146     		mov	r1, r6
+ 412 0022 2846     		mov	r0, r5
+ 413 0024 FFF7FEFF 		bl	vsnprintf
+ 414              	.LVL30:
+  73:App/Src/log.c **** 	va_end(ap);
+ 415              		.loc 1 73 2 view .LVU89
+  74:App/Src/log.c ****     log_buffer_write();
+ 416              		.loc 1 74 5 view .LVU90
+ 417 0028 FFF7FEFF 		bl	log_buffer_write
+ 418              	.LVL31:
+  75:App/Src/log.c **** }...
+ 419              		.loc 1 75 1 is_stmt 0 view .LVU91
+ 420 002c 03B0     		add	sp, sp, #12
+ 421              	.LCFI10:
+ 422              		.cfi_def_cfa_offset 36
+ 423              		@ sp needed
+ 424 002e BDE8F040 		pop	{r4, r5, r6, r7, lr}
+ 425              	.LCFI11:
+ 426              		.cfi_restore 14
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccpl93LP.s 			page 10
+
+
+ 427              		.cfi_restore 7
+ 428              		.cfi_restore 6
+ 429              		.cfi_restore 5
+ 430              		.cfi_restore 4
+ 431              		.cfi_def_cfa_offset 16
+ 432 0032 04B0     		add	sp, sp, #16
+ 433              	.LCFI12:
+ 434              		.cfi_restore 3
+ 435              		.cfi_restore 2
+ 436              		.cfi_restore 1
+ 437              		.cfi_restore 0
+ 438              		.cfi_def_cfa_offset 0
+ 439 0034 7047     		bx	lr
+ 440              	.L29:
+ 441 0036 00BF     		.align	2
+ 442              	.L28:
+ 443 0038 00000000 		.word	.LANCHOR1
+ 444              		.cfi_endproc
+ 445              	.LFE242:
+ 447              		.global	g_nextPage
+ 448              		.global	g_printfBuffer
+ 449              		.section	.bss.g_nextPage,"aw",%nobits
+ 450              		.align	2
+ 451              		.set	.LANCHOR0,. + 0
+ 454              	g_nextPage:
+ 455 0000 00000000 		.space	4
+ 456              		.section	.bss.g_printfBuffer,"aw",%nobits
+ 457              		.align	2
+ 458              		.set	.LANCHOR1,. + 0
+ 461              	g_printfBuffer:
+ 462 0000 00000000 		.space	64
+ 462      00000000 
+ 462      00000000 
+ 462      00000000 
+ 462      00000000 
+ 463              		.section	.bss.logLength.0,"aw",%nobits
+ 464              		.align	1
+ 465              		.set	.LANCHOR2,. + 0
+ 468              	logLength.0:
+ 469 0000 0000     		.space	2
+ 470              		.text
+ 471              	.Letext0:
+ 472              		.file 2 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_default_
+ 473              		.file 3 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 474              		.file 4 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\lib\\gcc\\arm-none-eabi\\10.3.1\\include\\
+ 475              		.file 5 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\stdio.h"
+ 476              		.file 6 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\string.h"
+ 477              		.file 7 "Device/Inc/flash.h"
+ 478              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 479              		.file 9 "Core/Inc/main.h"
+ 480              		.file 10 "<built-in>"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccpl93LP.s 			page 11
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 log.c
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:20     .rodata.log_list_init.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:27     .text.log_list_init:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:33     .text.log_list_init:00000000 log_list_init
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:187    .text.log_list_init:000000a4 $d
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:194    .text.get_log_record_pages:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:200    .text.get_log_record_pages:00000000 get_log_record_pages
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:217    .text.get_log_record_pages:00000008 $d
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:222    .text.log_list_write:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:228    .text.log_list_write:00000000 log_list_write
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:265    .text.log_buffer_write:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:271    .text.log_buffer_write:00000000 log_buffer_write
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:356    .text.log_buffer_write:0000005c $d
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:363    .text.log_printf:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:369    .text.log_printf:00000000 log_printf
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:443    .text.log_printf:00000038 $d
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:454    .bss.g_nextPage:00000000 g_nextPage
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:461    .bss.g_printfBuffer:00000000 g_printfBuffer
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:450    .bss.g_nextPage:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:457    .bss.g_printfBuffer:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:464    .bss.logLength.0:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccpl93LP.s:468    .bss.logLength.0:00000000 logLength.0
+
+UNDEFINED SYMBOLS
+memset
+flash_read_data
+UsbPrintf
+flash_write_data
+strlen
+HAL_Delay
+vsnprintf

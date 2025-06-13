@@ -1,0 +1,4635 @@
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"rtc.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.rtc_read_temp,"ax",%progbits
+  20              		.align	1
+  21              		.global	rtc_read_temp
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	rtc_read_temp:
+  27              	.LVL0:
+  28              	.LFB235:
+  29              		.file 1 "Device/Src/rtc.c"
+   1:Device/Src/rtc.c **** #include "main.h"
+   2:Device/Src/rtc.c **** #include "rtc.h"
+   3:Device/Src/rtc.c **** #include <string.h>
+   4:Device/Src/rtc.c **** #include "drv_wave1006.h"
+   5:Device/Src/rtc.c **** 
+   6:Device/Src/rtc.c **** #define OTP_LENGTH_SD3900           1024
+   7:Device/Src/rtc.c **** uint8_t g_otpBuffer[OTP_LENGTH_SD3900] = {0xff};
+   8:Device/Src/rtc.c **** #define CAP_STEP_3D6			1
+   9:Device/Src/rtc.c **** #define CAP_STEP_2D4			1
+  10:Device/Src/rtc.c **** #define CAP_STEP_1D2			21
+  11:Device/Src/rtc.c **** #define CAP_STEP_0D8			41
+  12:Device/Src/rtc.c **** #define CAP_STEP_0D6			102
+  13:Device/Src/rtc.c **** #define CAP_STEP_0D4			SD8800_CAP_LIST_MAX
+  14:Device/Src/rtc.c **** 
+  15:Device/Src/rtc.c **** uint8_t g_capList[SD8800_CAP_LIST_MAX + 1][2] = {
+  16:Device/Src/rtc.c **** 	{0x10,0x00},
+  17:Device/Src/rtc.c **** 	{0x10,0x01},
+  18:Device/Src/rtc.c **** 	{0x10,0x02},
+  19:Device/Src/rtc.c **** 	{0x10,0x03},
+  20:Device/Src/rtc.c **** 	{0x10,0x05},
+  21:Device/Src/rtc.c **** 	{0x10,0x06},
+  22:Device/Src/rtc.c **** 	{0x10,0x07},
+  23:Device/Src/rtc.c **** 	{0x10,0x12},
+  24:Device/Src/rtc.c **** 	{0x10,0x18},
+  25:Device/Src/rtc.c **** 	{0x10,0x0f},
+  26:Device/Src/rtc.c **** 	{0x10,0x1a},
+  27:Device/Src/rtc.c **** 	{0x10,0x17},
+  28:Device/Src/rtc.c **** 	{0x10,0x24},
+  29:Device/Src/rtc.c **** 	{0x10,0x25},
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 2
+
+
+  30:Device/Src/rtc.c **** 	{0x10,0x1f},
+  31:Device/Src/rtc.c **** 	{0x10,0x2c},
+  32:Device/Src/rtc.c **** 	{0x10,0x38},
+  33:Device/Src/rtc.c **** 	{0x10,0x39},
+  34:Device/Src/rtc.c **** 	{0x10,0x3a},
+  35:Device/Src/rtc.c **** 	{0x10,0x3b},
+  36:Device/Src/rtc.c **** 	{0x10,0x3d},
+  37:Device/Src/rtc.c **** 	{0x10,0x3e},
+  38:Device/Src/rtc.c **** 	{0x10,0x3f},
+  39:Device/Src/rtc.c **** 	{0x10,0x41},
+  40:Device/Src/rtc.c **** 	{0x10,0x42},
+  41:Device/Src/rtc.c **** 	{0x10,0x43},
+  42:Device/Src/rtc.c **** 	{0x10,0x48},
+  43:Device/Src/rtc.c **** 	{0x10,0x45},
+  44:Device/Src/rtc.c **** 	{0x10,0x4a},
+  45:Device/Src/rtc.c **** 	{0x10,0x47},
+  46:Device/Src/rtc.c **** 	{0x10,0x4c},
+  47:Device/Src/rtc.c **** 	{0x10,0x52},
+  48:Device/Src/rtc.c **** 	{0x10,0x53},
+  49:Device/Src/rtc.c **** 	{0x10,0x59},
+  50:Device/Src/rtc.c **** 	{0x10,0x61},
+  51:Device/Src/rtc.c **** 	{0x10,0x62},
+  52:Device/Src/rtc.c **** 	{0x10,0x5b},
+  53:Device/Src/rtc.c **** 	{0x10,0x64},
+  54:Device/Src/rtc.c **** 	{0x10,0x65},
+  55:Device/Src/rtc.c **** 	{0x10,0x66},
+  56:Device/Src/rtc.c **** 	{0x10,0x71},
+  57:Device/Src/rtc.c **** 	{0x10,0x72},
+  58:Device/Src/rtc.c **** 	{0x10,0x6d},
+  59:Device/Src/rtc.c **** 	{0x10,0x74},
+  60:Device/Src/rtc.c **** 	{0x10,0x79},
+  61:Device/Src/rtc.c **** 	{0x10,0x75},
+  62:Device/Src/rtc.c **** 	{0x10,0x76},
+  63:Device/Src/rtc.c **** 	{0x10,0x7b},
+  64:Device/Src/rtc.c **** 	{0x10,0x77},
+  65:Device/Src/rtc.c **** 	{0x10,0x80},
+  66:Device/Src/rtc.c **** 	{0x10,0x7d},
+  67:Device/Src/rtc.c **** 	{0x10,0x81},
+  68:Device/Src/rtc.c **** 	{0x10,0x82},
+  69:Device/Src/rtc.c **** 	{0x10,0x7f},
+  70:Device/Src/rtc.c **** 	{0x10,0x84},
+  71:Device/Src/rtc.c **** 	{0x10,0x89},
+  72:Device/Src/rtc.c **** 	{0x10,0x85},
+  73:Device/Src/rtc.c **** 	{0x10,0x86},
+  74:Device/Src/rtc.c **** 	{0x10,0x87},
+  75:Device/Src/rtc.c **** 	{0x10,0x8c},
+  76:Device/Src/rtc.c **** 	{0x10,0x92},
+  77:Device/Src/rtc.c **** 	{0x10,0x98},
+  78:Device/Src/rtc.c **** 	{0x10,0xa0},
+  79:Device/Src/rtc.c **** 	{0x10,0x99},
+  80:Device/Src/rtc.c **** 	{0x10,0xa1},
+  81:Device/Src/rtc.c **** 	{0x10,0xa2},
+  82:Device/Src/rtc.c **** 	{0x10,0x9b},
+  83:Device/Src/rtc.c **** 	{0x10,0xa4},
+  84:Device/Src/rtc.c **** 	{0x10,0x9d},
+  85:Device/Src/rtc.c **** 	{0x10,0xb0},
+  86:Device/Src/rtc.c **** 	{0x10,0xa6},
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 3
+
+
+  87:Device/Src/rtc.c **** 	{0x10,0xb1},
+  88:Device/Src/rtc.c **** 	{0x10,0xa7},
+  89:Device/Src/rtc.c **** 	{0x10,0xb8},
+  90:Device/Src/rtc.c **** 	{0x10,0xb3},
+  91:Device/Src/rtc.c **** 	{0x10,0xb9},
+  92:Device/Src/rtc.c **** 	{0x10,0xb5},
+  93:Device/Src/rtc.c **** 	{0x10,0xba},
+  94:Device/Src/rtc.c **** 	{0x10,0xbb},
+  95:Device/Src/rtc.c **** 	{0x10,0xb7},
+  96:Device/Src/rtc.c **** 	{0x10,0xbd},
+  97:Device/Src/rtc.c **** 	{0x10,0xbd},
+  98:Device/Src/rtc.c **** 	{0x10,0xc0},
+  99:Device/Src/rtc.c **** 	{0x10,0xbf},
+ 100:Device/Src/rtc.c **** 	{0x10,0xc1},
+ 101:Device/Src/rtc.c **** 	{0x10,0xc2},
+ 102:Device/Src/rtc.c **** 	{0x10,0xc3},
+ 103:Device/Src/rtc.c **** 	{0x10,0xc4},
+ 104:Device/Src/rtc.c **** 	{0x10,0xc9},
+ 105:Device/Src/rtc.c **** 	{0x10,0xd0},
+ 106:Device/Src/rtc.c **** 	{0x10,0xc6},
+ 107:Device/Src/rtc.c **** 	{0x10,0xcb},
+ 108:Device/Src/rtc.c **** 	{0x10,0xd2},
+ 109:Device/Src/rtc.c **** 	{0x10,0xd8},
+ 110:Device/Src/rtc.c **** 	{0x10,0xce},
+ 111:Device/Src/rtc.c **** 	{0x10,0xd5},
+ 112:Device/Src/rtc.c **** 	{0x10,0xd6},
+ 113:Device/Src/rtc.c **** 	{0x10,0xdb},
+ 114:Device/Src/rtc.c **** 	{0x10,0xe3},
+ 115:Device/Src/rtc.c **** 	{0x10,0xdd},
+ 116:Device/Src/rtc.c **** 	{0x10,0xe5},
+ 117:Device/Src/rtc.c **** 	{0x10,0xe6},
+ 118:Device/Src/rtc.c **** 	{0x10,0xeb},
+ 119:Device/Src/rtc.c **** 	{0x10,0xf2},
+ 120:Device/Src/rtc.c **** 	{0x10,0xf8},
+ 121:Device/Src/rtc.c **** 	{0x10,0xf3},
+ 122:Device/Src/rtc.c **** 	{0x10,0xf4},
+ 123:Device/Src/rtc.c **** 	{0x10,0xf9},
+ 124:Device/Src/rtc.c **** 	{0x10,0xfa},
+ 125:Device/Src/rtc.c **** 	{0x10,0xf6},
+ 126:Device/Src/rtc.c **** 	{0x11,0x00},
+ 127:Device/Src/rtc.c **** 	{0x10,0xfc},
+ 128:Device/Src/rtc.c **** 	{0x10,0xf7},
+ 129:Device/Src/rtc.c **** 	{0x10,0xfd},
+ 130:Device/Src/rtc.c **** 	{0x11,0x02},
+ 131:Device/Src/rtc.c **** 	{0x10,0xfe},
+ 132:Device/Src/rtc.c **** 	{0x11,0x03},
+ 133:Device/Src/rtc.c **** 	{0x11,0x04},
+ 134:Device/Src/rtc.c **** 	{0x11,0x09},
+ 135:Device/Src/rtc.c **** 	{0x11,0x10},
+ 136:Device/Src/rtc.c **** 	{0x11,0x06},
+ 137:Device/Src/rtc.c **** 	{0x11,0x11},
+ 138:Device/Src/rtc.c **** 	{0x11,0x0b},
+ 139:Device/Src/rtc.c **** 	{0x11,0x12},
+ 140:Device/Src/rtc.c **** 	{0x11,0x18},
+ 141:Device/Src/rtc.c **** 	{0x11,0x0d},
+ 142:Device/Src/rtc.c **** 	{0x11,0x14},
+ 143:Device/Src/rtc.c **** 	{0x11,0x19},
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 4
+
+
+ 144:Device/Src/rtc.c **** 	{0x11,0x21},
+ 145:Device/Src/rtc.c **** 	{0x11,0x1a},
+ 146:Device/Src/rtc.c **** 	{0x11,0x22},
+ 147:Device/Src/rtc.c **** 	{0x11,0x28},
+ 148:Device/Src/rtc.c **** 	{0x11,0x23},
+ 149:Device/Src/rtc.c **** 	{0x11,0x24},
+ 150:Device/Src/rtc.c **** 	{0x11,0x30},
+ 151:Device/Src/rtc.c **** 	{0x11,0x25},
+ 152:Device/Src/rtc.c **** 	{0x11,0x26},
+ 153:Device/Src/rtc.c **** 	{0x11,0x1f},
+ 154:Device/Src/rtc.c **** 	{0x11,0x32},
+ 155:Device/Src/rtc.c **** 	{0x11,0x38},
+ 156:Device/Src/rtc.c **** 	{0x11,0x2d},
+ 157:Device/Src/rtc.c **** 	{0x11,0x34},
+ 158:Device/Src/rtc.c **** 	{0x11,0x2e},
+ 159:Device/Src/rtc.c **** 	{0x11,0x3a},
+ 160:Device/Src/rtc.c **** 	{0x11,0x2f},
+ 161:Device/Src/rtc.c **** 	{0x11,0x36},
+ 162:Device/Src/rtc.c **** 	{0x11,0x3c},
+ 163:Device/Src/rtc.c **** 	{0x11,0x37},
+ 164:Device/Src/rtc.c **** 	{0x11,0x3d},
+ 165:Device/Src/rtc.c **** 	{0x11,0x3d},
+ 166:Device/Src/rtc.c **** 	{0x11,0x3e},
+ 167:Device/Src/rtc.c **** 	{0x11,0x40},
+ 168:Device/Src/rtc.c **** 	{0x11,0x3f},
+ 169:Device/Src/rtc.c **** 	{0x11,0x41},
+ 170:Device/Src/rtc.c **** 	{0x11,0x41},
+ 171:Device/Src/rtc.c **** 	{0x11,0x42},
+ 172:Device/Src/rtc.c **** 	{0x11,0x48},
+ 173:Device/Src/rtc.c **** 	{0x11,0x44},
+ 174:Device/Src/rtc.c **** 	{0x11,0x49},
+ 175:Device/Src/rtc.c **** 	{0x11,0x45},
+ 176:Device/Src/rtc.c **** 	{0x11,0x46},
+ 177:Device/Src/rtc.c **** 	{0x11,0x51},
+ 178:Device/Src/rtc.c **** 	{0x11,0x4b},
+ 179:Device/Src/rtc.c **** 	{0x11,0x52},
+ 180:Device/Src/rtc.c **** 	{0x11,0x58},
+ 181:Device/Src/rtc.c **** 	{0x11,0x53},
+ 182:Device/Src/rtc.c **** 	{0x11,0x4e},
+ 183:Device/Src/rtc.c **** 	{0x11,0x61},
+ 184:Device/Src/rtc.c **** 	{0x11,0x62},
+ 185:Device/Src/rtc.c **** 	{0x11,0x56},
+ 186:Device/Src/rtc.c **** 	{0x11,0x5b},
+ 187:Device/Src/rtc.c **** 	{0x11,0x57},
+ 188:Device/Src/rtc.c **** 	{0x11,0x69},
+ 189:Device/Src/rtc.c **** 	{0x11,0x6a},
+ 190:Device/Src/rtc.c **** 	{0x11,0x5e},
+ 191:Device/Src/rtc.c **** 	{0x11,0x71},
+ 192:Device/Src/rtc.c **** 	{0x11,0x72},
+ 193:Device/Src/rtc.c **** 	{0x11,0x78},
+ 194:Device/Src/rtc.c **** 	{0x11,0x73},
+ 195:Device/Src/rtc.c **** 	{0x11,0x79},
+ 196:Device/Src/rtc.c **** 	{0x11,0x7a},
+ 197:Device/Src/rtc.c **** 	{0x11,0x6f},
+ 198:Device/Src/rtc.c **** 	{0x11,0x76},
+ 199:Device/Src/rtc.c **** 	{0x11,0x7c},
+ 200:Device/Src/rtc.c **** 	{0x11,0x80},
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 5
+
+
+ 201:Device/Src/rtc.c **** 	{0x11,0x7d},
+ 202:Device/Src/rtc.c **** 	{0x11,0x81},
+ 203:Device/Src/rtc.c **** 	{0x11,0x7e},
+ 204:Device/Src/rtc.c **** 	{0x11,0x82},
+ 205:Device/Src/rtc.c **** 	{0x11,0x88},
+ 206:Device/Src/rtc.c **** 	{0x11,0x84},
+ 207:Device/Src/rtc.c **** 	{0x11,0x90},
+ 208:Device/Src/rtc.c **** 	{0x11,0x85},
+ 209:Device/Src/rtc.c **** 	{0x11,0x86},
+ 210:Device/Src/rtc.c **** 	{0x11,0x91},
+ 211:Device/Src/rtc.c **** 	{0x11,0x87},
+ 212:Device/Src/rtc.c **** 	{0x11,0x98},
+ 213:Device/Src/rtc.c **** 	{0x11,0x93},
+ 214:Device/Src/rtc.c **** 	{0x11,0x8e},
+ 215:Device/Src/rtc.c **** 	{0x11,0xa1},
+ 216:Device/Src/rtc.c **** 	{0x11,0x8f},
+ 217:Device/Src/rtc.c **** 	{0x11,0xa2},
+ 218:Device/Src/rtc.c **** 	{0x11,0x9c},
+ 219:Device/Src/rtc.c **** 	{0x11,0xa4},
+ 220:Device/Src/rtc.c **** 	{0x11,0x9d},
+ 221:Device/Src/rtc.c **** 	{0x11,0xaa},
+ 222:Device/Src/rtc.c **** 	{0x11,0xa6},
+ 223:Device/Src/rtc.c **** 	{0x11,0xb2},
+ 224:Device/Src/rtc.c **** 	{0x11,0xb8},
+ 225:Device/Src/rtc.c **** 	{0x11,0xb3},
+ 226:Device/Src/rtc.c **** 	{0x11,0xb9},
+ 227:Device/Src/rtc.c **** 	{0x11,0xae},
+ 228:Device/Src/rtc.c **** 	{0x11,0xb5},
+ 229:Device/Src/rtc.c **** 	{0x11,0xbb},
+ 230:Device/Src/rtc.c **** 	{0x11,0xbc},
+ 231:Device/Src/rtc.c **** 	{0x11,0xb7},
+ 232:Device/Src/rtc.c **** 	{0x11,0xbd},
+ 233:Device/Src/rtc.c **** 	{0x11,0xbe},
+ 234:Device/Src/rtc.c **** 	{0x11,0xc0},
+ 235:Device/Src/rtc.c **** 	{0x11,0xbf},
+ 236:Device/Src/rtc.c **** 	{0x11,0xc1},
+ 237:Device/Src/rtc.c **** 	{0x11,0xc2},
+ 238:Device/Src/rtc.c **** 	{0x11,0xc8},
+ 239:Device/Src/rtc.c **** 	{0x11,0xc3},
+ 240:Device/Src/rtc.c **** 	{0x11,0xc9},
+ 241:Device/Src/rtc.c **** 	{0x11,0xc5},
+ 242:Device/Src/rtc.c **** 	{0x11,0xc6},
+ 243:Device/Src/rtc.c **** 	{0x11,0xcb},
+ 244:Device/Src/rtc.c **** 	{0x11,0xc7},
+ 245:Device/Src/rtc.c **** 	{0x11,0xcd},
+ 246:Device/Src/rtc.c **** 	{0x11,0xd4},
+ 247:Device/Src/rtc.c **** 	{0x11,0xe1},
+ 248:Device/Src/rtc.c **** 	{0x11,0xe2},
+ 249:Device/Src/rtc.c **** 	{0x11,0xe8},
+ 250:Device/Src/rtc.c **** 	{0x11,0xe3},
+ 251:Device/Src/rtc.c **** 	{0x11,0xe9},
+ 252:Device/Src/rtc.c **** 	{0x11,0xdd},
+ 253:Device/Src/rtc.c **** 	{0x11,0xde},
+ 254:Device/Src/rtc.c **** 	{0x11,0xf2},
+ 255:Device/Src/rtc.c **** 	{0x11,0xf8},
+ 256:Device/Src/rtc.c **** 	{0x11,0xf3},
+ 257:Device/Src/rtc.c **** 	{0x11,0xf9},
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 6
+
+
+ 258:Device/Src/rtc.c **** 	{0x11,0xfa},
+ 259:Device/Src/rtc.c **** 	{0x11,0xf5},
+ 260:Device/Src/rtc.c **** 	{0x11,0xf6},
+ 261:Device/Src/rtc.c **** 	{0x11,0xfc},
+ 262:Device/Src/rtc.c **** 	{0x11,0xf7},
+ 263:Device/Src/rtc.c **** 	{0x12,0x03},
+ 264:Device/Src/rtc.c **** 	{0x12,0x09},
+ 265:Device/Src/rtc.c **** 	{0x11,0xff},
+ 266:Device/Src/rtc.c **** 	{0x12,0x05},
+ 267:Device/Src/rtc.c **** 	{0x12,0x0b},
+ 268:Device/Src/rtc.c **** 	{0x12,0x07},
+ 269:Device/Src/rtc.c **** 	{0x12,0x0d},
+ 270:Device/Src/rtc.c **** 	{0x12,0x19},
+ 271:Device/Src/rtc.c **** 	{0x12,0x1a},
+ 272:Device/Src/rtc.c **** 	{0x12,0x0f},
+ 273:Device/Src/rtc.c **** 	{0x12,0x1b},
+ 274:Device/Src/rtc.c **** 	{0x12,0x17},
+ 275:Device/Src/rtc.c **** 	{0x12,0x29},
+ 276:Device/Src/rtc.c **** 	{0x12,0x2a},
+ 277:Device/Src/rtc.c **** 	{0x12,0x26},
+ 278:Device/Src/rtc.c **** 	{0x12,0x2c},
+ 279:Device/Src/rtc.c **** 	{0x12,0x27},
+ 280:Device/Src/rtc.c **** 	{0x12,0x39},
+ 281:Device/Src/rtc.c **** 	{0x12,0x2e},
+ 282:Device/Src/rtc.c **** 	{0x12,0x35},
+ 283:Device/Src/rtc.c **** 	{0x12,0x3b},
+ 284:Device/Src/rtc.c **** 	{0x12,0x3c},
+ 285:Device/Src/rtc.c **** 	{0x12,0x37},
+ 286:Device/Src/rtc.c **** 	{0x12,0x3d},
+ 287:Device/Src/rtc.c **** 	{0x12,0x3e},
+ 288:Device/Src/rtc.c **** 	{0x12,0x3f},
+ 289:Device/Src/rtc.c **** 	{0x12,0x41},
+ 290:Device/Src/rtc.c **** 	{0x12,0x42},
+ 291:Device/Src/rtc.c **** 	{0x12,0x48},
+ 292:Device/Src/rtc.c **** 	{0x12,0x43},
+ 293:Device/Src/rtc.c **** 	{0x12,0x49},
+ 294:Device/Src/rtc.c **** 	{0x12,0x45},
+ 295:Device/Src/rtc.c **** 	{0x12,0x51},
+ 296:Device/Src/rtc.c **** 	{0x12,0x4b},
+ 297:Device/Src/rtc.c **** 	{0x12,0x60},
+ 298:Device/Src/rtc.c **** 	{0x12,0x59},
+ 299:Device/Src/rtc.c **** 	{0x12,0x5a},
+ 300:Device/Src/rtc.c **** 	{0x12,0x68},
+ 301:Device/Src/rtc.c **** 	{0x12,0x5b},
+ 302:Device/Src/rtc.c **** 	{0x12,0x70},
+ 303:Device/Src/rtc.c **** 	{0x12,0x6a},
+ 304:Device/Src/rtc.c **** 	{0x12,0x5e},
+ 305:Device/Src/rtc.c **** 	{0x12,0x78},
+ 306:Device/Src/rtc.c **** 	{0x12,0x67},
+ 307:Device/Src/rtc.c **** 	{0x12,0x6d},
+ 308:Device/Src/rtc.c **** 	{0x12,0x7a},
+ 309:Device/Src/rtc.c **** 	{0x12,0x75},
+ 310:Device/Src/rtc.c **** 	{0x12,0x7c},
+ 311:Device/Src/rtc.c **** 	{0x12,0x77},
+ 312:Device/Src/rtc.c **** 	{0x12,0x7d},
+ 313:Device/Src/rtc.c **** 	{0x12,0x7e},
+ 314:Device/Src/rtc.c **** 	{0x12,0x82},
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 7
+
+
+ 315:Device/Src/rtc.c **** 	{0x12,0x88},
+ 316:Device/Src/rtc.c **** 	{0x12,0x84},
+ 317:Device/Src/rtc.c **** 	{0x12,0x90},
+ 318:Device/Src/rtc.c **** 	{0x12,0x8a},
+ 319:Device/Src/rtc.c **** 	{0x12,0x86},
+ 320:Device/Src/rtc.c **** 	{0x12,0x98},
+ 321:Device/Src/rtc.c **** 	{0x12,0x8d},
+ 322:Device/Src/rtc.c **** 	{0x12,0xa1},
+ 323:Device/Src/rtc.c **** 	{0x12,0x95},
+ 324:Device/Src/rtc.c **** 	{0x12,0x96},
+ 325:Device/Src/rtc.c **** 	{0x12,0xb0},
+ 326:Device/Src/rtc.c **** 	{0x12,0x97},
+ 327:Device/Src/rtc.c **** 	{0x12,0xb1},
+ 328:Device/Src/rtc.c **** 	{0x12,0xb8},
+ 329:Device/Src/rtc.c **** 	{0x12,0x9f},
+ 330:Device/Src/rtc.c **** 	{0x12,0xb9},
+ 331:Device/Src/rtc.c **** 	{0x12,0xba},
+ 332:Device/Src/rtc.c **** 	{0x12,0xb5},
+ 333:Device/Src/rtc.c **** 	{0x12,0xbc},
+ 334:Device/Src/rtc.c **** 	{0x12,0xb7},
+ 335:Device/Src/rtc.c **** 	{0x12,0xbd},
+ 336:Device/Src/rtc.c **** 	{0x12,0xc0},
+ 337:Device/Src/rtc.c **** 	{0x12,0xbf},
+ 338:Device/Src/rtc.c **** 	{0x12,0xc1},
+ 339:Device/Src/rtc.c **** 	{0x12,0xc8},
+ 340:Device/Src/rtc.c **** 	{0x12,0xc3},
+ 341:Device/Src/rtc.c **** 	{0x12,0xd0},
+ 342:Device/Src/rtc.c **** 	{0x12,0xc5},
+ 343:Device/Src/rtc.c **** 	{0x12,0xc6},
+ 344:Device/Src/rtc.c **** 	{0x12,0xe0},
+ 345:Device/Src/rtc.c **** 	{0x12,0xd3},
+ 346:Device/Src/rtc.c **** 	{0x12,0xce},
+ 347:Device/Src/rtc.c **** 	{0x12,0xe8},
+ 348:Device/Src/rtc.c **** 	{0x12,0xdb},
+ 349:Device/Src/rtc.c **** 	{0x12,0xd7},
+ 350:Device/Src/rtc.c **** 	{0x12,0xe5},
+ 351:Device/Src/rtc.c **** 	{0x12,0xe6},
+ 352:Device/Src/rtc.c **** 	{0x12,0xdf},
+ 353:Device/Src/rtc.c **** 	{0x12,0xed},
+ 354:Device/Src/rtc.c **** 	{0x12,0xfa},
+ 355:Device/Src/rtc.c **** 	{0x12,0xf6},
+ 356:Device/Src/rtc.c **** 	{0x13,0x01},
+ 357:Device/Src/rtc.c **** 	{0x12,0xfd},
+ 358:Device/Src/rtc.c **** 	{0x12,0xfe},
+ 359:Device/Src/rtc.c **** 	{0x13,0x04},
+ 360:Device/Src/rtc.c **** 	{0x13,0x0a},
+ 361:Device/Src/rtc.c **** 	{0x13,0x0b},
+ 362:Device/Src/rtc.c **** 	{0x13,0x20},
+ 363:Device/Src/rtc.c **** 	{0x13,0x13},
+ 364:Device/Src/rtc.c **** 	{0x13,0x0e},
+ 365:Device/Src/rtc.c **** 	{0x13,0x28},
+ 366:Device/Src/rtc.c **** 	{0x13,0x1c},
+ 367:Device/Src/rtc.c **** 	{0x13,0x17},
+ 368:Device/Src/rtc.c **** 	{0x13,0x31},
+ 369:Device/Src/rtc.c **** 	{0x13,0x2b},
+ 370:Device/Src/rtc.c **** 	{0x13,0x27},
+ 371:Device/Src/rtc.c **** 	{0x13,0x3a},
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 8
+
+
+ 372:Device/Src/rtc.c **** 	{0x13,0x35},
+ 373:Device/Src/rtc.c **** 	{0x13,0x3c},
+ 374:Device/Src/rtc.c **** 	{0x13,0x37},
+ 375:Device/Src/rtc.c **** 	{0x13,0x3e},
+ 376:Device/Src/rtc.c **** 	{0x13,0x40},
+ 377:Device/Src/rtc.c **** 	{0x13,0x3f},
+ 378:Device/Src/rtc.c **** 	{0x13,0x41},
+ 379:Device/Src/rtc.c **** 	{0x13,0x48},
+ 380:Device/Src/rtc.c **** 	{0x13,0x44},
+ 381:Device/Src/rtc.c **** 	{0x13,0x4a},
+ 382:Device/Src/rtc.c **** 	{0x13,0x46},
+ 383:Device/Src/rtc.c **** 	{0x13,0x60},
+ 384:Device/Src/rtc.c **** 	{0x13,0x59},
+ 385:Device/Src/rtc.c **** 	{0x13,0x5a},
+ 386:Device/Src/rtc.c **** 	{0x13,0x56},
+ 387:Device/Src/rtc.c **** 	{0x13,0x70},
+ 388:Device/Src/rtc.c **** 	{0x13,0x65},
+ 389:Device/Src/rtc.c **** 	{0x13,0x66},
+ 390:Device/Src/rtc.c **** 	{0x13,0x5f},
+ 391:Device/Src/rtc.c **** 	{0x13,0x7a},
+ 392:Device/Src/rtc.c **** 	{0x13,0x75},
+ 393:Device/Src/rtc.c **** 	{0x13,0x6f},
+ 394:Device/Src/rtc.c **** 	{0x13,0x77},
+ 395:Device/Src/rtc.c **** 	{0x13,0x81},
+ 396:Device/Src/rtc.c **** 	{0x13,0x82},
+ 397:Device/Src/rtc.c **** 	{0x13,0x88},
+ 398:Device/Src/rtc.c **** 	{0x13,0x90},
+ 399:Device/Src/rtc.c **** 	{0x13,0x85},
+ 400:Device/Src/rtc.c **** 	{0x13,0x92},
+ 401:Device/Src/rtc.c **** 	{0x13,0x87},
+ 402:Device/Src/rtc.c **** 	{0x13,0x9a},
+ 403:Device/Src/rtc.c **** 	{0x13,0x95},
+ 404:Device/Src/rtc.c **** 	{0x13,0xa3},
+ 405:Device/Src/rtc.c **** 	{0x13,0x9d},
+ 406:Device/Src/rtc.c **** 	{0x13,0xb2},
+ 407:Device/Src/rtc.c **** 	{0x13,0xb3},
+ 408:Device/Src/rtc.c **** 	{0x13,0xba},
+ 409:Device/Src/rtc.c **** 	{0x13,0xb5},
+ 410:Device/Src/rtc.c **** 	{0x13,0xb6},
+ 411:Device/Src/rtc.c **** 	{0x13,0xb7},
+ 412:Device/Src/rtc.c **** 	{0x13,0xbe},
+ 413:Device/Src/rtc.c **** 	{0x13,0xbf},
+ 414:Device/Src/rtc.c **** 	{0x13,0xc2},
+ 415:Device/Src/rtc.c **** 	{0x13,0xc8},
+ 416:Device/Src/rtc.c **** 	{0x13,0xc9},
+ 417:Device/Src/rtc.c **** 	{0x13,0xd1},
+ 418:Device/Src/rtc.c **** 	{0x13,0xd2},
+ 419:Device/Src/rtc.c **** 	{0x13,0xd3},
+ 420:Device/Src/rtc.c **** 	{0x13,0xda},
+ 421:Device/Src/rtc.c **** 	{0x13,0xd5},
+ 422:Device/Src/rtc.c **** 	{0x13,0xe4},
+ 423:Device/Src/rtc.c **** 	{0x13,0xdd},
+ 424:Device/Src/rtc.c **** 	{0x14,0x00},
+ 425:Device/Src/rtc.c **** 	{0x13,0xe7},
+ 426:Device/Src/rtc.c **** 	{0x14,0x08},
+ 427:Device/Src/rtc.c **** 	{0x14,0x10},
+ 428:Device/Src/rtc.c **** 	{0x14,0x0a},
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 9
+
+
+ 429:Device/Src/rtc.c **** 	{0x14,0x18},
+ 430:Device/Src/rtc.c **** 	{0x13,0xff},
+ 431:Device/Src/rtc.c **** 	{0x14,0x1a},
+ 432:Device/Src/rtc.c **** 	{0x14,0x15},
+ 433:Device/Src/rtc.c **** 	{0x14,0x24},
+ 434:Device/Src/rtc.c **** 	{0x14,0x25},
+ 435:Device/Src/rtc.c **** 	{0x14,0x2c},
+ 436:Device/Src/rtc.c **** 	{0x14,0x27},
+ 437:Device/Src/rtc.c **** 	{0x14,0x2e},
+ 438:Device/Src/rtc.c **** 	{0x14,0x3c},
+ 439:Device/Src/rtc.c **** 	{0x14,0x3d},
+ 440:Device/Src/rtc.c **** 	{0x14,0x3e},
+ 441:Device/Src/rtc.c **** 	{0x14,0x40},
+ 442:Device/Src/rtc.c **** 	{0x14,0x41},
+ 443:Device/Src/rtc.c **** 	{0x14,0x48},
+ 444:Device/Src/rtc.c **** 	{0x14,0x49},
+ 445:Device/Src/rtc.c **** 	{0x14,0x51},
+ 446:Device/Src/rtc.c **** 	{0x14,0x4c},
+ 447:Device/Src/rtc.c **** 	{0x14,0x61},
+ 448:Device/Src/rtc.c **** 	{0x14,0x68},
+ 449:Device/Src/rtc.c **** 	{0x14,0x69},
+ 450:Device/Src/rtc.c **** 	{0x14,0x57},
+ 451:Device/Src/rtc.c **** 	{0x14,0x6c},
+ 452:Device/Src/rtc.c **** 	{0x14,0x74},
+ 453:Device/Src/rtc.c **** 	{0x14,0x75},
+ 454:Device/Src/rtc.c **** 	{0x14,0x7c},
+ 455:Device/Src/rtc.c **** 	{0x14,0x7d},
+ 456:Device/Src/rtc.c **** 	{0x14,0x81},
+ 457:Device/Src/rtc.c **** 	{0x14,0x90},
+ 458:Device/Src/rtc.c **** 	{0x14,0x83},
+ 459:Device/Src/rtc.c **** 	{0x14,0x91},
+ 460:Device/Src/rtc.c **** 	{0x14,0xa0},
+ 461:Device/Src/rtc.c **** 	{0x14,0x94},
+ 462:Device/Src/rtc.c **** 	{0x14,0x95},
+ 463:Device/Src/rtc.c **** 	{0x14,0xa3},
+ 464:Device/Src/rtc.c **** 	{0x14,0x97},
+ 465:Device/Src/rtc.c **** 	{0x14,0xac},
+ 466:Device/Src/rtc.c **** 	{0x14,0xb4},
+ 467:Device/Src/rtc.c **** 	{0x14,0xb5},
+ 468:Device/Src/rtc.c **** 	{0x14,0xaf},
+ 469:Device/Src/rtc.c **** 	{0x14,0xbd},
+ 470:Device/Src/rtc.c **** 	{0x14,0xc0},
+ 471:Device/Src/rtc.c **** 	{0x14,0xc1},
+ 472:Device/Src/rtc.c **** 	{0x14,0xc2},
+ 473:Device/Src/rtc.c **** 	{0x14,0xc9},
+ 474:Device/Src/rtc.c **** 	{0x14,0xc5},
+ 475:Device/Src/rtc.c **** 	{0x14,0xd9},
+ 476:Device/Src/rtc.c **** 	{0x14,0xe2},
+ 477:Device/Src/rtc.c **** 	{0x14,0xf0},
+ 478:Device/Src/rtc.c **** 	{0x14,0xdd},
+ 479:Device/Src/rtc.c **** 	{0x14,0xec},
+ 480:Device/Src/rtc.c **** 	{0x14,0xdf},
+ 481:Device/Src/rtc.c **** 	{0x14,0xfb},
+ 482:Device/Src/rtc.c **** 	{0x15,0x00},
+ 483:Device/Src/rtc.c **** 	{0x15,0x01},
+ 484:Device/Src/rtc.c **** 	{0x15,0x10},
+ 485:Device/Src/rtc.c **** 	{0x15,0x0a},
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 10
+
+
+ 486:Device/Src/rtc.c **** 	{0x15,0x0b},
+ 487:Device/Src/rtc.c **** 	{0x15,0x07},
+ 488:Device/Src/rtc.c **** 	{0x15,0x0e},
+ 489:Device/Src/rtc.c **** 	{0x15,0x16},
+ 490:Device/Src/rtc.c **** 	{0x15,0x32},
+ 491:Device/Src/rtc.c **** 	{0x15,0x39},
+ 492:Device/Src/rtc.c **** 	{0x15,0x2d},
+ 493:Device/Src/rtc.c **** 	{0x15,0x36},
+ 494:Device/Src/rtc.c **** 	{0x15,0x3d},
+ 495:Device/Src/rtc.c **** 	{0x15,0x40},
+ 496:Device/Src/rtc.c **** 	{0x15,0x41},
+ 497:Device/Src/rtc.c **** 	{0x15,0x42},
+ 498:Device/Src/rtc.c **** 	{0x15,0x43},
+ 499:Device/Src/rtc.c **** 	{0x15,0x45},
+ 500:Device/Src/rtc.c **** 	{0x15,0x59},
+ 501:Device/Src/rtc.c **** 	{0x15,0x62},
+ 502:Device/Src/rtc.c **** 	{0x15,0x4f},
+ 503:Device/Src/rtc.c **** 	{0x15,0x57},
+ 504:Device/Src/rtc.c **** 	{0x15,0x79},
+ 505:Device/Src/rtc.c **** 	{0x15,0x6e},
+ 506:Device/Src/rtc.c **** 	{0x15,0x6f},
+ 507:Device/Src/rtc.c **** 	{0x15,0x7e},
+ 508:Device/Src/rtc.c **** 	{0x15,0x7f},
+ 509:Device/Src/rtc.c **** 	{0x15,0x89},
+ 510:Device/Src/rtc.c **** 	{0x15,0x85},
+ 511:Device/Src/rtc.c **** 	{0x15,0x99},
+ 512:Device/Src/rtc.c **** 	{0x15,0x8e},
+ 513:Device/Src/rtc.c **** 	{0x15,0xa3},
+ 514:Device/Src/rtc.c **** 	{0x15,0x9d},
+ 515:Device/Src/rtc.c **** 	{0x15,0xb3},
+ 516:Device/Src/rtc.c **** 	{0x15,0xae},
+ 517:Device/Src/rtc.c **** 	{0x15,0xb6},
+ 518:Device/Src/rtc.c **** 	{0x15,0xb7},
+ 519:Device/Src/rtc.c **** 	{0x15,0xbf},
+ 520:Device/Src/rtc.c **** 	{0x15,0xc2},
+ 521:Device/Src/rtc.c **** 	{0x15,0xc3},
+ 522:Device/Src/rtc.c **** 	{0x15,0xc5},
+ 523:Device/Src/rtc.c **** 	{0x15,0xd3},
+ 524:Device/Src/rtc.c **** 	{0x15,0xce},
+ 525:Device/Src/rtc.c **** 	{0x15,0xcf},
+ 526:Device/Src/rtc.c **** 	{0x15,0xe6},
+ 527:Device/Src/rtc.c **** 	{0x15,0xdf},
+ 528:Device/Src/rtc.c **** 	{0x15,0xfc},
+ 529:Device/Src/rtc.c **** 	{0x15,0xf7},
+ 530:Device/Src/rtc.c **** 	{0x16,0x18},
+ 531:Device/Src/rtc.c **** 	{0x16,0x06},
+ 532:Device/Src/rtc.c **** 	{0x16,0x22},
+ 533:Device/Src/rtc.c **** 	{0x16,0x16},
+ 534:Device/Src/rtc.c **** 	{0x16,0x25},
+ 535:Device/Src/rtc.c **** 	{0x16,0x3a},
+ 536:Device/Src/rtc.c **** 	{0x16,0x3b},
+ 537:Device/Src/rtc.c **** 	{0x16,0x37},
+ 538:Device/Src/rtc.c **** 	{0x16,0x40},
+ 539:Device/Src/rtc.c **** 	{0x16,0x41},
+ 540:Device/Src/rtc.c **** 	{0x16,0x50},
+ 541:Device/Src/rtc.c **** 	{0x16,0x4a},
+ 542:Device/Src/rtc.c **** 	{0x16,0x4c},
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 11
+
+
+ 543:Device/Src/rtc.c **** 	{0x16,0x47},
+ 544:Device/Src/rtc.c **** 	{0x16,0x56},
+ 545:Device/Src/rtc.c **** 	{0x16,0x65},
+ 546:Device/Src/rtc.c **** 	{0x16,0x7a},
+ 547:Device/Src/rtc.c **** 	{0x16,0x76},
+ 548:Device/Src/rtc.c **** 	{0x16,0x80},
+ 549:Device/Src/rtc.c **** 	{0x16,0x7f},
+ 550:Device/Src/rtc.c **** 	{0x16,0x89},
+ 551:Device/Src/rtc.c **** 	{0x16,0x98},
+ 552:Device/Src/rtc.c **** 	{0x16,0x93},
+ 553:Device/Src/rtc.c **** 	{0x16,0x95},
+ 554:Device/Src/rtc.c **** 	{0x16,0xb8},
+ 555:Device/Src/rtc.c **** 	{0x16,0xb4},
+ 556:Device/Src/rtc.c **** 	{0x16,0xae},
+ 557:Device/Src/rtc.c **** 	{0x16,0xbd},
+ 558:Device/Src/rtc.c **** 	{0x16,0xc0},
+ 559:Device/Src/rtc.c **** 	{0x16,0xc8},
+ 560:Device/Src/rtc.c **** 	{0x16,0xc4},
+ 561:Device/Src/rtc.c **** 	{0x16,0xe0},
+ 562:Device/Src/rtc.c **** 	{0x16,0xd3},
+ 563:Device/Src/rtc.c **** 	{0x16,0xd5},
+ 564:Device/Src/rtc.c **** 	{0x16,0xdd},
+ 565:Device/Src/rtc.c **** 	{0x16,0xdf},
+ 566:Device/Src/rtc.c **** 	{0x17,0x00},
+ 567:Device/Src/rtc.c **** 	{0x17,0x02},
+ 568:Device/Src/rtc.c **** 	{0x16,0xff},
+ 569:Device/Src/rtc.c **** 	{0x17,0x0b},
+ 570:Device/Src/rtc.c **** 	{0x17,0x22},
+ 571:Device/Src/rtc.c **** 	{0x17,0x1c},
+ 572:Device/Src/rtc.c **** 	{0x17,0x1e},
+ 573:Device/Src/rtc.c **** 	{0x17,0x2d},
+ 574:Device/Src/rtc.c **** 	{0x17,0x2f},
+ 575:Device/Src/rtc.c **** 	{0x17,0x3e},
+ 576:Device/Src/rtc.c **** 	{0x17,0x41},
+ 577:Device/Src/rtc.c **** 	{0x17,0x50},
+ 578:Device/Src/rtc.c **** 	{0x17,0x60},
+ 579:Device/Src/rtc.c **** 	{0x17,0x5a},
+ 580:Device/Src/rtc.c **** 	{0x17,0x56},
+ 581:Device/Src/rtc.c **** 	{0x17,0x57},
+ 582:Device/Src/rtc.c **** 	{0x17,0x67},
+ 583:Device/Src/rtc.c **** 	{0x17,0x7d},
+ 584:Device/Src/rtc.c **** 	{0x17,0x81},
+ 585:Device/Src/rtc.c **** 	{0x17,0x89},
+ 586:Device/Src/rtc.c **** 	{0x17,0x85},
+ 587:Device/Src/rtc.c **** 	{0x17,0x87},
+ 588:Device/Src/rtc.c **** 	{0x17,0x8f},
+ 589:Device/Src/rtc.c **** 	{0x17,0x9e},
+ 590:Device/Src/rtc.c **** 	{0x17,0xb5},
+ 591:Device/Src/rtc.c **** 	{0x17,0xbd},
+ 592:Device/Src/rtc.c **** 	{0x17,0xbf},
+ 593:Device/Src/rtc.c **** 	{0x17,0xc2},
+ 594:Device/Src/rtc.c **** 	{0x17,0xca},
+ 595:Device/Src/rtc.c **** 	{0x17,0xe8},
+ 596:Device/Src/rtc.c **** 	{0x17,0xdc},
+ 597:Device/Src/rtc.c **** 	{0x17,0xeb},
+ 598:Device/Src/rtc.c **** 	{0x17,0xf5},
+ 599:Device/Src/rtc.c **** 	{0x17,0xfd},
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 12
+
+
+ 600:Device/Src/rtc.c **** 	{0x17,0xff},
+ 601:Device/Src/rtc.c **** 
+ 602:Device/Src/rtc.c **** };
+ 603:Device/Src/rtc.c **** 
+ 604:Device/Src/rtc.c **** 
+ 605:Device/Src/rtc.c **** uint8_t rtc_read_temp(float* temp)//ÉÕÐ´Íê³ÉÒÔºóµÄ8825,·Ö±æÂÊ0.5¶È
+ 606:Device/Src/rtc.c **** {
+  30              		.loc 1 606 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 8
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 606 1 is_stmt 0 view .LVU1
+  35 0000 30B5     		push	{r4, r5, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 12
+  38              		.cfi_offset 4, -12
+  39              		.cfi_offset 5, -8
+  40              		.cfi_offset 14, -4
+  41 0002 83B0     		sub	sp, sp, #12
+  42              	.LCFI1:
+  43              		.cfi_def_cfa_offset 24
+  44 0004 0546     		mov	r5, r0
+ 607:Device/Src/rtc.c **** 	uint8_t time = 20;
+  45              		.loc 1 607 2 is_stmt 1 view .LVU2
+  46              	.LVL1:
+ 608:Device/Src/rtc.c **** 	uint8_t buffer[2] = {0};
+  47              		.loc 1 608 2 view .LVU3
+  48              		.loc 1 608 10 is_stmt 0 view .LVU4
+  49 0006 0023     		movs	r3, #0
+  50 0008 ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 609:Device/Src/rtc.c **** 	float quick = 0;
+  51              		.loc 1 609 2 is_stmt 1 view .LVU5
+  52              	.LVL2:
+ 610:Device/Src/rtc.c **** 
+ 611:Device/Src/rtc.c **** 	*temp = 0;
+  53              		.loc 1 611 2 view .LVU6
+  54              		.loc 1 611 8 is_stmt 0 view .LVU7
+  55 000c 0023     		movs	r3, #0
+  56 000e 0360     		str	r3, [r0]	@ float
+ 612:Device/Src/rtc.c **** 	buffer[0] = 0x10;
+  57              		.loc 1 612 2 is_stmt 1 view .LVU8
+  58              		.loc 1 612 12 is_stmt 0 view .LVU9
+  59 0010 1023     		movs	r3, #16
+  60 0012 8DF80430 		strb	r3, [sp, #4]
+ 613:Device/Src/rtc.c ****     if (rtc_write_multi_bytes(RTC_8825_ADDRESS, 0x57, buffer, 1) != I2C_OK) {
+  61              		.loc 1 613 5 is_stmt 1 view .LVU10
+  62              		.loc 1 613 9 is_stmt 0 view .LVU11
+  63 0016 0123     		movs	r3, #1
+  64 0018 01AA     		add	r2, sp, #4
+  65 001a 5721     		movs	r1, #87
+  66 001c 6420     		movs	r0, #100
+  67              	.LVL3:
+  68              		.loc 1 613 9 view .LVU12
+  69 001e FFF7FEFF 		bl	rtc_write_multi_bytes
+  70              	.LVL4:
+  71              		.loc 1 613 8 view .LVU13
+  72 0022 D8BB     		cbnz	r0, .L10
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 13
+
+
+ 607:Device/Src/rtc.c **** 	uint8_t buffer[2] = {0};
+  73              		.loc 1 607 10 view .LVU14
+  74 0024 1422     		movs	r2, #20
+  75 0026 08E0     		b	.L3
+  76              	.LVL5:
+  77              	.L12:
+ 614:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 615:Device/Src/rtc.c **** 	}
+ 616:Device/Src/rtc.c **** 	
+ 617:Device/Src/rtc.c **** 	while(time --)
+ 618:Device/Src/rtc.c **** 	{
+ 619:Device/Src/rtc.c ****         rtc_read_multi_bytes(RTC_8825_ADDRESS, 0x56, buffer, 2);
+ 620:Device/Src/rtc.c **** 		if ((buffer[1] & 0x20) == 0) {
+ 621:Device/Src/rtc.c **** 			quick = buffer[0] << 1;//read high 8bit
+ 622:Device/Src/rtc.c **** 			if (buffer[1] & 0x40) {
+ 623:Device/Src/rtc.c **** 				quick += 1;
+ 624:Device/Src/rtc.c **** 			}
+ 625:Device/Src/rtc.c **** 			if (quick > 400) {
+ 626:Device/Src/rtc.c **** 				quick = (quick - 512) * 0.5;
+ 627:Device/Src/rtc.c **** 			} else {
+ 628:Device/Src/rtc.c **** 				quick = quick * 0.5;
+  78              		.loc 1 628 5 is_stmt 1 view .LVU15
+  79              		.loc 1 628 11 is_stmt 0 view .LVU16
+  80 0028 B6EE007A 		vmov.f32	s14, #5.0e-1
+  81 002c 67EE877A 		vmul.f32	s15, s15, s14
+  82              	.LVL6:
+  83              		.loc 1 628 11 view .LVU17
+  84 0030 2EE0     		b	.L8
+  85              	.LVL7:
+  86              	.L4:
+ 629:Device/Src/rtc.c **** 			}
+ 630:Device/Src/rtc.c **** 			*temp = quick;
+ 631:Device/Src/rtc.c ****             return I2C_OK;
+ 632:Device/Src/rtc.c ****         }
+ 633:Device/Src/rtc.c **** 		HAL_Delay(1);
+  87              		.loc 1 633 3 is_stmt 1 view .LVU18
+  88 0032 0120     		movs	r0, #1
+  89 0034 FFF7FEFF 		bl	HAL_Delay
+  90              	.LVL8:
+ 617:Device/Src/rtc.c **** 	{
+  91              		.loc 1 617 13 is_stmt 0 view .LVU19
+  92 0038 2246     		mov	r2, r4
+  93              	.LVL9:
+  94              	.L3:
+ 617:Device/Src/rtc.c **** 	{
+  95              		.loc 1 617 7 is_stmt 1 view .LVU20
+ 617:Device/Src/rtc.c **** 	{
+  96              		.loc 1 617 13 is_stmt 0 view .LVU21
+  97 003a 531E     		subs	r3, r2, #1
+  98 003c DCB2     		uxtb	r4, r3
+  99              	.LVL10:
+ 617:Device/Src/rtc.c **** 	{
+ 100              		.loc 1 617 7 view .LVU22
+ 101 003e 5AB3     		cbz	r2, .L14
+ 619:Device/Src/rtc.c **** 		if ((buffer[1] & 0x20) == 0) {
+ 102              		.loc 1 619 9 is_stmt 1 view .LVU23
+ 103 0040 0223     		movs	r3, #2
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 14
+
+
+ 104 0042 01AA     		add	r2, sp, #4
+ 105 0044 5621     		movs	r1, #86
+ 106 0046 6420     		movs	r0, #100
+ 107 0048 FFF7FEFF 		bl	rtc_read_multi_bytes
+ 108              	.LVL11:
+ 620:Device/Src/rtc.c **** 			quick = buffer[0] << 1;//read high 8bit
+ 109              		.loc 1 620 3 view .LVU24
+ 620:Device/Src/rtc.c **** 			quick = buffer[0] << 1;//read high 8bit
+ 110              		.loc 1 620 14 is_stmt 0 view .LVU25
+ 111 004c 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 620:Device/Src/rtc.c **** 			quick = buffer[0] << 1;//read high 8bit
+ 112              		.loc 1 620 6 view .LVU26
+ 113 0050 13F02000 		ands	r0, r3, #32
+ 114 0054 EDD1     		bne	.L4
+ 621:Device/Src/rtc.c **** 			if (buffer[1] & 0x40) {
+ 115              		.loc 1 621 4 is_stmt 1 view .LVU27
+ 621:Device/Src/rtc.c **** 			if (buffer[1] & 0x40) {
+ 116              		.loc 1 621 18 is_stmt 0 view .LVU28
+ 117 0056 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+ 621:Device/Src/rtc.c **** 			if (buffer[1] & 0x40) {
+ 118              		.loc 1 621 22 view .LVU29
+ 119 005a 5200     		lsls	r2, r2, #1
+ 621:Device/Src/rtc.c **** 			if (buffer[1] & 0x40) {
+ 120              		.loc 1 621 10 view .LVU30
+ 121 005c 07EE902A 		vmov	s15, r2	@ int
+ 122 0060 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 123              	.LVL12:
+ 622:Device/Src/rtc.c **** 				quick += 1;
+ 124              		.loc 1 622 4 is_stmt 1 view .LVU31
+ 622:Device/Src/rtc.c **** 				quick += 1;
+ 125              		.loc 1 622 7 is_stmt 0 view .LVU32
+ 126 0064 13F0400F 		tst	r3, #64
+ 127 0068 03D0     		beq	.L5
+ 623:Device/Src/rtc.c **** 			}
+ 128              		.loc 1 623 5 is_stmt 1 view .LVU33
+ 623:Device/Src/rtc.c **** 			}
+ 129              		.loc 1 623 11 is_stmt 0 view .LVU34
+ 130 006a B7EE007A 		vmov.f32	s14, #1.0e+0
+ 131 006e 77EE877A 		vadd.f32	s15, s15, s14
+ 132              	.LVL13:
+ 133              	.L5:
+ 625:Device/Src/rtc.c **** 				quick = (quick - 512) * 0.5;
+ 134              		.loc 1 625 4 is_stmt 1 view .LVU35
+ 625:Device/Src/rtc.c **** 				quick = (quick - 512) * 0.5;
+ 135              		.loc 1 625 7 is_stmt 0 view .LVU36
+ 136 0072 9FED0B7A 		vldr.32	s14, .L15
+ 137 0076 F4EEC77A 		vcmpe.f32	s15, s14
+ 138 007a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 139 007e D3DD     		ble	.L12
+ 626:Device/Src/rtc.c **** 			} else {
+ 140              		.loc 1 626 5 is_stmt 1 view .LVU37
+ 626:Device/Src/rtc.c **** 			} else {
+ 141              		.loc 1 626 20 is_stmt 0 view .LVU38
+ 142 0080 9FED087A 		vldr.32	s14, .L15+4
+ 143 0084 77EEC77A 		vsub.f32	s15, s15, s14
+ 144              	.LVL14:
+ 626:Device/Src/rtc.c **** 			} else {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 15
+
+
+ 145              		.loc 1 626 11 view .LVU39
+ 146 0088 B6EE007A 		vmov.f32	s14, #5.0e-1
+ 147 008c 67EE877A 		vmul.f32	s15, s15, s14
+ 148              	.LVL15:
+ 149              	.L8:
+ 630:Device/Src/rtc.c ****             return I2C_OK;
+ 150              		.loc 1 630 4 is_stmt 1 view .LVU40
+ 630:Device/Src/rtc.c ****             return I2C_OK;
+ 151              		.loc 1 630 10 is_stmt 0 view .LVU41
+ 152 0090 C5ED007A 		vstr.32	s15, [r5]
+ 631:Device/Src/rtc.c ****         }
+ 153              		.loc 1 631 13 is_stmt 1 view .LVU42
+ 154              	.LVL16:
+ 155              	.L2:
+ 634:Device/Src/rtc.c **** 	}
+ 635:Device/Src/rtc.c **** 	
+ 636:Device/Src/rtc.c **** 	return I2C_NO_ACK;
+ 637:Device/Src/rtc.c **** }
+ 156              		.loc 1 637 1 is_stmt 0 view .LVU43
+ 157 0094 03B0     		add	sp, sp, #12
+ 158              	.LCFI2:
+ 159              		.cfi_remember_state
+ 160              		.cfi_def_cfa_offset 12
+ 161              		@ sp needed
+ 162 0096 30BD     		pop	{r4, r5, pc}
+ 163              	.LVL17:
+ 164              	.L14:
+ 165              	.LCFI3:
+ 166              		.cfi_restore_state
+ 636:Device/Src/rtc.c **** }
+ 167              		.loc 1 636 9 view .LVU44
+ 168 0098 0220     		movs	r0, #2
+ 169 009a FBE7     		b	.L2
+ 170              	.LVL18:
+ 171              	.L10:
+ 614:Device/Src/rtc.c **** 	}
+ 172              		.loc 1 614 10 view .LVU45
+ 173 009c 0220     		movs	r0, #2
+ 174 009e F9E7     		b	.L2
+ 175              	.L16:
+ 176              		.align	2
+ 177              	.L15:
+ 178 00a0 0000C843 		.word	1137180672
+ 179 00a4 00000044 		.word	1140850688
+ 180              		.cfi_endproc
+ 181              	.LFE235:
+ 183              		.section	.text.rtc_read_date,"ax",%progbits
+ 184              		.align	1
+ 185              		.global	rtc_read_date
+ 186              		.syntax unified
+ 187              		.thumb
+ 188              		.thumb_func
+ 190              	rtc_read_date:
+ 191              	.LVL19:
+ 192              	.LFB237:
+ 638:Device/Src/rtc.c **** 
+ 639:Device/Src/rtc.c **** 
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 16
+
+
+ 640:Device/Src/rtc.c **** float system_get_rtc_temp(void)//ÒÑ¸Ä1208
+ 641:Device/Src/rtc.c **** {
+ 642:Device/Src/rtc.c **** 	float tempSum = 0;
+ 643:Device/Src/rtc.c **** 	uint8_t count = 0;
+ 644:Device/Src/rtc.c **** 	uint16_t readTemp;
+ 645:Device/Src/rtc.c **** 	int quick;
+ 646:Device/Src/rtc.c **** 	int i;
+ 647:Device/Src/rtc.c **** 
+ 648:Device/Src/rtc.c **** 	for (i = 0; i < 5; i++) {
+ 649:Device/Src/rtc.c **** 		if (wave1006_read_temp_adc(&readTemp) > 0) {
+ 650:Device/Src/rtc.c **** 			quick = readTemp;
+ 651:Device/Src/rtc.c **** 			count++;
+ 652:Device/Src/rtc.c **** 			tempSum += quick;
+ 653:Device/Src/rtc.c **** 		}
+ 654:Device/Src/rtc.c **** 		HAL_Delay(10);
+ 655:Device/Src/rtc.c **** 	}
+ 656:Device/Src/rtc.c **** 	if (count == 0) {
+ 657:Device/Src/rtc.c **** 		tempSum = -300;
+ 658:Device/Src/rtc.c **** 	} else {
+ 659:Device/Src/rtc.c **** 		tempSum = tempSum / count;
+ 660:Device/Src/rtc.c **** 	}
+ 661:Device/Src/rtc.c **** 	return tempSum;
+ 662:Device/Src/rtc.c **** }
+ 663:Device/Src/rtc.c **** 
+ 664:Device/Src/rtc.c **** uint8_t rtc_read_date(RealTime* psRTC)
+ 665:Device/Src/rtc.c **** {
+ 193              		.loc 1 665 1 is_stmt 1 view -0
+ 194              		.cfi_startproc
+ 195              		@ args = 0, pretend = 0, frame = 8
+ 196              		@ frame_needed = 0, uses_anonymous_args = 0
+ 197              		.loc 1 665 1 is_stmt 0 view .LVU47
+ 198 0000 10B5     		push	{r4, lr}
+ 199              	.LCFI4:
+ 200              		.cfi_def_cfa_offset 8
+ 201              		.cfi_offset 4, -8
+ 202              		.cfi_offset 14, -4
+ 203 0002 82B0     		sub	sp, sp, #8
+ 204              	.LCFI5:
+ 205              		.cfi_def_cfa_offset 16
+ 206 0004 0446     		mov	r4, r0
+ 666:Device/Src/rtc.c ****     uint8_t buffer[7] = {0};
+ 207              		.loc 1 666 5 is_stmt 1 view .LVU48
+ 208              		.loc 1 666 13 is_stmt 0 view .LVU49
+ 209 0006 0021     		movs	r1, #0
+ 210 0008 0091     		str	r1, [sp]
+ 211 000a ADF80410 		strh	r1, [sp, #4]	@ movhi
+ 212 000e 8DF80610 		strb	r1, [sp, #6]
+ 667:Device/Src/rtc.c ****     
+ 668:Device/Src/rtc.c ****     if (rtc_read_multi_bytes(RTC_8825_ADDRESS, 0x00, buffer, 7)!= I2C_OK) {
+ 213              		.loc 1 668 5 is_stmt 1 view .LVU50
+ 214              		.loc 1 668 9 is_stmt 0 view .LVU51
+ 215 0012 0723     		movs	r3, #7
+ 216 0014 6A46     		mov	r2, sp
+ 217 0016 6420     		movs	r0, #100
+ 218              	.LVL20:
+ 219              		.loc 1 668 9 view .LVU52
+ 220 0018 FFF7FEFF 		bl	rtc_read_multi_bytes
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 17
+
+
+ 221              	.LVL21:
+ 222              		.loc 1 668 8 view .LVU53
+ 223 001c 0028     		cmp	r0, #0
+ 224 001e 65D1     		bne	.L22
+ 225 0020 0246     		mov	r2, r0
+ 669:Device/Src/rtc.c ****         return I2C_NO_ACK;
+ 670:Device/Src/rtc.c ****     } 
+ 671:Device/Src/rtc.c ****     psRTC->sec = (buffer[0] / 16) * 10 + (buffer[0] % 16);
+ 226              		.loc 1 671 5 is_stmt 1 view .LVU54
+ 227              		.loc 1 671 25 is_stmt 0 view .LVU55
+ 228 0022 9DF80030 		ldrb	r3, [sp]	@ zero_extendqisi2
+ 229              		.loc 1 671 53 view .LVU56
+ 230 0026 03F00F01 		and	r1, r3, #15
+ 231              		.loc 1 671 40 view .LVU57
+ 232 002a 1B09     		lsrs	r3, r3, #4
+ 233 002c 03EB8303 		add	r3, r3, r3, lsl #2
+ 234 0030 01EB4303 		add	r3, r1, r3, lsl #1
+ 235              		.loc 1 671 16 view .LVU58
+ 236 0034 6371     		strb	r3, [r4, #5]
+ 672:Device/Src/rtc.c ****     psRTC->min = (buffer[1] / 16) * 10 + (buffer[1] % 16);
+ 237              		.loc 1 672 5 is_stmt 1 view .LVU59
+ 238              		.loc 1 672 25 is_stmt 0 view .LVU60
+ 239 0036 9DF80130 		ldrb	r3, [sp, #1]	@ zero_extendqisi2
+ 240              		.loc 1 672 53 view .LVU61
+ 241 003a 03F00F01 		and	r1, r3, #15
+ 242              		.loc 1 672 40 view .LVU62
+ 243 003e 1B09     		lsrs	r3, r3, #4
+ 244 0040 03EB8303 		add	r3, r3, r3, lsl #2
+ 245 0044 01EB4303 		add	r3, r1, r3, lsl #1
+ 246              		.loc 1 672 16 view .LVU63
+ 247 0048 2371     		strb	r3, [r4, #4]
+ 673:Device/Src/rtc.c ****     if (buffer[2] & 0x80) {//
+ 248              		.loc 1 673 5 is_stmt 1 view .LVU64
+ 249              		.loc 1 673 15 is_stmt 0 view .LVU65
+ 250 004a 9DF80230 		ldrb	r3, [sp, #2]	@ zero_extendqisi2
+ 251              		.loc 1 673 9 view .LVU66
+ 252 004e 9DF90210 		ldrsb	r1, [sp, #2]
+ 253              		.loc 1 673 8 view .LVU67
+ 254 0052 0029     		cmp	r1, #0
+ 255 0054 10DB     		blt	.L24
+ 674:Device/Src/rtc.c ****         buffer[2] = buffer[2] & 0x7f;
+ 675:Device/Src/rtc.c ****         psRTC->hour = (buffer[2] / 16) * 10 + (buffer[2] % 16);
+ 676:Device/Src/rtc.c ****     } else {
+ 677:Device/Src/rtc.c ****         if (buffer[2] & 0x20) {//
+ 256              		.loc 1 677 9 is_stmt 1 view .LVU68
+ 257              		.loc 1 677 12 is_stmt 0 view .LVU69
+ 258 0056 13F0200F 		tst	r3, #32
+ 259 005a 3AD0     		beq	.L21
+ 678:Device/Src/rtc.c ****             buffer[2] = buffer[2] & 0x1f;
+ 260              		.loc 1 678 13 is_stmt 1 view .LVU70
+ 261              		.loc 1 678 35 is_stmt 0 view .LVU71
+ 262 005c 03F01F03 		and	r3, r3, #31
+ 263              		.loc 1 678 23 view .LVU72
+ 264 0060 8DF80230 		strb	r3, [sp, #2]
+ 679:Device/Src/rtc.c ****             psRTC->hour = (buffer[2] / 16) * 10 + (buffer[2] % 16) + 12;
+ 265              		.loc 1 679 13 is_stmt 1 view .LVU73
+ 266              		.loc 1 679 62 is_stmt 0 view .LVU74
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 18
+
+
+ 267 0064 03F00F01 		and	r1, r3, #15
+ 268              		.loc 1 679 49 view .LVU75
+ 269 0068 1B09     		lsrs	r3, r3, #4
+ 270 006a 03EB8303 		add	r3, r3, r3, lsl #2
+ 271 006e 01EB4303 		add	r3, r1, r3, lsl #1
+ 272              		.loc 1 679 68 view .LVU76
+ 273 0072 0C33     		adds	r3, r3, #12
+ 274              		.loc 1 679 25 view .LVU77
+ 275 0074 E370     		strb	r3, [r4, #3]
+ 276 0076 0BE0     		b	.L20
+ 277              	.L24:
+ 674:Device/Src/rtc.c ****         buffer[2] = buffer[2] & 0x7f;
+ 278              		.loc 1 674 9 is_stmt 1 view .LVU78
+ 674:Device/Src/rtc.c ****         buffer[2] = buffer[2] & 0x7f;
+ 279              		.loc 1 674 31 is_stmt 0 view .LVU79
+ 280 0078 03F07F03 		and	r3, r3, #127
+ 674:Device/Src/rtc.c ****         buffer[2] = buffer[2] & 0x7f;
+ 281              		.loc 1 674 19 view .LVU80
+ 282 007c 8DF80230 		strb	r3, [sp, #2]
+ 675:Device/Src/rtc.c ****     } else {
+ 283              		.loc 1 675 9 is_stmt 1 view .LVU81
+ 675:Device/Src/rtc.c ****     } else {
+ 284              		.loc 1 675 58 is_stmt 0 view .LVU82
+ 285 0080 03F00F01 		and	r1, r3, #15
+ 675:Device/Src/rtc.c ****     } else {
+ 286              		.loc 1 675 45 view .LVU83
+ 287 0084 1B09     		lsrs	r3, r3, #4
+ 288 0086 03EB8303 		add	r3, r3, r3, lsl #2
+ 289 008a 01EB4303 		add	r3, r1, r3, lsl #1
+ 675:Device/Src/rtc.c ****     } else {
+ 290              		.loc 1 675 21 view .LVU84
+ 291 008e E370     		strb	r3, [r4, #3]
+ 292              	.L20:
+ 680:Device/Src/rtc.c ****         } else {//
+ 681:Device/Src/rtc.c ****             buffer[2] = buffer[2] & 0x1f;
+ 682:Device/Src/rtc.c ****             psRTC->hour = (buffer[2] / 16) * 10 + (buffer[2] % 16);
+ 683:Device/Src/rtc.c ****         }
+ 684:Device/Src/rtc.c ****     }
+ 685:Device/Src/rtc.c ****     // psRTC->week = (buffer[3] / 16) * 10 + (buffer[3] % 16);
+ 686:Device/Src/rtc.c ****     psRTC->day = (buffer[4] / 16) * 10 + (buffer[4] % 16);
+ 293              		.loc 1 686 5 is_stmt 1 view .LVU85
+ 294              		.loc 1 686 25 is_stmt 0 view .LVU86
+ 295 0090 9DF80430 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 296              		.loc 1 686 53 view .LVU87
+ 297 0094 03F00F01 		and	r1, r3, #15
+ 298              		.loc 1 686 40 view .LVU88
+ 299 0098 1B09     		lsrs	r3, r3, #4
+ 300 009a 03EB8303 		add	r3, r3, r3, lsl #2
+ 301 009e 01EB4303 		add	r3, r1, r3, lsl #1
+ 302              		.loc 1 686 16 view .LVU89
+ 303 00a2 A370     		strb	r3, [r4, #2]
+ 687:Device/Src/rtc.c ****     psRTC->mon = (buffer[5] / 16) * 10 + (buffer[5] % 16);
+ 304              		.loc 1 687 5 is_stmt 1 view .LVU90
+ 305              		.loc 1 687 25 is_stmt 0 view .LVU91
+ 306 00a4 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 307              		.loc 1 687 53 view .LVU92
+ 308 00a8 03F00F01 		and	r1, r3, #15
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 19
+
+
+ 309              		.loc 1 687 40 view .LVU93
+ 310 00ac 1B09     		lsrs	r3, r3, #4
+ 311 00ae 03EB8303 		add	r3, r3, r3, lsl #2
+ 312 00b2 01EB4303 		add	r3, r1, r3, lsl #1
+ 313              		.loc 1 687 16 view .LVU94
+ 314 00b6 6370     		strb	r3, [r4, #1]
+ 688:Device/Src/rtc.c ****     psRTC->year = (buffer[6] / 16) * 10 + (buffer[6] % 16);
+ 315              		.loc 1 688 5 is_stmt 1 view .LVU95
+ 316              		.loc 1 688 26 is_stmt 0 view .LVU96
+ 317 00b8 9DF80630 		ldrb	r3, [sp, #6]	@ zero_extendqisi2
+ 318              		.loc 1 688 54 view .LVU97
+ 319 00bc 03F00F01 		and	r1, r3, #15
+ 320              		.loc 1 688 41 view .LVU98
+ 321 00c0 1B09     		lsrs	r3, r3, #4
+ 322 00c2 03EB8303 		add	r3, r3, r3, lsl #2
+ 323 00c6 01EB4303 		add	r3, r1, r3, lsl #1
+ 324              		.loc 1 688 17 view .LVU99
+ 325 00ca 2370     		strb	r3, [r4]
+ 689:Device/Src/rtc.c ****     return I2C_OK;
+ 326              		.loc 1 689 5 is_stmt 1 view .LVU100
+ 327              	.L18:
+ 690:Device/Src/rtc.c **** }
+ 328              		.loc 1 690 1 is_stmt 0 view .LVU101
+ 329 00cc 1046     		mov	r0, r2
+ 330 00ce 02B0     		add	sp, sp, #8
+ 331              	.LCFI6:
+ 332              		.cfi_remember_state
+ 333              		.cfi_def_cfa_offset 8
+ 334              		@ sp needed
+ 335 00d0 10BD     		pop	{r4, pc}
+ 336              	.LVL22:
+ 337              	.L21:
+ 338              	.LCFI7:
+ 339              		.cfi_restore_state
+ 681:Device/Src/rtc.c ****             psRTC->hour = (buffer[2] / 16) * 10 + (buffer[2] % 16);
+ 340              		.loc 1 681 13 is_stmt 1 view .LVU102
+ 681:Device/Src/rtc.c ****             psRTC->hour = (buffer[2] / 16) * 10 + (buffer[2] % 16);
+ 341              		.loc 1 681 35 is_stmt 0 view .LVU103
+ 342 00d2 03F01F03 		and	r3, r3, #31
+ 681:Device/Src/rtc.c ****             psRTC->hour = (buffer[2] / 16) * 10 + (buffer[2] % 16);
+ 343              		.loc 1 681 23 view .LVU104
+ 344 00d6 8DF80230 		strb	r3, [sp, #2]
+ 682:Device/Src/rtc.c ****         }
+ 345              		.loc 1 682 13 is_stmt 1 view .LVU105
+ 682:Device/Src/rtc.c ****         }
+ 346              		.loc 1 682 62 is_stmt 0 view .LVU106
+ 347 00da 03F00F01 		and	r1, r3, #15
+ 682:Device/Src/rtc.c ****         }
+ 348              		.loc 1 682 49 view .LVU107
+ 349 00de 1B09     		lsrs	r3, r3, #4
+ 350 00e0 03EB8303 		add	r3, r3, r3, lsl #2
+ 351 00e4 01EB4303 		add	r3, r1, r3, lsl #1
+ 682:Device/Src/rtc.c ****         }
+ 352              		.loc 1 682 25 view .LVU108
+ 353 00e8 E370     		strb	r3, [r4, #3]
+ 354 00ea D1E7     		b	.L20
+ 355              	.L22:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 20
+
+
+ 669:Device/Src/rtc.c ****     } 
+ 356              		.loc 1 669 16 view .LVU109
+ 357 00ec 0222     		movs	r2, #2
+ 358 00ee EDE7     		b	.L18
+ 359              		.cfi_endproc
+ 360              	.LFE237:
+ 362              		.section	.text.rtc_write_date,"ax",%progbits
+ 363              		.align	1
+ 364              		.global	rtc_write_date
+ 365              		.syntax unified
+ 366              		.thumb
+ 367              		.thumb_func
+ 369              	rtc_write_date:
+ 370              	.LVL23:
+ 371              	.LFB238:
+ 691:Device/Src/rtc.c **** 
+ 692:Device/Src/rtc.c **** uint8_t rtc_write_date(RealTime* setRTC)	
+ 693:Device/Src/rtc.c **** {                               
+ 372              		.loc 1 693 1 is_stmt 1 view -0
+ 373              		.cfi_startproc
+ 374              		@ args = 0, pretend = 0, frame = 8
+ 375              		@ frame_needed = 0, uses_anonymous_args = 0
+ 376              		.loc 1 693 1 is_stmt 0 view .LVU111
+ 377 0000 00B5     		push	{lr}
+ 378              	.LCFI8:
+ 379              		.cfi_def_cfa_offset 4
+ 380              		.cfi_offset 14, -4
+ 381 0002 83B0     		sub	sp, sp, #12
+ 382              	.LCFI9:
+ 383              		.cfi_def_cfa_offset 16
+ 694:Device/Src/rtc.c ****     uint8_t buffer[7] = {0};
+ 384              		.loc 1 694 5 is_stmt 1 view .LVU112
+ 385              		.loc 1 694 13 is_stmt 0 view .LVU113
+ 386 0004 0021     		movs	r1, #0
+ 387 0006 0091     		str	r1, [sp]
+ 388 0008 ADF80410 		strh	r1, [sp, #4]	@ movhi
+ 389 000c 8DF80610 		strb	r1, [sp, #6]
+ 695:Device/Src/rtc.c ****     buffer[0] = (setRTC->sec / 10) * 16 + (setRTC->sec % 10);
+ 390              		.loc 1 695 5 is_stmt 1 view .LVU114
+ 391              		.loc 1 695 24 is_stmt 0 view .LVU115
+ 392 0010 4279     		ldrb	r2, [r0, #5]	@ zero_extendqisi2
+ 393              		.loc 1 695 41 view .LVU116
+ 394 0012 2D4B     		ldr	r3, .L30
+ 395 0014 A3FB02EC 		umull	lr, ip, r3, r2
+ 396 0018 4FEADC0C 		lsr	ip, ip, #3
+ 397 001c 0CEB8C0E 		add	lr, ip, ip, lsl #2
+ 398 0020 A2EB4E02 		sub	r2, r2, lr, lsl #1
+ 399 0024 02EB0C12 		add	r2, r2, ip, lsl #4
+ 400              		.loc 1 695 15 view .LVU117
+ 401 0028 8DF80020 		strb	r2, [sp]
+ 696:Device/Src/rtc.c ****     buffer[1] = (setRTC->min / 10) * 16 + (setRTC->min % 10);
+ 402              		.loc 1 696 5 is_stmt 1 view .LVU118
+ 403              		.loc 1 696 24 is_stmt 0 view .LVU119
+ 404 002c 0279     		ldrb	r2, [r0, #4]	@ zero_extendqisi2
+ 405              		.loc 1 696 41 view .LVU120
+ 406 002e A3FB02EC 		umull	lr, ip, r3, r2
+ 407 0032 4FEADC0C 		lsr	ip, ip, #3
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 21
+
+
+ 408 0036 0CEB8C0E 		add	lr, ip, ip, lsl #2
+ 409 003a A2EB4E02 		sub	r2, r2, lr, lsl #1
+ 410 003e 02EB0C12 		add	r2, r2, ip, lsl #4
+ 411              		.loc 1 696 15 view .LVU121
+ 412 0042 8DF80120 		strb	r2, [sp, #1]
+ 697:Device/Src/rtc.c ****     buffer[2] = (setRTC->hour / 10) * 16 + (setRTC->hour % 10) + 0x80;//
+ 413              		.loc 1 697 5 is_stmt 1 view .LVU122
+ 414              		.loc 1 697 24 is_stmt 0 view .LVU123
+ 415 0046 C278     		ldrb	r2, [r0, #3]	@ zero_extendqisi2
+ 416              		.loc 1 697 42 view .LVU124
+ 417 0048 A3FB02EC 		umull	lr, ip, r3, r2
+ 418 004c 4FEADC0C 		lsr	ip, ip, #3
+ 419 0050 0CEB8C0E 		add	lr, ip, ip, lsl #2
+ 420 0054 A2EB4E02 		sub	r2, r2, lr, lsl #1
+ 421 0058 02EB0C12 		add	r2, r2, ip, lsl #4
+ 422 005c D2B2     		uxtb	r2, r2
+ 423              		.loc 1 697 64 view .LVU125
+ 424 005e 82F08002 		eor	r2, r2, #128
+ 425              		.loc 1 697 15 view .LVU126
+ 426 0062 8DF80220 		strb	r2, [sp, #2]
+ 698:Device/Src/rtc.c ****     buffer[3] = 0;
+ 427              		.loc 1 698 5 is_stmt 1 view .LVU127
+ 699:Device/Src/rtc.c ****     buffer[4] = (setRTC->day / 10) * 16 + (setRTC->day % 10);
+ 428              		.loc 1 699 5 view .LVU128
+ 429              		.loc 1 699 24 is_stmt 0 view .LVU129
+ 430 0066 8278     		ldrb	r2, [r0, #2]	@ zero_extendqisi2
+ 431              		.loc 1 699 41 view .LVU130
+ 432 0068 A3FB02EC 		umull	lr, ip, r3, r2
+ 433 006c 4FEADC0C 		lsr	ip, ip, #3
+ 434 0070 0CEB8C0E 		add	lr, ip, ip, lsl #2
+ 435 0074 A2EB4E02 		sub	r2, r2, lr, lsl #1
+ 436 0078 02EB0C12 		add	r2, r2, ip, lsl #4
+ 437              		.loc 1 699 15 view .LVU131
+ 438 007c 8DF80420 		strb	r2, [sp, #4]
+ 700:Device/Src/rtc.c ****     buffer[5] = (setRTC->mon / 10) * 16 + (setRTC->mon % 10);
+ 439              		.loc 1 700 5 is_stmt 1 view .LVU132
+ 440              		.loc 1 700 24 is_stmt 0 view .LVU133
+ 441 0080 4278     		ldrb	r2, [r0, #1]	@ zero_extendqisi2
+ 442              		.loc 1 700 41 view .LVU134
+ 443 0082 A3FB02EC 		umull	lr, ip, r3, r2
+ 444 0086 4FEADC0C 		lsr	ip, ip, #3
+ 445 008a 0CEB8C0E 		add	lr, ip, ip, lsl #2
+ 446 008e A2EB4E02 		sub	r2, r2, lr, lsl #1
+ 447 0092 02EB0C12 		add	r2, r2, ip, lsl #4
+ 448              		.loc 1 700 15 view .LVU135
+ 449 0096 8DF80520 		strb	r2, [sp, #5]
+ 701:Device/Src/rtc.c ****     buffer[6] = (setRTC->year / 10) * 16 + (setRTC->year % 10);
+ 450              		.loc 1 701 5 is_stmt 1 view .LVU136
+ 451              		.loc 1 701 24 is_stmt 0 view .LVU137
+ 452 009a 0278     		ldrb	r2, [r0]	@ zero_extendqisi2
+ 453              		.loc 1 701 42 view .LVU138
+ 454 009c A3FB0203 		umull	r0, r3, r3, r2
+ 455              	.LVL24:
+ 456              		.loc 1 701 42 view .LVU139
+ 457 00a0 DB08     		lsrs	r3, r3, #3
+ 458 00a2 03EB8300 		add	r0, r3, r3, lsl #2
+ 459 00a6 A2EB4002 		sub	r2, r2, r0, lsl #1
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 22
+
+
+ 460 00aa 02EB0313 		add	r3, r2, r3, lsl #4
+ 461              		.loc 1 701 15 view .LVU140
+ 462 00ae 8DF80630 		strb	r3, [sp, #6]
+ 702:Device/Src/rtc.c ****     if (rtc_write_multi_bytes(RTC_8825_ADDRESS, 0x00, buffer, 7)!= I2C_OK) {
+ 463              		.loc 1 702 5 is_stmt 1 view .LVU141
+ 464              		.loc 1 702 9 is_stmt 0 view .LVU142
+ 465 00b2 0723     		movs	r3, #7
+ 466 00b4 6A46     		mov	r2, sp
+ 467 00b6 6420     		movs	r0, #100
+ 468 00b8 FFF7FEFF 		bl	rtc_write_multi_bytes
+ 469              	.LVL25:
+ 470              		.loc 1 702 8 view .LVU143
+ 471 00bc 10B9     		cbnz	r0, .L29
+ 472              	.L26:
+ 703:Device/Src/rtc.c ****         return I2C_NO_ACK;
+ 704:Device/Src/rtc.c ****     } 
+ 705:Device/Src/rtc.c ****     return I2C_OK;
+ 706:Device/Src/rtc.c **** }
+ 473              		.loc 1 706 1 view .LVU144
+ 474 00be 03B0     		add	sp, sp, #12
+ 475              	.LCFI10:
+ 476              		.cfi_remember_state
+ 477              		.cfi_def_cfa_offset 4
+ 478              		@ sp needed
+ 479 00c0 5DF804FB 		ldr	pc, [sp], #4
+ 480              	.L29:
+ 481              	.LCFI11:
+ 482              		.cfi_restore_state
+ 703:Device/Src/rtc.c ****         return I2C_NO_ACK;
+ 483              		.loc 1 703 16 view .LVU145
+ 484 00c4 0220     		movs	r0, #2
+ 485 00c6 FAE7     		b	.L26
+ 486              	.L31:
+ 487              		.align	2
+ 488              	.L30:
+ 489 00c8 CDCCCCCC 		.word	-858993459
+ 490              		.cfi_endproc
+ 491              	.LFE238:
+ 493              		.section	.text.PrintfTime,"ax",%progbits
+ 494              		.align	1
+ 495              		.global	PrintfTime
+ 496              		.syntax unified
+ 497              		.thumb
+ 498              		.thumb_func
+ 500              	PrintfTime:
+ 501              	.LVL26:
+ 502              	.LFB239:
+ 707:Device/Src/rtc.c **** 
+ 708:Device/Src/rtc.c **** void PrintfTime(RealTime* rtc)
+ 709:Device/Src/rtc.c **** {
+ 503              		.loc 1 709 1 is_stmt 1 view -0
+ 504              		.cfi_startproc
+ 505              		@ args = 0, pretend = 0, frame = 0
+ 506              		@ frame_needed = 0, uses_anonymous_args = 0
+ 507              		@ link register save eliminated.
+ 710:Device/Src/rtc.c **** 	// UsbPrintf("\n20%d/%d/%d %d:%d:%d\n", rtc->year, rtc->mon, rtc->day, rtc->hour, rtc->min, rtc->s
+ 711:Device/Src/rtc.c **** }
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 23
+
+
+ 508              		.loc 1 711 1 view .LVU147
+ 509 0000 7047     		bx	lr
+ 510              		.cfi_endproc
+ 511              	.LFE239:
+ 513              		.section	.rodata.rtc_out_freq.str1.4,"aMS",%progbits,1
+ 514              		.align	2
+ 515              	.LC0:
+ 516 0000 6F757420 		.ascii	"out 64Hz ...\012\000"
+ 516      3634487A 
+ 516      202E2E2E 
+ 516      0A00
+ 517              		.section	.text.rtc_out_freq,"ax",%progbits
+ 518              		.align	1
+ 519              		.global	rtc_out_freq
+ 520              		.syntax unified
+ 521              		.thumb
+ 522              		.thumb_func
+ 524              	rtc_out_freq:
+ 525              	.LFB240:
+ 712:Device/Src/rtc.c **** 
+ 713:Device/Src/rtc.c **** 
+ 714:Device/Src/rtc.c **** 
+ 715:Device/Src/rtc.c **** uint8_t rtc_out_freq(void)
+ 716:Device/Src/rtc.c **** {
+ 526              		.loc 1 716 1 view -0
+ 527              		.cfi_startproc
+ 528              		@ args = 0, pretend = 0, frame = 8
+ 529              		@ frame_needed = 0, uses_anonymous_args = 0
+ 530 0000 10B5     		push	{r4, lr}
+ 531              	.LCFI12:
+ 532              		.cfi_def_cfa_offset 8
+ 533              		.cfi_offset 4, -8
+ 534              		.cfi_offset 14, -4
+ 535 0002 82B0     		sub	sp, sp, #8
+ 536              	.LCFI13:
+ 537              		.cfi_def_cfa_offset 16
+ 717:Device/Src/rtc.c **** 	uint8_t buffer[2] = {0x21, 0x44};
+ 538              		.loc 1 717 2 view .LVU149
+ 539              		.loc 1 717 10 is_stmt 0 view .LVU150
+ 540 0004 44F22143 		movw	r3, #17441
+ 541 0008 ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 718:Device/Src/rtc.c **** 	if (rtc_write_multi_bytes(RTC_8825_ADDRESS, 0x10, buffer, 2)!= I2C_OK) {
+ 542              		.loc 1 718 2 is_stmt 1 view .LVU151
+ 543              		.loc 1 718 6 is_stmt 0 view .LVU152
+ 544 000c 0223     		movs	r3, #2
+ 545 000e 01AA     		add	r2, sp, #4
+ 546 0010 1021     		movs	r1, #16
+ 547 0012 6420     		movs	r0, #100
+ 548 0014 FFF7FEFF 		bl	rtc_write_multi_bytes
+ 549              	.LVL27:
+ 550              		.loc 1 718 5 view .LVU153
+ 551 0018 30B9     		cbnz	r0, .L35
+ 552 001a 0446     		mov	r4, r0
+ 719:Device/Src/rtc.c ****         return I2C_NO_ACK;
+ 720:Device/Src/rtc.c ****     } 
+ 721:Device/Src/rtc.c **** 	
+ 722:Device/Src/rtc.c **** 	UsbPrintf("out 64Hz ...\n");
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 24
+
+
+ 553              		.loc 1 722 2 is_stmt 1 view .LVU154
+ 554 001c 0348     		ldr	r0, .L37
+ 555 001e FFF7FEFF 		bl	UsbPrintf
+ 556              	.LVL28:
+ 723:Device/Src/rtc.c **** 	return I2C_OK;
+ 557              		.loc 1 723 2 view .LVU155
+ 558              	.L34:
+ 724:Device/Src/rtc.c **** }
+ 559              		.loc 1 724 1 is_stmt 0 view .LVU156
+ 560 0022 2046     		mov	r0, r4
+ 561 0024 02B0     		add	sp, sp, #8
+ 562              	.LCFI14:
+ 563              		.cfi_remember_state
+ 564              		.cfi_def_cfa_offset 8
+ 565              		@ sp needed
+ 566 0026 10BD     		pop	{r4, pc}
+ 567              	.L35:
+ 568              	.LCFI15:
+ 569              		.cfi_restore_state
+ 719:Device/Src/rtc.c ****         return I2C_NO_ACK;
+ 570              		.loc 1 719 16 view .LVU157
+ 571 0028 0224     		movs	r4, #2
+ 572 002a FAE7     		b	.L34
+ 573              	.L38:
+ 574              		.align	2
+ 575              	.L37:
+ 576 002c 00000000 		.word	.LC0
+ 577              		.cfi_endproc
+ 578              	.LFE240:
+ 580              		.section	.rodata.rtc_disable_int.str1.4,"aMS",%progbits,1
+ 581              		.align	2
+ 582              	.LC1:
+ 583 0000 636C6F73 		.ascii	"close 64Hz ...\012\000"
+ 583      65203634 
+ 583      487A202E 
+ 583      2E2E0A00 
+ 584              		.align	2
+ 585              	.LC2:
+ 586 0010 636C6F73 		.ascii	"close int error\012\000"
+ 586      6520696E 
+ 586      74206572 
+ 586      726F720A 
+ 586      00
+ 587              		.section	.text.rtc_disable_int,"ax",%progbits
+ 588              		.align	1
+ 589              		.global	rtc_disable_int
+ 590              		.syntax unified
+ 591              		.thumb
+ 592              		.thumb_func
+ 594              	rtc_disable_int:
+ 595              	.LFB241:
+ 725:Device/Src/rtc.c **** 
+ 726:Device/Src/rtc.c **** uint8_t rtc_disable_int(void)
+ 727:Device/Src/rtc.c **** {
+ 596              		.loc 1 727 1 is_stmt 1 view -0
+ 597              		.cfi_startproc
+ 598              		@ args = 0, pretend = 0, frame = 8
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 25
+
+
+ 599              		@ frame_needed = 0, uses_anonymous_args = 0
+ 600 0000 30B5     		push	{r4, r5, lr}
+ 601              	.LCFI16:
+ 602              		.cfi_def_cfa_offset 12
+ 603              		.cfi_offset 4, -12
+ 604              		.cfi_offset 5, -8
+ 605              		.cfi_offset 14, -4
+ 606 0002 83B0     		sub	sp, sp, #12
+ 607              	.LCFI17:
+ 608              		.cfi_def_cfa_offset 24
+ 728:Device/Src/rtc.c ****     uint8_t buffer[2] = {0x00, 0x40};
+ 609              		.loc 1 728 5 view .LVU159
+ 610              		.loc 1 728 13 is_stmt 0 view .LVU160
+ 611 0004 4FF48043 		mov	r3, #16384
+ 612 0008 ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 729:Device/Src/rtc.c **** 	uint8_t i;
+ 613              		.loc 1 729 2 is_stmt 1 view .LVU161
+ 730:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 614              		.loc 1 730 2 view .LVU162
+ 615              	.LVL29:
+ 616              		.loc 1 730 9 is_stmt 0 view .LVU163
+ 617 000c 0024     		movs	r4, #0
+ 618              		.loc 1 730 2 view .LVU164
+ 619 000e 04E0     		b	.L40
+ 620              	.LVL30:
+ 621              	.L41:
+ 731:Device/Src/rtc.c **** 		if (check_sda_level()) {
+ 732:Device/Src/rtc.c **** 			if (rtc_write_multi_bytes(RTC_8825_ADDRESS, 0x10, buffer, 2) == I2C_OK) {
+ 733:Device/Src/rtc.c **** 				UsbPrintf("close 64Hz ...\n");
+ 734:Device/Src/rtc.c **** 				return I2C_OK;
+ 735:Device/Src/rtc.c **** 			}
+ 736:Device/Src/rtc.c **** 		}
+ 737:Device/Src/rtc.c **** 		HAL_Delay(2);
+ 622              		.loc 1 737 3 is_stmt 1 discriminator 2 view .LVU165
+ 623 0010 0220     		movs	r0, #2
+ 624 0012 FFF7FEFF 		bl	HAL_Delay
+ 625              	.LVL31:
+ 730:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 626              		.loc 1 730 22 discriminator 2 view .LVU166
+ 730:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 627              		.loc 1 730 23 is_stmt 0 discriminator 2 view .LVU167
+ 628 0016 0134     		adds	r4, r4, #1
+ 629              	.LVL32:
+ 730:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 630              		.loc 1 730 23 discriminator 2 view .LVU168
+ 631 0018 E4B2     		uxtb	r4, r4
+ 632              	.LVL33:
+ 633              	.L40:
+ 730:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 634              		.loc 1 730 14 is_stmt 1 discriminator 1 view .LVU169
+ 730:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 635              		.loc 1 730 2 is_stmt 0 discriminator 1 view .LVU170
+ 636 001a 092C     		cmp	r4, #9
+ 637 001c 10D8     		bhi	.L45
+ 731:Device/Src/rtc.c **** 		if (check_sda_level()) {
+ 638              		.loc 1 731 3 is_stmt 1 view .LVU171
+ 731:Device/Src/rtc.c **** 		if (check_sda_level()) {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 26
+
+
+ 639              		.loc 1 731 7 is_stmt 0 view .LVU172
+ 640 001e FFF7FEFF 		bl	check_sda_level
+ 641              	.LVL34:
+ 731:Device/Src/rtc.c **** 		if (check_sda_level()) {
+ 642              		.loc 1 731 6 view .LVU173
+ 643 0022 0028     		cmp	r0, #0
+ 644 0024 F4D0     		beq	.L41
+ 732:Device/Src/rtc.c **** 				UsbPrintf("close 64Hz ...\n");
+ 645              		.loc 1 732 4 is_stmt 1 view .LVU174
+ 732:Device/Src/rtc.c **** 				UsbPrintf("close 64Hz ...\n");
+ 646              		.loc 1 732 8 is_stmt 0 view .LVU175
+ 647 0026 0223     		movs	r3, #2
+ 648 0028 01AA     		add	r2, sp, #4
+ 649 002a 1021     		movs	r1, #16
+ 650 002c 6420     		movs	r0, #100
+ 651 002e FFF7FEFF 		bl	rtc_write_multi_bytes
+ 652              	.LVL35:
+ 732:Device/Src/rtc.c **** 				UsbPrintf("close 64Hz ...\n");
+ 653              		.loc 1 732 7 view .LVU176
+ 654 0032 0546     		mov	r5, r0
+ 655 0034 0028     		cmp	r0, #0
+ 656 0036 EBD1     		bne	.L41
+ 733:Device/Src/rtc.c **** 				return I2C_OK;
+ 657              		.loc 1 733 5 is_stmt 1 view .LVU177
+ 658 0038 0548     		ldr	r0, .L46
+ 659 003a FFF7FEFF 		bl	UsbPrintf
+ 660              	.LVL36:
+ 734:Device/Src/rtc.c **** 			}
+ 661              		.loc 1 734 5 view .LVU178
+ 734:Device/Src/rtc.c **** 			}
+ 662              		.loc 1 734 12 is_stmt 0 view .LVU179
+ 663 003e 03E0     		b	.L42
+ 664              	.L45:
+ 738:Device/Src/rtc.c **** 	}
+ 739:Device/Src/rtc.c **** 	UsbPrintf("close int error\n");
+ 665              		.loc 1 739 2 is_stmt 1 view .LVU180
+ 666 0040 0448     		ldr	r0, .L46+4
+ 667 0042 FFF7FEFF 		bl	UsbPrintf
+ 668              	.LVL37:
+ 740:Device/Src/rtc.c **** 	return I2C_NO_ACK;
+ 669              		.loc 1 740 2 view .LVU181
+ 670              		.loc 1 740 9 is_stmt 0 view .LVU182
+ 671 0046 0225     		movs	r5, #2
+ 672              	.L42:
+ 741:Device/Src/rtc.c **** }
+ 673              		.loc 1 741 1 view .LVU183
+ 674 0048 2846     		mov	r0, r5
+ 675 004a 03B0     		add	sp, sp, #12
+ 676              	.LCFI18:
+ 677              		.cfi_def_cfa_offset 12
+ 678              		@ sp needed
+ 679 004c 30BD     		pop	{r4, r5, pc}
+ 680              	.LVL38:
+ 681              	.L47:
+ 682              		.loc 1 741 1 view .LVU184
+ 683 004e 00BF     		.align	2
+ 684              	.L46:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 27
+
+
+ 685 0050 00000000 		.word	.LC1
+ 686 0054 10000000 		.word	.LC2
+ 687              		.cfi_endproc
+ 688              	.LFE241:
+ 690              		.section	.rodata.rtc_set_testcap.str1.4,"aMS",%progbits,1
+ 691              		.align	2
+ 692              	.LC3:
+ 693 0000 61646A75 		.ascii	"adjust cap iic error\012\000"
+ 693      73742063 
+ 693      61702069 
+ 693      69632065 
+ 693      72726F72 
+ 694              		.section	.text.rtc_set_testcap,"ax",%progbits
+ 695              		.align	1
+ 696              		.global	rtc_set_testcap
+ 697              		.syntax unified
+ 698              		.thumb
+ 699              		.thumb_func
+ 701              	rtc_set_testcap:
+ 702              	.LVL39:
+ 703              	.LFB242:
+ 742:Device/Src/rtc.c **** 
+ 743:Device/Src/rtc.c **** 
+ 744:Device/Src/rtc.c **** uint8_t rtc_set_testcap(uint8_t *p_dat)
+ 745:Device/Src/rtc.c **** {	
+ 704              		.loc 1 745 1 is_stmt 1 view -0
+ 705              		.cfi_startproc
+ 706              		@ args = 0, pretend = 0, frame = 0
+ 707              		@ frame_needed = 0, uses_anonymous_args = 0
+ 708              		.loc 1 745 1 is_stmt 0 view .LVU186
+ 709 0000 38B5     		push	{r3, r4, r5, lr}
+ 710              	.LCFI19:
+ 711              		.cfi_def_cfa_offset 16
+ 712              		.cfi_offset 3, -16
+ 713              		.cfi_offset 4, -12
+ 714              		.cfi_offset 5, -8
+ 715              		.cfi_offset 14, -4
+ 716 0002 0546     		mov	r5, r0
+ 746:Device/Src/rtc.c **** 	uint8_t i;
+ 717              		.loc 1 746 2 is_stmt 1 view .LVU187
+ 747:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 718              		.loc 1 747 2 view .LVU188
+ 719              	.LVL40:
+ 720              		.loc 1 747 9 is_stmt 0 view .LVU189
+ 721 0004 0024     		movs	r4, #0
+ 722              		.loc 1 747 2 view .LVU190
+ 723 0006 04E0     		b	.L49
+ 724              	.LVL41:
+ 725              	.L50:
+ 748:Device/Src/rtc.c **** 		if (check_sda_level()) {
+ 749:Device/Src/rtc.c **** 			if (rtc_write_multi_bytes(RTC_8825_ADDRESS, WAVE1006_REG_USER_RAM_START + 21, p_dat, 2) == I2C_O
+ 750:Device/Src/rtc.c **** 				return I2C_OK;
+ 751:Device/Src/rtc.c **** 			} 
+ 752:Device/Src/rtc.c **** 		}
+ 753:Device/Src/rtc.c **** 		HAL_Delay(2);
+ 726              		.loc 1 753 3 is_stmt 1 discriminator 2 view .LVU191
+ 727 0008 0220     		movs	r0, #2
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 28
+
+
+ 728 000a FFF7FEFF 		bl	HAL_Delay
+ 729              	.LVL42:
+ 747:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 730              		.loc 1 747 22 discriminator 2 view .LVU192
+ 747:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 731              		.loc 1 747 23 is_stmt 0 discriminator 2 view .LVU193
+ 732 000e 0134     		adds	r4, r4, #1
+ 733              	.LVL43:
+ 747:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 734              		.loc 1 747 23 discriminator 2 view .LVU194
+ 735 0010 E4B2     		uxtb	r4, r4
+ 736              	.LVL44:
+ 737              	.L49:
+ 747:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 738              		.loc 1 747 14 is_stmt 1 discriminator 1 view .LVU195
+ 747:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 739              		.loc 1 747 2 is_stmt 0 discriminator 1 view .LVU196
+ 740 0012 092C     		cmp	r4, #9
+ 741 0014 0DD8     		bhi	.L54
+ 748:Device/Src/rtc.c **** 		if (check_sda_level()) {
+ 742              		.loc 1 748 3 is_stmt 1 view .LVU197
+ 748:Device/Src/rtc.c **** 		if (check_sda_level()) {
+ 743              		.loc 1 748 7 is_stmt 0 view .LVU198
+ 744 0016 FFF7FEFF 		bl	check_sda_level
+ 745              	.LVL45:
+ 748:Device/Src/rtc.c **** 		if (check_sda_level()) {
+ 746              		.loc 1 748 6 view .LVU199
+ 747 001a 0028     		cmp	r0, #0
+ 748 001c F4D0     		beq	.L50
+ 749:Device/Src/rtc.c **** 				return I2C_OK;
+ 749              		.loc 1 749 4 is_stmt 1 view .LVU200
+ 749:Device/Src/rtc.c **** 				return I2C_OK;
+ 750              		.loc 1 749 8 is_stmt 0 view .LVU201
+ 751 001e 0223     		movs	r3, #2
+ 752 0020 2A46     		mov	r2, r5
+ 753 0022 8121     		movs	r1, #129
+ 754 0024 6420     		movs	r0, #100
+ 755 0026 FFF7FEFF 		bl	rtc_write_multi_bytes
+ 756              	.LVL46:
+ 749:Device/Src/rtc.c **** 				return I2C_OK;
+ 757              		.loc 1 749 7 view .LVU202
+ 758 002a 0346     		mov	r3, r0
+ 759 002c 0028     		cmp	r0, #0
+ 760 002e EBD1     		bne	.L50
+ 761 0030 03E0     		b	.L51
+ 762              	.L54:
+ 754:Device/Src/rtc.c **** 	}
+ 755:Device/Src/rtc.c **** 	UsbPrintf("adjust cap iic error\n");
+ 763              		.loc 1 755 2 is_stmt 1 view .LVU203
+ 764 0032 0348     		ldr	r0, .L55
+ 765 0034 FFF7FEFF 		bl	UsbPrintf
+ 766              	.LVL47:
+ 756:Device/Src/rtc.c **** 	return I2C_NO_ACK;
+ 767              		.loc 1 756 2 view .LVU204
+ 768              		.loc 1 756 9 is_stmt 0 view .LVU205
+ 769 0038 0223     		movs	r3, #2
+ 770              	.L51:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 29
+
+
+ 757:Device/Src/rtc.c **** }
+ 771              		.loc 1 757 1 view .LVU206
+ 772 003a 1846     		mov	r0, r3
+ 773 003c 38BD     		pop	{r3, r4, r5, pc}
+ 774              	.LVL48:
+ 775              	.L56:
+ 776              		.loc 1 757 1 view .LVU207
+ 777 003e 00BF     		.align	2
+ 778              	.L55:
+ 779 0040 00000000 		.word	.LC3
+ 780              		.cfi_endproc
+ 781              	.LFE242:
+ 783              		.section	.rodata.rtc_1006_set_testmode.str1.4,"aMS",%progbits,1
+ 784              		.align	2
+ 785              	.LC4:
+ 786 0000 74657374 		.ascii	"test flag 0x%02X, mode %d\012\000"
+ 786      20666C61 
+ 786      67203078 
+ 786      25303258 
+ 786      2C206D6F 
+ 787 001b 00       		.align	2
+ 788              	.LC5:
+ 789 001c 69326320 		.ascii	"i2c OK after pad change \012\000"
+ 789      4F4B2061 
+ 789      66746572 
+ 789      20706164 
+ 789      20636861 
+ 790              		.section	.text.rtc_1006_set_testmode,"ax",%progbits
+ 791              		.align	1
+ 792              		.global	rtc_1006_set_testmode
+ 793              		.syntax unified
+ 794              		.thumb
+ 795              		.thumb_func
+ 797              	rtc_1006_set_testmode:
+ 798              	.LVL49:
+ 799              	.LFB243:
+ 758:Device/Src/rtc.c **** 
+ 759:Device/Src/rtc.c **** 
+ 760:Device/Src/rtc.c **** uint8_t rtc_1006_set_testmode(uint8_t channel)
+ 761:Device/Src/rtc.c **** {
+ 800              		.loc 1 761 1 is_stmt 1 view -0
+ 801              		.cfi_startproc
+ 802              		@ args = 0, pretend = 0, frame = 8
+ 803              		@ frame_needed = 0, uses_anonymous_args = 0
+ 804              		.loc 1 761 1 is_stmt 0 view .LVU209
+ 805 0000 10B5     		push	{r4, lr}
+ 806              	.LCFI20:
+ 807              		.cfi_def_cfa_offset 8
+ 808              		.cfi_offset 4, -8
+ 809              		.cfi_offset 14, -4
+ 810 0002 82B0     		sub	sp, sp, #8
+ 811              	.LCFI21:
+ 812              		.cfi_def_cfa_offset 16
+ 762:Device/Src/rtc.c **** 	uint8_t buf;
+ 813              		.loc 1 762 2 is_stmt 1 view .LVU210
+ 763:Device/Src/rtc.c **** 	uint8_t osc_buf[2] = {0};
+ 814              		.loc 1 763 2 view .LVU211
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 30
+
+
+ 815              		.loc 1 763 10 is_stmt 0 view .LVU212
+ 816 0004 0024     		movs	r4, #0
+ 817 0006 ADF80440 		strh	r4, [sp, #4]	@ movhi
+ 764:Device/Src/rtc.c **** 
+ 765:Device/Src/rtc.c **** 	rtc_set_channel(channel, RTC_SD8825);
+ 818              		.loc 1 765 2 is_stmt 1 view .LVU213
+ 819 000a 0221     		movs	r1, #2
+ 820 000c FFF7FEFF 		bl	rtc_set_channel
+ 821              	.LVL50:
+ 766:Device/Src/rtc.c ****     HAL_Delay(5);
+ 822              		.loc 1 766 5 view .LVU214
+ 823 0010 0520     		movs	r0, #5
+ 824 0012 FFF7FEFF 		bl	HAL_Delay
+ 825              	.LVL51:
+ 767:Device/Src/rtc.c **** 	buf = 0x40;
+ 826              		.loc 1 767 2 view .LVU215
+ 827              		.loc 1 767 6 is_stmt 0 view .LVU216
+ 828 0016 4023     		movs	r3, #64
+ 829 0018 8DF80730 		strb	r3, [sp, #7]
+ 768:Device/Src/rtc.c **** 	if(drv_wave1006_write_reg(DEV_SD3068, WAVE1006_REG_CTR3, 1, &buf) != WAVE1006_EXIT_OK)   //Èç¹ûÊÇÓ
+ 830              		.loc 1 768 2 is_stmt 1 view .LVU217
+ 831              		.loc 1 768 5 is_stmt 0 view .LVU218
+ 832 001c 0DF10703 		add	r3, sp, #7
+ 833 0020 0122     		movs	r2, #1
+ 834 0022 1121     		movs	r1, #17
+ 835 0024 2046     		mov	r0, r4
+ 836 0026 FFF7FEFF 		bl	drv_wave1006_write_reg
+ 837              	.LVL52:
+ 838              		.loc 1 768 4 view .LVU219
+ 839 002a 0028     		cmp	r0, #0
+ 840 002c 6ED1     		bne	.L59
+ 769:Device/Src/rtc.c **** 	{
+ 770:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 771:Device/Src/rtc.c **** 	}
+ 772:Device/Src/rtc.c **** 	if (drv_wave1006_read_reg(DEV_SD3068, WAVE1006_REG_USER_RAM_START + 19, 1, &buf) != WAVE1006_EXIT_
+ 841              		.loc 1 772 2 is_stmt 1 view .LVU220
+ 842              		.loc 1 772 6 is_stmt 0 view .LVU221
+ 843 002e 0DF10703 		add	r3, sp, #7
+ 844 0032 0122     		movs	r2, #1
+ 845 0034 7F21     		movs	r1, #127
+ 846 0036 2046     		mov	r0, r4
+ 847 0038 FFF7FEFF 		bl	drv_wave1006_read_reg
+ 848              	.LVL53:
+ 849              		.loc 1 772 5 view .LVU222
+ 850 003c 0028     		cmp	r0, #0
+ 851 003e 68D1     		bne	.L60
+ 773:Device/Src/rtc.c **** 	{
+ 774:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 775:Device/Src/rtc.c **** 	}
+ 776:Device/Src/rtc.c **** 	buf &= ~0x38;   //Çå0 RuleTempAdj[2:0]      //ADC³ß×Ó 5
+ 852              		.loc 1 776 2 is_stmt 1 view .LVU223
+ 853              		.loc 1 776 6 is_stmt 0 view .LVU224
+ 854 0040 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 855 0044 03F0C703 		and	r3, r3, #199
+ 856 0048 8DF80730 		strb	r3, [sp, #7]
+ 777:Device/Src/rtc.c **** 	buf |=  0x28;
+ 857              		.loc 1 777 2 is_stmt 1 view .LVU225
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 31
+
+
+ 858              		.loc 1 777 6 is_stmt 0 view .LVU226
+ 859 004c 43F02803 		orr	r3, r3, #40
+ 860 0050 8DF80730 		strb	r3, [sp, #7]
+ 778:Device/Src/rtc.c **** 	if (drv_wave1006_write_reg(DEV_SD3068, WAVE1006_REG_USER_RAM_START + 19, 1, &buf) != WAVE1006_EXIT
+ 861              		.loc 1 778 2 is_stmt 1 view .LVU227
+ 862              		.loc 1 778 6 is_stmt 0 view .LVU228
+ 863 0054 0DF10703 		add	r3, sp, #7
+ 864 0058 0122     		movs	r2, #1
+ 865 005a 7F21     		movs	r1, #127
+ 866 005c 2046     		mov	r0, r4
+ 867 005e FFF7FEFF 		bl	drv_wave1006_write_reg
+ 868              	.LVL54:
+ 869              		.loc 1 778 5 view .LVU229
+ 870 0062 0028     		cmp	r0, #0
+ 871 0064 57D1     		bne	.L61
+ 779:Device/Src/rtc.c **** 	{
+ 780:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 781:Device/Src/rtc.c **** 	}
+ 782:Device/Src/rtc.c **** 
+ 783:Device/Src/rtc.c **** 	//1¡¢ÅäÖÃºÃOSC TEST²ÎÊý     RAM24¡¢RAM25
+ 784:Device/Src/rtc.c **** 	if (drv_wave1006_read_reg(DEV_SD3068, WAVE1006_REG_USER_RAM_START + 24, 1, &osc_buf[1]) != WAVE100
+ 872              		.loc 1 784 2 is_stmt 1 view .LVU230
+ 873              		.loc 1 784 6 is_stmt 0 view .LVU231
+ 874 0066 0DF10503 		add	r3, sp, #5
+ 875 006a 0122     		movs	r2, #1
+ 876 006c 8421     		movs	r1, #132
+ 877 006e 2046     		mov	r0, r4
+ 878 0070 FFF7FEFF 		bl	drv_wave1006_read_reg
+ 879              	.LVL55:
+ 880              		.loc 1 784 5 view .LVU232
+ 881 0074 0028     		cmp	r0, #0
+ 882 0076 50D1     		bne	.L62
+ 785:Device/Src/rtc.c **** 	{
+ 786:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 787:Device/Src/rtc.c **** 	}
+ 788:Device/Src/rtc.c **** 	osc_buf[0]  = 0xf7;   //ram24
+ 883              		.loc 1 788 2 is_stmt 1 view .LVU233
+ 884              		.loc 1 788 14 is_stmt 0 view .LVU234
+ 885 0078 F723     		movs	r3, #247
+ 886 007a 8DF80430 		strb	r3, [sp, #4]
+ 789:Device/Src/rtc.c **** 	osc_buf[1] &= ~0x1f;
+ 887              		.loc 1 789 2 is_stmt 1 view .LVU235
+ 888              		.loc 1 789 13 is_stmt 0 view .LVU236
+ 889 007e 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 890 0082 03F0E003 		and	r3, r3, #224
+ 891 0086 8DF80530 		strb	r3, [sp, #5]
+ 790:Device/Src/rtc.c **** 	osc_buf[1] |= 0x19;		//ram25
+ 892              		.loc 1 790 2 is_stmt 1 view .LVU237
+ 893              		.loc 1 790 13 is_stmt 0 view .LVU238
+ 894 008a 43F01903 		orr	r3, r3, #25
+ 895 008e 8DF80530 		strb	r3, [sp, #5]
+ 791:Device/Src/rtc.c **** 	if (drv_wave1006_write_reg(DEV_SD3068, WAVE1006_REG_USER_RAM_START + 23, 2, osc_buf) != WAVE1006_E
+ 896              		.loc 1 791 2 is_stmt 1 view .LVU239
+ 897              		.loc 1 791 6 is_stmt 0 view .LVU240
+ 898 0092 01AB     		add	r3, sp, #4
+ 899 0094 0222     		movs	r2, #2
+ 900 0096 8321     		movs	r1, #131
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 32
+
+
+ 901 0098 2046     		mov	r0, r4
+ 902 009a FFF7FEFF 		bl	drv_wave1006_write_reg
+ 903              	.LVL56:
+ 904              		.loc 1 791 5 view .LVU241
+ 905 009e 0028     		cmp	r0, #0
+ 906 00a0 3DD1     		bne	.L63
+ 792:Device/Src/rtc.c **** 	{
+ 793:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 794:Device/Src/rtc.c **** 	}
+ 795:Device/Src/rtc.c **** 	//Ñ¡ÔñÎªSD8825·â×°(±ØÐëÔÚ½ø²âÊÔÄ£Ê½Ö®Ç°Ñ¡Ôñ£¬·ñÔòÐ¾Æ¬pad¸Ä±ä)
+ 796:Device/Src/rtc.c **** 	if (drv_wave1006_read_reg(DEV_SD3068, WAVE1006_REG_USER_RAM_START + 20, 1, &buf) != WAVE1006_EXIT_
+ 907              		.loc 1 796 2 is_stmt 1 view .LVU242
+ 908              		.loc 1 796 6 is_stmt 0 view .LVU243
+ 909 00a2 0DF10703 		add	r3, sp, #7
+ 910 00a6 0122     		movs	r2, #1
+ 911 00a8 8021     		movs	r1, #128
+ 912 00aa 2046     		mov	r0, r4
+ 913 00ac FFF7FEFF 		bl	drv_wave1006_read_reg
+ 914              	.LVL57:
+ 915              		.loc 1 796 5 view .LVU244
+ 916 00b0 B8BB     		cbnz	r0, .L64
+ 797:Device/Src/rtc.c **** 	{
+ 798:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 799:Device/Src/rtc.c **** 	}
+ 800:Device/Src/rtc.c **** 	buf &= ~0x0f;
+ 917              		.loc 1 800 2 is_stmt 1 view .LVU245
+ 918              		.loc 1 800 6 is_stmt 0 view .LVU246
+ 919 00b2 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 920 00b6 23F00F03 		bic	r3, r3, #15
+ 921 00ba 8DF80730 		strb	r3, [sp, #7]
+ 801:Device/Src/rtc.c **** 	buf |= 0x00;//¸ù¾ÝpadÅäÖÃ±í£¬±àºÅ0Îª8825
+ 922              		.loc 1 801 2 is_stmt 1 view .LVU247
+ 802:Device/Src/rtc.c **** 	if (drv_wave1006_write_reg(DEV_SD3068, WAVE1006_REG_USER_RAM_START + 20, 1, &buf) != WAVE1006_EXIT
+ 923              		.loc 1 802 2 view .LVU248
+ 924              		.loc 1 802 6 is_stmt 0 view .LVU249
+ 925 00be 0DF10703 		add	r3, sp, #7
+ 926 00c2 0122     		movs	r2, #1
+ 927 00c4 8021     		movs	r1, #128
+ 928 00c6 2046     		mov	r0, r4
+ 929 00c8 FFF7FEFF 		bl	drv_wave1006_write_reg
+ 930              	.LVL58:
+ 931              		.loc 1 802 5 view .LVU250
+ 932 00cc 58BB     		cbnz	r0, .L65
+ 803:Device/Src/rtc.c **** 	{
+ 804:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 805:Device/Src/rtc.c **** 	}
+ 806:Device/Src/rtc.c **** 	if (wave1006_enter_test_mode(WAVE1006_TEST_PAD | WAVE1006_TEST_OSC | WAVE1006_TEST_ADC) != WAVE100
+ 933              		.loc 1 806 2 is_stmt 1 view .LVU251
+ 934              		.loc 1 806 6 is_stmt 0 view .LVU252
+ 935 00ce 5420     		movs	r0, #84
+ 936 00d0 FFF7FEFF 		bl	wave1006_enter_test_mode
+ 937              	.LVL59:
+ 938              		.loc 1 806 5 view .LVU253
+ 939 00d4 48BB     		cbnz	r0, .L66
+ 807:Device/Src/rtc.c **** 	{
+ 808:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 809:Device/Src/rtc.c **** 	}
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 33
+
+
+ 810:Device/Src/rtc.c **** 	HAL_Delay(5);
+ 940              		.loc 1 810 2 is_stmt 1 view .LVU254
+ 941 00d6 0520     		movs	r0, #5
+ 942 00d8 FFF7FEFF 		bl	HAL_Delay
+ 943              	.LVL60:
+ 811:Device/Src/rtc.c **** 	// rtc_set_channel(channel, RTC_SD8825);
+ 812:Device/Src/rtc.c **** 	if (drv_wave1006_read_reg(DEV_SD3068, 0xFD, 1, &buf) != WAVE1006_EXIT_OK) {
+ 944              		.loc 1 812 2 view .LVU255
+ 945              		.loc 1 812 6 is_stmt 0 view .LVU256
+ 946 00dc 0DF10703 		add	r3, sp, #7
+ 947 00e0 0122     		movs	r2, #1
+ 948 00e2 FD21     		movs	r1, #253
+ 949 00e4 2046     		mov	r0, r4
+ 950 00e6 FFF7FEFF 		bl	drv_wave1006_read_reg
+ 951              	.LVL61:
+ 952              		.loc 1 812 5 view .LVU257
+ 953 00ea 00BB     		cbnz	r0, .L67
+ 813:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 814:Device/Src/rtc.c **** 	}
+ 815:Device/Src/rtc.c **** 	UsbPrintf("test flag 0x%02X, mode %d\n", buf, (buf >> 3) & 0x01);
+ 954              		.loc 1 815 2 is_stmt 1 view .LVU258
+ 955 00ec 9DF80710 		ldrb	r1, [sp, #7]	@ zero_extendqisi2
+ 956 00f0 C1F3C002 		ubfx	r2, r1, #3, #1
+ 957 00f4 0F48     		ldr	r0, .L69
+ 958 00f6 FFF7FEFF 		bl	UsbPrintf
+ 959              	.LVL62:
+ 816:Device/Src/rtc.c **** 	UsbPrintf("i2c OK after pad change \n");
+ 960              		.loc 1 816 2 view .LVU259
+ 961 00fa 0F4C     		ldr	r4, .L69+4
+ 962 00fc 2046     		mov	r0, r4
+ 963 00fe FFF7FEFF 		bl	UsbPrintf
+ 964              	.LVL63:
+ 817:Device/Src/rtc.c **** 	log_printf("i2c OK after pad change \n");
+ 965              		.loc 1 817 2 view .LVU260
+ 966 0102 2046     		mov	r0, r4
+ 967 0104 FFF7FEFF 		bl	log_printf
+ 968              	.LVL64:
+ 818:Device/Src/rtc.c **** 	
+ 819:Device/Src/rtc.c **** 	return I2C_OK;
+ 969              		.loc 1 819 2 view .LVU261
+ 970              		.loc 1 819 9 is_stmt 0 view .LVU262
+ 971 0108 0020     		movs	r0, #0
+ 972 010a 00E0     		b	.L58
+ 973              	.L59:
+ 770:Device/Src/rtc.c **** 	}
+ 974              		.loc 1 770 10 view .LVU263
+ 975 010c 0220     		movs	r0, #2
+ 976              	.L58:
+ 820:Device/Src/rtc.c **** }
+ 977              		.loc 1 820 1 view .LVU264
+ 978 010e 02B0     		add	sp, sp, #8
+ 979              	.LCFI22:
+ 980              		.cfi_remember_state
+ 981              		.cfi_def_cfa_offset 8
+ 982              		@ sp needed
+ 983 0110 10BD     		pop	{r4, pc}
+ 984              	.L60:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 34
+
+
+ 985              	.LCFI23:
+ 986              		.cfi_restore_state
+ 774:Device/Src/rtc.c **** 	}
+ 987              		.loc 1 774 10 view .LVU265
+ 988 0112 0220     		movs	r0, #2
+ 989 0114 FBE7     		b	.L58
+ 990              	.L61:
+ 780:Device/Src/rtc.c **** 	}
+ 991              		.loc 1 780 10 view .LVU266
+ 992 0116 0220     		movs	r0, #2
+ 993 0118 F9E7     		b	.L58
+ 994              	.L62:
+ 786:Device/Src/rtc.c **** 	}
+ 995              		.loc 1 786 10 view .LVU267
+ 996 011a 0220     		movs	r0, #2
+ 997 011c F7E7     		b	.L58
+ 998              	.L63:
+ 793:Device/Src/rtc.c **** 	}
+ 999              		.loc 1 793 10 view .LVU268
+ 1000 011e 0220     		movs	r0, #2
+ 1001 0120 F5E7     		b	.L58
+ 1002              	.L64:
+ 798:Device/Src/rtc.c **** 	}
+ 1003              		.loc 1 798 10 view .LVU269
+ 1004 0122 0220     		movs	r0, #2
+ 1005 0124 F3E7     		b	.L58
+ 1006              	.L65:
+ 804:Device/Src/rtc.c **** 	}
+ 1007              		.loc 1 804 10 view .LVU270
+ 1008 0126 0220     		movs	r0, #2
+ 1009 0128 F1E7     		b	.L58
+ 1010              	.L66:
+ 808:Device/Src/rtc.c **** 	}
+ 1011              		.loc 1 808 10 view .LVU271
+ 1012 012a 0220     		movs	r0, #2
+ 1013 012c EFE7     		b	.L58
+ 1014              	.L67:
+ 813:Device/Src/rtc.c **** 	}
+ 1015              		.loc 1 813 10 view .LVU272
+ 1016 012e 0220     		movs	r0, #2
+ 1017 0130 EDE7     		b	.L58
+ 1018              	.L70:
+ 1019 0132 00BF     		.align	2
+ 1020              	.L69:
+ 1021 0134 00000000 		.word	.LC4
+ 1022 0138 1C000000 		.word	.LC5
+ 1023              		.cfi_endproc
+ 1024              	.LFE243:
+ 1026              		.section	.text.rtc_8825_adc_testmode,"ax",%progbits
+ 1027              		.align	1
+ 1028              		.global	rtc_8825_adc_testmode
+ 1029              		.syntax unified
+ 1030              		.thumb
+ 1031              		.thumb_func
+ 1033              	rtc_8825_adc_testmode:
+ 1034              	.LVL65:
+ 1035              	.LFB244:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 35
+
+
+ 821:Device/Src/rtc.c **** 
+ 822:Device/Src/rtc.c **** uint8_t rtc_8825_adc_testmode(uint8_t channel)
+ 823:Device/Src/rtc.c **** {
+ 1036              		.loc 1 823 1 is_stmt 1 view -0
+ 1037              		.cfi_startproc
+ 1038              		@ args = 0, pretend = 0, frame = 8
+ 1039              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1040              		.loc 1 823 1 is_stmt 0 view .LVU274
+ 1041 0000 10B5     		push	{r4, lr}
+ 1042              	.LCFI24:
+ 1043              		.cfi_def_cfa_offset 8
+ 1044              		.cfi_offset 4, -8
+ 1045              		.cfi_offset 14, -4
+ 1046 0002 82B0     		sub	sp, sp, #8
+ 1047              	.LCFI25:
+ 1048              		.cfi_def_cfa_offset 16
+ 1049 0004 0446     		mov	r4, r0
+ 824:Device/Src/rtc.c **** 	uint8_t buf;
+ 1050              		.loc 1 824 2 is_stmt 1 view .LVU275
+ 825:Device/Src/rtc.c **** 
+ 826:Device/Src/rtc.c **** 	rtc_set_channel(channel, RTC_SD8825);
+ 1051              		.loc 1 826 2 view .LVU276
+ 1052 0006 0221     		movs	r1, #2
+ 1053 0008 FFF7FEFF 		bl	rtc_set_channel
+ 1054              	.LVL66:
+ 827:Device/Src/rtc.c ****     HAL_Delay(5);
+ 1055              		.loc 1 827 5 view .LVU277
+ 1056 000c 0520     		movs	r0, #5
+ 1057 000e FFF7FEFF 		bl	HAL_Delay
+ 1058              	.LVL67:
+ 828:Device/Src/rtc.c **** 	buf = 0x40;
+ 1059              		.loc 1 828 2 view .LVU278
+ 1060              		.loc 1 828 6 is_stmt 0 view .LVU279
+ 1061 0012 4023     		movs	r3, #64
+ 1062 0014 8DF80730 		strb	r3, [sp, #7]
+ 829:Device/Src/rtc.c **** 	if(drv_wave1006_write_reg(DEV_SD3068, WAVE1006_REG_CTR3, 1, &buf) != WAVE1006_EXIT_OK)   //Èç¹ûÊÇÓ
+ 1063              		.loc 1 829 2 is_stmt 1 view .LVU280
+ 1064              		.loc 1 829 5 is_stmt 0 view .LVU281
+ 1065 0018 0DF10703 		add	r3, sp, #7
+ 1066 001c 0122     		movs	r2, #1
+ 1067 001e 1121     		movs	r1, #17
+ 1068 0020 0020     		movs	r0, #0
+ 1069 0022 FFF7FEFF 		bl	drv_wave1006_write_reg
+ 1070              	.LVL68:
+ 1071              		.loc 1 829 4 view .LVU282
+ 1072 0026 C8BB     		cbnz	r0, .L73
+ 830:Device/Src/rtc.c **** 	{
+ 831:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 832:Device/Src/rtc.c **** 	}
+ 833:Device/Src/rtc.c **** 	//Ñ¡ÔñÎªSD8825·â×°(±ØÐëÔÚ½ø²âÊÔÄ£Ê½Ö®Ç°Ñ¡Ôñ£¬·ñÔòÐ¾Æ¬pad¸Ä±ä)
+ 834:Device/Src/rtc.c **** 	if (drv_wave1006_read_reg(DEV_SD3068, WAVE1006_REG_USER_RAM_START + 20, 1, &buf) != WAVE1006_EXIT_
+ 1073              		.loc 1 834 2 is_stmt 1 view .LVU283
+ 1074              		.loc 1 834 6 is_stmt 0 view .LVU284
+ 1075 0028 0DF10703 		add	r3, sp, #7
+ 1076 002c 0122     		movs	r2, #1
+ 1077 002e 8021     		movs	r1, #128
+ 1078 0030 FFF7FEFF 		bl	drv_wave1006_read_reg
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 36
+
+
+ 1079              	.LVL69:
+ 1080              		.loc 1 834 5 view .LVU285
+ 1081 0034 A8BB     		cbnz	r0, .L74
+ 835:Device/Src/rtc.c **** 	{
+ 836:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 837:Device/Src/rtc.c **** 	}
+ 838:Device/Src/rtc.c **** 	buf &= ~0x0f;
+ 1082              		.loc 1 838 2 is_stmt 1 view .LVU286
+ 1083              		.loc 1 838 6 is_stmt 0 view .LVU287
+ 1084 0036 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 1085 003a 23F00F03 		bic	r3, r3, #15
+ 1086 003e 8DF80730 		strb	r3, [sp, #7]
+ 839:Device/Src/rtc.c **** 	buf |= 0x00;//¸ù¾ÝpadÅäÖÃ±í£¬±àºÅ0Îª8825
+ 1087              		.loc 1 839 2 is_stmt 1 view .LVU288
+ 840:Device/Src/rtc.c **** 	if (drv_wave1006_write_reg(DEV_SD3068, WAVE1006_REG_USER_RAM_START + 20, 1, &buf) != WAVE1006_EXIT
+ 1088              		.loc 1 840 2 view .LVU289
+ 1089              		.loc 1 840 6 is_stmt 0 view .LVU290
+ 1090 0042 0DF10703 		add	r3, sp, #7
+ 1091 0046 0122     		movs	r2, #1
+ 1092 0048 8021     		movs	r1, #128
+ 1093 004a FFF7FEFF 		bl	drv_wave1006_write_reg
+ 1094              	.LVL70:
+ 1095              		.loc 1 840 5 view .LVU291
+ 1096 004e 50BB     		cbnz	r0, .L75
+ 841:Device/Src/rtc.c **** 	{
+ 842:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 843:Device/Src/rtc.c **** 	}
+ 844:Device/Src/rtc.c **** 	if (wave1006_enter_test_mode(WAVE1006_TEST_PAD | WAVE1006_TEST_ADC) != WAVE1006_EXIT_OK)   //´Ë´¦Ò
+ 1097              		.loc 1 844 2 is_stmt 1 view .LVU292
+ 1098              		.loc 1 844 6 is_stmt 0 view .LVU293
+ 1099 0050 5020     		movs	r0, #80
+ 1100 0052 FFF7FEFF 		bl	wave1006_enter_test_mode
+ 1101              	.LVL71:
+ 1102              		.loc 1 844 5 view .LVU294
+ 1103 0056 40BB     		cbnz	r0, .L76
+ 845:Device/Src/rtc.c **** 	{
+ 846:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 847:Device/Src/rtc.c **** 	}
+ 848:Device/Src/rtc.c **** 	// UsbPrintf("pad change OK\n");
+ 849:Device/Src/rtc.c **** 	HAL_Delay(5);
+ 1104              		.loc 1 849 2 is_stmt 1 view .LVU295
+ 1105 0058 0520     		movs	r0, #5
+ 1106 005a FFF7FEFF 		bl	HAL_Delay
+ 1107              	.LVL72:
+ 850:Device/Src/rtc.c **** 	rtc_set_channel(channel, RTC_SD8825);
+ 1108              		.loc 1 850 2 view .LVU296
+ 1109 005e 0221     		movs	r1, #2
+ 1110 0060 2046     		mov	r0, r4
+ 1111 0062 FFF7FEFF 		bl	rtc_set_channel
+ 1112              	.LVL73:
+ 851:Device/Src/rtc.c **** 	if (drv_wave1006_read_reg(DEV_SD3068, WAVE1006_REG_USER_RAM_START + 19, 1, &buf) != WAVE1006_EXIT_
+ 1113              		.loc 1 851 2 view .LVU297
+ 1114              		.loc 1 851 6 is_stmt 0 view .LVU298
+ 1115 0066 0DF10703 		add	r3, sp, #7
+ 1116 006a 0122     		movs	r2, #1
+ 1117 006c 7F21     		movs	r1, #127
+ 1118 006e 0020     		movs	r0, #0
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 37
+
+
+ 1119 0070 FFF7FEFF 		bl	drv_wave1006_read_reg
+ 1120              	.LVL74:
+ 1121              		.loc 1 851 5 view .LVU299
+ 1122 0074 D8B9     		cbnz	r0, .L77
+ 852:Device/Src/rtc.c **** 	{
+ 853:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 854:Device/Src/rtc.c **** 	}
+ 855:Device/Src/rtc.c **** 	buf &= ~0x38;   //Çå0 RuleTempAdj[2:0]      //ADC³ß×Ó 5
+ 1123              		.loc 1 855 2 is_stmt 1 view .LVU300
+ 1124              		.loc 1 855 6 is_stmt 0 view .LVU301
+ 1125 0076 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 1126 007a 03F0C703 		and	r3, r3, #199
+ 1127 007e 8DF80730 		strb	r3, [sp, #7]
+ 856:Device/Src/rtc.c **** 	buf |=  0x28;
+ 1128              		.loc 1 856 2 is_stmt 1 view .LVU302
+ 1129              		.loc 1 856 6 is_stmt 0 view .LVU303
+ 1130 0082 43F02803 		orr	r3, r3, #40
+ 1131 0086 8DF80730 		strb	r3, [sp, #7]
+ 857:Device/Src/rtc.c **** 	if (drv_wave1006_write_reg(DEV_SD3068, WAVE1006_REG_USER_RAM_START + 19, 1, &buf) != WAVE1006_EXIT
+ 1132              		.loc 1 857 2 is_stmt 1 view .LVU304
+ 1133              		.loc 1 857 6 is_stmt 0 view .LVU305
+ 1134 008a 0DF10703 		add	r3, sp, #7
+ 1135 008e 0122     		movs	r2, #1
+ 1136 0090 7F21     		movs	r1, #127
+ 1137 0092 FFF7FEFF 		bl	drv_wave1006_write_reg
+ 1138              	.LVL75:
+ 1139              		.loc 1 857 5 view .LVU306
+ 1140 0096 10B1     		cbz	r0, .L72
+ 858:Device/Src/rtc.c **** 	{
+ 859:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 1141              		.loc 1 859 10 view .LVU307
+ 1142 0098 0220     		movs	r0, #2
+ 1143 009a 00E0     		b	.L72
+ 1144              	.L73:
+ 831:Device/Src/rtc.c **** 	}
+ 1145              		.loc 1 831 10 view .LVU308
+ 1146 009c 0220     		movs	r0, #2
+ 1147              	.L72:
+ 860:Device/Src/rtc.c **** 	}
+ 861:Device/Src/rtc.c **** 	return I2C_OK;
+ 862:Device/Src/rtc.c **** }
+ 1148              		.loc 1 862 1 view .LVU309
+ 1149 009e 02B0     		add	sp, sp, #8
+ 1150              	.LCFI26:
+ 1151              		.cfi_remember_state
+ 1152              		.cfi_def_cfa_offset 8
+ 1153              		@ sp needed
+ 1154 00a0 10BD     		pop	{r4, pc}
+ 1155              	.L74:
+ 1156              	.LCFI27:
+ 1157              		.cfi_restore_state
+ 836:Device/Src/rtc.c **** 	}
+ 1158              		.loc 1 836 10 view .LVU310
+ 1159 00a2 0220     		movs	r0, #2
+ 1160 00a4 FBE7     		b	.L72
+ 1161              	.L75:
+ 842:Device/Src/rtc.c **** 	}
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 38
+
+
+ 1162              		.loc 1 842 10 view .LVU311
+ 1163 00a6 0220     		movs	r0, #2
+ 1164 00a8 F9E7     		b	.L72
+ 1165              	.L76:
+ 846:Device/Src/rtc.c **** 	}
+ 1166              		.loc 1 846 10 view .LVU312
+ 1167 00aa 0220     		movs	r0, #2
+ 1168 00ac F7E7     		b	.L72
+ 1169              	.L77:
+ 853:Device/Src/rtc.c **** 	}
+ 1170              		.loc 1 853 10 view .LVU313
+ 1171 00ae 0220     		movs	r0, #2
+ 1172 00b0 F5E7     		b	.L72
+ 1173              		.cfi_endproc
+ 1174              	.LFE244:
+ 1176              		.section	.rodata.rtc_1006_exit_testmode.str1.4,"aMS",%progbits,1
+ 1177              		.align	2
+ 1178              	.LC6:
+ 1179 0000 7761726E 		.ascii	"warning! RTC exit testmode fail!\012\000"
+ 1179      696E6721 
+ 1179      20525443 
+ 1179      20657869 
+ 1179      74207465 
+ 1180              		.section	.text.rtc_1006_exit_testmode,"ax",%progbits
+ 1181              		.align	1
+ 1182              		.global	rtc_1006_exit_testmode
+ 1183              		.syntax unified
+ 1184              		.thumb
+ 1185              		.thumb_func
+ 1187              	rtc_1006_exit_testmode:
+ 1188              	.LVL76:
+ 1189              	.LFB245:
+ 863:Device/Src/rtc.c **** 
+ 864:Device/Src/rtc.c **** uint8_t rtc_1006_exit_testmode(uint8_t channel)
+ 865:Device/Src/rtc.c **** {
+ 1190              		.loc 1 865 1 is_stmt 1 view -0
+ 1191              		.cfi_startproc
+ 1192              		@ args = 0, pretend = 0, frame = 8
+ 1193              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1194              		.loc 1 865 1 is_stmt 0 view .LVU315
+ 1195 0000 10B5     		push	{r4, lr}
+ 1196              	.LCFI28:
+ 1197              		.cfi_def_cfa_offset 8
+ 1198              		.cfi_offset 4, -8
+ 1199              		.cfi_offset 14, -4
+ 1200 0002 82B0     		sub	sp, sp, #8
+ 1201              	.LCFI29:
+ 1202              		.cfi_def_cfa_offset 16
+ 866:Device/Src/rtc.c **** 	uint8_t buf = 0x00;
+ 1203              		.loc 1 866 2 is_stmt 1 view .LVU316
+ 1204              		.loc 1 866 10 is_stmt 0 view .LVU317
+ 1205 0004 0023     		movs	r3, #0
+ 1206 0006 8DF80730 		strb	r3, [sp, #7]
+ 867:Device/Src/rtc.c **** 		
+ 868:Device/Src/rtc.c **** 	// UsbPrintf("try to exit testmode\n");
+ 869:Device/Src/rtc.c **** 	buf = 0x00;
+ 1207              		.loc 1 869 2 is_stmt 1 view .LVU318
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 39
+
+
+ 870:Device/Src/rtc.c **** 	if (rtc_write_multi_bytes(RTC_8825_ADDRESS, WAVE1006_REG_EXTEND , &buf, 1) != I2C_OK) {
+ 1208              		.loc 1 870 2 view .LVU319
+ 1209              		.loc 1 870 6 is_stmt 0 view .LVU320
+ 1210 000a 0123     		movs	r3, #1
+ 1211 000c 0DF10702 		add	r2, sp, #7
+ 1212 0010 FD21     		movs	r1, #253
+ 1213 0012 6420     		movs	r0, #100
+ 1214              	.LVL77:
+ 1215              		.loc 1 870 6 view .LVU321
+ 1216 0014 FFF7FEFF 		bl	rtc_write_multi_bytes
+ 1217              	.LVL78:
+ 1218              		.loc 1 870 5 view .LVU322
+ 1219 0018 08B9     		cbnz	r0, .L83
+ 1220              	.L81:
+ 871:Device/Src/rtc.c **** 		// rtc_set_channel(channel, RTC_INIT_1006);
+ 872:Device/Src/rtc.c **** 		UsbPrintf("warning! RTC exit testmode fail!\n");
+ 873:Device/Src/rtc.c **** 		log_printf("warning! RTC exit testmode fail!\n");
+ 874:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 875:Device/Src/rtc.c **** 	} 
+ 876:Device/Src/rtc.c **** 	// rtc_set_channel(channel, RTC_INIT_1006);
+ 877:Device/Src/rtc.c **** 	// UsbPrintf("exit testmode success\n");
+ 878:Device/Src/rtc.c **** 	return I2C_OK;
+ 879:Device/Src/rtc.c **** }
+ 1221              		.loc 1 879 1 view .LVU323
+ 1222 001a 02B0     		add	sp, sp, #8
+ 1223              	.LCFI30:
+ 1224              		.cfi_remember_state
+ 1225              		.cfi_def_cfa_offset 8
+ 1226              		@ sp needed
+ 1227 001c 10BD     		pop	{r4, pc}
+ 1228              	.L83:
+ 1229              	.LCFI31:
+ 1230              		.cfi_restore_state
+ 872:Device/Src/rtc.c **** 		log_printf("warning! RTC exit testmode fail!\n");
+ 1231              		.loc 1 872 3 is_stmt 1 view .LVU324
+ 1232 001e 044C     		ldr	r4, .L84
+ 1233 0020 2046     		mov	r0, r4
+ 1234 0022 FFF7FEFF 		bl	UsbPrintf
+ 1235              	.LVL79:
+ 873:Device/Src/rtc.c **** 		return I2C_NO_ACK;
+ 1236              		.loc 1 873 3 view .LVU325
+ 1237 0026 2046     		mov	r0, r4
+ 1238 0028 FFF7FEFF 		bl	log_printf
+ 1239              	.LVL80:
+ 874:Device/Src/rtc.c **** 	} 
+ 1240              		.loc 1 874 3 view .LVU326
+ 874:Device/Src/rtc.c **** 	} 
+ 1241              		.loc 1 874 10 is_stmt 0 view .LVU327
+ 1242 002c 0220     		movs	r0, #2
+ 1243 002e F4E7     		b	.L81
+ 1244              	.L85:
+ 1245              		.align	2
+ 1246              	.L84:
+ 1247 0030 00000000 		.word	.LC6
+ 1248              		.cfi_endproc
+ 1249              	.LFE245:
+ 1251              		.section	.text.rtc_convert_temp_offset,"ax",%progbits
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 40
+
+
+ 1252              		.align	1
+ 1253              		.global	rtc_convert_temp_offset
+ 1254              		.syntax unified
+ 1255              		.thumb
+ 1256              		.thumb_func
+ 1258              	rtc_convert_temp_offset:
+ 1259              	.LVL81:
+ 1260              	.LFB246:
+ 880:Device/Src/rtc.c **** 
+ 881:Device/Src/rtc.c **** 
+ 882:Device/Src/rtc.c **** 
+ 883:Device/Src/rtc.c **** uint16_t rtc_convert_temp_offset(float rtc_adc, float system_temp)
+ 884:Device/Src/rtc.c **** {
+ 1261              		.loc 1 884 1 is_stmt 1 view -0
+ 1262              		.cfi_startproc
+ 1263              		@ args = 0, pretend = 0, frame = 0
+ 1264              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1265              		@ link register save eliminated.
+ 885:Device/Src/rtc.c **** 	uint16_t offset;
+ 1266              		.loc 1 885 2 view .LVU329
+ 886:Device/Src/rtc.c **** 	offset = (uint16_t)(((rtc_adc - (system_temp + 60) * 2)) * 2 - 48);//Ïê¼ûÐ¾Æ¬Éè¼ÆÊÖ²á£¬ÆðÊ¼-60¶È£¬
+ 1267              		.loc 1 886 2 view .LVU330
+ 1268              		.loc 1 886 47 is_stmt 0 view .LVU331
+ 1269 0000 DFED097A 		vldr.32	s15, .L87
+ 1270 0004 70EEA70A 		vadd.f32	s1, s1, s15
+ 1271              	.LVL82:
+ 1272              		.loc 1 886 53 view .LVU332
+ 1273 0008 70EEA00A 		vadd.f32	s1, s1, s1
+ 1274              		.loc 1 886 32 view .LVU333
+ 1275 000c 30EE600A 		vsub.f32	s0, s0, s1
+ 1276              	.LVL83:
+ 1277              		.loc 1 886 59 view .LVU334
+ 1278 0010 30EE000A 		vadd.f32	s0, s0, s0
+ 1279              		.loc 1 886 63 view .LVU335
+ 1280 0014 DFED057A 		vldr.32	s15, .L87+4
+ 1281 0018 30EE670A 		vsub.f32	s0, s0, s15
+ 1282              		.loc 1 886 9 view .LVU336
+ 1283 001c BCEEC00A 		vcvt.u32.f32	s0, s0
+ 1284              	.LVL84:
+ 887:Device/Src/rtc.c **** 	return offset;
+ 1285              		.loc 1 887 2 is_stmt 1 view .LVU337
+ 888:Device/Src/rtc.c **** }
+ 1286              		.loc 1 888 1 is_stmt 0 view .LVU338
+ 1287 0020 10EE103A 		vmov	r3, s0	@ int
+ 1288 0024 98B2     		uxth	r0, r3
+ 1289 0026 7047     		bx	lr
+ 1290              	.L88:
+ 1291              		.align	2
+ 1292              	.L87:
+ 1293 0028 00007042 		.word	1114636288
+ 1294 002c 00004042 		.word	1111490560
+ 1295              		.cfi_endproc
+ 1296              	.LFE246:
+ 1298              		.section	.text.rtc_init_test_cap,"ax",%progbits
+ 1299              		.align	1
+ 1300              		.global	rtc_init_test_cap
+ 1301              		.syntax unified
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 41
+
+
+ 1302              		.thumb
+ 1303              		.thumb_func
+ 1305              	rtc_init_test_cap:
+ 1306              	.LVL85:
+ 1307              	.LFB247:
+ 889:Device/Src/rtc.c **** 
+ 890:Device/Src/rtc.c **** uint16_t rtc_init_test_cap(float temp)
+ 891:Device/Src/rtc.c **** {
+ 1308              		.loc 1 891 1 is_stmt 1 view -0
+ 1309              		.cfi_startproc
+ 1310              		@ args = 0, pretend = 0, frame = 0
+ 1311              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1312              		@ link register save eliminated.
+ 892:Device/Src/rtc.c **** 	uint16_t cap = 480;
+ 1313              		.loc 1 892 2 view .LVU340
+ 893:Device/Src/rtc.c **** 	if (temp > -45 && temp <= -35)		//-40
+ 1314              		.loc 1 893 2 view .LVU341
+ 1315              		.loc 1 893 5 is_stmt 0 view .LVU342
+ 1316 0000 DFED2C7A 		vldr.32	s15, .L112
+ 1317 0004 B4EEE70A 		vcmpe.f32	s0, s15
+ 1318 0008 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1319 000c 06DD     		ble	.L90
+ 1320              		.loc 1 893 17 discriminator 1 view .LVU343
+ 1321 000e DFED2A7A 		vldr.32	s15, .L112+4
+ 1322 0012 B4EEE70A 		vcmpe.f32	s0, s15
+ 1323 0016 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1324 001a 3AD9     		bls	.L100
+ 1325              	.L90:
+ 894:Device/Src/rtc.c **** 	{
+ 895:Device/Src/rtc.c **** 		cap = 220;
+ 896:Device/Src/rtc.c **** 	}
+ 897:Device/Src/rtc.c **** 	else if (temp > -15 && temp <= -5)	//-10
+ 1326              		.loc 1 897 7 is_stmt 1 view .LVU344
+ 1327              		.loc 1 897 10 is_stmt 0 view .LVU345
+ 1328 001c FAEE0E7A 		vmov.f32	s15, #-1.5e+1
+ 1329 0020 B4EEE70A 		vcmpe.f32	s0, s15
+ 1330 0024 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1331 0028 06DD     		ble	.L93
+ 1332              		.loc 1 897 22 discriminator 1 view .LVU346
+ 1333 002a F9EE047A 		vmov.f32	s15, #-5.0e+0
+ 1334 002e B4EEE70A 		vcmpe.f32	s0, s15
+ 1335 0032 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1336 0036 2ED9     		bls	.L101
+ 1337              	.L93:
+ 898:Device/Src/rtc.c **** 	{
+ 899:Device/Src/rtc.c **** 		cap = 380;
+ 900:Device/Src/rtc.c **** 	}
+ 901:Device/Src/rtc.c **** 	else if (temp > 10 && temp <= 35)		//29
+ 1338              		.loc 1 901 7 is_stmt 1 view .LVU347
+ 1339              		.loc 1 901 10 is_stmt 0 view .LVU348
+ 1340 0038 F2EE047A 		vmov.f32	s15, #1.0e+1
+ 1341 003c B4EEE70A 		vcmpe.f32	s0, s15
+ 1342 0040 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1343 0044 06DD     		ble	.L95
+ 1344              		.loc 1 901 21 discriminator 1 view .LVU349
+ 1345 0046 DFED1D7A 		vldr.32	s15, .L112+8
+ 1346 004a B4EEE70A 		vcmpe.f32	s0, s15
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 42
+
+
+ 1347 004e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1348 0052 23D9     		bls	.L102
+ 1349              	.L95:
+ 902:Device/Src/rtc.c **** 	{
+ 903:Device/Src/rtc.c **** 		cap = 480;
+ 904:Device/Src/rtc.c **** 	}
+ 905:Device/Src/rtc.c **** 	else if (temp > 55 && temp <= 65)		//60
+ 1350              		.loc 1 905 7 is_stmt 1 view .LVU350
+ 1351              		.loc 1 905 10 is_stmt 0 view .LVU351
+ 1352 0054 DFED1A7A 		vldr.32	s15, .L112+12
+ 1353 0058 B4EEE70A 		vcmpe.f32	s0, s15
+ 1354 005c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1355 0060 06DD     		ble	.L97
+ 1356              		.loc 1 905 21 discriminator 1 view .LVU352
+ 1357 0062 DFED187A 		vldr.32	s15, .L112+16
+ 1358 0066 B4EEE70A 		vcmpe.f32	s0, s15
+ 1359 006a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1360 006e 18D9     		bls	.L103
+ 1361              	.L97:
+ 906:Device/Src/rtc.c **** 	{
+ 907:Device/Src/rtc.c **** 		cap = 380;
+ 908:Device/Src/rtc.c **** 	}
+ 909:Device/Src/rtc.c **** 	else if (temp > 80 && temp <= 90)		//85
+ 1362              		.loc 1 909 7 is_stmt 1 view .LVU353
+ 1363              		.loc 1 909 10 is_stmt 0 view .LVU354
+ 1364 0070 DFED157A 		vldr.32	s15, .L112+20
+ 1365 0074 B4EEE70A 		vcmpe.f32	s0, s15
+ 1366 0078 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1367 007c 14DD     		ble	.L111
+ 1368              		.loc 1 909 21 discriminator 1 view .LVU355
+ 1369 007e DFED137A 		vldr.32	s15, .L112+24
+ 1370 0082 B4EEE70A 		vcmpe.f32	s0, s15
+ 1371 0086 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1372 008a 10D9     		bls	.L105
+ 892:Device/Src/rtc.c **** 	if (temp > -45 && temp <= -35)		//-40
+ 1373              		.loc 1 892 11 view .LVU356
+ 1374 008c 4FF4F070 		mov	r0, #480
+ 1375 0090 7047     		bx	lr
+ 1376              	.L100:
+ 895:Device/Src/rtc.c **** 	}
+ 1377              		.loc 1 895 7 view .LVU357
+ 1378 0092 DC20     		movs	r0, #220
+ 1379 0094 7047     		bx	lr
+ 1380              	.L101:
+ 899:Device/Src/rtc.c **** 	}
+ 1381              		.loc 1 899 7 view .LVU358
+ 1382 0096 4FF4BE70 		mov	r0, #380
+ 1383 009a 7047     		bx	lr
+ 1384              	.L102:
+ 903:Device/Src/rtc.c **** 	}
+ 1385              		.loc 1 903 7 view .LVU359
+ 1386 009c 4FF4F070 		mov	r0, #480
+ 1387 00a0 7047     		bx	lr
+ 1388              	.L103:
+ 907:Device/Src/rtc.c **** 	}
+ 1389              		.loc 1 907 7 view .LVU360
+ 1390 00a2 4FF4BE70 		mov	r0, #380
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 43
+
+
+ 1391 00a6 7047     		bx	lr
+ 1392              	.L111:
+ 892:Device/Src/rtc.c **** 	if (temp > -45 && temp <= -35)		//-40
+ 1393              		.loc 1 892 11 view .LVU361
+ 1394 00a8 4FF4F070 		mov	r0, #480
+ 1395 00ac 7047     		bx	lr
+ 1396              	.L105:
+ 910:Device/Src/rtc.c **** 	{
+ 911:Device/Src/rtc.c **** 		cap = 220;
+ 1397              		.loc 1 911 7 view .LVU362
+ 1398 00ae DC20     		movs	r0, #220
+ 1399              	.LVL86:
+ 912:Device/Src/rtc.c **** 	}
+ 913:Device/Src/rtc.c **** 	return cap;
+ 1400              		.loc 1 913 2 is_stmt 1 view .LVU363
+ 914:Device/Src/rtc.c **** }
+ 1401              		.loc 1 914 1 is_stmt 0 view .LVU364
+ 1402 00b0 7047     		bx	lr
+ 1403              	.L113:
+ 1404 00b2 00BF     		.align	2
+ 1405              	.L112:
+ 1406 00b4 000034C2 		.word	-1036779520
+ 1407 00b8 00000CC2 		.word	-1039400960
+ 1408 00bc 00000C42 		.word	1108082688
+ 1409 00c0 00005C42 		.word	1113325568
+ 1410 00c4 00008242 		.word	1115815936
+ 1411 00c8 0000A042 		.word	1117782016
+ 1412 00cc 0000B442 		.word	1119092736
+ 1413              		.cfi_endproc
+ 1414              	.LFE247:
+ 1416              		.section	.text.cap_list_to_uint,"ax",%progbits
+ 1417              		.align	1
+ 1418              		.global	cap_list_to_uint
+ 1419              		.syntax unified
+ 1420              		.thumb
+ 1421              		.thumb_func
+ 1423              	cap_list_to_uint:
+ 1424              	.LVL87:
+ 1425              	.LFB248:
+ 915:Device/Src/rtc.c **** 
+ 916:Device/Src/rtc.c **** /*
+ 917:Device/Src/rtc.c **** OSCCapSel<12:11>	"Õñµ´Æ÷Òý½ÅOSCINºÍOSCOUT´Öµ÷µçÈÝÑ¡ÔñÏî¡£
+ 918:Device/Src/rtc.c **** 00:0pF
+ 919:Device/Src/rtc.c **** 01:1.5pF
+ 920:Device/Src/rtc.c **** 10:3.0pF
+ 921:Device/Src/rtc.c **** 11:4.5pF"	
+ 922:Device/Src/rtc.c **** OSCCapSel<10:6>	"Õñµ´Æ÷Òý½ÅOSCINºÍOSCOUT´Î¼¶´Öµ÷µçÈÝÑ¡ÔñÏî¡£²½½øÎª408fF"
+ 923:Device/Src/rtc.c **** OSCCapSel<5:3>	"Õñµ´Æ÷Òý½ÅOSCINÏ¸µ÷µçÈÝÑ¡ÔñÏî¡£²½½øÎª51fF"
+ 924:Device/Src/rtc.c **** OSCCapSel<2:0>	"Õñµ´Æ÷Òý½ÅOSCOUTÏ¸µ÷µçÈÝÑ¡ÔñÏî¡£²½½øÎª51fF"	
+ 925:Device/Src/rtc.c **** */
+ 926:Device/Src/rtc.c **** // float cap_uint_to_float(uint8_t cap1, uint8_t cap2)
+ 927:Device/Src/rtc.c **** // {
+ 928:Device/Src/rtc.c **** // 	float convert = 0;
+ 929:Device/Src/rtc.c **** // 	uint16_t cap_config = 0;
+ 930:Device/Src/rtc.c **** // 	cap_config = ((cap2 & 0x07) << 5) | (cap1 >> 3);
+ 931:Device/Src/rtc.c **** // 	convert = 1.5 * ((cap2 >> 3) & 0x03) + cap_config * 0.051;
+ 932:Device/Src/rtc.c **** // 	return convert;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 44
+
+
+ 933:Device/Src/rtc.c **** // }
+ 934:Device/Src/rtc.c **** 
+ 935:Device/Src/rtc.c **** // float cap_config_to_float(uint8_t mode, uint8_t cap)
+ 936:Device/Src/rtc.c **** // {
+ 937:Device/Src/rtc.c **** // 	float convert = 0;
+ 938:Device/Src/rtc.c **** // 	convert = 1.5 * mode + cap * 0.051;
+ 939:Device/Src/rtc.c **** // 	return convert;
+ 940:Device/Src/rtc.c **** // }
+ 941:Device/Src/rtc.c **** 
+ 942:Device/Src/rtc.c **** // void cap_config_to_uint(uint8_t mode, uint8_t cap, uint8_t* cap_buf)
+ 943:Device/Src/rtc.c **** // {
+ 944:Device/Src/rtc.c **** // 	cap_buf[0] = ((cap & 0xff) << 3) | (cap & 0x07);
+ 945:Device/Src/rtc.c **** // 	cap_buf[1] = ((mode & 0x03) << 3) | ((cap & 0xff) >> 5);
+ 946:Device/Src/rtc.c **** // }
+ 947:Device/Src/rtc.c **** // void cap_float_to_uint(float f_cap, uint8_t *p_dat1, uint8_t *p_dat2)
+ 948:Device/Src/rtc.c **** // {
+ 949:Device/Src/rtc.c **** // 	float convert;
+ 950:Device/Src/rtc.c **** // 	uint16_t cap_config = 0;
+ 951:Device/Src/rtc.c **** // 	convert = f_cap - SD8800_CAP_MIN;//¹Ì¶¨´óµçÈÝ
+ 952:Device/Src/rtc.c **** // 	cap_config = convert / 0.051;//¾ØÕóÐ¡µçÈÝ
+ 953:Device/Src/rtc.c **** // 	*p_dat2 = (SD8800_CAP_MODE << 3) | ((cap_config & 0xff) >> 5);
+ 954:Device/Src/rtc.c **** // 	*p_dat1 = ((cap_config & 0xff) << 3) | (cap_config & 0x07);
+ 955:Device/Src/rtc.c **** 
+ 956:Device/Src/rtc.c **** // }
+ 957:Device/Src/rtc.c **** 
+ 958:Device/Src/rtc.c **** void cap_list_to_uint(uint16_t number, uint8_t* cap_buf)
+ 959:Device/Src/rtc.c **** {
+ 1426              		.loc 1 959 1 is_stmt 1 view -0
+ 1427              		.cfi_startproc
+ 1428              		@ args = 0, pretend = 0, frame = 0
+ 1429              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1430              		@ link register save eliminated.
+ 960:Device/Src/rtc.c **** 	if (number < SD8800_CAP_LIST_MAX) {
+ 1431              		.loc 1 960 2 view .LVU366
+ 1432              		.loc 1 960 5 is_stmt 0 view .LVU367
+ 1433 0000 B0F5127F 		cmp	r0, #584
+ 1434 0004 07D2     		bcs	.L114
+ 961:Device/Src/rtc.c **** 		cap_buf[1] = g_capList[number][0];
+ 1435              		.loc 1 961 3 is_stmt 1 view .LVU368
+ 1436              		.loc 1 961 33 is_stmt 0 view .LVU369
+ 1437 0006 044B     		ldr	r3, .L116
+ 1438 0008 13F81020 		ldrb	r2, [r3, r0, lsl #1]	@ zero_extendqisi2
+ 1439              		.loc 1 961 14 view .LVU370
+ 1440 000c 4A70     		strb	r2, [r1, #1]
+ 962:Device/Src/rtc.c **** 		cap_buf[0] = g_capList[number][1];
+ 1441              		.loc 1 962 3 is_stmt 1 view .LVU371
+ 1442              		.loc 1 962 33 is_stmt 0 view .LVU372
+ 1443 000e 03EB4000 		add	r0, r3, r0, lsl #1
+ 1444              	.LVL88:
+ 1445              		.loc 1 962 33 view .LVU373
+ 1446 0012 4378     		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+ 1447              		.loc 1 962 14 view .LVU374
+ 1448 0014 0B70     		strb	r3, [r1]
+ 1449              	.L114:
+ 963:Device/Src/rtc.c **** 	}
+ 964:Device/Src/rtc.c **** }
+ 1450              		.loc 1 964 1 view .LVU375
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 45
+
+
+ 1451 0016 7047     		bx	lr
+ 1452              	.L117:
+ 1453              		.align	2
+ 1454              	.L116:
+ 1455 0018 00000000 		.word	.LANCHOR0
+ 1456              		.cfi_endproc
+ 1457              	.LFE248:
+ 1459              		.global	__aeabi_i2d
+ 1460              		.global	__aeabi_dmul
+ 1461              		.global	__aeabi_d2f
+ 1462              		.global	__aeabi_f2d
+ 1463              		.global	__aeabi_dsub
+ 1464              		.global	__aeabi_d2uiz
+ 1465              		.global	__aeabi_ddiv
+ 1466              		.section	.text.cap_list_number_convert,"ax",%progbits
+ 1467              		.align	1
+ 1468              		.global	cap_list_number_convert
+ 1469              		.syntax unified
+ 1470              		.thumb
+ 1471              		.thumb_func
+ 1473              	cap_list_number_convert:
+ 1474              	.LVL89:
+ 1475              	.LFB249:
+ 965:Device/Src/rtc.c **** 
+ 966:Device/Src/rtc.c **** // 
+ 967:Device/Src/rtc.c **** uint16_t cap_list_number_convert(uint16_t start, float ppm)
+ 968:Device/Src/rtc.c **** {
+ 1476              		.loc 1 968 1 is_stmt 1 view -0
+ 1477              		.cfi_startproc
+ 1478              		@ args = 0, pretend = 0, frame = 0
+ 1479              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1480              		.loc 1 968 1 is_stmt 0 view .LVU377
+ 1481 0000 D0B5     		push	{r4, r6, r7, lr}
+ 1482              	.LCFI32:
+ 1483              		.cfi_def_cfa_offset 16
+ 1484              		.cfi_offset 4, -16
+ 1485              		.cfi_offset 6, -12
+ 1486              		.cfi_offset 7, -8
+ 1487              		.cfi_offset 14, -4
+ 1488 0002 2DED028B 		vpush.64	{d8}
+ 1489              	.LCFI33:
+ 1490              		.cfi_def_cfa_offset 24
+ 1491              		.cfi_offset 80, -24
+ 1492              		.cfi_offset 81, -20
+ 1493 0006 0446     		mov	r4, r0
+ 1494 0008 B0EE408A 		vmov.f32	s16, s0
+ 969:Device/Src/rtc.c **** 	float sum3d6 = 3.6* CAP_STEP_3D6;
+ 1495              		.loc 1 969 2 is_stmt 1 view .LVU378
+ 1496              	.LVL90:
+ 970:Device/Src/rtc.c **** 	float sum2d4 = 2.4 * (CAP_STEP_2D4 - CAP_STEP_3D6);
+ 1497              		.loc 1 970 2 view .LVU379
+ 971:Device/Src/rtc.c **** 	float sum1d2 = 1.2 * (CAP_STEP_1D2 - CAP_STEP_2D4);
+ 1498              		.loc 1 971 2 view .LVU380
+ 972:Device/Src/rtc.c **** 	float sum0d8 = 0.8 * (CAP_STEP_0D8 - CAP_STEP_1D2);
+ 1499              		.loc 1 972 2 view .LVU381
+ 973:Device/Src/rtc.c **** 	float sum0d6 = 0.6 * (CAP_STEP_0D6 - CAP_STEP_0D8);
+ 1500              		.loc 1 973 2 view .LVU382
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 46
+
+
+ 974:Device/Src/rtc.c **** 	float sum0d4 = 0.4 * (start - CAP_STEP_0D6);
+ 1501              		.loc 1 974 2 view .LVU383
+ 1502              		.loc 1 974 21 is_stmt 0 view .LVU384
+ 1503 000c 6638     		subs	r0, r0, #102
+ 1504              	.LVL91:
+ 1505              		.loc 1 974 21 view .LVU385
+ 1506 000e FFF7FEFF 		bl	__aeabi_i2d
+ 1507              	.LVL92:
+ 1508              		.loc 1 974 21 view .LVU386
+ 1509 0012 6BA3     		adr	r3, .L146+64
+ 1510 0014 D3E90023 		ldrd	r2, [r3]
+ 1511 0018 FFF7FEFF 		bl	__aeabi_dmul
+ 1512              	.LVL93:
+ 1513              		.loc 1 974 8 view .LVU387
+ 1514 001c FFF7FEFF 		bl	__aeabi_d2f
+ 1515              	.LVL94:
+ 1516 0020 00EE100A 		vmov	s0, r0
+ 1517              	.LVL95:
+ 975:Device/Src/rtc.c **** 	uint16_t number = 1;
+ 1518              		.loc 1 975 2 is_stmt 1 view .LVU388
+ 976:Device/Src/rtc.c **** 	if (ppm < sum0d4) {
+ 1519              		.loc 1 976 2 view .LVU389
+ 1520              		.loc 1 976 5 is_stmt 0 view .LVU390
+ 1521 0024 B4EEC80A 		vcmpe.f32	s0, s16
+ 1522 0028 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1523 002c 16DD     		ble	.L138
+ 977:Device/Src/rtc.c **** 		number = start - ppm * 2.5;
+ 1524              		.loc 1 977 3 is_stmt 1 view .LVU391
+ 1525              		.loc 1 977 24 is_stmt 0 view .LVU392
+ 1526 002e 18EE100A 		vmov	r0, s16
+ 1527              	.LVL96:
+ 1528              		.loc 1 977 24 view .LVU393
+ 1529 0032 FFF7FEFF 		bl	__aeabi_f2d
+ 1530              	.LVL97:
+ 1531              		.loc 1 977 24 view .LVU394
+ 1532 0036 0022     		movs	r2, #0
+ 1533 0038 594B     		ldr	r3, .L146+32
+ 1534 003a FFF7FEFF 		bl	__aeabi_dmul
+ 1535              	.LVL98:
+ 1536 003e 0646     		mov	r6, r0
+ 1537 0040 0F46     		mov	r7, r1
+ 1538              		.loc 1 977 18 view .LVU395
+ 1539 0042 2046     		mov	r0, r4
+ 1540 0044 FFF7FEFF 		bl	__aeabi_i2d
+ 1541              	.LVL99:
+ 1542 0048 3246     		mov	r2, r6
+ 1543 004a 3B46     		mov	r3, r7
+ 1544 004c FFF7FEFF 		bl	__aeabi_dsub
+ 1545              	.LVL100:
+ 1546              		.loc 1 977 10 view .LVU396
+ 1547 0050 FFF7FEFF 		bl	__aeabi_d2uiz
+ 1548              	.LVL101:
+ 1549 0054 80B2     		uxth	r0, r0
+ 1550              	.LVL102:
+ 1551              	.L121:
+ 978:Device/Src/rtc.c **** 	} else {
+ 979:Device/Src/rtc.c **** 		ppm -= sum0d4;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 47
+
+
+ 980:Device/Src/rtc.c **** 		if (ppm < sum0d6) {
+ 981:Device/Src/rtc.c **** 			number = CAP_STEP_0D6 - ppm / 0.6;
+ 982:Device/Src/rtc.c **** 		} else {
+ 983:Device/Src/rtc.c **** 			ppm -= sum0d6;
+ 984:Device/Src/rtc.c **** 			if (ppm < sum0d8) {
+ 985:Device/Src/rtc.c **** 				number = CAP_STEP_0D8 - ppm / 0.8;
+ 986:Device/Src/rtc.c **** 			} else {
+ 987:Device/Src/rtc.c **** 				ppm -= sum0d8;
+ 988:Device/Src/rtc.c **** 				if (ppm < sum1d2) {
+ 989:Device/Src/rtc.c **** 					number = CAP_STEP_1D2 - ppm / 1.2;
+ 990:Device/Src/rtc.c **** 				} else {
+ 991:Device/Src/rtc.c **** 					ppm -= sum1d2;
+ 992:Device/Src/rtc.c **** 					if (ppm < sum2d4) {
+ 993:Device/Src/rtc.c **** 						number = CAP_STEP_2D4 - ppm / 2.4;
+ 994:Device/Src/rtc.c **** 					} else {
+ 995:Device/Src/rtc.c **** 						ppm -= sum2d4;
+ 996:Device/Src/rtc.c **** 						if (ppm < sum3d6) {
+ 997:Device/Src/rtc.c **** 							number = CAP_STEP_3D6 - ppm / 3.6;
+ 998:Device/Src/rtc.c **** 						} else {
+ 999:Device/Src/rtc.c **** 							number = 1;
+1000:Device/Src/rtc.c **** 						}
+1001:Device/Src/rtc.c **** 					}
+1002:Device/Src/rtc.c **** 				}
+1003:Device/Src/rtc.c **** 			}
+1004:Device/Src/rtc.c **** 		}
+1005:Device/Src/rtc.c **** 	}
+1006:Device/Src/rtc.c **** 	return number;
+ 1552              		.loc 1 1006 2 is_stmt 1 view .LVU397
+1007:Device/Src/rtc.c **** }
+ 1553              		.loc 1 1007 1 is_stmt 0 view .LVU398
+ 1554 0056 BDEC028B 		vldm	sp!, {d8}
+ 1555              	.LCFI34:
+ 1556              		.cfi_remember_state
+ 1557              		.cfi_restore 80
+ 1558              		.cfi_restore 81
+ 1559              		.cfi_def_cfa_offset 16
+ 1560              	.LVL103:
+ 1561              		.loc 1 1007 1 view .LVU399
+ 1562 005a D0BD     		pop	{r4, r6, r7, pc}
+ 1563              	.LVL104:
+ 1564              	.L138:
+ 1565              	.LCFI35:
+ 1566              		.cfi_restore_state
+ 979:Device/Src/rtc.c **** 		if (ppm < sum0d6) {
+ 1567              		.loc 1 979 3 is_stmt 1 view .LVU400
+ 979:Device/Src/rtc.c **** 		if (ppm < sum0d6) {
+ 1568              		.loc 1 979 7 is_stmt 0 view .LVU401
+ 1569 005c 38EE408A 		vsub.f32	s16, s16, s0
+ 1570              	.LVL105:
+ 980:Device/Src/rtc.c **** 			number = CAP_STEP_0D6 - ppm / 0.6;
+ 1571              		.loc 1 980 3 is_stmt 1 view .LVU402
+ 980:Device/Src/rtc.c **** 			number = CAP_STEP_0D6 - ppm / 0.6;
+ 1572              		.loc 1 980 6 is_stmt 0 view .LVU403
+ 1573 0060 DFED507A 		vldr.32	s15, .L146+36
+ 1574 0064 B4EEE78A 		vcmpe.f32	s16, s15
+ 1575 0068 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1576 006c 12D5     		bpl	.L139
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 48
+
+
+ 981:Device/Src/rtc.c **** 		} else {
+ 1577              		.loc 1 981 4 is_stmt 1 view .LVU404
+ 981:Device/Src/rtc.c **** 		} else {
+ 1578              		.loc 1 981 32 is_stmt 0 view .LVU405
+ 1579 006e 18EE100A 		vmov	r0, s16
+ 1580              	.LVL106:
+ 981:Device/Src/rtc.c **** 		} else {
+ 1581              		.loc 1 981 32 view .LVU406
+ 1582 0072 FFF7FEFF 		bl	__aeabi_f2d
+ 1583              	.LVL107:
+ 981:Device/Src/rtc.c **** 		} else {
+ 1584              		.loc 1 981 32 view .LVU407
+ 1585 0076 42A3     		adr	r3, .L146
+ 1586 0078 D3E90023 		ldrd	r2, [r3]
+ 1587 007c FFF7FEFF 		bl	__aeabi_ddiv
+ 1588              	.LVL108:
+ 1589 0080 0246     		mov	r2, r0
+ 1590 0082 0B46     		mov	r3, r1
+ 981:Device/Src/rtc.c **** 		} else {
+ 1591              		.loc 1 981 26 view .LVU408
+ 1592 0084 0020     		movs	r0, #0
+ 1593 0086 4849     		ldr	r1, .L146+40
+ 1594 0088 FFF7FEFF 		bl	__aeabi_dsub
+ 1595              	.LVL109:
+ 981:Device/Src/rtc.c **** 		} else {
+ 1596              		.loc 1 981 11 view .LVU409
+ 1597 008c FFF7FEFF 		bl	__aeabi_d2uiz
+ 1598              	.LVL110:
+ 1599 0090 80B2     		uxth	r0, r0
+ 1600              	.LVL111:
+ 981:Device/Src/rtc.c **** 		} else {
+ 1601              		.loc 1 981 11 view .LVU410
+ 1602 0092 E0E7     		b	.L121
+ 1603              	.LVL112:
+ 1604              	.L139:
+ 983:Device/Src/rtc.c **** 			if (ppm < sum0d8) {
+ 1605              		.loc 1 983 4 is_stmt 1 view .LVU411
+ 983:Device/Src/rtc.c **** 			if (ppm < sum0d8) {
+ 1606              		.loc 1 983 8 is_stmt 0 view .LVU412
+ 1607 0094 DFED437A 		vldr.32	s15, .L146+36
+ 1608 0098 38EE678A 		vsub.f32	s16, s16, s15
+ 1609              	.LVL113:
+ 984:Device/Src/rtc.c **** 				number = CAP_STEP_0D8 - ppm / 0.8;
+ 1610              		.loc 1 984 4 is_stmt 1 view .LVU413
+ 984:Device/Src/rtc.c **** 				number = CAP_STEP_0D8 - ppm / 0.8;
+ 1611              		.loc 1 984 7 is_stmt 0 view .LVU414
+ 1612 009c F3EE007A 		vmov.f32	s15, #1.6e+1
+ 1613 00a0 B4EEE78A 		vcmpe.f32	s16, s15
+ 1614 00a4 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1615 00a8 12D5     		bpl	.L140
+ 985:Device/Src/rtc.c **** 			} else {
+ 1616              		.loc 1 985 5 is_stmt 1 view .LVU415
+ 985:Device/Src/rtc.c **** 			} else {
+ 1617              		.loc 1 985 33 is_stmt 0 view .LVU416
+ 1618 00aa 18EE100A 		vmov	r0, s16
+ 1619              	.LVL114:
+ 985:Device/Src/rtc.c **** 			} else {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 49
+
+
+ 1620              		.loc 1 985 33 view .LVU417
+ 1621 00ae FFF7FEFF 		bl	__aeabi_f2d
+ 1622              	.LVL115:
+ 985:Device/Src/rtc.c **** 			} else {
+ 1623              		.loc 1 985 33 view .LVU418
+ 1624 00b2 35A3     		adr	r3, .L146+8
+ 1625 00b4 D3E90023 		ldrd	r2, [r3]
+ 1626 00b8 FFF7FEFF 		bl	__aeabi_ddiv
+ 1627              	.LVL116:
+ 1628 00bc 0246     		mov	r2, r0
+ 1629 00be 0B46     		mov	r3, r1
+ 985:Device/Src/rtc.c **** 			} else {
+ 1630              		.loc 1 985 27 view .LVU419
+ 1631 00c0 0020     		movs	r0, #0
+ 1632 00c2 3A49     		ldr	r1, .L146+44
+ 1633 00c4 FFF7FEFF 		bl	__aeabi_dsub
+ 1634              	.LVL117:
+ 985:Device/Src/rtc.c **** 			} else {
+ 1635              		.loc 1 985 12 view .LVU420
+ 1636 00c8 FFF7FEFF 		bl	__aeabi_d2uiz
+ 1637              	.LVL118:
+ 1638 00cc 80B2     		uxth	r0, r0
+ 1639              	.LVL119:
+ 985:Device/Src/rtc.c **** 			} else {
+ 1640              		.loc 1 985 12 view .LVU421
+ 1641 00ce C2E7     		b	.L121
+ 1642              	.LVL120:
+ 1643              	.L140:
+ 987:Device/Src/rtc.c **** 				if (ppm < sum1d2) {
+ 1644              		.loc 1 987 5 is_stmt 1 view .LVU422
+ 987:Device/Src/rtc.c **** 				if (ppm < sum1d2) {
+ 1645              		.loc 1 987 9 is_stmt 0 view .LVU423
+ 1646 00d0 F3EE007A 		vmov.f32	s15, #1.6e+1
+ 1647 00d4 38EE678A 		vsub.f32	s16, s16, s15
+ 1648              	.LVL121:
+ 988:Device/Src/rtc.c **** 					number = CAP_STEP_1D2 - ppm / 1.2;
+ 1649              		.loc 1 988 5 is_stmt 1 view .LVU424
+ 988:Device/Src/rtc.c **** 					number = CAP_STEP_1D2 - ppm / 1.2;
+ 1650              		.loc 1 988 8 is_stmt 0 view .LVU425
+ 1651 00d8 F3EE087A 		vmov.f32	s15, #2.4e+1
+ 1652 00dc B4EEE78A 		vcmpe.f32	s16, s15
+ 1653 00e0 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1654 00e4 12D5     		bpl	.L141
+ 989:Device/Src/rtc.c **** 				} else {
+ 1655              		.loc 1 989 6 is_stmt 1 view .LVU426
+ 989:Device/Src/rtc.c **** 				} else {
+ 1656              		.loc 1 989 34 is_stmt 0 view .LVU427
+ 1657 00e6 18EE100A 		vmov	r0, s16
+ 1658              	.LVL122:
+ 989:Device/Src/rtc.c **** 				} else {
+ 1659              		.loc 1 989 34 view .LVU428
+ 1660 00ea FFF7FEFF 		bl	__aeabi_f2d
+ 1661              	.LVL123:
+ 989:Device/Src/rtc.c **** 				} else {
+ 1662              		.loc 1 989 34 view .LVU429
+ 1663 00ee 4FF03332 		mov	r2, #858993459
+ 1664 00f2 2F4B     		ldr	r3, .L146+48
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 50
+
+
+ 1665 00f4 FFF7FEFF 		bl	__aeabi_ddiv
+ 1666              	.LVL124:
+ 1667 00f8 0246     		mov	r2, r0
+ 1668 00fa 0B46     		mov	r3, r1
+ 989:Device/Src/rtc.c **** 				} else {
+ 1669              		.loc 1 989 28 view .LVU430
+ 1670 00fc 0020     		movs	r0, #0
+ 1671 00fe 2D49     		ldr	r1, .L146+52
+ 1672 0100 FFF7FEFF 		bl	__aeabi_dsub
+ 1673              	.LVL125:
+ 989:Device/Src/rtc.c **** 				} else {
+ 1674              		.loc 1 989 13 view .LVU431
+ 1675 0104 FFF7FEFF 		bl	__aeabi_d2uiz
+ 1676              	.LVL126:
+ 1677 0108 80B2     		uxth	r0, r0
+ 1678              	.LVL127:
+ 989:Device/Src/rtc.c **** 				} else {
+ 1679              		.loc 1 989 13 view .LVU432
+ 1680 010a A4E7     		b	.L121
+ 1681              	.LVL128:
+ 1682              	.L141:
+ 991:Device/Src/rtc.c **** 					if (ppm < sum2d4) {
+ 1683              		.loc 1 991 6 is_stmt 1 view .LVU433
+ 991:Device/Src/rtc.c **** 					if (ppm < sum2d4) {
+ 1684              		.loc 1 991 10 is_stmt 0 view .LVU434
+ 1685 010c F3EE087A 		vmov.f32	s15, #2.4e+1
+ 1686 0110 38EE678A 		vsub.f32	s16, s16, s15
+ 1687              	.LVL129:
+ 992:Device/Src/rtc.c **** 						number = CAP_STEP_2D4 - ppm / 2.4;
+ 1688              		.loc 1 992 6 is_stmt 1 view .LVU435
+ 992:Device/Src/rtc.c **** 						number = CAP_STEP_2D4 - ppm / 2.4;
+ 1689              		.loc 1 992 9 is_stmt 0 view .LVU436
+ 1690 0114 B5EEC08A 		vcmpe.f32	s16, #0
+ 1691 0118 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1692 011c 19D4     		bmi	.L145
+ 995:Device/Src/rtc.c **** 						if (ppm < sum3d6) {
+ 1693              		.loc 1 995 7 is_stmt 1 view .LVU437
+ 996:Device/Src/rtc.c **** 							number = CAP_STEP_3D6 - ppm / 3.6;
+ 1694              		.loc 1 996 7 view .LVU438
+ 996:Device/Src/rtc.c **** 							number = CAP_STEP_3D6 - ppm / 3.6;
+ 1695              		.loc 1 996 10 is_stmt 0 view .LVU439
+ 1696 011e DFED267A 		vldr.32	s15, .L146+56
+ 1697 0122 B4EEE78A 		vcmpe.f32	s16, s15
+ 1698 0126 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1699 012a 25D5     		bpl	.L143
+ 997:Device/Src/rtc.c **** 						} else {
+ 1700              		.loc 1 997 8 is_stmt 1 view .LVU440
+ 997:Device/Src/rtc.c **** 						} else {
+ 1701              		.loc 1 997 36 is_stmt 0 view .LVU441
+ 1702 012c 18EE100A 		vmov	r0, s16
+ 1703              	.LVL130:
+ 997:Device/Src/rtc.c **** 						} else {
+ 1704              		.loc 1 997 36 view .LVU442
+ 1705 0130 FFF7FEFF 		bl	__aeabi_f2d
+ 1706              	.LVL131:
+ 997:Device/Src/rtc.c **** 						} else {
+ 1707              		.loc 1 997 36 view .LVU443
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 51
+
+
+ 1708 0134 16A3     		adr	r3, .L146+16
+ 1709 0136 D3E90023 		ldrd	r2, [r3]
+ 1710 013a FFF7FEFF 		bl	__aeabi_ddiv
+ 1711              	.LVL132:
+ 1712 013e 0246     		mov	r2, r0
+ 1713 0140 0B46     		mov	r3, r1
+ 997:Device/Src/rtc.c **** 						} else {
+ 1714              		.loc 1 997 30 view .LVU444
+ 1715 0142 0020     		movs	r0, #0
+ 1716 0144 1D49     		ldr	r1, .L146+60
+ 1717 0146 FFF7FEFF 		bl	__aeabi_dsub
+ 1718              	.LVL133:
+ 997:Device/Src/rtc.c **** 						} else {
+ 1719              		.loc 1 997 15 view .LVU445
+ 1720 014a FFF7FEFF 		bl	__aeabi_d2uiz
+ 1721              	.LVL134:
+ 1722 014e 80B2     		uxth	r0, r0
+ 1723              	.LVL135:
+ 997:Device/Src/rtc.c **** 						} else {
+ 1724              		.loc 1 997 15 view .LVU446
+ 1725 0150 81E7     		b	.L121
+ 1726              	.LVL136:
+ 1727              	.L145:
+ 993:Device/Src/rtc.c **** 					} else {
+ 1728              		.loc 1 993 7 is_stmt 1 view .LVU447
+ 993:Device/Src/rtc.c **** 					} else {
+ 1729              		.loc 1 993 35 is_stmt 0 view .LVU448
+ 1730 0152 18EE100A 		vmov	r0, s16
+ 1731              	.LVL137:
+ 993:Device/Src/rtc.c **** 					} else {
+ 1732              		.loc 1 993 35 view .LVU449
+ 1733 0156 FFF7FEFF 		bl	__aeabi_f2d
+ 1734              	.LVL138:
+ 993:Device/Src/rtc.c **** 					} else {
+ 1735              		.loc 1 993 35 view .LVU450
+ 1736 015a 0FA3     		adr	r3, .L146+24
+ 1737 015c D3E90023 		ldrd	r2, [r3]
+ 1738 0160 FFF7FEFF 		bl	__aeabi_ddiv
+ 1739              	.LVL139:
+ 1740 0164 0246     		mov	r2, r0
+ 1741 0166 0B46     		mov	r3, r1
+ 993:Device/Src/rtc.c **** 					} else {
+ 1742              		.loc 1 993 29 view .LVU451
+ 1743 0168 0020     		movs	r0, #0
+ 1744 016a 1449     		ldr	r1, .L146+60
+ 1745 016c FFF7FEFF 		bl	__aeabi_dsub
+ 1746              	.LVL140:
+ 993:Device/Src/rtc.c **** 					} else {
+ 1747              		.loc 1 993 14 view .LVU452
+ 1748 0170 FFF7FEFF 		bl	__aeabi_d2uiz
+ 1749              	.LVL141:
+ 1750 0174 80B2     		uxth	r0, r0
+ 1751              	.LVL142:
+ 993:Device/Src/rtc.c **** 					} else {
+ 1752              		.loc 1 993 14 view .LVU453
+ 1753 0176 6EE7     		b	.L121
+ 1754              	.LVL143:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 52
+
+
+ 1755              	.L143:
+ 999:Device/Src/rtc.c **** 						}
+ 1756              		.loc 1 999 15 view .LVU454
+ 1757 0178 0120     		movs	r0, #1
+ 1758              	.LVL144:
+ 999:Device/Src/rtc.c **** 						}
+ 1759              		.loc 1 999 15 view .LVU455
+ 1760 017a 6CE7     		b	.L121
+ 1761              	.L147:
+ 1762 017c AFF30080 		.align	3
+ 1763              	.L146:
+ 1764 0180 33333333 		.word	858993459
+ 1765 0184 3333E33F 		.word	1071854387
+ 1766 0188 9A999999 		.word	-1717986918
+ 1767 018c 9999E93F 		.word	1072273817
+ 1768 0190 CDCCCCCC 		.word	-858993459
+ 1769 0194 CCCC0C40 		.word	1074580684
+ 1770 0198 33333333 		.word	858993459
+ 1771 019c 33330340 		.word	1073951539
+ 1772 01a0 00000440 		.word	1074003968
+ 1773 01a4 66661242 		.word	1108502118
+ 1774 01a8 00805940 		.word	1079607296
+ 1775 01ac 00804440 		.word	1078231040
+ 1776 01b0 3333F33F 		.word	1072902963
+ 1777 01b4 00003540 		.word	1077215232
+ 1778 01b8 66666640 		.word	1080452710
+ 1779 01bc 0000F03F 		.word	1072693248
+ 1780 01c0 9A999999 		.word	-1717986918
+ 1781 01c4 9999D93F 		.word	1071225241
+ 1782              		.cfi_endproc
+ 1783              	.LFE249:
+ 1785              		.global	__aeabi_dadd
+ 1786              		.section	.text.digtal_adj_convert,"ax",%progbits
+ 1787              		.align	1
+ 1788              		.global	digtal_adj_convert
+ 1789              		.syntax unified
+ 1790              		.thumb
+ 1791              		.thumb_func
+ 1793              	digtal_adj_convert:
+ 1794              	.LVL145:
+ 1795              	.LFB250:
+1008:Device/Src/rtc.c **** 
+1009:Device/Src/rtc.c **** int digtal_adj_convert(uint16_t start, float ppm)
+1010:Device/Src/rtc.c **** {
+ 1796              		.loc 1 1010 1 is_stmt 1 view -0
+ 1797              		.cfi_startproc
+ 1798              		@ args = 0, pretend = 0, frame = 0
+ 1799              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1800              		.loc 1 1010 1 is_stmt 0 view .LVU457
+ 1801 0000 08B5     		push	{r3, lr}
+ 1802              	.LCFI36:
+ 1803              		.cfi_def_cfa_offset 8
+ 1804              		.cfi_offset 3, -8
+ 1805              		.cfi_offset 14, -4
+ 1806 0002 2DED028B 		vpush.64	{d8}
+ 1807              	.LCFI37:
+ 1808              		.cfi_def_cfa_offset 16
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 53
+
+
+ 1809              		.cfi_offset 80, -16
+ 1810              		.cfi_offset 81, -12
+ 1811 0006 B0EE408A 		vmov.f32	s16, s0
+1011:Device/Src/rtc.c **** 	float sum;
+ 1812              		.loc 1 1011 2 is_stmt 1 view .LVU458
+1012:Device/Src/rtc.c **** 	int digtal = 0;
+ 1813              		.loc 1 1012 2 view .LVU459
+ 1814              	.LVL146:
+1013:Device/Src/rtc.c **** 	
+1014:Device/Src/rtc.c **** 	sum =  1.2 * (CAP_STEP_1D2 - CAP_STEP_2D4) + 0.8 * (CAP_STEP_0D8 - CAP_STEP_1D2)
+ 1815              		.loc 1 1014 2 view .LVU460
+1015:Device/Src/rtc.c **** 			+ 0.6 * (CAP_STEP_0D6 - CAP_STEP_0D8) + 0.4 * (start - CAP_STEP_0D6);
+ 1816              		.loc 1 1015 48 is_stmt 0 view .LVU461
+ 1817 000a 6638     		subs	r0, r0, #102
+ 1818              	.LVL147:
+ 1819              		.loc 1 1015 48 view .LVU462
+ 1820 000c FFF7FEFF 		bl	__aeabi_i2d
+ 1821              	.LVL148:
+ 1822              		.loc 1 1015 48 view .LVU463
+ 1823 0010 11A3     		adr	r3, .L154
+ 1824 0012 D3E90023 		ldrd	r2, [r3]
+ 1825 0016 FFF7FEFF 		bl	__aeabi_dmul
+ 1826              	.LVL149:
+ 1827              		.loc 1 1015 42 view .LVU464
+ 1828 001a 11A3     		adr	r3, .L154+8
+ 1829 001c D3E90023 		ldrd	r2, [r3]
+ 1830 0020 FFF7FEFF 		bl	__aeabi_dadd
+ 1831              	.LVL150:
+1014:Device/Src/rtc.c **** 			+ 0.6 * (CAP_STEP_0D6 - CAP_STEP_0D8) + 0.4 * (start - CAP_STEP_0D6);
+ 1832              		.loc 1 1014 6 view .LVU465
+ 1833 0024 FFF7FEFF 		bl	__aeabi_d2f
+ 1834              	.LVL151:
+ 1835 0028 07EE900A 		vmov	s15, r0
+ 1836              	.LVL152:
+1016:Device/Src/rtc.c **** 	if (ppm < sum) {
+ 1837              		.loc 1 1016 2 is_stmt 1 view .LVU466
+ 1838              		.loc 1 1016 5 is_stmt 0 view .LVU467
+ 1839 002c F4EEC87A 		vcmpe.f32	s15, s16
+ 1840 0030 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1841 0034 0BDC     		bgt	.L151
+1017:Device/Src/rtc.c **** 		return 0;
+1018:Device/Src/rtc.c **** 	} else {
+1019:Device/Src/rtc.c **** 		digtal = sum - ppm;
+ 1842              		.loc 1 1019 3 is_stmt 1 view .LVU468
+ 1843              		.loc 1 1019 16 is_stmt 0 view .LVU469
+ 1844 0036 77EEC87A 		vsub.f32	s15, s15, s16
+ 1845              		.loc 1 1019 10 view .LVU470
+ 1846 003a FDEEE77A 		vcvt.s32.f32	s15, s15
+ 1847 003e 17EE900A 		vmov	r0, s15	@ int
+ 1848              	.LVL153:
+1020:Device/Src/rtc.c **** 		if (digtal < -189) {//Êý×Ö²¹³¥Ö»ÓÐ6bit£¬×î´óÖµÎª63£¬¶ÔÓ¦µÄÊýÎª-189
+ 1849              		.loc 1 1020 3 is_stmt 1 view .LVU471
+ 1850              		.loc 1 1020 6 is_stmt 0 view .LVU472
+ 1851 0042 10F1BD0F 		cmn	r0, #189
+ 1852 0046 03DA     		bge	.L148
+1021:Device/Src/rtc.c **** 			digtal = -189;
+ 1853              		.loc 1 1021 11 view .LVU473
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 54
+
+
+ 1854 0048 6FF0BC00 		mvn	r0, #188
+ 1855              	.LVL154:
+1022:Device/Src/rtc.c **** 		}
+1023:Device/Src/rtc.c **** 		return digtal;
+ 1856              		.loc 1 1023 3 is_stmt 1 view .LVU474
+ 1857              		.loc 1 1023 10 is_stmt 0 view .LVU475
+ 1858 004c 00E0     		b	.L148
+ 1859              	.LVL155:
+ 1860              	.L151:
+1017:Device/Src/rtc.c **** 	} else {
+ 1861              		.loc 1 1017 10 view .LVU476
+ 1862 004e 0020     		movs	r0, #0
+ 1863              	.LVL156:
+ 1864              	.L148:
+1024:Device/Src/rtc.c **** 	}
+1025:Device/Src/rtc.c **** }
+ 1865              		.loc 1 1025 1 view .LVU477
+ 1866 0050 BDEC028B 		vldm	sp!, {d8}
+ 1867              	.LCFI38:
+ 1868              		.cfi_restore 80
+ 1869              		.cfi_restore 81
+ 1870              		.cfi_def_cfa_offset 8
+ 1871              	.LVL157:
+ 1872              		.loc 1 1025 1 view .LVU478
+ 1873 0054 08BD     		pop	{r3, pc}
+ 1874              	.L155:
+ 1875 0056 00BF     		.align	3
+ 1876              	.L154:
+ 1877 0058 9A999999 		.word	-1717986918
+ 1878 005c 9999D93F 		.word	1071225241
+ 1879 0060 66666666 		.word	1717986918
+ 1880 0064 66265340 		.word	1079191142
+ 1881              		.cfi_endproc
+ 1882              	.LFE250:
+ 1884              		.section	.text.wave1006_read_temp_adc,"ax",%progbits
+ 1885              		.align	1
+ 1886              		.global	wave1006_read_temp_adc
+ 1887              		.syntax unified
+ 1888              		.thumb
+ 1889              		.thumb_func
+ 1891              	wave1006_read_temp_adc:
+ 1892              	.LVL158:
+ 1893              	.LFB251:
+1026:Device/Src/rtc.c **** 
+1027:Device/Src/rtc.c **** uint8_t wave1006_read_temp_adc(uint16_t* temp)
+1028:Device/Src/rtc.c **** {
+ 1894              		.loc 1 1028 1 is_stmt 1 view -0
+ 1895              		.cfi_startproc
+ 1896              		@ args = 0, pretend = 0, frame = 8
+ 1897              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1898              		.loc 1 1028 1 is_stmt 0 view .LVU480
+ 1899 0000 30B5     		push	{r4, r5, lr}
+ 1900              	.LCFI39:
+ 1901              		.cfi_def_cfa_offset 12
+ 1902              		.cfi_offset 4, -12
+ 1903              		.cfi_offset 5, -8
+ 1904              		.cfi_offset 14, -4
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 55
+
+
+ 1905 0002 83B0     		sub	sp, sp, #12
+ 1906              	.LCFI40:
+ 1907              		.cfi_def_cfa_offset 24
+ 1908 0004 0546     		mov	r5, r0
+1029:Device/Src/rtc.c **** 	uint8_t buffer[2] = {0};
+ 1909              		.loc 1 1029 2 is_stmt 1 view .LVU481
+ 1910              		.loc 1 1029 10 is_stmt 0 view .LVU482
+ 1911 0006 0020     		movs	r0, #0
+ 1912              	.LVL159:
+ 1913              		.loc 1 1029 10 view .LVU483
+ 1914 0008 ADF80400 		strh	r0, [sp, #4]	@ movhi
+1030:Device/Src/rtc.c **** 	buffer[0] = 0x10;
+ 1915              		.loc 1 1030 2 is_stmt 1 view .LVU484
+ 1916              		.loc 1 1030 12 is_stmt 0 view .LVU485
+ 1917 000c 1023     		movs	r3, #16
+ 1918 000e 8DF80430 		strb	r3, [sp, #4]
+1031:Device/Src/rtc.c **** 	uint8_t i;
+ 1919              		.loc 1 1031 2 is_stmt 1 view .LVU486
+1032:Device/Src/rtc.c **** 	
+1033:Device/Src/rtc.c **** 	// if (drv_wave1006_write_reg(DEV_SD3068, 0x17, 1, &buffer[0]) != WAVE1006_EXIT_OK) {
+1034:Device/Src/rtc.c **** 	if (drv_wave1006_write_reg(DEV_SD3068, 0x57, 1, &buffer[0]) != WAVE1006_EXIT_OK) {
+ 1920              		.loc 1 1034 2 view .LVU487
+ 1921              		.loc 1 1034 6 is_stmt 0 view .LVU488
+ 1922 0012 01AB     		add	r3, sp, #4
+ 1923 0014 0122     		movs	r2, #1
+ 1924 0016 5721     		movs	r1, #87
+ 1925 0018 FFF7FEFF 		bl	drv_wave1006_write_reg
+ 1926              	.LVL160:
+ 1927              		.loc 1 1034 5 view .LVU489
+ 1928 001c 58BB     		cbnz	r0, .L161
+1035:Device/Src/rtc.c **** 		return 0;
+1036:Device/Src/rtc.c **** 	}
+1037:Device/Src/rtc.c **** 	for (i = 0; i < 10; i++) {
+ 1929              		.loc 1 1037 9 view .LVU490
+ 1930 001e 0024     		movs	r4, #0
+ 1931 0020 01E0     		b	.L158
+ 1932              	.LVL161:
+ 1933              	.L166:
+ 1934              		.loc 1 1037 22 is_stmt 1 discriminator 2 view .LVU491
+ 1935              		.loc 1 1037 23 is_stmt 0 discriminator 2 view .LVU492
+ 1936 0022 0134     		adds	r4, r4, #1
+ 1937              	.LVL162:
+ 1938              		.loc 1 1037 23 discriminator 2 view .LVU493
+ 1939 0024 E4B2     		uxtb	r4, r4
+ 1940              	.LVL163:
+ 1941              	.L158:
+ 1942              		.loc 1 1037 14 is_stmt 1 discriminator 1 view .LVU494
+ 1943              		.loc 1 1037 2 is_stmt 0 discriminator 1 view .LVU495
+ 1944 0026 092C     		cmp	r4, #9
+ 1945 0028 0DD8     		bhi	.L159
+1038:Device/Src/rtc.c **** 		HAL_Delay(1);
+ 1946              		.loc 1 1038 3 is_stmt 1 view .LVU496
+ 1947 002a 0120     		movs	r0, #1
+ 1948 002c FFF7FEFF 		bl	HAL_Delay
+ 1949              	.LVL164:
+1039:Device/Src/rtc.c **** 		drv_wave1006_read_reg(DEV_SD3068, 0x57, 1, buffer);
+ 1950              		.loc 1 1039 3 view .LVU497
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 56
+
+
+ 1951 0030 01AB     		add	r3, sp, #4
+ 1952 0032 0122     		movs	r2, #1
+ 1953 0034 5721     		movs	r1, #87
+ 1954 0036 0020     		movs	r0, #0
+ 1955 0038 FFF7FEFF 		bl	drv_wave1006_read_reg
+ 1956              	.LVL165:
+1040:Device/Src/rtc.c **** 		if ((buffer[0] & 0x30) == 0) {
+ 1957              		.loc 1 1040 3 view .LVU498
+ 1958              		.loc 1 1040 14 is_stmt 0 view .LVU499
+ 1959 003c 9DF80430 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 1960              		.loc 1 1040 6 view .LVU500
+ 1961 0040 13F0300F 		tst	r3, #48
+ 1962 0044 EDD1     		bne	.L166
+ 1963              	.L159:
+1041:Device/Src/rtc.c **** 			break;
+1042:Device/Src/rtc.c **** 		}
+1043:Device/Src/rtc.c **** 	}
+1044:Device/Src/rtc.c **** 	if (i >= 10) {return 0;}
+ 1964              		.loc 1 1044 2 is_stmt 1 view .LVU501
+ 1965              		.loc 1 1044 5 is_stmt 0 view .LVU502
+ 1966 0046 092C     		cmp	r4, #9
+ 1967 0048 01D9     		bls	.L167
+ 1968              		.loc 1 1044 23 view .LVU503
+ 1969 004a 0020     		movs	r0, #0
+ 1970 004c 14E0     		b	.L157
+ 1971              	.L167:
+1045:Device/Src/rtc.c **** 	if (drv_wave1006_read_reg(DEV_SD3068, WAVE1006_REG_USER_RAM_START + 26, 2, buffer) != WAVE1006_EXI
+ 1972              		.loc 1 1045 2 is_stmt 1 view .LVU504
+ 1973              		.loc 1 1045 6 is_stmt 0 view .LVU505
+ 1974 004e 01AB     		add	r3, sp, #4
+ 1975 0050 0222     		movs	r2, #2
+ 1976 0052 8621     		movs	r1, #134
+ 1977 0054 0020     		movs	r0, #0
+ 1978 0056 FFF7FEFF 		bl	drv_wave1006_read_reg
+ 1979              	.LVL166:
+ 1980              		.loc 1 1045 5 view .LVU506
+ 1981 005a 78B9     		cbnz	r0, .L163
+1046:Device/Src/rtc.c **** 	{
+1047:Device/Src/rtc.c **** 		return 0;
+1048:Device/Src/rtc.c **** 	}
+1049:Device/Src/rtc.c **** 	*temp = buffer[0];
+ 1982              		.loc 1 1049 2 is_stmt 1 view .LVU507
+ 1983              		.loc 1 1049 16 is_stmt 0 view .LVU508
+ 1984 005c 9DF80430 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 1985              		.loc 1 1049 8 view .LVU509
+ 1986 0060 2B80     		strh	r3, [r5]	@ movhi
+1050:Device/Src/rtc.c **** 	if (buffer[1] & 0x40) {
+ 1987              		.loc 1 1050 2 is_stmt 1 view .LVU510
+ 1988              		.loc 1 1050 12 is_stmt 0 view .LVU511
+ 1989 0062 9DF80520 		ldrb	r2, [sp, #5]	@ zero_extendqisi2
+ 1990              		.loc 1 1050 5 view .LVU512
+ 1991 0066 12F0400F 		tst	r2, #64
+ 1992 006a 09D0     		beq	.L164
+1051:Device/Src/rtc.c **** 		*temp += 256;
+ 1993              		.loc 1 1051 3 is_stmt 1 view .LVU513
+ 1994              		.loc 1 1051 9 is_stmt 0 view .LVU514
+ 1995 006c 03F58073 		add	r3, r3, #256
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 57
+
+
+ 1996 0070 2B80     		strh	r3, [r5]	@ movhi
+1052:Device/Src/rtc.c **** 	}
+1053:Device/Src/rtc.c **** 	return 1;
+ 1997              		.loc 1 1053 9 view .LVU515
+ 1998 0072 0120     		movs	r0, #1
+ 1999 0074 00E0     		b	.L157
+ 2000              	.LVL167:
+ 2001              	.L161:
+1035:Device/Src/rtc.c **** 	}
+ 2002              		.loc 1 1035 10 view .LVU516
+ 2003 0076 0020     		movs	r0, #0
+ 2004              	.L157:
+1054:Device/Src/rtc.c **** }
+ 2005              		.loc 1 1054 1 view .LVU517
+ 2006 0078 03B0     		add	sp, sp, #12
+ 2007              	.LCFI41:
+ 2008              		.cfi_remember_state
+ 2009              		.cfi_def_cfa_offset 12
+ 2010              		@ sp needed
+ 2011 007a 30BD     		pop	{r4, r5, pc}
+ 2012              	.LVL168:
+ 2013              	.L163:
+ 2014              	.LCFI42:
+ 2015              		.cfi_restore_state
+1047:Device/Src/rtc.c **** 	}
+ 2016              		.loc 1 1047 10 view .LVU518
+ 2017 007c 0020     		movs	r0, #0
+ 2018 007e FBE7     		b	.L157
+ 2019              	.L164:
+1053:Device/Src/rtc.c **** }
+ 2020              		.loc 1 1053 9 view .LVU519
+ 2021 0080 0120     		movs	r0, #1
+ 2022 0082 F9E7     		b	.L157
+ 2023              		.cfi_endproc
+ 2024              	.LFE251:
+ 2026              		.section	.text.system_get_rtc_temp,"ax",%progbits
+ 2027              		.align	1
+ 2028              		.global	system_get_rtc_temp
+ 2029              		.syntax unified
+ 2030              		.thumb
+ 2031              		.thumb_func
+ 2033              	system_get_rtc_temp:
+ 2034              	.LFB236:
+ 641:Device/Src/rtc.c **** 	float tempSum = 0;
+ 2035              		.loc 1 641 1 is_stmt 1 view -0
+ 2036              		.cfi_startproc
+ 2037              		@ args = 0, pretend = 0, frame = 8
+ 2038              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2039 0000 30B5     		push	{r4, r5, lr}
+ 2040              	.LCFI43:
+ 2041              		.cfi_def_cfa_offset 12
+ 2042              		.cfi_offset 4, -12
+ 2043              		.cfi_offset 5, -8
+ 2044              		.cfi_offset 14, -4
+ 2045 0002 2DED028B 		vpush.64	{d8}
+ 2046              	.LCFI44:
+ 2047              		.cfi_def_cfa_offset 20
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 58
+
+
+ 2048              		.cfi_offset 80, -20
+ 2049              		.cfi_offset 81, -16
+ 2050 0006 83B0     		sub	sp, sp, #12
+ 2051              	.LCFI45:
+ 2052              		.cfi_def_cfa_offset 32
+ 642:Device/Src/rtc.c **** 	uint8_t count = 0;
+ 2053              		.loc 1 642 2 view .LVU521
+ 2054              	.LVL169:
+ 643:Device/Src/rtc.c **** 	uint16_t readTemp;
+ 2055              		.loc 1 643 2 view .LVU522
+ 644:Device/Src/rtc.c **** 	int quick;
+ 2056              		.loc 1 644 2 view .LVU523
+ 645:Device/Src/rtc.c **** 	int i;
+ 2057              		.loc 1 645 2 view .LVU524
+ 646:Device/Src/rtc.c **** 
+ 2058              		.loc 1 646 2 view .LVU525
+ 648:Device/Src/rtc.c **** 		if (wave1006_read_temp_adc(&readTemp) > 0) {
+ 2059              		.loc 1 648 2 view .LVU526
+ 648:Device/Src/rtc.c **** 		if (wave1006_read_temp_adc(&readTemp) > 0) {
+ 2060              		.loc 1 648 9 is_stmt 0 view .LVU527
+ 2061 0008 0024     		movs	r4, #0
+ 643:Device/Src/rtc.c **** 	uint16_t readTemp;
+ 2062              		.loc 1 643 10 view .LVU528
+ 2063 000a 2546     		mov	r5, r4
+ 642:Device/Src/rtc.c **** 	uint8_t count = 0;
+ 2064              		.loc 1 642 8 view .LVU529
+ 2065 000c 9FED138A 		vldr.32	s16, .L176
+ 648:Device/Src/rtc.c **** 		if (wave1006_read_temp_adc(&readTemp) > 0) {
+ 2066              		.loc 1 648 2 view .LVU530
+ 2067 0010 03E0     		b	.L169
+ 2068              	.LVL170:
+ 2069              	.L170:
+ 654:Device/Src/rtc.c **** 	}
+ 2070              		.loc 1 654 3 is_stmt 1 discriminator 2 view .LVU531
+ 2071 0012 0A20     		movs	r0, #10
+ 2072 0014 FFF7FEFF 		bl	HAL_Delay
+ 2073              	.LVL171:
+ 648:Device/Src/rtc.c **** 		if (wave1006_read_temp_adc(&readTemp) > 0) {
+ 2074              		.loc 1 648 21 discriminator 2 view .LVU532
+ 648:Device/Src/rtc.c **** 		if (wave1006_read_temp_adc(&readTemp) > 0) {
+ 2075              		.loc 1 648 22 is_stmt 0 discriminator 2 view .LVU533
+ 2076 0018 0134     		adds	r4, r4, #1
+ 2077              	.LVL172:
+ 2078              	.L169:
+ 648:Device/Src/rtc.c **** 		if (wave1006_read_temp_adc(&readTemp) > 0) {
+ 2079              		.loc 1 648 14 is_stmt 1 discriminator 1 view .LVU534
+ 648:Device/Src/rtc.c **** 		if (wave1006_read_temp_adc(&readTemp) > 0) {
+ 2080              		.loc 1 648 2 is_stmt 0 discriminator 1 view .LVU535
+ 2081 001a 042C     		cmp	r4, #4
+ 2082 001c 10DC     		bgt	.L175
+ 649:Device/Src/rtc.c **** 			quick = readTemp;
+ 2083              		.loc 1 649 3 is_stmt 1 view .LVU536
+ 649:Device/Src/rtc.c **** 			quick = readTemp;
+ 2084              		.loc 1 649 7 is_stmt 0 view .LVU537
+ 2085 001e 0DF10600 		add	r0, sp, #6
+ 2086 0022 FFF7FEFF 		bl	wave1006_read_temp_adc
+ 2087              	.LVL173:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 59
+
+
+ 649:Device/Src/rtc.c **** 			quick = readTemp;
+ 2088              		.loc 1 649 6 view .LVU538
+ 2089 0026 0028     		cmp	r0, #0
+ 2090 0028 F3D0     		beq	.L170
+ 650:Device/Src/rtc.c **** 			count++;
+ 2091              		.loc 1 650 4 is_stmt 1 view .LVU539
+ 650:Device/Src/rtc.c **** 			count++;
+ 2092              		.loc 1 650 10 is_stmt 0 view .LVU540
+ 2093 002a BDF80630 		ldrh	r3, [sp, #6]
+ 2094 002e 07EE903A 		vmov	s15, r3	@ int
+ 2095              	.LVL174:
+ 651:Device/Src/rtc.c **** 			tempSum += quick;
+ 2096              		.loc 1 651 4 is_stmt 1 view .LVU541
+ 651:Device/Src/rtc.c **** 			tempSum += quick;
+ 2097              		.loc 1 651 9 is_stmt 0 view .LVU542
+ 2098 0032 0135     		adds	r5, r5, #1
+ 2099              	.LVL175:
+ 651:Device/Src/rtc.c **** 			tempSum += quick;
+ 2100              		.loc 1 651 9 view .LVU543
+ 2101 0034 EDB2     		uxtb	r5, r5
+ 2102              	.LVL176:
+ 652:Device/Src/rtc.c **** 		}
+ 2103              		.loc 1 652 4 is_stmt 1 view .LVU544
+ 652:Device/Src/rtc.c **** 		}
+ 2104              		.loc 1 652 12 is_stmt 0 view .LVU545
+ 2105 0036 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 2106 003a 38EE278A 		vadd.f32	s16, s16, s15
+ 2107              	.LVL177:
+ 652:Device/Src/rtc.c **** 		}
+ 2108              		.loc 1 652 12 view .LVU546
+ 2109 003e E8E7     		b	.L170
+ 2110              	.LVL178:
+ 2111              	.L175:
+ 656:Device/Src/rtc.c **** 		tempSum = -300;
+ 2112              		.loc 1 656 2 is_stmt 1 view .LVU547
+ 656:Device/Src/rtc.c **** 		tempSum = -300;
+ 2113              		.loc 1 656 5 is_stmt 0 view .LVU548
+ 2114 0040 4DB1     		cbz	r5, .L173
+ 659:Device/Src/rtc.c **** 	}
+ 2115              		.loc 1 659 3 is_stmt 1 view .LVU549
+ 659:Device/Src/rtc.c **** 	}
+ 2116              		.loc 1 659 21 is_stmt 0 view .LVU550
+ 2117 0042 07EE905A 		vmov	s15, r5	@ int
+ 2118 0046 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 659:Device/Src/rtc.c **** 	}
+ 2119              		.loc 1 659 11 view .LVU551
+ 2120 004a 88EE270A 		vdiv.f32	s0, s16, s15
+ 2121              	.LVL179:
+ 2122              	.L168:
+ 662:Device/Src/rtc.c **** 
+ 2123              		.loc 1 662 1 view .LVU552
+ 2124 004e 03B0     		add	sp, sp, #12
+ 2125              	.LCFI46:
+ 2126              		.cfi_remember_state
+ 2127              		.cfi_def_cfa_offset 20
+ 2128              		@ sp needed
+ 2129 0050 BDEC028B 		vldm	sp!, {d8}
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 60
+
+
+ 2130              	.LCFI47:
+ 2131              		.cfi_restore 80
+ 2132              		.cfi_restore 81
+ 2133              		.cfi_def_cfa_offset 12
+ 2134 0054 30BD     		pop	{r4, r5, pc}
+ 2135              	.LVL180:
+ 2136              	.L173:
+ 2137              	.LCFI48:
+ 2138              		.cfi_restore_state
+ 657:Device/Src/rtc.c **** 	} else {
+ 2139              		.loc 1 657 11 view .LVU553
+ 2140 0056 9FED020A 		vldr.32	s0, .L176+4
+ 2141              	.LVL181:
+ 661:Device/Src/rtc.c **** }
+ 2142              		.loc 1 661 2 is_stmt 1 view .LVU554
+ 661:Device/Src/rtc.c **** }
+ 2143              		.loc 1 661 9 is_stmt 0 view .LVU555
+ 2144 005a F8E7     		b	.L168
+ 2145              	.L177:
+ 2146              		.align	2
+ 2147              	.L176:
+ 2148 005c 00000000 		.word	0
+ 2149 0060 000096C3 		.word	-1013579776
+ 2150              		.cfi_endproc
+ 2151              	.LFE236:
+ 2153              		.section	.text.sd8825_out_freq,"ax",%progbits
+ 2154              		.align	1
+ 2155              		.global	sd8825_out_freq
+ 2156              		.syntax unified
+ 2157              		.thumb
+ 2158              		.thumb_func
+ 2160              	sd8825_out_freq:
+ 2161              	.LFB252:
+1055:Device/Src/rtc.c **** 
+1056:Device/Src/rtc.c **** 
+1057:Device/Src/rtc.c **** uint8_t sd8825_out_freq(void)
+1058:Device/Src/rtc.c **** {
+ 2162              		.loc 1 1058 1 is_stmt 1 view -0
+ 2163              		.cfi_startproc
+ 2164              		@ args = 0, pretend = 0, frame = 16
+ 2165              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2166 0000 30B5     		push	{r4, r5, lr}
+ 2167              	.LCFI49:
+ 2168              		.cfi_def_cfa_offset 12
+ 2169              		.cfi_offset 4, -12
+ 2170              		.cfi_offset 5, -8
+ 2171              		.cfi_offset 14, -4
+ 2172 0002 85B0     		sub	sp, sp, #20
+ 2173              	.LCFI50:
+ 2174              		.cfi_def_cfa_offset 32
+1059:Device/Src/rtc.c **** 	uint8_t Hz1[5] = {0x40, 0x00, 0x10, 0x00, 0x10};
+ 2175              		.loc 1 1059 2 view .LVU557
+ 2176              		.loc 1 1059 10 is_stmt 0 view .LVU558
+ 2177 0004 1F4B     		ldr	r3, .L190
+ 2178 0006 93E80300 		ldm	r3, {r0, r1}
+ 2179 000a 0290     		str	r0, [sp, #8]
+ 2180 000c 8DF80C10 		strb	r1, [sp, #12]
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 61
+
+
+1060:Device/Src/rtc.c **** 	uint8_t buffer[5] = {0};
+ 2181              		.loc 1 1060 2 is_stmt 1 view .LVU559
+ 2182              		.loc 1 1060 10 is_stmt 0 view .LVU560
+ 2183 0010 0024     		movs	r4, #0
+ 2184 0012 0094     		str	r4, [sp]
+ 2185 0014 8DF80440 		strb	r4, [sp, #4]
+1061:Device/Src/rtc.c **** 	uint8_t i, j;
+ 2186              		.loc 1 1061 2 is_stmt 1 view .LVU561
+1062:Device/Src/rtc.c **** 	for (i = 0; i < 3; i++) {
+ 2187              		.loc 1 1062 2 view .LVU562
+ 2188              	.LVL182:
+ 2189              		.loc 1 1062 2 is_stmt 0 view .LVU563
+ 2190 0018 10E0     		b	.L179
+ 2191              	.LVL183:
+ 2192              	.L187:
+1063:Device/Src/rtc.c **** 		if (rtc_write_multi_bytes(RTC_8825_ADDRESS, 0x0B, Hz1, 5) == I2C_OK) {//¿ªÆôÊä³ö
+1064:Device/Src/rtc.c **** 			rtc_read_multi_bytes(RTC_8825_ADDRESS, 0x0B, buffer, 5);
+1065:Device/Src/rtc.c **** 			for (j = 0; j < 5; j++) {
+ 2193              		.loc 1 1065 23 is_stmt 1 discriminator 2 view .LVU564
+ 2194              		.loc 1 1065 24 is_stmt 0 discriminator 2 view .LVU565
+ 2195 001a 0133     		adds	r3, r3, #1
+ 2196              	.LVL184:
+ 2197              		.loc 1 1065 24 discriminator 2 view .LVU566
+ 2198 001c DBB2     		uxtb	r3, r3
+ 2199              	.LVL185:
+ 2200              	.L181:
+ 2201              		.loc 1 1065 16 is_stmt 1 discriminator 1 view .LVU567
+ 2202              		.loc 1 1065 4 is_stmt 0 discriminator 1 view .LVU568
+ 2203 001e 042B     		cmp	r3, #4
+ 2204 0020 08D8     		bhi	.L182
+1066:Device/Src/rtc.c **** 				if (buffer[j] != Hz1[j]) {
+ 2205              		.loc 1 1066 5 is_stmt 1 view .LVU569
+ 2206              		.loc 1 1066 15 is_stmt 0 view .LVU570
+ 2207 0022 03F11002 		add	r2, r3, #16
+ 2208 0026 6A44     		add	r2, sp, r2
+ 2209 0028 12F8101C 		ldrb	r1, [r2, #-16]	@ zero_extendqisi2
+ 2210              		.loc 1 1066 25 view .LVU571
+ 2211 002c 12F8082C 		ldrb	r2, [r2, #-8]	@ zero_extendqisi2
+ 2212              		.loc 1 1066 8 view .LVU572
+ 2213 0030 9142     		cmp	r1, r2
+ 2214 0032 F2D0     		beq	.L187
+ 2215              	.L182:
+1067:Device/Src/rtc.c **** 					break;
+1068:Device/Src/rtc.c **** 				}
+1069:Device/Src/rtc.c **** 			}
+1070:Device/Src/rtc.c **** 			if (j == 5) {
+ 2216              		.loc 1 1070 4 is_stmt 1 view .LVU573
+ 2217              		.loc 1 1070 7 is_stmt 0 view .LVU574
+ 2218 0034 052B     		cmp	r3, #5
+ 2219 0036 14D0     		beq	.L188
+ 2220              	.LVL186:
+ 2221              	.L180:
+1062:Device/Src/rtc.c **** 		if (rtc_write_multi_bytes(RTC_8825_ADDRESS, 0x0B, Hz1, 5) == I2C_OK) {//¿ªÆôÊä³ö
+ 2222              		.loc 1 1062 21 is_stmt 1 discriminator 2 view .LVU575
+1062:Device/Src/rtc.c **** 		if (rtc_write_multi_bytes(RTC_8825_ADDRESS, 0x0B, Hz1, 5) == I2C_OK) {//¿ªÆôÊä³ö
+ 2223              		.loc 1 1062 22 is_stmt 0 discriminator 2 view .LVU576
+ 2224 0038 0134     		adds	r4, r4, #1
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 62
+
+
+ 2225              	.LVL187:
+1062:Device/Src/rtc.c **** 		if (rtc_write_multi_bytes(RTC_8825_ADDRESS, 0x0B, Hz1, 5) == I2C_OK) {//¿ªÆôÊä³ö
+ 2226              		.loc 1 1062 22 discriminator 2 view .LVU577
+ 2227 003a E4B2     		uxtb	r4, r4
+ 2228              	.LVL188:
+ 2229              	.L179:
+1062:Device/Src/rtc.c **** 		if (rtc_write_multi_bytes(RTC_8825_ADDRESS, 0x0B, Hz1, 5) == I2C_OK) {//¿ªÆôÊä³ö
+ 2230              		.loc 1 1062 14 is_stmt 1 discriminator 1 view .LVU578
+1062:Device/Src/rtc.c **** 		if (rtc_write_multi_bytes(RTC_8825_ADDRESS, 0x0B, Hz1, 5) == I2C_OK) {//¿ªÆôÊä³ö
+ 2231              		.loc 1 1062 2 is_stmt 0 discriminator 1 view .LVU579
+ 2232 003c 022C     		cmp	r4, #2
+ 2233 003e 1DD8     		bhi	.L189
+1063:Device/Src/rtc.c **** 			rtc_read_multi_bytes(RTC_8825_ADDRESS, 0x0B, buffer, 5);
+ 2234              		.loc 1 1063 3 is_stmt 1 view .LVU580
+1063:Device/Src/rtc.c **** 			rtc_read_multi_bytes(RTC_8825_ADDRESS, 0x0B, buffer, 5);
+ 2235              		.loc 1 1063 7 is_stmt 0 view .LVU581
+ 2236 0040 0523     		movs	r3, #5
+ 2237 0042 02AA     		add	r2, sp, #8
+ 2238 0044 0B21     		movs	r1, #11
+ 2239 0046 6420     		movs	r0, #100
+ 2240 0048 FFF7FEFF 		bl	rtc_write_multi_bytes
+ 2241              	.LVL189:
+1063:Device/Src/rtc.c **** 			rtc_read_multi_bytes(RTC_8825_ADDRESS, 0x0B, buffer, 5);
+ 2242              		.loc 1 1063 6 view .LVU582
+ 2243 004c 0546     		mov	r5, r0
+ 2244 004e 0028     		cmp	r0, #0
+ 2245 0050 F2D1     		bne	.L180
+1064:Device/Src/rtc.c **** 			for (j = 0; j < 5; j++) {
+ 2246              		.loc 1 1064 4 is_stmt 1 view .LVU583
+ 2247 0052 0523     		movs	r3, #5
+ 2248 0054 6A46     		mov	r2, sp
+ 2249 0056 0B21     		movs	r1, #11
+ 2250 0058 6420     		movs	r0, #100
+ 2251 005a FFF7FEFF 		bl	rtc_read_multi_bytes
+ 2252              	.LVL190:
+1065:Device/Src/rtc.c **** 				if (buffer[j] != Hz1[j]) {
+ 2253              		.loc 1 1065 4 view .LVU584
+1065:Device/Src/rtc.c **** 				if (buffer[j] != Hz1[j]) {
+ 2254              		.loc 1 1065 11 is_stmt 0 view .LVU585
+ 2255 005e 2B46     		mov	r3, r5
+1065:Device/Src/rtc.c **** 				if (buffer[j] != Hz1[j]) {
+ 2256              		.loc 1 1065 4 view .LVU586
+ 2257 0060 DDE7     		b	.L181
+ 2258              	.LVL191:
+ 2259              	.L188:
+1071:Device/Src/rtc.c **** 				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13, GPIO_PIN_RESET);
+ 2260              		.loc 1 1071 5 is_stmt 1 view .LVU587
+ 2261 0062 0022     		movs	r2, #0
+ 2262 0064 4FF47051 		mov	r1, #15360
+ 2263 0068 0748     		ldr	r0, .L190+4
+ 2264 006a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 2265              	.LVL192:
+1072:Device/Src/rtc.c **** 				HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_1
+ 2266              		.loc 1 1072 5 view .LVU588
+ 2267 006e 0022     		movs	r2, #0
+ 2268 0070 4FF47C41 		mov	r1, #64512
+ 2269 0074 0548     		ldr	r0, .L190+8
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 63
+
+
+ 2270 0076 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 2271              	.LVL193:
+1073:Device/Src/rtc.c **** 				return I2C_OK;
+ 2272              		.loc 1 1073 5 view .LVU589
+ 2273              		.loc 1 1073 12 is_stmt 0 view .LVU590
+ 2274 007a 00E0     		b	.L184
+ 2275              	.L189:
+1074:Device/Src/rtc.c **** 			} 
+1075:Device/Src/rtc.c **** 		}
+1076:Device/Src/rtc.c **** 	}
+1077:Device/Src/rtc.c **** 	return I2C_NO_ACK;
+ 2276              		.loc 1 1077 9 view .LVU591
+ 2277 007c 0225     		movs	r5, #2
+ 2278              	.L184:
+1078:Device/Src/rtc.c **** }
+ 2279              		.loc 1 1078 1 view .LVU592
+ 2280 007e 2846     		mov	r0, r5
+ 2281 0080 05B0     		add	sp, sp, #20
+ 2282              	.LCFI51:
+ 2283              		.cfi_def_cfa_offset 12
+ 2284              		@ sp needed
+ 2285 0082 30BD     		pop	{r4, r5, pc}
+ 2286              	.LVL194:
+ 2287              	.L191:
+ 2288              		.loc 1 1078 1 view .LVU593
+ 2289              		.align	2
+ 2290              	.L190:
+ 2291 0084 00000000 		.word	.LANCHOR1
+ 2292 0088 00080240 		.word	1073874944
+ 2293 008c 000C0240 		.word	1073875968
+ 2294              		.cfi_endproc
+ 2295              	.LFE252:
+ 2297              		.section	.text.sd8825_close_freq,"ax",%progbits
+ 2298              		.align	1
+ 2299              		.global	sd8825_close_freq
+ 2300              		.syntax unified
+ 2301              		.thumb
+ 2302              		.thumb_func
+ 2304              	sd8825_close_freq:
+ 2305              	.LFB253:
+1079:Device/Src/rtc.c **** 
+1080:Device/Src/rtc.c **** uint8_t sd8825_close_freq(void)
+1081:Device/Src/rtc.c **** {
+ 2306              		.loc 1 1081 1 is_stmt 1 view -0
+ 2307              		.cfi_startproc
+ 2308              		@ args = 0, pretend = 0, frame = 8
+ 2309              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2310 0000 10B5     		push	{r4, lr}
+ 2311              	.LCFI52:
+ 2312              		.cfi_def_cfa_offset 8
+ 2313              		.cfi_offset 4, -8
+ 2314              		.cfi_offset 14, -4
+ 2315 0002 82B0     		sub	sp, sp, #8
+ 2316              	.LCFI53:
+ 2317              		.cfi_def_cfa_offset 16
+1082:Device/Src/rtc.c **** 	uint8_t buf, j;
+ 2318              		.loc 1 1082 2 view .LVU595
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 64
+
+
+1083:Device/Src/rtc.c **** 	buf = 0x00;
+ 2319              		.loc 1 1083 2 view .LVU596
+ 2320              		.loc 1 1083 6 is_stmt 0 view .LVU597
+ 2321 0004 0024     		movs	r4, #0
+ 2322 0006 8DF80740 		strb	r4, [sp, #7]
+1084:Device/Src/rtc.c **** 	for (j = 0; j < 10; j++) {
+ 2323              		.loc 1 1084 2 is_stmt 1 view .LVU598
+ 2324              	.LVL195:
+ 2325              		.loc 1 1084 2 is_stmt 0 view .LVU599
+ 2326 000a 04E0     		b	.L193
+ 2327              	.LVL196:
+ 2328              	.L194:
+1085:Device/Src/rtc.c **** 		if (check_sda_level()) {
+1086:Device/Src/rtc.c **** 			if (rtc_write_multi_bytes(RTC_8825_ADDRESS, 0x0d, &buf, 1) == I2C_OK) {
+1087:Device/Src/rtc.c **** 				buf = 0xff;
+1088:Device/Src/rtc.c **** 				rtc_read_multi_bytes(RTC_8825_ADDRESS, 0x0d, &buf, 1);
+1089:Device/Src/rtc.c **** 				if (buf == 0) {
+1090:Device/Src/rtc.c **** 					return I2C_OK;
+1091:Device/Src/rtc.c **** 				}
+1092:Device/Src/rtc.c **** 			} 
+1093:Device/Src/rtc.c **** 		}
+1094:Device/Src/rtc.c **** 		HAL_Delay(20);
+ 2329              		.loc 1 1094 3 is_stmt 1 discriminator 2 view .LVU600
+ 2330 000c 1420     		movs	r0, #20
+ 2331 000e FFF7FEFF 		bl	HAL_Delay
+ 2332              	.LVL197:
+1084:Device/Src/rtc.c **** 	for (j = 0; j < 10; j++) {
+ 2333              		.loc 1 1084 22 discriminator 2 view .LVU601
+1084:Device/Src/rtc.c **** 	for (j = 0; j < 10; j++) {
+ 2334              		.loc 1 1084 23 is_stmt 0 discriminator 2 view .LVU602
+ 2335 0012 0134     		adds	r4, r4, #1
+ 2336              	.LVL198:
+1084:Device/Src/rtc.c **** 	for (j = 0; j < 10; j++) {
+ 2337              		.loc 1 1084 23 discriminator 2 view .LVU603
+ 2338 0014 E4B2     		uxtb	r4, r4
+ 2339              	.LVL199:
+ 2340              	.L193:
+1084:Device/Src/rtc.c **** 	for (j = 0; j < 10; j++) {
+ 2341              		.loc 1 1084 14 is_stmt 1 discriminator 1 view .LVU604
+1084:Device/Src/rtc.c **** 	for (j = 0; j < 10; j++) {
+ 2342              		.loc 1 1084 2 is_stmt 0 discriminator 1 view .LVU605
+ 2343 0016 092C     		cmp	r4, #9
+ 2344 0018 1BD8     		bhi	.L198
+1085:Device/Src/rtc.c **** 		if (check_sda_level()) {
+ 2345              		.loc 1 1085 3 is_stmt 1 view .LVU606
+1085:Device/Src/rtc.c **** 		if (check_sda_level()) {
+ 2346              		.loc 1 1085 7 is_stmt 0 view .LVU607
+ 2347 001a FFF7FEFF 		bl	check_sda_level
+ 2348              	.LVL200:
+1085:Device/Src/rtc.c **** 		if (check_sda_level()) {
+ 2349              		.loc 1 1085 6 view .LVU608
+ 2350 001e 0028     		cmp	r0, #0
+ 2351 0020 F4D0     		beq	.L194
+1086:Device/Src/rtc.c **** 				buf = 0xff;
+ 2352              		.loc 1 1086 4 is_stmt 1 view .LVU609
+1086:Device/Src/rtc.c **** 				buf = 0xff;
+ 2353              		.loc 1 1086 8 is_stmt 0 view .LVU610
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 65
+
+
+ 2354 0022 0123     		movs	r3, #1
+ 2355 0024 0DF10702 		add	r2, sp, #7
+ 2356 0028 0D21     		movs	r1, #13
+ 2357 002a 6420     		movs	r0, #100
+ 2358 002c FFF7FEFF 		bl	rtc_write_multi_bytes
+ 2359              	.LVL201:
+1086:Device/Src/rtc.c **** 				buf = 0xff;
+ 2360              		.loc 1 1086 7 view .LVU611
+ 2361 0030 0028     		cmp	r0, #0
+ 2362 0032 EBD1     		bne	.L194
+1087:Device/Src/rtc.c **** 				rtc_read_multi_bytes(RTC_8825_ADDRESS, 0x0d, &buf, 1);
+ 2363              		.loc 1 1087 5 is_stmt 1 view .LVU612
+1087:Device/Src/rtc.c **** 				rtc_read_multi_bytes(RTC_8825_ADDRESS, 0x0d, &buf, 1);
+ 2364              		.loc 1 1087 9 is_stmt 0 view .LVU613
+ 2365 0034 FF23     		movs	r3, #255
+ 2366 0036 8DF80730 		strb	r3, [sp, #7]
+1088:Device/Src/rtc.c **** 				if (buf == 0) {
+ 2367              		.loc 1 1088 5 is_stmt 1 view .LVU614
+ 2368 003a 0123     		movs	r3, #1
+ 2369 003c 0DF10702 		add	r2, sp, #7
+ 2370 0040 0D21     		movs	r1, #13
+ 2371 0042 6420     		movs	r0, #100
+ 2372 0044 FFF7FEFF 		bl	rtc_read_multi_bytes
+ 2373              	.LVL202:
+1089:Device/Src/rtc.c **** 					return I2C_OK;
+ 2374              		.loc 1 1089 5 view .LVU615
+1089:Device/Src/rtc.c **** 					return I2C_OK;
+ 2375              		.loc 1 1089 13 is_stmt 0 view .LVU616
+ 2376 0048 9DF80700 		ldrb	r0, [sp, #7]	@ zero_extendqisi2
+1089:Device/Src/rtc.c **** 					return I2C_OK;
+ 2377              		.loc 1 1089 8 view .LVU617
+ 2378 004c 0028     		cmp	r0, #0
+ 2379 004e DDD1     		bne	.L194
+ 2380 0050 00E0     		b	.L195
+ 2381              	.L198:
+1095:Device/Src/rtc.c **** 	}
+1096:Device/Src/rtc.c **** 	
+1097:Device/Src/rtc.c **** 	return I2C_NO_ACK;
+ 2382              		.loc 1 1097 9 view .LVU618
+ 2383 0052 0220     		movs	r0, #2
+ 2384              	.L195:
+1098:Device/Src/rtc.c **** }
+ 2385              		.loc 1 1098 1 view .LVU619
+ 2386 0054 02B0     		add	sp, sp, #8
+ 2387              	.LCFI54:
+ 2388              		.cfi_def_cfa_offset 8
+ 2389              		@ sp needed
+ 2390 0056 10BD     		pop	{r4, pc}
+ 2391              		.loc 1 1098 1 view .LVU620
+ 2392              		.cfi_endproc
+ 2393              	.LFE253:
+ 2395              		.global	g_capList
+ 2396              		.global	g_otpBuffer
+ 2397              		.section	.rodata
+ 2398              		.align	2
+ 2399              		.set	.LANCHOR1,. + 0
+ 2400              	.LC7:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 66
+
+
+ 2401 0000 40001000 		.ascii	"@\000\020\000\020"
+ 2401      10
+ 2402              		.section	.data.g_capList,"aw"
+ 2403              		.align	2
+ 2404              		.set	.LANCHOR0,. + 0
+ 2407              	g_capList:
+ 2408 0000 1000     		.ascii	"\020\000"
+ 2409 0002 1001     		.ascii	"\020\001"
+ 2410 0004 1002     		.ascii	"\020\002"
+ 2411 0006 1003     		.ascii	"\020\003"
+ 2412 0008 1005     		.ascii	"\020\005"
+ 2413 000a 1006     		.ascii	"\020\006"
+ 2414 000c 1007     		.ascii	"\020\007"
+ 2415 000e 1012     		.ascii	"\020\022"
+ 2416 0010 1018     		.ascii	"\020\030"
+ 2417 0012 100F     		.ascii	"\020\017"
+ 2418 0014 101A     		.ascii	"\020\032"
+ 2419 0016 1017     		.ascii	"\020\027"
+ 2420 0018 1024     		.ascii	"\020$"
+ 2421 001a 1025     		.ascii	"\020%"
+ 2422 001c 101F     		.ascii	"\020\037"
+ 2423 001e 102C     		.ascii	"\020,"
+ 2424 0020 1038     		.ascii	"\0208"
+ 2425 0022 1039     		.ascii	"\0209"
+ 2426 0024 103A     		.ascii	"\020:"
+ 2427 0026 103B     		.ascii	"\020;"
+ 2428 0028 103D     		.ascii	"\020="
+ 2429 002a 103E     		.ascii	"\020>"
+ 2430 002c 103F     		.ascii	"\020?"
+ 2431 002e 1041     		.ascii	"\020A"
+ 2432 0030 1042     		.ascii	"\020B"
+ 2433 0032 1043     		.ascii	"\020C"
+ 2434 0034 1048     		.ascii	"\020H"
+ 2435 0036 1045     		.ascii	"\020E"
+ 2436 0038 104A     		.ascii	"\020J"
+ 2437 003a 1047     		.ascii	"\020G"
+ 2438 003c 104C     		.ascii	"\020L"
+ 2439 003e 1052     		.ascii	"\020R"
+ 2440 0040 1053     		.ascii	"\020S"
+ 2441 0042 1059     		.ascii	"\020Y"
+ 2442 0044 1061     		.ascii	"\020a"
+ 2443 0046 1062     		.ascii	"\020b"
+ 2444 0048 105B     		.ascii	"\020["
+ 2445 004a 1064     		.ascii	"\020d"
+ 2446 004c 1065     		.ascii	"\020e"
+ 2447 004e 1066     		.ascii	"\020f"
+ 2448 0050 1071     		.ascii	"\020q"
+ 2449 0052 1072     		.ascii	"\020r"
+ 2450 0054 106D     		.ascii	"\020m"
+ 2451 0056 1074     		.ascii	"\020t"
+ 2452 0058 1079     		.ascii	"\020y"
+ 2453 005a 1075     		.ascii	"\020u"
+ 2454 005c 1076     		.ascii	"\020v"
+ 2455 005e 107B     		.ascii	"\020{"
+ 2456 0060 1077     		.ascii	"\020w"
+ 2457 0062 1080     		.ascii	"\020\200"
+ 2458 0064 107D     		.ascii	"\020}"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 67
+
+
+ 2459 0066 1081     		.ascii	"\020\201"
+ 2460 0068 1082     		.ascii	"\020\202"
+ 2461 006a 107F     		.ascii	"\020\177"
+ 2462 006c 1084     		.ascii	"\020\204"
+ 2463 006e 1089     		.ascii	"\020\211"
+ 2464 0070 1085     		.ascii	"\020\205"
+ 2465 0072 1086     		.ascii	"\020\206"
+ 2466 0074 1087     		.ascii	"\020\207"
+ 2467 0076 108C     		.ascii	"\020\214"
+ 2468 0078 1092     		.ascii	"\020\222"
+ 2469 007a 1098     		.ascii	"\020\230"
+ 2470 007c 10A0     		.ascii	"\020\240"
+ 2471 007e 1099     		.ascii	"\020\231"
+ 2472 0080 10A1     		.ascii	"\020\241"
+ 2473 0082 10A2     		.ascii	"\020\242"
+ 2474 0084 109B     		.ascii	"\020\233"
+ 2475 0086 10A4     		.ascii	"\020\244"
+ 2476 0088 109D     		.ascii	"\020\235"
+ 2477 008a 10B0     		.ascii	"\020\260"
+ 2478 008c 10A6     		.ascii	"\020\246"
+ 2479 008e 10B1     		.ascii	"\020\261"
+ 2480 0090 10A7     		.ascii	"\020\247"
+ 2481 0092 10B8     		.ascii	"\020\270"
+ 2482 0094 10B3     		.ascii	"\020\263"
+ 2483 0096 10B9     		.ascii	"\020\271"
+ 2484 0098 10B5     		.ascii	"\020\265"
+ 2485 009a 10BA     		.ascii	"\020\272"
+ 2486 009c 10BB     		.ascii	"\020\273"
+ 2487 009e 10B7     		.ascii	"\020\267"
+ 2488 00a0 10BD     		.ascii	"\020\275"
+ 2489 00a2 10BD     		.ascii	"\020\275"
+ 2490 00a4 10C0     		.ascii	"\020\300"
+ 2491 00a6 10BF     		.ascii	"\020\277"
+ 2492 00a8 10C1     		.ascii	"\020\301"
+ 2493 00aa 10C2     		.ascii	"\020\302"
+ 2494 00ac 10C3     		.ascii	"\020\303"
+ 2495 00ae 10C4     		.ascii	"\020\304"
+ 2496 00b0 10C9     		.ascii	"\020\311"
+ 2497 00b2 10D0     		.ascii	"\020\320"
+ 2498 00b4 10C6     		.ascii	"\020\306"
+ 2499 00b6 10CB     		.ascii	"\020\313"
+ 2500 00b8 10D2     		.ascii	"\020\322"
+ 2501 00ba 10D8     		.ascii	"\020\330"
+ 2502 00bc 10CE     		.ascii	"\020\316"
+ 2503 00be 10D5     		.ascii	"\020\325"
+ 2504 00c0 10D6     		.ascii	"\020\326"
+ 2505 00c2 10DB     		.ascii	"\020\333"
+ 2506 00c4 10E3     		.ascii	"\020\343"
+ 2507 00c6 10DD     		.ascii	"\020\335"
+ 2508 00c8 10E5     		.ascii	"\020\345"
+ 2509 00ca 10E6     		.ascii	"\020\346"
+ 2510 00cc 10EB     		.ascii	"\020\353"
+ 2511 00ce 10F2     		.ascii	"\020\362"
+ 2512 00d0 10F8     		.ascii	"\020\370"
+ 2513 00d2 10F3     		.ascii	"\020\363"
+ 2514 00d4 10F4     		.ascii	"\020\364"
+ 2515 00d6 10F9     		.ascii	"\020\371"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 68
+
+
+ 2516 00d8 10FA     		.ascii	"\020\372"
+ 2517 00da 10F6     		.ascii	"\020\366"
+ 2518 00dc 1100     		.ascii	"\021\000"
+ 2519 00de 10FC     		.ascii	"\020\374"
+ 2520 00e0 10F7     		.ascii	"\020\367"
+ 2521 00e2 10FD     		.ascii	"\020\375"
+ 2522 00e4 1102     		.ascii	"\021\002"
+ 2523 00e6 10FE     		.ascii	"\020\376"
+ 2524 00e8 1103     		.ascii	"\021\003"
+ 2525 00ea 1104     		.ascii	"\021\004"
+ 2526 00ec 1109     		.ascii	"\021\011"
+ 2527 00ee 1110     		.ascii	"\021\020"
+ 2528 00f0 1106     		.ascii	"\021\006"
+ 2529 00f2 1111     		.ascii	"\021\021"
+ 2530 00f4 110B     		.ascii	"\021\013"
+ 2531 00f6 1112     		.ascii	"\021\022"
+ 2532 00f8 1118     		.ascii	"\021\030"
+ 2533 00fa 110D     		.ascii	"\021\015"
+ 2534 00fc 1114     		.ascii	"\021\024"
+ 2535 00fe 1119     		.ascii	"\021\031"
+ 2536 0100 1121     		.ascii	"\021!"
+ 2537 0102 111A     		.ascii	"\021\032"
+ 2538 0104 1122     		.ascii	"\021\""
+ 2539 0106 1128     		.ascii	"\021("
+ 2540 0108 1123     		.ascii	"\021#"
+ 2541 010a 1124     		.ascii	"\021$"
+ 2542 010c 1130     		.ascii	"\0210"
+ 2543 010e 1125     		.ascii	"\021%"
+ 2544 0110 1126     		.ascii	"\021&"
+ 2545 0112 111F     		.ascii	"\021\037"
+ 2546 0114 1132     		.ascii	"\0212"
+ 2547 0116 1138     		.ascii	"\0218"
+ 2548 0118 112D     		.ascii	"\021-"
+ 2549 011a 1134     		.ascii	"\0214"
+ 2550 011c 112E     		.ascii	"\021."
+ 2551 011e 113A     		.ascii	"\021:"
+ 2552 0120 112F     		.ascii	"\021/"
+ 2553 0122 1136     		.ascii	"\0216"
+ 2554 0124 113C     		.ascii	"\021<"
+ 2555 0126 1137     		.ascii	"\0217"
+ 2556 0128 113D     		.ascii	"\021="
+ 2557 012a 113D     		.ascii	"\021="
+ 2558 012c 113E     		.ascii	"\021>"
+ 2559 012e 1140     		.ascii	"\021@"
+ 2560 0130 113F     		.ascii	"\021?"
+ 2561 0132 1141     		.ascii	"\021A"
+ 2562 0134 1141     		.ascii	"\021A"
+ 2563 0136 1142     		.ascii	"\021B"
+ 2564 0138 1148     		.ascii	"\021H"
+ 2565 013a 1144     		.ascii	"\021D"
+ 2566 013c 1149     		.ascii	"\021I"
+ 2567 013e 1145     		.ascii	"\021E"
+ 2568 0140 1146     		.ascii	"\021F"
+ 2569 0142 1151     		.ascii	"\021Q"
+ 2570 0144 114B     		.ascii	"\021K"
+ 2571 0146 1152     		.ascii	"\021R"
+ 2572 0148 1158     		.ascii	"\021X"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 69
+
+
+ 2573 014a 1153     		.ascii	"\021S"
+ 2574 014c 114E     		.ascii	"\021N"
+ 2575 014e 1161     		.ascii	"\021a"
+ 2576 0150 1162     		.ascii	"\021b"
+ 2577 0152 1156     		.ascii	"\021V"
+ 2578 0154 115B     		.ascii	"\021["
+ 2579 0156 1157     		.ascii	"\021W"
+ 2580 0158 1169     		.ascii	"\021i"
+ 2581 015a 116A     		.ascii	"\021j"
+ 2582 015c 115E     		.ascii	"\021^"
+ 2583 015e 1171     		.ascii	"\021q"
+ 2584 0160 1172     		.ascii	"\021r"
+ 2585 0162 1178     		.ascii	"\021x"
+ 2586 0164 1173     		.ascii	"\021s"
+ 2587 0166 1179     		.ascii	"\021y"
+ 2588 0168 117A     		.ascii	"\021z"
+ 2589 016a 116F     		.ascii	"\021o"
+ 2590 016c 1176     		.ascii	"\021v"
+ 2591 016e 117C     		.ascii	"\021|"
+ 2592 0170 1180     		.ascii	"\021\200"
+ 2593 0172 117D     		.ascii	"\021}"
+ 2594 0174 1181     		.ascii	"\021\201"
+ 2595 0176 117E     		.ascii	"\021~"
+ 2596 0178 1182     		.ascii	"\021\202"
+ 2597 017a 1188     		.ascii	"\021\210"
+ 2598 017c 1184     		.ascii	"\021\204"
+ 2599 017e 1190     		.ascii	"\021\220"
+ 2600 0180 1185     		.ascii	"\021\205"
+ 2601 0182 1186     		.ascii	"\021\206"
+ 2602 0184 1191     		.ascii	"\021\221"
+ 2603 0186 1187     		.ascii	"\021\207"
+ 2604 0188 1198     		.ascii	"\021\230"
+ 2605 018a 1193     		.ascii	"\021\223"
+ 2606 018c 118E     		.ascii	"\021\216"
+ 2607 018e 11A1     		.ascii	"\021\241"
+ 2608 0190 118F     		.ascii	"\021\217"
+ 2609 0192 11A2     		.ascii	"\021\242"
+ 2610 0194 119C     		.ascii	"\021\234"
+ 2611 0196 11A4     		.ascii	"\021\244"
+ 2612 0198 119D     		.ascii	"\021\235"
+ 2613 019a 11AA     		.ascii	"\021\252"
+ 2614 019c 11A6     		.ascii	"\021\246"
+ 2615 019e 11B2     		.ascii	"\021\262"
+ 2616 01a0 11B8     		.ascii	"\021\270"
+ 2617 01a2 11B3     		.ascii	"\021\263"
+ 2618 01a4 11B9     		.ascii	"\021\271"
+ 2619 01a6 11AE     		.ascii	"\021\256"
+ 2620 01a8 11B5     		.ascii	"\021\265"
+ 2621 01aa 11BB     		.ascii	"\021\273"
+ 2622 01ac 11BC     		.ascii	"\021\274"
+ 2623 01ae 11B7     		.ascii	"\021\267"
+ 2624 01b0 11BD     		.ascii	"\021\275"
+ 2625 01b2 11BE     		.ascii	"\021\276"
+ 2626 01b4 11C0     		.ascii	"\021\300"
+ 2627 01b6 11BF     		.ascii	"\021\277"
+ 2628 01b8 11C1     		.ascii	"\021\301"
+ 2629 01ba 11C2     		.ascii	"\021\302"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 70
+
+
+ 2630 01bc 11C8     		.ascii	"\021\310"
+ 2631 01be 11C3     		.ascii	"\021\303"
+ 2632 01c0 11C9     		.ascii	"\021\311"
+ 2633 01c2 11C5     		.ascii	"\021\305"
+ 2634 01c4 11C6     		.ascii	"\021\306"
+ 2635 01c6 11CB     		.ascii	"\021\313"
+ 2636 01c8 11C7     		.ascii	"\021\307"
+ 2637 01ca 11CD     		.ascii	"\021\315"
+ 2638 01cc 11D4     		.ascii	"\021\324"
+ 2639 01ce 11E1     		.ascii	"\021\341"
+ 2640 01d0 11E2     		.ascii	"\021\342"
+ 2641 01d2 11E8     		.ascii	"\021\350"
+ 2642 01d4 11E3     		.ascii	"\021\343"
+ 2643 01d6 11E9     		.ascii	"\021\351"
+ 2644 01d8 11DD     		.ascii	"\021\335"
+ 2645 01da 11DE     		.ascii	"\021\336"
+ 2646 01dc 11F2     		.ascii	"\021\362"
+ 2647 01de 11F8     		.ascii	"\021\370"
+ 2648 01e0 11F3     		.ascii	"\021\363"
+ 2649 01e2 11F9     		.ascii	"\021\371"
+ 2650 01e4 11FA     		.ascii	"\021\372"
+ 2651 01e6 11F5     		.ascii	"\021\365"
+ 2652 01e8 11F6     		.ascii	"\021\366"
+ 2653 01ea 11FC     		.ascii	"\021\374"
+ 2654 01ec 11F7     		.ascii	"\021\367"
+ 2655 01ee 1203     		.ascii	"\022\003"
+ 2656 01f0 1209     		.ascii	"\022\011"
+ 2657 01f2 11FF     		.ascii	"\021\377"
+ 2658 01f4 1205     		.ascii	"\022\005"
+ 2659 01f6 120B     		.ascii	"\022\013"
+ 2660 01f8 1207     		.ascii	"\022\007"
+ 2661 01fa 120D     		.ascii	"\022\015"
+ 2662 01fc 1219     		.ascii	"\022\031"
+ 2663 01fe 121A     		.ascii	"\022\032"
+ 2664 0200 120F     		.ascii	"\022\017"
+ 2665 0202 121B     		.ascii	"\022\033"
+ 2666 0204 1217     		.ascii	"\022\027"
+ 2667 0206 1229     		.ascii	"\022)"
+ 2668 0208 122A     		.ascii	"\022*"
+ 2669 020a 1226     		.ascii	"\022&"
+ 2670 020c 122C     		.ascii	"\022,"
+ 2671 020e 1227     		.ascii	"\022'"
+ 2672 0210 1239     		.ascii	"\0229"
+ 2673 0212 122E     		.ascii	"\022."
+ 2674 0214 1235     		.ascii	"\0225"
+ 2675 0216 123B     		.ascii	"\022;"
+ 2676 0218 123C     		.ascii	"\022<"
+ 2677 021a 1237     		.ascii	"\0227"
+ 2678 021c 123D     		.ascii	"\022="
+ 2679 021e 123E     		.ascii	"\022>"
+ 2680 0220 123F     		.ascii	"\022?"
+ 2681 0222 1241     		.ascii	"\022A"
+ 2682 0224 1242     		.ascii	"\022B"
+ 2683 0226 1248     		.ascii	"\022H"
+ 2684 0228 1243     		.ascii	"\022C"
+ 2685 022a 1249     		.ascii	"\022I"
+ 2686 022c 1245     		.ascii	"\022E"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 71
+
+
+ 2687 022e 1251     		.ascii	"\022Q"
+ 2688 0230 124B     		.ascii	"\022K"
+ 2689 0232 1260     		.ascii	"\022`"
+ 2690 0234 1259     		.ascii	"\022Y"
+ 2691 0236 125A     		.ascii	"\022Z"
+ 2692 0238 1268     		.ascii	"\022h"
+ 2693 023a 125B     		.ascii	"\022["
+ 2694 023c 1270     		.ascii	"\022p"
+ 2695 023e 126A     		.ascii	"\022j"
+ 2696 0240 125E     		.ascii	"\022^"
+ 2697 0242 1278     		.ascii	"\022x"
+ 2698 0244 1267     		.ascii	"\022g"
+ 2699 0246 126D     		.ascii	"\022m"
+ 2700 0248 127A     		.ascii	"\022z"
+ 2701 024a 1275     		.ascii	"\022u"
+ 2702 024c 127C     		.ascii	"\022|"
+ 2703 024e 1277     		.ascii	"\022w"
+ 2704 0250 127D     		.ascii	"\022}"
+ 2705 0252 127E     		.ascii	"\022~"
+ 2706 0254 1282     		.ascii	"\022\202"
+ 2707 0256 1288     		.ascii	"\022\210"
+ 2708 0258 1284     		.ascii	"\022\204"
+ 2709 025a 1290     		.ascii	"\022\220"
+ 2710 025c 128A     		.ascii	"\022\212"
+ 2711 025e 1286     		.ascii	"\022\206"
+ 2712 0260 1298     		.ascii	"\022\230"
+ 2713 0262 128D     		.ascii	"\022\215"
+ 2714 0264 12A1     		.ascii	"\022\241"
+ 2715 0266 1295     		.ascii	"\022\225"
+ 2716 0268 1296     		.ascii	"\022\226"
+ 2717 026a 12B0     		.ascii	"\022\260"
+ 2718 026c 1297     		.ascii	"\022\227"
+ 2719 026e 12B1     		.ascii	"\022\261"
+ 2720 0270 12B8     		.ascii	"\022\270"
+ 2721 0272 129F     		.ascii	"\022\237"
+ 2722 0274 12B9     		.ascii	"\022\271"
+ 2723 0276 12BA     		.ascii	"\022\272"
+ 2724 0278 12B5     		.ascii	"\022\265"
+ 2725 027a 12BC     		.ascii	"\022\274"
+ 2726 027c 12B7     		.ascii	"\022\267"
+ 2727 027e 12BD     		.ascii	"\022\275"
+ 2728 0280 12C0     		.ascii	"\022\300"
+ 2729 0282 12BF     		.ascii	"\022\277"
+ 2730 0284 12C1     		.ascii	"\022\301"
+ 2731 0286 12C8     		.ascii	"\022\310"
+ 2732 0288 12C3     		.ascii	"\022\303"
+ 2733 028a 12D0     		.ascii	"\022\320"
+ 2734 028c 12C5     		.ascii	"\022\305"
+ 2735 028e 12C6     		.ascii	"\022\306"
+ 2736 0290 12E0     		.ascii	"\022\340"
+ 2737 0292 12D3     		.ascii	"\022\323"
+ 2738 0294 12CE     		.ascii	"\022\316"
+ 2739 0296 12E8     		.ascii	"\022\350"
+ 2740 0298 12DB     		.ascii	"\022\333"
+ 2741 029a 12D7     		.ascii	"\022\327"
+ 2742 029c 12E5     		.ascii	"\022\345"
+ 2743 029e 12E6     		.ascii	"\022\346"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 72
+
+
+ 2744 02a0 12DF     		.ascii	"\022\337"
+ 2745 02a2 12ED     		.ascii	"\022\355"
+ 2746 02a4 12FA     		.ascii	"\022\372"
+ 2747 02a6 12F6     		.ascii	"\022\366"
+ 2748 02a8 1301     		.ascii	"\023\001"
+ 2749 02aa 12FD     		.ascii	"\022\375"
+ 2750 02ac 12FE     		.ascii	"\022\376"
+ 2751 02ae 1304     		.ascii	"\023\004"
+ 2752 02b0 130A     		.ascii	"\023\012"
+ 2753 02b2 130B     		.ascii	"\023\013"
+ 2754 02b4 1320     		.ascii	"\023 "
+ 2755 02b6 1313     		.ascii	"\023\023"
+ 2756 02b8 130E     		.ascii	"\023\016"
+ 2757 02ba 1328     		.ascii	"\023("
+ 2758 02bc 131C     		.ascii	"\023\034"
+ 2759 02be 1317     		.ascii	"\023\027"
+ 2760 02c0 1331     		.ascii	"\0231"
+ 2761 02c2 132B     		.ascii	"\023+"
+ 2762 02c4 1327     		.ascii	"\023'"
+ 2763 02c6 133A     		.ascii	"\023:"
+ 2764 02c8 1335     		.ascii	"\0235"
+ 2765 02ca 133C     		.ascii	"\023<"
+ 2766 02cc 1337     		.ascii	"\0237"
+ 2767 02ce 133E     		.ascii	"\023>"
+ 2768 02d0 1340     		.ascii	"\023@"
+ 2769 02d2 133F     		.ascii	"\023?"
+ 2770 02d4 1341     		.ascii	"\023A"
+ 2771 02d6 1348     		.ascii	"\023H"
+ 2772 02d8 1344     		.ascii	"\023D"
+ 2773 02da 134A     		.ascii	"\023J"
+ 2774 02dc 1346     		.ascii	"\023F"
+ 2775 02de 1360     		.ascii	"\023`"
+ 2776 02e0 1359     		.ascii	"\023Y"
+ 2777 02e2 135A     		.ascii	"\023Z"
+ 2778 02e4 1356     		.ascii	"\023V"
+ 2779 02e6 1370     		.ascii	"\023p"
+ 2780 02e8 1365     		.ascii	"\023e"
+ 2781 02ea 1366     		.ascii	"\023f"
+ 2782 02ec 135F     		.ascii	"\023_"
+ 2783 02ee 137A     		.ascii	"\023z"
+ 2784 02f0 1375     		.ascii	"\023u"
+ 2785 02f2 136F     		.ascii	"\023o"
+ 2786 02f4 1377     		.ascii	"\023w"
+ 2787 02f6 1381     		.ascii	"\023\201"
+ 2788 02f8 1382     		.ascii	"\023\202"
+ 2789 02fa 1388     		.ascii	"\023\210"
+ 2790 02fc 1390     		.ascii	"\023\220"
+ 2791 02fe 1385     		.ascii	"\023\205"
+ 2792 0300 1392     		.ascii	"\023\222"
+ 2793 0302 1387     		.ascii	"\023\207"
+ 2794 0304 139A     		.ascii	"\023\232"
+ 2795 0306 1395     		.ascii	"\023\225"
+ 2796 0308 13A3     		.ascii	"\023\243"
+ 2797 030a 139D     		.ascii	"\023\235"
+ 2798 030c 13B2     		.ascii	"\023\262"
+ 2799 030e 13B3     		.ascii	"\023\263"
+ 2800 0310 13BA     		.ascii	"\023\272"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 73
+
+
+ 2801 0312 13B5     		.ascii	"\023\265"
+ 2802 0314 13B6     		.ascii	"\023\266"
+ 2803 0316 13B7     		.ascii	"\023\267"
+ 2804 0318 13BE     		.ascii	"\023\276"
+ 2805 031a 13BF     		.ascii	"\023\277"
+ 2806 031c 13C2     		.ascii	"\023\302"
+ 2807 031e 13C8     		.ascii	"\023\310"
+ 2808 0320 13C9     		.ascii	"\023\311"
+ 2809 0322 13D1     		.ascii	"\023\321"
+ 2810 0324 13D2     		.ascii	"\023\322"
+ 2811 0326 13D3     		.ascii	"\023\323"
+ 2812 0328 13DA     		.ascii	"\023\332"
+ 2813 032a 13D5     		.ascii	"\023\325"
+ 2814 032c 13E4     		.ascii	"\023\344"
+ 2815 032e 13DD     		.ascii	"\023\335"
+ 2816 0330 1400     		.ascii	"\024\000"
+ 2817 0332 13E7     		.ascii	"\023\347"
+ 2818 0334 1408     		.ascii	"\024\010"
+ 2819 0336 1410     		.ascii	"\024\020"
+ 2820 0338 140A     		.ascii	"\024\012"
+ 2821 033a 1418     		.ascii	"\024\030"
+ 2822 033c 13FF     		.ascii	"\023\377"
+ 2823 033e 141A     		.ascii	"\024\032"
+ 2824 0340 1415     		.ascii	"\024\025"
+ 2825 0342 1424     		.ascii	"\024$"
+ 2826 0344 1425     		.ascii	"\024%"
+ 2827 0346 142C     		.ascii	"\024,"
+ 2828 0348 1427     		.ascii	"\024'"
+ 2829 034a 142E     		.ascii	"\024."
+ 2830 034c 143C     		.ascii	"\024<"
+ 2831 034e 143D     		.ascii	"\024="
+ 2832 0350 143E     		.ascii	"\024>"
+ 2833 0352 1440     		.ascii	"\024@"
+ 2834 0354 1441     		.ascii	"\024A"
+ 2835 0356 1448     		.ascii	"\024H"
+ 2836 0358 1449     		.ascii	"\024I"
+ 2837 035a 1451     		.ascii	"\024Q"
+ 2838 035c 144C     		.ascii	"\024L"
+ 2839 035e 1461     		.ascii	"\024a"
+ 2840 0360 1468     		.ascii	"\024h"
+ 2841 0362 1469     		.ascii	"\024i"
+ 2842 0364 1457     		.ascii	"\024W"
+ 2843 0366 146C     		.ascii	"\024l"
+ 2844 0368 1474     		.ascii	"\024t"
+ 2845 036a 1475     		.ascii	"\024u"
+ 2846 036c 147C     		.ascii	"\024|"
+ 2847 036e 147D     		.ascii	"\024}"
+ 2848 0370 1481     		.ascii	"\024\201"
+ 2849 0372 1490     		.ascii	"\024\220"
+ 2850 0374 1483     		.ascii	"\024\203"
+ 2851 0376 1491     		.ascii	"\024\221"
+ 2852 0378 14A0     		.ascii	"\024\240"
+ 2853 037a 1494     		.ascii	"\024\224"
+ 2854 037c 1495     		.ascii	"\024\225"
+ 2855 037e 14A3     		.ascii	"\024\243"
+ 2856 0380 1497     		.ascii	"\024\227"
+ 2857 0382 14AC     		.ascii	"\024\254"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 74
+
+
+ 2858 0384 14B4     		.ascii	"\024\264"
+ 2859 0386 14B5     		.ascii	"\024\265"
+ 2860 0388 14AF     		.ascii	"\024\257"
+ 2861 038a 14BD     		.ascii	"\024\275"
+ 2862 038c 14C0     		.ascii	"\024\300"
+ 2863 038e 14C1     		.ascii	"\024\301"
+ 2864 0390 14C2     		.ascii	"\024\302"
+ 2865 0392 14C9     		.ascii	"\024\311"
+ 2866 0394 14C5     		.ascii	"\024\305"
+ 2867 0396 14D9     		.ascii	"\024\331"
+ 2868 0398 14E2     		.ascii	"\024\342"
+ 2869 039a 14F0     		.ascii	"\024\360"
+ 2870 039c 14DD     		.ascii	"\024\335"
+ 2871 039e 14EC     		.ascii	"\024\354"
+ 2872 03a0 14DF     		.ascii	"\024\337"
+ 2873 03a2 14FB     		.ascii	"\024\373"
+ 2874 03a4 1500     		.ascii	"\025\000"
+ 2875 03a6 1501     		.ascii	"\025\001"
+ 2876 03a8 1510     		.ascii	"\025\020"
+ 2877 03aa 150A     		.ascii	"\025\012"
+ 2878 03ac 150B     		.ascii	"\025\013"
+ 2879 03ae 1507     		.ascii	"\025\007"
+ 2880 03b0 150E     		.ascii	"\025\016"
+ 2881 03b2 1516     		.ascii	"\025\026"
+ 2882 03b4 1532     		.ascii	"\0252"
+ 2883 03b6 1539     		.ascii	"\0259"
+ 2884 03b8 152D     		.ascii	"\025-"
+ 2885 03ba 1536     		.ascii	"\0256"
+ 2886 03bc 153D     		.ascii	"\025="
+ 2887 03be 1540     		.ascii	"\025@"
+ 2888 03c0 1541     		.ascii	"\025A"
+ 2889 03c2 1542     		.ascii	"\025B"
+ 2890 03c4 1543     		.ascii	"\025C"
+ 2891 03c6 1545     		.ascii	"\025E"
+ 2892 03c8 1559     		.ascii	"\025Y"
+ 2893 03ca 1562     		.ascii	"\025b"
+ 2894 03cc 154F     		.ascii	"\025O"
+ 2895 03ce 1557     		.ascii	"\025W"
+ 2896 03d0 1579     		.ascii	"\025y"
+ 2897 03d2 156E     		.ascii	"\025n"
+ 2898 03d4 156F     		.ascii	"\025o"
+ 2899 03d6 157E     		.ascii	"\025~"
+ 2900 03d8 157F     		.ascii	"\025\177"
+ 2901 03da 1589     		.ascii	"\025\211"
+ 2902 03dc 1585     		.ascii	"\025\205"
+ 2903 03de 1599     		.ascii	"\025\231"
+ 2904 03e0 158E     		.ascii	"\025\216"
+ 2905 03e2 15A3     		.ascii	"\025\243"
+ 2906 03e4 159D     		.ascii	"\025\235"
+ 2907 03e6 15B3     		.ascii	"\025\263"
+ 2908 03e8 15AE     		.ascii	"\025\256"
+ 2909 03ea 15B6     		.ascii	"\025\266"
+ 2910 03ec 15B7     		.ascii	"\025\267"
+ 2911 03ee 15BF     		.ascii	"\025\277"
+ 2912 03f0 15C2     		.ascii	"\025\302"
+ 2913 03f2 15C3     		.ascii	"\025\303"
+ 2914 03f4 15C5     		.ascii	"\025\305"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 75
+
+
+ 2915 03f6 15D3     		.ascii	"\025\323"
+ 2916 03f8 15CE     		.ascii	"\025\316"
+ 2917 03fa 15CF     		.ascii	"\025\317"
+ 2918 03fc 15E6     		.ascii	"\025\346"
+ 2919 03fe 15DF     		.ascii	"\025\337"
+ 2920 0400 15FC     		.ascii	"\025\374"
+ 2921 0402 15F7     		.ascii	"\025\367"
+ 2922 0404 1618     		.ascii	"\026\030"
+ 2923 0406 1606     		.ascii	"\026\006"
+ 2924 0408 1622     		.ascii	"\026\""
+ 2925 040a 1616     		.ascii	"\026\026"
+ 2926 040c 1625     		.ascii	"\026%"
+ 2927 040e 163A     		.ascii	"\026:"
+ 2928 0410 163B     		.ascii	"\026;"
+ 2929 0412 1637     		.ascii	"\0267"
+ 2930 0414 1640     		.ascii	"\026@"
+ 2931 0416 1641     		.ascii	"\026A"
+ 2932 0418 1650     		.ascii	"\026P"
+ 2933 041a 164A     		.ascii	"\026J"
+ 2934 041c 164C     		.ascii	"\026L"
+ 2935 041e 1647     		.ascii	"\026G"
+ 2936 0420 1656     		.ascii	"\026V"
+ 2937 0422 1665     		.ascii	"\026e"
+ 2938 0424 167A     		.ascii	"\026z"
+ 2939 0426 1676     		.ascii	"\026v"
+ 2940 0428 1680     		.ascii	"\026\200"
+ 2941 042a 167F     		.ascii	"\026\177"
+ 2942 042c 1689     		.ascii	"\026\211"
+ 2943 042e 1698     		.ascii	"\026\230"
+ 2944 0430 1693     		.ascii	"\026\223"
+ 2945 0432 1695     		.ascii	"\026\225"
+ 2946 0434 16B8     		.ascii	"\026\270"
+ 2947 0436 16B4     		.ascii	"\026\264"
+ 2948 0438 16AE     		.ascii	"\026\256"
+ 2949 043a 16BD     		.ascii	"\026\275"
+ 2950 043c 16C0     		.ascii	"\026\300"
+ 2951 043e 16C8     		.ascii	"\026\310"
+ 2952 0440 16C4     		.ascii	"\026\304"
+ 2953 0442 16E0     		.ascii	"\026\340"
+ 2954 0444 16D3     		.ascii	"\026\323"
+ 2955 0446 16D5     		.ascii	"\026\325"
+ 2956 0448 16DD     		.ascii	"\026\335"
+ 2957 044a 16DF     		.ascii	"\026\337"
+ 2958 044c 1700     		.ascii	"\027\000"
+ 2959 044e 1702     		.ascii	"\027\002"
+ 2960 0450 16FF     		.ascii	"\026\377"
+ 2961 0452 170B     		.ascii	"\027\013"
+ 2962 0454 1722     		.ascii	"\027\""
+ 2963 0456 171C     		.ascii	"\027\034"
+ 2964 0458 171E     		.ascii	"\027\036"
+ 2965 045a 172D     		.ascii	"\027-"
+ 2966 045c 172F     		.ascii	"\027/"
+ 2967 045e 173E     		.ascii	"\027>"
+ 2968 0460 1741     		.ascii	"\027A"
+ 2969 0462 1750     		.ascii	"\027P"
+ 2970 0464 1760     		.ascii	"\027`"
+ 2971 0466 175A     		.ascii	"\027Z"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 76
+
+
+ 2972 0468 1756     		.ascii	"\027V"
+ 2973 046a 1757     		.ascii	"\027W"
+ 2974 046c 1767     		.ascii	"\027g"
+ 2975 046e 177D     		.ascii	"\027}"
+ 2976 0470 1781     		.ascii	"\027\201"
+ 2977 0472 1789     		.ascii	"\027\211"
+ 2978 0474 1785     		.ascii	"\027\205"
+ 2979 0476 1787     		.ascii	"\027\207"
+ 2980 0478 178F     		.ascii	"\027\217"
+ 2981 047a 179E     		.ascii	"\027\236"
+ 2982 047c 17B5     		.ascii	"\027\265"
+ 2983 047e 17BD     		.ascii	"\027\275"
+ 2984 0480 17BF     		.ascii	"\027\277"
+ 2985 0482 17C2     		.ascii	"\027\302"
+ 2986 0484 17CA     		.ascii	"\027\312"
+ 2987 0486 17E8     		.ascii	"\027\350"
+ 2988 0488 17DC     		.ascii	"\027\334"
+ 2989 048a 17EB     		.ascii	"\027\353"
+ 2990 048c 17F5     		.ascii	"\027\365"
+ 2991 048e 17FD     		.ascii	"\027\375"
+ 2992 0490 17FF     		.ascii	"\027\377"
+ 2993              		.section	.data.g_otpBuffer,"aw"
+ 2994              		.align	2
+ 2997              	g_otpBuffer:
+ 2998 0000 FF00     		.ascii	"\377\000"
+ 2999 0002 00000000 		.space	1022
+ 2999      00000000 
+ 2999      00000000 
+ 2999      00000000 
+ 2999      00000000 
+ 3000              		.text
+ 3001              	.Letext0:
+ 3002              		.file 2 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_default_
+ 3003              		.file 3 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 3004              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 3005              		.file 5 "Core/Inc/main.h"
+ 3006              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 3007              		.file 7 "Drivers/User_Driver/Inc/soft_i2c.h"
+ 3008              		.file 8 "Drivers/User_Driver/Inc/rtc_i2c.h"
+ 3009              		.file 9 "Device/Inc/drv_wave1006.h"
+ 3010              		.file 10 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 77
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 rtc.c
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:20     .text.rtc_read_temp:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:26     .text.rtc_read_temp:00000000 rtc_read_temp
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:178    .text.rtc_read_temp:000000a0 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:184    .text.rtc_read_date:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:190    .text.rtc_read_date:00000000 rtc_read_date
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:363    .text.rtc_write_date:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:369    .text.rtc_write_date:00000000 rtc_write_date
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:489    .text.rtc_write_date:000000c8 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:494    .text.PrintfTime:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:500    .text.PrintfTime:00000000 PrintfTime
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:514    .rodata.rtc_out_freq.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:518    .text.rtc_out_freq:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:524    .text.rtc_out_freq:00000000 rtc_out_freq
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:576    .text.rtc_out_freq:0000002c $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:581    .rodata.rtc_disable_int.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:588    .text.rtc_disable_int:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:594    .text.rtc_disable_int:00000000 rtc_disable_int
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:685    .text.rtc_disable_int:00000050 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:691    .rodata.rtc_set_testcap.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:695    .text.rtc_set_testcap:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:701    .text.rtc_set_testcap:00000000 rtc_set_testcap
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:779    .text.rtc_set_testcap:00000040 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:784    .rodata.rtc_1006_set_testmode.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:791    .text.rtc_1006_set_testmode:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:797    .text.rtc_1006_set_testmode:00000000 rtc_1006_set_testmode
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1021   .text.rtc_1006_set_testmode:00000134 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1027   .text.rtc_8825_adc_testmode:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1033   .text.rtc_8825_adc_testmode:00000000 rtc_8825_adc_testmode
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1177   .rodata.rtc_1006_exit_testmode.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1181   .text.rtc_1006_exit_testmode:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1187   .text.rtc_1006_exit_testmode:00000000 rtc_1006_exit_testmode
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1247   .text.rtc_1006_exit_testmode:00000030 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1252   .text.rtc_convert_temp_offset:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1258   .text.rtc_convert_temp_offset:00000000 rtc_convert_temp_offset
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1293   .text.rtc_convert_temp_offset:00000028 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1299   .text.rtc_init_test_cap:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1305   .text.rtc_init_test_cap:00000000 rtc_init_test_cap
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1406   .text.rtc_init_test_cap:000000b4 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1417   .text.cap_list_to_uint:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1423   .text.cap_list_to_uint:00000000 cap_list_to_uint
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1455   .text.cap_list_to_uint:00000018 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1467   .text.cap_list_number_convert:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1473   .text.cap_list_number_convert:00000000 cap_list_number_convert
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1764   .text.cap_list_number_convert:00000180 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1787   .text.digtal_adj_convert:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1793   .text.digtal_adj_convert:00000000 digtal_adj_convert
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1877   .text.digtal_adj_convert:00000058 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1885   .text.wave1006_read_temp_adc:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:1891   .text.wave1006_read_temp_adc:00000000 wave1006_read_temp_adc
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2027   .text.system_get_rtc_temp:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2033   .text.system_get_rtc_temp:00000000 system_get_rtc_temp
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2148   .text.system_get_rtc_temp:0000005c $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2154   .text.sd8825_out_freq:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2160   .text.sd8825_out_freq:00000000 sd8825_out_freq
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2291   .text.sd8825_out_freq:00000084 $d
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s 			page 78
+
+
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2298   .text.sd8825_close_freq:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2304   .text.sd8825_close_freq:00000000 sd8825_close_freq
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2407   .data.g_capList:00000000 g_capList
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2997   .data.g_otpBuffer:00000000 g_otpBuffer
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2398   .rodata:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2403   .data.g_capList:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc5mX3ko.s:2994   .data.g_otpBuffer:00000000 $d
+
+UNDEFINED SYMBOLS
+rtc_write_multi_bytes
+HAL_Delay
+rtc_read_multi_bytes
+UsbPrintf
+check_sda_level
+rtc_set_channel
+drv_wave1006_write_reg
+drv_wave1006_read_reg
+wave1006_enter_test_mode
+log_printf
+__aeabi_i2d
+__aeabi_dmul
+__aeabi_d2f
+__aeabi_f2d
+__aeabi_dsub
+__aeabi_d2uiz
+__aeabi_ddiv
+__aeabi_dadd
+HAL_GPIO_WritePin

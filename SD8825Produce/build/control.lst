@@ -1,0 +1,4073 @@
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"control.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.CTL_CONNECT_Handle,"ax",%progbits
+  20              		.align	1
+  21              		.global	CTL_CONNECT_Handle
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	CTL_CONNECT_Handle:
+  27              	.LVL0:
+  28              	.LFB240:
+  29              		.file 1 "App/Src/control.c"
+   1:App/Src/control.c **** #include "control.h"
+   2:App/Src/control.c **** #include "main.h"
+   3:App/Src/control.c **** #include "string.h"
+   4:App/Src/control.c **** #include <stdio.h>
+   5:App/Src/control.c **** #include <stdarg.h>
+   6:App/Src/control.c **** #include "task.h"
+   7:App/Src/control.c **** #include "flash.h"
+   8:App/Src/control.c **** #include "manager.h"
+   9:App/Src/control.c **** #include "temp.h"
+  10:App/Src/control.c **** #include "rtc.h"
+  11:App/Src/control.c **** #include "power.h"
+  12:App/Src/control.c **** 
+  13:App/Src/control.c **** #define CONTROL_RECEIVE_BUFF_NUMBER    200
+  14:App/Src/control.c **** #define CONTROL_TRANSMIT_BUFF_NUMBER   300
+  15:App/Src/control.c **** #define CTRL_UART_TICK_CLEAR         10//10ms
+  16:App/Src/control.c **** 
+  17:App/Src/control.c **** // #define FUNCTION0_NUMBER        1
+  18:App/Src/control.c **** // #define FUNCTION1_NUMBER        FUNCTION0_NUMBER + 2
+  19:App/Src/control.c **** // #define FUNCTION2_NUMBER        FUNCTION1_NUMBER + 3
+  20:App/Src/control.c **** // #define FUNCTION3_NUMBER        FUNCTION2_NUMBER + 2
+  21:App/Src/control.c **** // #define FUNCTION4_NUMBER        FUNCTION3_NUMBER + 3
+  22:App/Src/control.c **** // #define FUNCTION5_NUMBER        FUNCTION4_NUMBER + 2
+  23:App/Src/control.c **** // #define FUNCTION6_NUMBER        FUNCTION5_NUMBER + 2
+  24:App/Src/control.c **** // #define FUNCTION7_NUMBER        FUNCTION6_NUMBER + 4
+  25:App/Src/control.c **** // #define FUNCTION8_NUMBER        FUNCTION7_NUMBER + 4
+  26:App/Src/control.c **** // #define FUNCTION9_NUMBER        FUNCTION8_NUMBER + 1
+  27:App/Src/control.c **** // #define MAX_SELECT_NUMBER     FUNCTION9_NUMBER
+  28:App/Src/control.c **** // char selectList[MAX_SELECT_NUMBER][FUNCTION_NAME_LENGTH] = {
+  29:App/Src/control.c **** //     "[选择功能]",
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 2
+
+
+  30:App/Src/control.c **** //     "[读取内存]", "[清除内存]",
+  31:App/Src/control.c **** //     "[IIC接触测试]", "[温度读取]", "[频率计连通测试]",
+  32:App/Src/control.c **** //     "[配置温度]", "[查看配置结果]", 
+  33:App/Src/control.c **** //     "[单点测试(累加)]", "[单点测试(重复)]", "[读取测试结果]",
+  34:App/Src/control.c **** //     "[计算温补值]", "[查看计算结果]",
+  35:App/Src/control.c **** //     "[烧写补偿]", "[查看烧写结果]",
+  36:App/Src/control.c **** //     "[低温同步时间]", "[低温误差验证]", "[高温同步时间]", "[高温误差验证]",
+  37:App/Src/control.c **** //     "[通用测试]", "[检烧模式/累加]", "[检烧模式/重复]", "[查看测试结果]",
+  38:App/Src/control.c **** //     "[查看取料信息]"
+  39:App/Src/control.c **** // };
+  40:App/Src/control.c **** 
+  41:App/Src/control.c **** typedef enum {
+  42:App/Src/control.c **** 	OPERATE_FREE_MODE = 0,
+  43:App/Src/control.c **** 	OPERATE_READ_FLASH,
+  44:App/Src/control.c **** 	OPERATE_ERASE_FLASH,
+  45:App/Src/control.c **** 	OPERATE_IIC_TEST,
+  46:App/Src/control.c **** 	OPERATE_READ_TEMP,
+  47:App/Src/control.c **** 	OPERATE_CONNECT,
+  48:App/Src/control.c **** 	OPERATE_SET_CONFIG9,
+  49:App/Src/control.c **** 	OPERATE_SHOW_CONFIG9,
+  50:App/Src/control.c **** 	OPERATE_CAPADJUST_ADD,
+  51:App/Src/control.c **** 	OPERATE_CAPADJUST_COVER,
+  52:App/Src/control.c **** 	OPERATE_CAPADJUST_RESULT,
+  53:App/Src/control.c **** 	OPERATE_CALCULATE,
+  54:App/Src/control.c **** 	OPERATE_CALCUL_RESULT,
+  55:App/Src/control.c **** 	OPERATE_DOWNLOAD,
+  56:App/Src/control.c **** 	OPERATE_LOAD_RESULT,
+  57:App/Src/control.c **** 	OPERATE_COLD_SYNC,
+  58:App/Src/control.c **** 	OPERATE_COLD_ERROR,
+  59:App/Src/control.c **** 	OPERATE_HOT_SYNC,
+  60:App/Src/control.c **** 	OPERATE_HOT_ERROR,
+  61:App/Src/control.c **** 	OPERATE_MACHINE_TEST,
+  62:App/Src/control.c **** 	OPERATE_MACHINE_WRITE,
+  63:App/Src/control.c **** 	OPERATE_MACHINE_COVER,//and write
+  64:App/Src/control.c **** 	OPERATE_MACHINE_RESULT,
+  65:App/Src/control.c **** 	OPERATE_TAKE_OUT_MESSAGE,
+  66:App/Src/control.c **** } OperateCommand;
+  67:App/Src/control.c **** 
+  68:App/Src/control.c **** extern UART_HandleTypeDef huart3;
+  69:App/Src/control.c **** static uint16_t control_Rx_Cnt = 0;		//
+  70:App/Src/control.c **** static uint8_t controlRxBuf;
+  71:App/Src/control.c **** uint8_t g_controlRxBuff[CONTROL_RECEIVE_BUFF_NUMBER] = {0};
+  72:App/Src/control.c **** uint8_t g_controlTxBuff[CONTROL_TRANSMIT_BUFF_NUMBER] = {0};
+  73:App/Src/control.c **** uint8_t g_controlATStatus = 0;
+  74:App/Src/control.c **** static uint8_t g_earseFlash = 0;
+  75:App/Src/control.c **** 
+  76:App/Src/control.c **** #define MAX_CONTROL_NUMBER  15
+  77:App/Src/control.c **** #define MAX_CONTROL_LENGTH  20
+  78:App/Src/control.c **** static char CtrlStringList[MAX_CONTROL_NUMBER][MAX_CONTROL_LENGTH] = {
+  79:App/Src/control.c ****     "AT^CONNECT?",
+  80:App/Src/control.c **** 	"AT^REALTIME", 
+  81:App/Src/control.c **** 	"AT^OPERATE",
+  82:App/Src/control.c **** 	"AT^VDDMODE",
+  83:App/Src/control.c **** 	"AT^VERSION?",
+  84:App/Src/control.c **** 	"AT^CSN",
+  85:App/Src/control.c **** 	"AT^BSN?",
+  86:App/Src/control.c **** 	"AT^GETCSN",
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 3
+
+
+  87:App/Src/control.c **** };
+  88:App/Src/control.c **** 
+  89:App/Src/control.c **** 
+  90:App/Src/control.c **** void ControlPrintf(char* fmt,...)  
+  91:App/Src/control.c **** {  
+  92:App/Src/control.c **** 	va_list ap;//
+  93:App/Src/control.c **** 	memset(g_controlTxBuff, 0, CONTROL_TRANSMIT_BUFF_NUMBER);
+  94:App/Src/control.c **** 	va_start(ap, fmt);//
+  95:App/Src/control.c **** 	vsnprintf((char*)g_controlTxBuff, CONTROL_TRANSMIT_BUFF_NUMBER, fmt, ap);//
+  96:App/Src/control.c **** 	va_end(ap);
+  97:App/Src/control.c **** 	HAL_UART_Transmit(&huart3, g_controlTxBuff, strlen((char*)g_controlTxBuff), 1000);
+  98:App/Src/control.c **** }
+  99:App/Src/control.c **** 
+ 100:App/Src/control.c **** 
+ 101:App/Src/control.c **** void ControlInit(void)
+ 102:App/Src/control.c **** {
+ 103:App/Src/control.c **** 	HAL_UART_Receive_IT(&huart3, &controlRxBuf, 1);		
+ 104:App/Src/control.c ****     memset(g_controlRxBuff, 0x00, sizeof(g_controlRxBuff));
+ 105:App/Src/control.c **** 	memset(g_controlTxBuff, 0x00, sizeof(g_controlTxBuff));
+ 106:App/Src/control.c **** }
+ 107:App/Src/control.c **** 
+ 108:App/Src/control.c **** void CTL_CONNECT_Handle(char* command)
+ 109:App/Src/control.c **** {
+  30              		.loc 1 109 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+ 110:App/Src/control.c **** 	// ControlPrintf("temp:%.1f connect OK\n", temp_read_value(1));
+ 111:App/Src/control.c **** }
+  35              		.loc 1 111 1 view .LVU1
+  36 0000 7047     		bx	lr
+  37              		.cfi_endproc
+  38              	.LFE240:
+  40              		.section	.text.CTL_VDDMODE_Handle,"ax",%progbits
+  41              		.align	1
+  42              		.global	CTL_VDDMODE_Handle
+  43              		.syntax unified
+  44              		.thumb
+  45              		.thumb_func
+  47              	CTL_VDDMODE_Handle:
+  48              	.LVL1:
+  49              	.LFB255:
+ 112:App/Src/control.c **** 
+ 113:App/Src/control.c **** void CTL_REALTIME_Handle(char* command)
+ 114:App/Src/control.c **** {
+ 115:App/Src/control.c ****     RealTime rtc = {0};
+ 116:App/Src/control.c **** 	int num = 0;
+ 117:App/Src/control.c **** 	int inNumber = 0;
+ 118:App/Src/control.c **** 
+ 119:App/Src/control.c **** 	// UsbPrintf("receive system:%s", command);
+ 120:App/Src/control.c **** 	system_get_real_time(&rtc);
+ 121:App/Src/control.c **** 	num = strSearch(command, "year:");
+ 122:App/Src/control.c **** 	if (num != -1) {
+ 123:App/Src/control.c **** 		num += strlen("year:");
+ 124:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 125:App/Src/control.c **** 		rtc.year = inNumber % 100;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 4
+
+
+ 126:App/Src/control.c **** 	}
+ 127:App/Src/control.c **** 	num = strSearch(command, "mon:");
+ 128:App/Src/control.c **** 	if (num != -1) {
+ 129:App/Src/control.c **** 		num += strlen("mon:");
+ 130:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 131:App/Src/control.c **** 		rtc.mon = inNumber % 100;
+ 132:App/Src/control.c **** 	}	
+ 133:App/Src/control.c **** 	num = strSearch(command, "day:");
+ 134:App/Src/control.c **** 	if (num != -1) {
+ 135:App/Src/control.c **** 		num += strlen("day:");
+ 136:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 137:App/Src/control.c **** 		rtc.day = inNumber % 100;
+ 138:App/Src/control.c **** 	}	
+ 139:App/Src/control.c **** 	num = strSearch(command, "hour:");
+ 140:App/Src/control.c **** 	if (num != -1) {
+ 141:App/Src/control.c **** 		num += strlen("hour:");
+ 142:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 143:App/Src/control.c **** 		rtc.hour = inNumber % 100;
+ 144:App/Src/control.c **** 	}	
+ 145:App/Src/control.c **** 	num = strSearch(command, "min:");
+ 146:App/Src/control.c **** 	if (num != -1) {
+ 147:App/Src/control.c **** 		num += strlen("min:");
+ 148:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 149:App/Src/control.c **** 		rtc.min = inNumber % 100;
+ 150:App/Src/control.c **** 	}	
+ 151:App/Src/control.c **** 	num = strSearch(command, "sec:");
+ 152:App/Src/control.c **** 	if (num != -1) {
+ 153:App/Src/control.c **** 		num += strlen("sec:");
+ 154:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 155:App/Src/control.c **** 		rtc.sec = inNumber % 100;
+ 156:App/Src/control.c **** 	}
+ 157:App/Src/control.c **** 	system_set_real_time(rtc);
+ 158:App/Src/control.c **** 	ControlPrintf("sync time OK\n");
+ 159:App/Src/control.c **** }
+ 160:App/Src/control.c **** 
+ 161:App/Src/control.c **** 
+ 162:App/Src/control.c **** void OPERATE_READ_FLASH_Handle(void)
+ 163:App/Src/control.c **** {
+ 164:App/Src/control.c **** 	uint8_t buffer[MAX_CHIP_NUMBER] = {0xff};
+ 165:App/Src/control.c **** 	uint32_t address;
+ 166:App/Src/control.c **** 	uint8_t count, lastCount = 0;
+ 167:App/Src/control.c **** 	int i, j;
+ 168:App/Src/control.c **** 	char message[7][20] = {
+ 169:App/Src/control.c **** 		"已清空数据", "温度计", "温补测试", "计算", "烧录", "机台测试", "取料记录"};
+ 170:App/Src/control.c **** 	if (g_earseFlash > 0) {
+ 171:App/Src/control.c **** 		ControlPrintf("message:正在清空，稍后再试\n");
+ 172:App/Src/control.c **** 		return;
+ 173:App/Src/control.c **** 	}
+ 174:App/Src/control.c **** 	for (j = 0; j < 6; j++) {//6个测试标志
+ 175:App/Src/control.c **** 		memset(buffer, 0xff, MAX_CHIP_NUMBER);
+ 176:App/Src/control.c **** 		address = TEST_FALG_START_ADDR + j * PAGE_SIZE;
+ 177:App/Src/control.c **** 		flash_read_data(address, buffer, MAX_CHIP_NUMBER);
+ 178:App/Src/control.c **** 		count = 0;
+ 179:App/Src/control.c **** 		for (i = 0; i < MAX_CHIP_NUMBER ; i++) {
+ 180:App/Src/control.c **** 			if (j == 1) {
+ 181:App/Src/control.c **** 				if (buffer[i] == 0xE0) {
+ 182:App/Src/control.c **** 					count++;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 5
+
+
+ 183:App/Src/control.c **** 				}
+ 184:App/Src/control.c **** 			} else {
+ 185:App/Src/control.c **** 				if (buffer[i] == '1') {
+ 186:App/Src/control.c **** 					count++;
+ 187:App/Src/control.c **** 				}
+ 188:App/Src/control.c **** 			}
+ 189:App/Src/control.c **** 		}
+ 190:App/Src/control.c **** 		if (count == 0) {
+ 191:App/Src/control.c **** 			ControlPrintf("okNumber:%d chipName:%d message:%s\n", lastCount, MAX_CHIP_NUMBER, message[j]);
+ 192:App/Src/control.c **** 			return;
+ 193:App/Src/control.c **** 		} else {
+ 194:App/Src/control.c **** 			lastCount = count;
+ 195:App/Src/control.c **** 		}
+ 196:App/Src/control.c **** 	}
+ 197:App/Src/control.c **** 	ControlPrintf("okNumber:%d chipName:%d message:%s\n", lastCount, MAX_CHIP_NUMBER, message[j]);
+ 198:App/Src/control.c **** }
+ 199:App/Src/control.c **** 
+ 200:App/Src/control.c **** void OPERATE_ERASE_FLASH_Handle(void)
+ 201:App/Src/control.c **** {
+ 202:App/Src/control.c **** 	HAL_Delay(200);
+ 203:App/Src/control.c **** 	if (flash_erase(0, 0) != 1) {//全片擦除
+ 204:App/Src/control.c ****         ControlPrintf("message:清空异常，请重试\n");
+ 205:App/Src/control.c **** 		return;
+ 206:App/Src/control.c ****     }
+ 207:App/Src/control.c **** 	ControlPrintf("message:开始清空数据\n");
+ 208:App/Src/control.c **** 	UsbPrintf("earse full chip need 40s ~ 200s\n");
+ 209:App/Src/control.c **** 	g_earseFlash = 1;
+ 210:App/Src/control.c **** }
+ 211:App/Src/control.c **** 
+ 212:App/Src/control.c **** void CheckFlashEarse(void)
+ 213:App/Src/control.c **** {
+ 214:App/Src/control.c **** 	static uint32_t lastTick = 0;
+ 215:App/Src/control.c **** 	static uint32_t usedTime = 0;
+ 216:App/Src/control.c **** 	if (g_earseFlash == 1) {
+ 217:App/Src/control.c **** 		g_earseFlash = 2;
+ 218:App/Src/control.c **** 		lastTick = HAL_GetTick();
+ 219:App/Src/control.c **** 		usedTime = 0;
+ 220:App/Src/control.c **** 	} else if (g_earseFlash == 2) {
+ 221:App/Src/control.c **** 		if (HAL_GetTick() < lastTick + 2000) { return; }
+ 222:App/Src/control.c **** 		usedTime += HAL_GetTick() - lastTick;
+ 223:App/Src/control.c **** 		lastTick = HAL_GetTick();
+ 224:App/Src/control.c **** 		UsbPrintf("wait for %ds...\n", usedTime / 1000);
+ 225:App/Src/control.c **** 		ControlPrintf("message:请等待,已进行%ds\n", usedTime / 1000);
+ 226:App/Src/control.c **** 		if (CheckBusy() == 1) {
+ 227:App/Src/control.c **** 			log_list_init(); 
+ 228:App/Src/control.c **** 			ControlPrintf("okNumber:%d chipName:%d message:清空已完成！\n", MAX_CHIP_NUMBER, MAX_CHIP_NUMBER
+ 229:App/Src/control.c **** 			g_earseFlash = 0;
+ 230:App/Src/control.c **** 		}
+ 231:App/Src/control.c **** 	}
+ 232:App/Src/control.c **** }
+ 233:App/Src/control.c **** 
+ 234:App/Src/control.c **** 
+ 235:App/Src/control.c **** void OPERATE_IIC_TEST_Handle(void)
+ 236:App/Src/control.c **** {
+ 237:App/Src/control.c **** 	int i = 0;
+ 238:App/Src/control.c **** 	uint8_t count = 0;
+ 239:App/Src/control.c **** 	uint8_t buffer;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 6
+
+
+ 240:App/Src/control.c **** 	ControlPrintf("okNumber:0 chipName:0 message:开始iic读取\n");
+ 241:App/Src/control.c **** 	for (i = 1; i <= MAX_CHIP_NUMBER; i++) {
+ 242:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 243:App/Src/control.c **** 		rtc_set_channel(i, RTC_SD8825);
+ 244:App/Src/control.c **** 		HAL_Delay(5);
+ 245:App/Src/control.c **** 		if (rtc_read_multi_bytes(0x64, 0x00, &buffer, 8) == I2C_OK) {
+ 246:App/Src/control.c **** 			count++;
+ 247:App/Src/control.c **** 		}
+ 248:App/Src/control.c **** 	}
+ 249:App/Src/control.c **** 	ControlPrintf("okNumber:%d chipName:%d message:已完成！\n", count, MAX_CHIP_NUMBER);
+ 250:App/Src/control.c **** }
+ 251:App/Src/control.c **** 
+ 252:App/Src/control.c **** void OPERATE_READ_TEMP_Handle(void)
+ 253:App/Src/control.c **** {
+ 254:App/Src/control.c **** 	int i = 0;
+ 255:App/Src/control.c **** 	uint8_t count = 0;
+ 256:App/Src/control.c **** 	uint8_t buffer[512] = {0};
+ 257:App/Src/control.c **** 	uint16_t temp[MAX_CHIP_NUMBER] = {0};
+ 258:App/Src/control.c **** 	uint8_t maxCount = 0;
+ 259:App/Src/control.c **** 	int maxIndex = 0;
+ 260:App/Src/control.c **** 
+ 261:App/Src/control.c **** 	ControlPrintf("okNumber:0 chipName:0 message:开始温度读取\n");
+ 262:App/Src/control.c **** 	for (i = 1; i <= MAX_CHIP_NUMBER; i++) {
+ 263:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 264:App/Src/control.c **** 		HAL_Delay(5);
+ 265:App/Src/control.c **** 		if (wave1006_read_temp_adc(&temp[i]) == I2C_OK) {
+ 266:App/Src/control.c **** 			count++;
+ 267:App/Src/control.c **** 			buffer[temp[i]]++;
+ 268:App/Src/control.c **** 		}
+ 269:App/Src/control.c **** 	}
+ 270:App/Src/control.c **** 	for (i = 0; i < 512; i++) {
+ 271:App/Src/control.c **** 		if (buffer[i] > maxCount) {
+ 272:App/Src/control.c **** 			maxCount = buffer[i];
+ 273:App/Src/control.c **** 			maxIndex = i;
+ 274:App/Src/control.c **** 		}
+ 275:App/Src/control.c **** 	}
+ 276:App/Src/control.c **** 	if (maxIndex > 400) {//温度值低于0度时，数据转换
+ 277:App/Src/control.c **** 		maxIndex = maxIndex - 512;
+ 278:App/Src/control.c **** 	}
+ 279:App/Src/control.c **** 	ControlPrintf("okNumber:%d chipName:%d message:多数[%d℃]:%d个\n", count, MAX_CHIP_NUMBER, maxInde
+ 280:App/Src/control.c **** }
+ 281:App/Src/control.c **** 
+ 282:App/Src/control.c **** 
+ 283:App/Src/control.c **** void OPERATE_CAPADJUST_RESULT_Handle(void)
+ 284:App/Src/control.c **** {
+ 285:App/Src/control.c **** 	uint8_t buffer[MAX_CHIP_NUMBER] = {0xff};
+ 286:App/Src/control.c **** 	int i = 0;
+ 287:App/Src/control.c **** 	uint8_t value[256] = {0};
+ 288:App/Src/control.c **** 	uint8_t maxCount = 0;
+ 289:App/Src/control.c **** 	int maxIndex = 0;
+ 290:App/Src/control.c **** 	uint8_t count = 0;
+ 291:App/Src/control.c **** 
+ 292:App/Src/control.c **** 	flash_read_data(TEST_FALG_START_ADDR + FLAG_TEST_DOT * PAGE_SIZE, buffer, MAX_CHIP_NUMBER);
+ 293:App/Src/control.c **** 	for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 294:App/Src/control.c **** 		value[buffer[i]]++;
+ 295:App/Src/control.c **** 		if (buffer[i] != 0xff) {
+ 296:App/Src/control.c **** 			count++;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 7
+
+
+ 297:App/Src/control.c **** 		}
+ 298:App/Src/control.c **** 	}
+ 299:App/Src/control.c **** 	for (i = 0; i < 256; i++) {
+ 300:App/Src/control.c **** 		if (value[i] > maxCount) {
+ 301:App/Src/control.c **** 			maxCount = value[i];
+ 302:App/Src/control.c **** 			maxIndex = i;
+ 303:App/Src/control.c **** 		}
+ 304:App/Src/control.c **** 	}
+ 305:App/Src/control.c **** 	ControlPrintf("okNumber:%d chipName:%d message:多数[%02X]:%d个\n", count, MAX_CHIP_NUMBER, maxInde
+ 306:App/Src/control.c **** }
+ 307:App/Src/control.c **** 
+ 308:App/Src/control.c **** void OPERATE_RESULT_Handle(TestFlagList mode)
+ 309:App/Src/control.c **** {
+ 310:App/Src/control.c **** 	uint8_t buffer[MAX_CHIP_NUMBER] = {0xff};
+ 311:App/Src/control.c **** 	int i = 0;
+ 312:App/Src/control.c **** 
+ 313:App/Src/control.c **** 	uint8_t count = 0;
+ 314:App/Src/control.c **** 
+ 315:App/Src/control.c **** 	flash_read_data(TEST_FALG_START_ADDR + mode * PAGE_SIZE, buffer, MAX_CHIP_NUMBER);
+ 316:App/Src/control.c **** 	for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 317:App/Src/control.c **** 		if (buffer[i] == '1') {
+ 318:App/Src/control.c **** 			count++;
+ 319:App/Src/control.c **** 		}
+ 320:App/Src/control.c **** 	}
+ 321:App/Src/control.c **** 	ControlPrintf("okNumber:%d chipName:%d message:读取完成\n", count, MAX_CHIP_NUMBER);
+ 322:App/Src/control.c **** }
+ 323:App/Src/control.c **** 
+ 324:App/Src/control.c **** void OPERATE_COLD_SYNC_Handle(void)
+ 325:App/Src/control.c **** {
+ 326:App/Src/control.c **** 
+ 327:App/Src/control.c **** }
+ 328:App/Src/control.c **** 
+ 329:App/Src/control.c **** void OPERATE_COLD_ERROR_Handle(void)
+ 330:App/Src/control.c **** {
+ 331:App/Src/control.c **** 
+ 332:App/Src/control.c **** }
+ 333:App/Src/control.c **** 
+ 334:App/Src/control.c **** void OPERATE_HOT_SYNC_Handle(void)
+ 335:App/Src/control.c **** {
+ 336:App/Src/control.c **** 
+ 337:App/Src/control.c **** }
+ 338:App/Src/control.c **** 
+ 339:App/Src/control.c **** void OPERATE_HOT_ERROR_Handle(void)
+ 340:App/Src/control.c **** {
+ 341:App/Src/control.c **** 
+ 342:App/Src/control.c **** }
+ 343:App/Src/control.c **** 
+ 344:App/Src/control.c **** void OPERATE_TAKE_OUT_MESSAGE_Handle(void)
+ 345:App/Src/control.c **** {
+ 346:App/Src/control.c **** 
+ 347:App/Src/control.c **** }
+ 348:App/Src/control.c **** 
+ 349:App/Src/control.c **** 
+ 350:App/Src/control.c **** void CTL_OPERATE_Handle(char* command)//设置工作模式
+ 351:App/Src/control.c **** {	
+ 352:App/Src/control.c **** 	int num = 0;
+ 353:App/Src/control.c **** 	int inNumber = 0;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 8
+
+
+ 354:App/Src/control.c **** 
+ 355:App/Src/control.c **** 	UsbPrintf("receive system:%s", command);
+ 356:App/Src/control.c **** 	log_printf("receive system:%s", command);
+ 357:App/Src/control.c **** 	num = strSearch(command, "AT^OPERATE=");
+ 358:App/Src/control.c **** 	if (num >= 0) {
+ 359:App/Src/control.c **** 		num += strlen("AT^OPERATE=");
+ 360:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 361:App/Src/control.c **** 		switch (inNumber) {
+ 362:App/Src/control.c **** 			case OPERATE_FREE_MODE:
+ 363:App/Src/control.c **** 			break;
+ 364:App/Src/control.c **** 			case OPERATE_READ_FLASH:
+ 365:App/Src/control.c **** 				OPERATE_READ_FLASH_Handle();
+ 366:App/Src/control.c **** 			break;
+ 367:App/Src/control.c **** 			case OPERATE_ERASE_FLASH:
+ 368:App/Src/control.c **** 				OPERATE_ERASE_FLASH_Handle();
+ 369:App/Src/control.c **** 			break;
+ 370:App/Src/control.c **** 			case OPERATE_IIC_TEST:
+ 371:App/Src/control.c **** 				OPERATE_IIC_TEST_Handle();
+ 372:App/Src/control.c **** 			break;
+ 373:App/Src/control.c **** 			case OPERATE_READ_TEMP:
+ 374:App/Src/control.c **** 				OPERATE_READ_TEMP_Handle();
+ 375:App/Src/control.c **** 			break;
+ 376:App/Src/control.c **** 			case OPERATE_CONNECT:
+ 377:App/Src/control.c **** 				ControlPrintf("okNumber:0 chipName:0 message:正在连通测试\n");
+ 378:App/Src/control.c **** 				manager_set_mode(FREQ_CONNECT);
+ 379:App/Src/control.c **** 			break;
+ 380:App/Src/control.c **** 			case OPERATE_SET_CONFIG9:
+ 381:App/Src/control.c **** 				ControlPrintf("okNumber:0 chipName:0 message:开始配置...\n");
+ 382:App/Src/control.c **** 				manager_set_mode(TEMP_TEST);
+ 383:App/Src/control.c **** 			break;
+ 384:App/Src/control.c **** 			case OPERATE_SHOW_CONFIG9:
+ 385:App/Src/control.c **** 			// OPERATE_SHOW_CONFIG9_Handle();
+ 386:App/Src/control.c **** 			break;
+ 387:App/Src/control.c **** 			case OPERATE_CAPADJUST_ADD:
+ 388:App/Src/control.c **** 				ControlPrintf("okNumber:0 chipName:0 message:开始单点测试...\n");
+ 389:App/Src/control.c **** 				manager_set_mode(CAP_ADJUST);
+ 390:App/Src/control.c **** 			break;
+ 391:App/Src/control.c **** 			case OPERATE_CAPADJUST_COVER:
+ 392:App/Src/control.c **** 				ControlPrintf("okNumber:0 chipName:0 message:清空再单点测试...\n");
+ 393:App/Src/control.c **** 				manager_set_mode(CAP_ADJUST_COVER);
+ 394:App/Src/control.c **** 			break;
+ 395:App/Src/control.c **** 			case OPERATE_CAPADJUST_RESULT:
+ 396:App/Src/control.c **** 				OPERATE_CAPADJUST_RESULT_Handle();
+ 397:App/Src/control.c **** 			break;
+ 398:App/Src/control.c **** 			case OPERATE_CALCULATE:
+ 399:App/Src/control.c **** 				ControlPrintf("okNumber:0 chipName:0 message:开始计算...\n");
+ 400:App/Src/control.c **** 				manager_set_mode(CALCULATE);
+ 401:App/Src/control.c **** 			break;
+ 402:App/Src/control.c **** 			case OPERATE_CALCUL_RESULT:
+ 403:App/Src/control.c **** 				OPERATE_RESULT_Handle(FLAG_CALCULATE);
+ 404:App/Src/control.c **** 			break;
+ 405:App/Src/control.c **** 			case OPERATE_DOWNLOAD:
+ 406:App/Src/control.c **** 				ControlPrintf("okNumber:0 chipName:0 message:开始烧录温补数据\n");
+ 407:App/Src/control.c **** 				manager_set_mode(CAP_DOWNLOAD);
+ 408:App/Src/control.c **** 			break;
+ 409:App/Src/control.c **** 			case OPERATE_LOAD_RESULT:
+ 410:App/Src/control.c **** 				OPERATE_RESULT_Handle(FLAG_TEMPLOAD);
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 9
+
+
+ 411:App/Src/control.c **** 			break;
+ 412:App/Src/control.c **** 			case OPERATE_COLD_SYNC:
+ 413:App/Src/control.c **** 				manager_set_mode(SYNC_RTC_TIME);
+ 414:App/Src/control.c **** 			break;
+ 415:App/Src/control.c **** 			case OPERATE_COLD_ERROR:
+ 416:App/Src/control.c **** 				manager_set_mode(CHECK_ERROR_TIME);
+ 417:App/Src/control.c **** 			break;
+ 418:App/Src/control.c **** 			case OPERATE_HOT_SYNC:
+ 419:App/Src/control.c **** 				manager_set_mode(SYNC_RTC_TIME);
+ 420:App/Src/control.c **** 			break;
+ 421:App/Src/control.c **** 			case OPERATE_HOT_ERROR:
+ 422:App/Src/control.c **** 				manager_set_mode(CHECK_ERROR_TIME);
+ 423:App/Src/control.c **** 			break;
+ 424:App/Src/control.c **** 			case OPERATE_MACHINE_TEST:
+ 425:App/Src/control.c **** 				ControlPrintf("okNumber:0 chipName:0 message:机台普通测试\n");
+ 426:App/Src/control.c **** 				manager_set_mode(MACHINE_TEST);
+ 427:App/Src/control.c **** 			break;
+ 428:App/Src/control.c **** 			case OPERATE_MACHINE_WRITE:
+ 429:App/Src/control.c **** 				ControlPrintf("okNumber:0 chipName:0 message:无此模式\n");
+ 430:App/Src/control.c **** 				manager_set_mode(MACHINE_WRITE);
+ 431:App/Src/control.c **** 			break;
+ 432:App/Src/control.c **** 			case OPERATE_MACHINE_COVER:
+ 433:App/Src/control.c **** 				ControlPrintf("okNumber:0 chipName:0 message:先清空再机台测试\n");
+ 434:App/Src/control.c **** 				manager_set_mode(MACHINE_COVER);
+ 435:App/Src/control.c **** 			break;
+ 436:App/Src/control.c **** 			case OPERATE_MACHINE_RESULT:
+ 437:App/Src/control.c **** 				OPERATE_RESULT_Handle(FLAG_MACHINE);
+ 438:App/Src/control.c **** 			break;
+ 439:App/Src/control.c **** 			case OPERATE_TAKE_OUT_MESSAGE:
+ 440:App/Src/control.c **** 			break;
+ 441:App/Src/control.c **** 			default:break;
+ 442:App/Src/control.c **** 		}
+ 443:App/Src/control.c **** 	}
+ 444:App/Src/control.c **** 
+ 445:App/Src/control.c **** }
+ 446:App/Src/control.c **** 
+ 447:App/Src/control.c **** 
+ 448:App/Src/control.c **** void CTL_VDDMODE_Handle(char* command)
+ 449:App/Src/control.c **** {
+  50              		.loc 1 449 1 view -0
+  51              		.cfi_startproc
+  52              		@ args = 0, pretend = 0, frame = 0
+  53              		@ frame_needed = 0, uses_anonymous_args = 0
+  54              		@ link register save eliminated.
+ 450:App/Src/control.c **** 
+ 451:App/Src/control.c **** }
+  55              		.loc 1 451 1 view .LVU3
+  56 0000 7047     		bx	lr
+  57              		.cfi_endproc
+  58              	.LFE255:
+  60              		.section	.rodata.CTL_CSN_Handle.str1.4,"aMS",%progbits,1
+  61              		.align	2
+  62              	.LC1:
+  63 0000 3D00     		.ascii	"=\000"
+  64 0002 0000     		.align	2
+  65              	.LC2:
+  66 0004 72656365 		.ascii	"receive command csn = %d\012\000"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 10
+
+
+  66      69766520 
+  66      636F6D6D 
+  66      616E6420 
+  66      63736E20 
+  67 001e 0000     		.align	2
+  68              	.LC3:
+  69 0020 72656365 		.ascii	"receice command csn = %d\012\000"
+  69      69636520 
+  69      636F6D6D 
+  69      616E6420 
+  69      63736E20 
+  70              		.section	.text.CTL_CSN_Handle,"ax",%progbits
+  71              		.align	1
+  72              		.global	CTL_CSN_Handle
+  73              		.syntax unified
+  74              		.thumb
+  75              		.thumb_func
+  77              	CTL_CSN_Handle:
+  78              	.LVL2:
+  79              	.LFB257:
+ 452:App/Src/control.c **** 
+ 453:App/Src/control.c **** void CTL_VERSION_Handle(char* command)
+ 454:App/Src/control.c **** {
+ 455:App/Src/control.c **** 	ControlPrintf("message:%s\n", SOFT_VERSION);
+ 456:App/Src/control.c **** }
+ 457:App/Src/control.c **** 
+ 458:App/Src/control.c **** extern uint16_t g_csn;
+ 459:App/Src/control.c **** void CTL_CSN_Handle(char* command)
+ 460:App/Src/control.c **** {
+  80              		.loc 1 460 1 view -0
+  81              		.cfi_startproc
+  82              		@ args = 0, pretend = 0, frame = 8
+  83              		@ frame_needed = 0, uses_anonymous_args = 0
+  84              		.loc 1 460 1 is_stmt 0 view .LVU5
+  85 0000 10B5     		push	{r4, lr}
+  86              	.LCFI0:
+  87              		.cfi_def_cfa_offset 8
+  88              		.cfi_offset 4, -8
+  89              		.cfi_offset 14, -4
+  90 0002 82B0     		sub	sp, sp, #8
+  91              	.LCFI1:
+  92              		.cfi_def_cfa_offset 16
+  93 0004 0446     		mov	r4, r0
+ 461:App/Src/control.c **** 	int number;
+  94              		.loc 1 461 2 is_stmt 1 view .LVU6
+ 462:App/Src/control.c **** 	CharToInt(command, strSearch(command, "=") + 1, &number);
+  95              		.loc 1 462 2 view .LVU7
+  96              		.loc 1 462 21 is_stmt 0 view .LVU8
+  97 0006 0D49     		ldr	r1, .L7
+  98 0008 FFF7FEFF 		bl	strSearch
+  99              	.LVL3:
+ 100              		.loc 1 462 2 view .LVU9
+ 101 000c 411C     		adds	r1, r0, #1
+ 102 000e 01AA     		add	r2, sp, #4
+ 103 0010 C9B2     		uxtb	r1, r1
+ 104 0012 2046     		mov	r0, r4
+ 105 0014 FFF7FEFF 		bl	CharToInt
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 11
+
+
+ 106              	.LVL4:
+ 463:App/Src/control.c **** 	if (number > 2000 && 9999) {
+ 107              		.loc 1 463 2 is_stmt 1 view .LVU10
+ 108              		.loc 1 463 20 is_stmt 0 view .LVU11
+ 109 0018 0199     		ldr	r1, [sp, #4]
+ 110              		.loc 1 463 5 view .LVU12
+ 111 001a B1F5FA6F 		cmp	r1, #2000
+ 112 001e 01DC     		bgt	.L6
+ 113              	.LVL5:
+ 114              	.L3:
+ 464:App/Src/control.c **** 		g_csn = number;
+ 465:App/Src/control.c **** 		UsbPrintf("receive command csn = %d\n", g_csn);
+ 466:App/Src/control.c **** 		log_printf("receice command csn = %d\n", g_csn);
+ 467:App/Src/control.c **** 	}
+ 468:App/Src/control.c **** }
+ 115              		.loc 1 468 1 view .LVU13
+ 116 0020 02B0     		add	sp, sp, #8
+ 117              	.LCFI2:
+ 118              		.cfi_remember_state
+ 119              		.cfi_def_cfa_offset 8
+ 120              		@ sp needed
+ 121 0022 10BD     		pop	{r4, pc}
+ 122              	.LVL6:
+ 123              	.L6:
+ 124              	.LCFI3:
+ 125              		.cfi_restore_state
+ 464:App/Src/control.c **** 		g_csn = number;
+ 126              		.loc 1 464 3 is_stmt 1 view .LVU14
+ 464:App/Src/control.c **** 		g_csn = number;
+ 127              		.loc 1 464 9 is_stmt 0 view .LVU15
+ 128 0024 89B2     		uxth	r1, r1
+ 129 0026 064C     		ldr	r4, .L7+4
+ 130              	.LVL7:
+ 464:App/Src/control.c **** 		g_csn = number;
+ 131              		.loc 1 464 9 view .LVU16
+ 132 0028 2180     		strh	r1, [r4]	@ movhi
+ 465:App/Src/control.c **** 		log_printf("receice command csn = %d\n", g_csn);
+ 133              		.loc 1 465 3 is_stmt 1 view .LVU17
+ 134 002a 0648     		ldr	r0, .L7+8
+ 135 002c FFF7FEFF 		bl	UsbPrintf
+ 136              	.LVL8:
+ 466:App/Src/control.c **** 	}
+ 137              		.loc 1 466 3 view .LVU18
+ 138 0030 2188     		ldrh	r1, [r4]
+ 139 0032 0548     		ldr	r0, .L7+12
+ 140 0034 FFF7FEFF 		bl	log_printf
+ 141              	.LVL9:
+ 142              		.loc 1 468 1 is_stmt 0 view .LVU19
+ 143 0038 F2E7     		b	.L3
+ 144              	.L8:
+ 145 003a 00BF     		.align	2
+ 146              	.L7:
+ 147 003c 00000000 		.word	.LC1
+ 148 0040 00000000 		.word	g_csn
+ 149 0044 04000000 		.word	.LC2
+ 150 0048 20000000 		.word	.LC3
+ 151              		.cfi_endproc
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 12
+
+
+ 152              	.LFE257:
+ 154              		.section	.text.ControlPrintf,"ax",%progbits
+ 155              		.align	1
+ 156              		.global	ControlPrintf
+ 157              		.syntax unified
+ 158              		.thumb
+ 159              		.thumb_func
+ 161              	ControlPrintf:
+ 162              	.LVL10:
+ 163              	.LFB238:
+  91:App/Src/control.c **** 	va_list ap;//
+ 164              		.loc 1 91 1 is_stmt 1 view -0
+ 165              		.cfi_startproc
+ 166              		@ args = 4, pretend = 16, frame = 8
+ 167              		@ frame_needed = 0, uses_anonymous_args = 1
+  91:App/Src/control.c **** 	va_list ap;//
+ 168              		.loc 1 91 1 is_stmt 0 view .LVU21
+ 169 0000 0FB4     		push	{r0, r1, r2, r3}
+ 170              	.LCFI4:
+ 171              		.cfi_def_cfa_offset 16
+ 172              		.cfi_offset 0, -16
+ 173              		.cfi_offset 1, -12
+ 174              		.cfi_offset 2, -8
+ 175              		.cfi_offset 3, -4
+ 176 0002 F0B5     		push	{r4, r5, r6, r7, lr}
+ 177              	.LCFI5:
+ 178              		.cfi_def_cfa_offset 36
+ 179              		.cfi_offset 4, -36
+ 180              		.cfi_offset 5, -32
+ 181              		.cfi_offset 6, -28
+ 182              		.cfi_offset 7, -24
+ 183              		.cfi_offset 14, -20
+ 184 0004 83B0     		sub	sp, sp, #12
+ 185              	.LCFI6:
+ 186              		.cfi_def_cfa_offset 48
+ 187 0006 08AD     		add	r5, sp, #32
+ 188 0008 55F8047B 		ldr	r7, [r5], #4
+  92:App/Src/control.c **** 	memset(g_controlTxBuff, 0, CONTROL_TRANSMIT_BUFF_NUMBER);
+ 189              		.loc 1 92 2 is_stmt 1 view .LVU22
+  93:App/Src/control.c **** 	va_start(ap, fmt);//
+ 190              		.loc 1 93 2 view .LVU23
+ 191 000c 0E4C     		ldr	r4, .L11
+ 192 000e 4FF49676 		mov	r6, #300
+ 193 0012 3246     		mov	r2, r6
+ 194 0014 0021     		movs	r1, #0
+ 195 0016 2046     		mov	r0, r4
+ 196 0018 FFF7FEFF 		bl	memset
+ 197              	.LVL11:
+  94:App/Src/control.c **** 	vsnprintf((char*)g_controlTxBuff, CONTROL_TRANSMIT_BUFF_NUMBER, fmt, ap);//
+ 198              		.loc 1 94 2 view .LVU24
+ 199 001c 0195     		str	r5, [sp, #4]
+  95:App/Src/control.c **** 	va_end(ap);
+ 200              		.loc 1 95 2 view .LVU25
+ 201 001e 2B46     		mov	r3, r5
+ 202 0020 3A46     		mov	r2, r7
+ 203 0022 3146     		mov	r1, r6
+ 204 0024 2046     		mov	r0, r4
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 13
+
+
+ 205 0026 FFF7FEFF 		bl	vsnprintf
+ 206              	.LVL12:
+  96:App/Src/control.c **** 	HAL_UART_Transmit(&huart3, g_controlTxBuff, strlen((char*)g_controlTxBuff), 1000);
+ 207              		.loc 1 96 2 view .LVU26
+  97:App/Src/control.c **** }
+ 208              		.loc 1 97 2 view .LVU27
+  97:App/Src/control.c **** }
+ 209              		.loc 1 97 46 is_stmt 0 view .LVU28
+ 210 002a 2046     		mov	r0, r4
+ 211 002c FFF7FEFF 		bl	strlen
+ 212              	.LVL13:
+  97:App/Src/control.c **** }
+ 213              		.loc 1 97 2 view .LVU29
+ 214 0030 4FF47A73 		mov	r3, #1000
+ 215 0034 82B2     		uxth	r2, r0
+ 216 0036 2146     		mov	r1, r4
+ 217 0038 0448     		ldr	r0, .L11+4
+ 218 003a FFF7FEFF 		bl	HAL_UART_Transmit
+ 219              	.LVL14:
+  98:App/Src/control.c **** 
+ 220              		.loc 1 98 1 view .LVU30
+ 221 003e 03B0     		add	sp, sp, #12
+ 222              	.LCFI7:
+ 223              		.cfi_def_cfa_offset 36
+ 224              		@ sp needed
+ 225 0040 BDE8F040 		pop	{r4, r5, r6, r7, lr}
+ 226              	.LCFI8:
+ 227              		.cfi_restore 14
+ 228              		.cfi_restore 7
+ 229              		.cfi_restore 6
+ 230              		.cfi_restore 5
+ 231              		.cfi_restore 4
+ 232              		.cfi_def_cfa_offset 16
+ 233 0044 04B0     		add	sp, sp, #16
+ 234              	.LCFI9:
+ 235              		.cfi_restore 3
+ 236              		.cfi_restore 2
+ 237              		.cfi_restore 1
+ 238              		.cfi_restore 0
+ 239              		.cfi_def_cfa_offset 0
+ 240 0046 7047     		bx	lr
+ 241              	.L12:
+ 242              		.align	2
+ 243              	.L11:
+ 244 0048 00000000 		.word	.LANCHOR0
+ 245 004c 00000000 		.word	huart3
+ 246              		.cfi_endproc
+ 247              	.LFE238:
+ 249              		.section	.rodata.CTL_REALTIME_Handle.str1.4,"aMS",%progbits,1
+ 250              		.align	2
+ 251              	.LC4:
+ 252 0000 79656172 		.ascii	"year:\000"
+ 252      3A00
+ 253 0006 0000     		.align	2
+ 254              	.LC5:
+ 255 0008 6D6F6E3A 		.ascii	"mon:\000"
+ 255      00
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 14
+
+
+ 256 000d 000000   		.align	2
+ 257              	.LC6:
+ 258 0010 6461793A 		.ascii	"day:\000"
+ 258      00
+ 259 0015 000000   		.align	2
+ 260              	.LC7:
+ 261 0018 686F7572 		.ascii	"hour:\000"
+ 261      3A00
+ 262 001e 0000     		.align	2
+ 263              	.LC8:
+ 264 0020 6D696E3A 		.ascii	"min:\000"
+ 264      00
+ 265 0025 000000   		.align	2
+ 266              	.LC9:
+ 267 0028 7365633A 		.ascii	"sec:\000"
+ 267      00
+ 268 002d 000000   		.align	2
+ 269              	.LC10:
+ 270 0030 73796E63 		.ascii	"sync time OK\012\000"
+ 270      2074696D 
+ 270      65204F4B 
+ 270      0A00
+ 271              		.section	.text.CTL_REALTIME_Handle,"ax",%progbits
+ 272              		.align	1
+ 273              		.global	CTL_REALTIME_Handle
+ 274              		.syntax unified
+ 275              		.thumb
+ 276              		.thumb_func
+ 278              	CTL_REALTIME_Handle:
+ 279              	.LVL15:
+ 280              	.LFB241:
+ 114:App/Src/control.c ****     RealTime rtc = {0};
+ 281              		.loc 1 114 1 is_stmt 1 view -0
+ 282              		.cfi_startproc
+ 283              		@ args = 0, pretend = 0, frame = 16
+ 284              		@ frame_needed = 0, uses_anonymous_args = 0
+ 114:App/Src/control.c ****     RealTime rtc = {0};
+ 285              		.loc 1 114 1 is_stmt 0 view .LVU32
+ 286 0000 10B5     		push	{r4, lr}
+ 287              	.LCFI10:
+ 288              		.cfi_def_cfa_offset 8
+ 289              		.cfi_offset 4, -8
+ 290              		.cfi_offset 14, -4
+ 291 0002 84B0     		sub	sp, sp, #16
+ 292              	.LCFI11:
+ 293              		.cfi_def_cfa_offset 24
+ 294 0004 0446     		mov	r4, r0
+ 115:App/Src/control.c **** 	int num = 0;
+ 295              		.loc 1 115 5 is_stmt 1 view .LVU33
+ 115:App/Src/control.c **** 	int num = 0;
+ 296              		.loc 1 115 14 is_stmt 0 view .LVU34
+ 297 0006 0023     		movs	r3, #0
+ 298 0008 0293     		str	r3, [sp, #8]
+ 299 000a 0393     		str	r3, [sp, #12]
+ 116:App/Src/control.c **** 	int inNumber = 0;
+ 300              		.loc 1 116 2 is_stmt 1 view .LVU35
+ 301              	.LVL16:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 15
+
+
+ 117:App/Src/control.c **** 
+ 302              		.loc 1 117 2 view .LVU36
+ 117:App/Src/control.c **** 
+ 303              		.loc 1 117 6 is_stmt 0 view .LVU37
+ 304 000c 0193     		str	r3, [sp, #4]
+ 120:App/Src/control.c **** 	num = strSearch(command, "year:");
+ 305              		.loc 1 120 2 is_stmt 1 view .LVU38
+ 306 000e 02A8     		add	r0, sp, #8
+ 307              	.LVL17:
+ 120:App/Src/control.c **** 	num = strSearch(command, "year:");
+ 308              		.loc 1 120 2 is_stmt 0 view .LVU39
+ 309 0010 FFF7FEFF 		bl	system_get_real_time
+ 310              	.LVL18:
+ 121:App/Src/control.c **** 	if (num != -1) {
+ 311              		.loc 1 121 2 is_stmt 1 view .LVU40
+ 121:App/Src/control.c **** 	if (num != -1) {
+ 312              		.loc 1 121 8 is_stmt 0 view .LVU41
+ 313 0014 5549     		ldr	r1, .L23
+ 314 0016 2046     		mov	r0, r4
+ 315 0018 FFF7FEFF 		bl	strSearch
+ 316              	.LVL19:
+ 122:App/Src/control.c **** 		num += strlen("year:");
+ 317              		.loc 1 122 2 is_stmt 1 view .LVU42
+ 122:App/Src/control.c **** 		num += strlen("year:");
+ 318              		.loc 1 122 5 is_stmt 0 view .LVU43
+ 319 001c B0F1FF3F 		cmp	r0, #-1
+ 320 0020 14D0     		beq	.L14
+ 123:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 321              		.loc 1 123 3 is_stmt 1 view .LVU44
+ 123:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 322              		.loc 1 123 7 is_stmt 0 view .LVU45
+ 323 0022 0530     		adds	r0, r0, #5
+ 324              	.LVL20:
+ 124:App/Src/control.c **** 		rtc.year = inNumber % 100;
+ 325              		.loc 1 124 3 is_stmt 1 view .LVU46
+ 124:App/Src/control.c **** 		rtc.year = inNumber % 100;
+ 326              		.loc 1 124 7 is_stmt 0 view .LVU47
+ 327 0024 01AA     		add	r2, sp, #4
+ 328 0026 C1B2     		uxtb	r1, r0
+ 329 0028 2046     		mov	r0, r4
+ 330              	.LVL21:
+ 124:App/Src/control.c **** 		rtc.year = inNumber % 100;
+ 331              		.loc 1 124 7 view .LVU48
+ 332 002a FFF7FEFF 		bl	CharToInt
+ 333              	.LVL22:
+ 124:App/Src/control.c **** 		rtc.year = inNumber % 100;
+ 334              		.loc 1 124 6 view .LVU49
+ 335 002e 0028     		cmp	r0, #0
+ 336 0030 00F09980 		beq	.L13
+ 125:App/Src/control.c **** 	}
+ 337              		.loc 1 125 3 is_stmt 1 view .LVU50
+ 125:App/Src/control.c **** 	}
+ 338              		.loc 1 125 23 is_stmt 0 view .LVU51
+ 339 0034 019A     		ldr	r2, [sp, #4]
+ 340 0036 4E49     		ldr	r1, .L23+4
+ 341 0038 81FB0231 		smull	r3, r1, r1, r2
+ 342 003c D317     		asrs	r3, r2, #31
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 16
+
+
+ 343 003e C3EB6113 		rsb	r3, r3, r1, asr #5
+ 344 0042 6421     		movs	r1, #100
+ 345 0044 01FB1323 		mls	r3, r1, r3, r2
+ 125:App/Src/control.c **** 	}
+ 346              		.loc 1 125 12 view .LVU52
+ 347 0048 8DF80830 		strb	r3, [sp, #8]
+ 348              	.L14:
+ 127:App/Src/control.c **** 	if (num != -1) {
+ 349              		.loc 1 127 2 is_stmt 1 view .LVU53
+ 127:App/Src/control.c **** 	if (num != -1) {
+ 350              		.loc 1 127 8 is_stmt 0 view .LVU54
+ 351 004c 4949     		ldr	r1, .L23+8
+ 352 004e 2046     		mov	r0, r4
+ 353 0050 FFF7FEFF 		bl	strSearch
+ 354              	.LVL23:
+ 128:App/Src/control.c **** 		num += strlen("mon:");
+ 355              		.loc 1 128 2 is_stmt 1 view .LVU55
+ 128:App/Src/control.c **** 		num += strlen("mon:");
+ 356              		.loc 1 128 5 is_stmt 0 view .LVU56
+ 357 0054 B0F1FF3F 		cmp	r0, #-1
+ 358 0058 13D0     		beq	.L16
+ 129:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 359              		.loc 1 129 3 is_stmt 1 view .LVU57
+ 129:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 360              		.loc 1 129 7 is_stmt 0 view .LVU58
+ 361 005a 0430     		adds	r0, r0, #4
+ 362              	.LVL24:
+ 130:App/Src/control.c **** 		rtc.mon = inNumber % 100;
+ 363              		.loc 1 130 3 is_stmt 1 view .LVU59
+ 130:App/Src/control.c **** 		rtc.mon = inNumber % 100;
+ 364              		.loc 1 130 7 is_stmt 0 view .LVU60
+ 365 005c 01AA     		add	r2, sp, #4
+ 366 005e C1B2     		uxtb	r1, r0
+ 367 0060 2046     		mov	r0, r4
+ 368              	.LVL25:
+ 130:App/Src/control.c **** 		rtc.mon = inNumber % 100;
+ 369              		.loc 1 130 7 view .LVU61
+ 370 0062 FFF7FEFF 		bl	CharToInt
+ 371              	.LVL26:
+ 130:App/Src/control.c **** 		rtc.mon = inNumber % 100;
+ 372              		.loc 1 130 6 view .LVU62
+ 373 0066 0028     		cmp	r0, #0
+ 374 0068 7DD0     		beq	.L13
+ 131:App/Src/control.c **** 	}	
+ 375              		.loc 1 131 3 is_stmt 1 view .LVU63
+ 131:App/Src/control.c **** 	}	
+ 376              		.loc 1 131 22 is_stmt 0 view .LVU64
+ 377 006a 019A     		ldr	r2, [sp, #4]
+ 378 006c 4049     		ldr	r1, .L23+4
+ 379 006e 81FB0231 		smull	r3, r1, r1, r2
+ 380 0072 D317     		asrs	r3, r2, #31
+ 381 0074 C3EB6113 		rsb	r3, r3, r1, asr #5
+ 382 0078 6421     		movs	r1, #100
+ 383 007a 01FB1323 		mls	r3, r1, r3, r2
+ 131:App/Src/control.c **** 	}	
+ 384              		.loc 1 131 11 view .LVU65
+ 385 007e 8DF80930 		strb	r3, [sp, #9]
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 17
+
+
+ 386              	.L16:
+ 133:App/Src/control.c **** 	if (num != -1) {
+ 387              		.loc 1 133 2 is_stmt 1 view .LVU66
+ 133:App/Src/control.c **** 	if (num != -1) {
+ 388              		.loc 1 133 8 is_stmt 0 view .LVU67
+ 389 0082 3D49     		ldr	r1, .L23+12
+ 390 0084 2046     		mov	r0, r4
+ 391 0086 FFF7FEFF 		bl	strSearch
+ 392              	.LVL27:
+ 134:App/Src/control.c **** 		num += strlen("day:");
+ 393              		.loc 1 134 2 is_stmt 1 view .LVU68
+ 134:App/Src/control.c **** 		num += strlen("day:");
+ 394              		.loc 1 134 5 is_stmt 0 view .LVU69
+ 395 008a B0F1FF3F 		cmp	r0, #-1
+ 396 008e 13D0     		beq	.L17
+ 135:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 397              		.loc 1 135 3 is_stmt 1 view .LVU70
+ 135:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 398              		.loc 1 135 7 is_stmt 0 view .LVU71
+ 399 0090 0430     		adds	r0, r0, #4
+ 400              	.LVL28:
+ 136:App/Src/control.c **** 		rtc.day = inNumber % 100;
+ 401              		.loc 1 136 3 is_stmt 1 view .LVU72
+ 136:App/Src/control.c **** 		rtc.day = inNumber % 100;
+ 402              		.loc 1 136 7 is_stmt 0 view .LVU73
+ 403 0092 01AA     		add	r2, sp, #4
+ 404 0094 C1B2     		uxtb	r1, r0
+ 405 0096 2046     		mov	r0, r4
+ 406              	.LVL29:
+ 136:App/Src/control.c **** 		rtc.day = inNumber % 100;
+ 407              		.loc 1 136 7 view .LVU74
+ 408 0098 FFF7FEFF 		bl	CharToInt
+ 409              	.LVL30:
+ 136:App/Src/control.c **** 		rtc.day = inNumber % 100;
+ 410              		.loc 1 136 6 view .LVU75
+ 411 009c 0028     		cmp	r0, #0
+ 412 009e 62D0     		beq	.L13
+ 137:App/Src/control.c **** 	}	
+ 413              		.loc 1 137 3 is_stmt 1 view .LVU76
+ 137:App/Src/control.c **** 	}	
+ 414              		.loc 1 137 22 is_stmt 0 view .LVU77
+ 415 00a0 019A     		ldr	r2, [sp, #4]
+ 416 00a2 3349     		ldr	r1, .L23+4
+ 417 00a4 81FB0231 		smull	r3, r1, r1, r2
+ 418 00a8 D317     		asrs	r3, r2, #31
+ 419 00aa C3EB6113 		rsb	r3, r3, r1, asr #5
+ 420 00ae 6421     		movs	r1, #100
+ 421 00b0 01FB1323 		mls	r3, r1, r3, r2
+ 137:App/Src/control.c **** 	}	
+ 422              		.loc 1 137 11 view .LVU78
+ 423 00b4 8DF80A30 		strb	r3, [sp, #10]
+ 424              	.L17:
+ 139:App/Src/control.c **** 	if (num != -1) {
+ 425              		.loc 1 139 2 is_stmt 1 view .LVU79
+ 139:App/Src/control.c **** 	if (num != -1) {
+ 426              		.loc 1 139 8 is_stmt 0 view .LVU80
+ 427 00b8 3049     		ldr	r1, .L23+16
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 18
+
+
+ 428 00ba 2046     		mov	r0, r4
+ 429 00bc FFF7FEFF 		bl	strSearch
+ 430              	.LVL31:
+ 140:App/Src/control.c **** 		num += strlen("hour:");
+ 431              		.loc 1 140 2 is_stmt 1 view .LVU81
+ 140:App/Src/control.c **** 		num += strlen("hour:");
+ 432              		.loc 1 140 5 is_stmt 0 view .LVU82
+ 433 00c0 B0F1FF3F 		cmp	r0, #-1
+ 434 00c4 13D0     		beq	.L18
+ 141:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 435              		.loc 1 141 3 is_stmt 1 view .LVU83
+ 141:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 436              		.loc 1 141 7 is_stmt 0 view .LVU84
+ 437 00c6 0530     		adds	r0, r0, #5
+ 438              	.LVL32:
+ 142:App/Src/control.c **** 		rtc.hour = inNumber % 100;
+ 439              		.loc 1 142 3 is_stmt 1 view .LVU85
+ 142:App/Src/control.c **** 		rtc.hour = inNumber % 100;
+ 440              		.loc 1 142 7 is_stmt 0 view .LVU86
+ 441 00c8 01AA     		add	r2, sp, #4
+ 442 00ca C1B2     		uxtb	r1, r0
+ 443 00cc 2046     		mov	r0, r4
+ 444              	.LVL33:
+ 142:App/Src/control.c **** 		rtc.hour = inNumber % 100;
+ 445              		.loc 1 142 7 view .LVU87
+ 446 00ce FFF7FEFF 		bl	CharToInt
+ 447              	.LVL34:
+ 142:App/Src/control.c **** 		rtc.hour = inNumber % 100;
+ 448              		.loc 1 142 6 view .LVU88
+ 449 00d2 0028     		cmp	r0, #0
+ 450 00d4 47D0     		beq	.L13
+ 143:App/Src/control.c **** 	}	
+ 451              		.loc 1 143 3 is_stmt 1 view .LVU89
+ 143:App/Src/control.c **** 	}	
+ 452              		.loc 1 143 23 is_stmt 0 view .LVU90
+ 453 00d6 019A     		ldr	r2, [sp, #4]
+ 454 00d8 2549     		ldr	r1, .L23+4
+ 455 00da 81FB0231 		smull	r3, r1, r1, r2
+ 456 00de D317     		asrs	r3, r2, #31
+ 457 00e0 C3EB6113 		rsb	r3, r3, r1, asr #5
+ 458 00e4 6421     		movs	r1, #100
+ 459 00e6 01FB1323 		mls	r3, r1, r3, r2
+ 143:App/Src/control.c **** 	}	
+ 460              		.loc 1 143 12 view .LVU91
+ 461 00ea 8DF80B30 		strb	r3, [sp, #11]
+ 462              	.L18:
+ 145:App/Src/control.c **** 	if (num != -1) {
+ 463              		.loc 1 145 2 is_stmt 1 view .LVU92
+ 145:App/Src/control.c **** 	if (num != -1) {
+ 464              		.loc 1 145 8 is_stmt 0 view .LVU93
+ 465 00ee 2449     		ldr	r1, .L23+20
+ 466 00f0 2046     		mov	r0, r4
+ 467 00f2 FFF7FEFF 		bl	strSearch
+ 468              	.LVL35:
+ 146:App/Src/control.c **** 		num += strlen("min:");
+ 469              		.loc 1 146 2 is_stmt 1 view .LVU94
+ 146:App/Src/control.c **** 		num += strlen("min:");
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 19
+
+
+ 470              		.loc 1 146 5 is_stmt 0 view .LVU95
+ 471 00f6 B0F1FF3F 		cmp	r0, #-1
+ 472 00fa 12D0     		beq	.L19
+ 147:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 473              		.loc 1 147 3 is_stmt 1 view .LVU96
+ 147:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 474              		.loc 1 147 7 is_stmt 0 view .LVU97
+ 475 00fc 0430     		adds	r0, r0, #4
+ 476              	.LVL36:
+ 148:App/Src/control.c **** 		rtc.min = inNumber % 100;
+ 477              		.loc 1 148 3 is_stmt 1 view .LVU98
+ 148:App/Src/control.c **** 		rtc.min = inNumber % 100;
+ 478              		.loc 1 148 7 is_stmt 0 view .LVU99
+ 479 00fe 01AA     		add	r2, sp, #4
+ 480 0100 C1B2     		uxtb	r1, r0
+ 481 0102 2046     		mov	r0, r4
+ 482              	.LVL37:
+ 148:App/Src/control.c **** 		rtc.min = inNumber % 100;
+ 483              		.loc 1 148 7 view .LVU100
+ 484 0104 FFF7FEFF 		bl	CharToInt
+ 485              	.LVL38:
+ 148:App/Src/control.c **** 		rtc.min = inNumber % 100;
+ 486              		.loc 1 148 6 view .LVU101
+ 487 0108 68B3     		cbz	r0, .L13
+ 149:App/Src/control.c **** 	}	
+ 488              		.loc 1 149 3 is_stmt 1 view .LVU102
+ 149:App/Src/control.c **** 	}	
+ 489              		.loc 1 149 22 is_stmt 0 view .LVU103
+ 490 010a 019A     		ldr	r2, [sp, #4]
+ 491 010c 1849     		ldr	r1, .L23+4
+ 492 010e 81FB0231 		smull	r3, r1, r1, r2
+ 493 0112 D317     		asrs	r3, r2, #31
+ 494 0114 C3EB6113 		rsb	r3, r3, r1, asr #5
+ 495 0118 6421     		movs	r1, #100
+ 496 011a 01FB1323 		mls	r3, r1, r3, r2
+ 149:App/Src/control.c **** 	}	
+ 497              		.loc 1 149 11 view .LVU104
+ 498 011e 8DF80C30 		strb	r3, [sp, #12]
+ 499              	.L19:
+ 151:App/Src/control.c **** 	if (num != -1) {
+ 500              		.loc 1 151 2 is_stmt 1 view .LVU105
+ 151:App/Src/control.c **** 	if (num != -1) {
+ 501              		.loc 1 151 8 is_stmt 0 view .LVU106
+ 502 0122 1849     		ldr	r1, .L23+24
+ 503 0124 2046     		mov	r0, r4
+ 504 0126 FFF7FEFF 		bl	strSearch
+ 505              	.LVL39:
+ 152:App/Src/control.c **** 		num += strlen("sec:");
+ 506              		.loc 1 152 2 is_stmt 1 view .LVU107
+ 152:App/Src/control.c **** 		num += strlen("sec:");
+ 507              		.loc 1 152 5 is_stmt 0 view .LVU108
+ 508 012a B0F1FF3F 		cmp	r0, #-1
+ 509 012e 12D0     		beq	.L20
+ 153:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 510              		.loc 1 153 3 is_stmt 1 view .LVU109
+ 153:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 511              		.loc 1 153 7 is_stmt 0 view .LVU110
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 20
+
+
+ 512 0130 0430     		adds	r0, r0, #4
+ 513              	.LVL40:
+ 154:App/Src/control.c **** 		rtc.sec = inNumber % 100;
+ 514              		.loc 1 154 3 is_stmt 1 view .LVU111
+ 154:App/Src/control.c **** 		rtc.sec = inNumber % 100;
+ 515              		.loc 1 154 7 is_stmt 0 view .LVU112
+ 516 0132 01AA     		add	r2, sp, #4
+ 517 0134 C1B2     		uxtb	r1, r0
+ 518 0136 2046     		mov	r0, r4
+ 519              	.LVL41:
+ 154:App/Src/control.c **** 		rtc.sec = inNumber % 100;
+ 520              		.loc 1 154 7 view .LVU113
+ 521 0138 FFF7FEFF 		bl	CharToInt
+ 522              	.LVL42:
+ 154:App/Src/control.c **** 		rtc.sec = inNumber % 100;
+ 523              		.loc 1 154 6 view .LVU114
+ 524 013c 98B1     		cbz	r0, .L13
+ 155:App/Src/control.c **** 	}
+ 525              		.loc 1 155 3 is_stmt 1 view .LVU115
+ 155:App/Src/control.c **** 	}
+ 526              		.loc 1 155 22 is_stmt 0 view .LVU116
+ 527 013e 019A     		ldr	r2, [sp, #4]
+ 528 0140 0B49     		ldr	r1, .L23+4
+ 529 0142 81FB0231 		smull	r3, r1, r1, r2
+ 530 0146 D317     		asrs	r3, r2, #31
+ 531 0148 C3EB6113 		rsb	r3, r3, r1, asr #5
+ 532 014c 6421     		movs	r1, #100
+ 533 014e 01FB1323 		mls	r3, r1, r3, r2
+ 155:App/Src/control.c **** 	}
+ 534              		.loc 1 155 11 view .LVU117
+ 535 0152 8DF80D30 		strb	r3, [sp, #13]
+ 536              	.L20:
+ 157:App/Src/control.c **** 	ControlPrintf("sync time OK\n");
+ 537              		.loc 1 157 2 is_stmt 1 view .LVU118
+ 538 0156 04AB     		add	r3, sp, #16
+ 539 0158 13E90300 		ldmdb	r3, {r0, r1}
+ 540 015c FFF7FEFF 		bl	system_set_real_time
+ 541              	.LVL43:
+ 158:App/Src/control.c **** }
+ 542              		.loc 1 158 2 view .LVU119
+ 543 0160 0948     		ldr	r0, .L23+28
+ 544 0162 FFF7FEFF 		bl	ControlPrintf
+ 545              	.LVL44:
+ 546              	.L13:
+ 159:App/Src/control.c **** 
+ 547              		.loc 1 159 1 is_stmt 0 view .LVU120
+ 548 0166 04B0     		add	sp, sp, #16
+ 549              	.LCFI12:
+ 550              		.cfi_def_cfa_offset 8
+ 551              		@ sp needed
+ 552 0168 10BD     		pop	{r4, pc}
+ 553              	.LVL45:
+ 554              	.L24:
+ 159:App/Src/control.c **** 
+ 555              		.loc 1 159 1 view .LVU121
+ 556 016a 00BF     		.align	2
+ 557              	.L23:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 21
+
+
+ 558 016c 00000000 		.word	.LC4
+ 559 0170 1F85EB51 		.word	1374389535
+ 560 0174 08000000 		.word	.LC5
+ 561 0178 10000000 		.word	.LC6
+ 562 017c 18000000 		.word	.LC7
+ 563 0180 20000000 		.word	.LC8
+ 564 0184 28000000 		.word	.LC9
+ 565 0188 30000000 		.word	.LC10
+ 566              		.cfi_endproc
+ 567              	.LFE241:
+ 569              		.section	.rodata.CTL_VERSION_Handle.str1.4,"aMS",%progbits,1
+ 570              		.align	2
+ 571              	.LC11:
+ 572 0000 53443838 		.ascii	"SD8825V1.5\000"
+ 572      32355631 
+ 572      2E3500
+ 573 000b 00       		.align	2
+ 574              	.LC12:
+ 575 000c 6D657373 		.ascii	"message:%s\012\000"
+ 575      6167653A 
+ 575      25730A00 
+ 576              		.section	.text.CTL_VERSION_Handle,"ax",%progbits
+ 577              		.align	1
+ 578              		.global	CTL_VERSION_Handle
+ 579              		.syntax unified
+ 580              		.thumb
+ 581              		.thumb_func
+ 583              	CTL_VERSION_Handle:
+ 584              	.LVL46:
+ 585              	.LFB256:
+ 454:App/Src/control.c **** 	ControlPrintf("message:%s\n", SOFT_VERSION);
+ 586              		.loc 1 454 1 is_stmt 1 view -0
+ 587              		.cfi_startproc
+ 588              		@ args = 0, pretend = 0, frame = 0
+ 589              		@ frame_needed = 0, uses_anonymous_args = 0
+ 454:App/Src/control.c **** 	ControlPrintf("message:%s\n", SOFT_VERSION);
+ 590              		.loc 1 454 1 is_stmt 0 view .LVU123
+ 591 0000 08B5     		push	{r3, lr}
+ 592              	.LCFI13:
+ 593              		.cfi_def_cfa_offset 8
+ 594              		.cfi_offset 3, -8
+ 595              		.cfi_offset 14, -4
+ 455:App/Src/control.c **** }
+ 596              		.loc 1 455 2 is_stmt 1 view .LVU124
+ 597 0002 0249     		ldr	r1, .L27
+ 598 0004 0248     		ldr	r0, .L27+4
+ 599              	.LVL47:
+ 455:App/Src/control.c **** }
+ 600              		.loc 1 455 2 is_stmt 0 view .LVU125
+ 601 0006 FFF7FEFF 		bl	ControlPrintf
+ 602              	.LVL48:
+ 456:App/Src/control.c **** 
+ 603              		.loc 1 456 1 view .LVU126
+ 604 000a 08BD     		pop	{r3, pc}
+ 605              	.L28:
+ 606              		.align	2
+ 607              	.L27:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 22
+
+
+ 608 000c 00000000 		.word	.LC11
+ 609 0010 0C000000 		.word	.LC12
+ 610              		.cfi_endproc
+ 611              	.LFE256:
+ 613              		.section	.rodata.CTL_GETCSN_Handle.str1.4,"aMS",%progbits,1
+ 614              		.align	2
+ 615              	.LC13:
+ 616 0000 6D657373 		.ascii	"message:%d\012\000"
+ 616      6167653A 
+ 616      25640A00 
+ 617              		.section	.text.CTL_GETCSN_Handle,"ax",%progbits
+ 618              		.align	1
+ 619              		.global	CTL_GETCSN_Handle
+ 620              		.syntax unified
+ 621              		.thumb
+ 622              		.thumb_func
+ 624              	CTL_GETCSN_Handle:
+ 625              	.LVL49:
+ 626              	.LFB258:
+ 469:App/Src/control.c **** 
+ 470:App/Src/control.c **** void CTL_GETCSN_Handle(char* command)
+ 471:App/Src/control.c **** {
+ 627              		.loc 1 471 1 is_stmt 1 view -0
+ 628              		.cfi_startproc
+ 629              		@ args = 0, pretend = 0, frame = 0
+ 630              		@ frame_needed = 0, uses_anonymous_args = 0
+ 631              		.loc 1 471 1 is_stmt 0 view .LVU128
+ 632 0000 08B5     		push	{r3, lr}
+ 633              	.LCFI14:
+ 634              		.cfi_def_cfa_offset 8
+ 635              		.cfi_offset 3, -8
+ 636              		.cfi_offset 14, -4
+ 472:App/Src/control.c **** 	ControlPrintf("message:%d\n", g_csn);
+ 637              		.loc 1 472 2 is_stmt 1 view .LVU129
+ 638 0002 034B     		ldr	r3, .L31
+ 639 0004 1988     		ldrh	r1, [r3]
+ 640 0006 0348     		ldr	r0, .L31+4
+ 641              	.LVL50:
+ 642              		.loc 1 472 2 is_stmt 0 view .LVU130
+ 643 0008 FFF7FEFF 		bl	ControlPrintf
+ 644              	.LVL51:
+ 473:App/Src/control.c **** }
+ 645              		.loc 1 473 1 view .LVU131
+ 646 000c 08BD     		pop	{r3, pc}
+ 647              	.L32:
+ 648 000e 00BF     		.align	2
+ 649              	.L31:
+ 650 0010 00000000 		.word	g_csn
+ 651 0014 00000000 		.word	.LC13
+ 652              		.cfi_endproc
+ 653              	.LFE258:
+ 655              		.section	.text.CTL_BSN_Handle,"ax",%progbits
+ 656              		.align	1
+ 657              		.global	CTL_BSN_Handle
+ 658              		.syntax unified
+ 659              		.thumb
+ 660              		.thumb_func
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 23
+
+
+ 662              	CTL_BSN_Handle:
+ 663              	.LVL52:
+ 664              	.LFB259:
+ 474:App/Src/control.c **** 
+ 475:App/Src/control.c **** void CTL_BSN_Handle(char* command)
+ 476:App/Src/control.c **** {
+ 665              		.loc 1 476 1 is_stmt 1 view -0
+ 666              		.cfi_startproc
+ 667              		@ args = 0, pretend = 0, frame = 16
+ 668              		@ frame_needed = 0, uses_anonymous_args = 0
+ 669              		.loc 1 476 1 is_stmt 0 view .LVU133
+ 670 0000 00B5     		push	{lr}
+ 671              	.LCFI15:
+ 672              		.cfi_def_cfa_offset 4
+ 673              		.cfi_offset 14, -4
+ 674 0002 85B0     		sub	sp, sp, #20
+ 675              	.LCFI16:
+ 676              		.cfi_def_cfa_offset 24
+ 477:App/Src/control.c **** 	char bsn[BSN_LENGTH + 1] = {0};
+ 677              		.loc 1 477 2 is_stmt 1 view .LVU134
+ 678              		.loc 1 477 7 is_stmt 0 view .LVU135
+ 679 0004 0023     		movs	r3, #0
+ 680 0006 0193     		str	r3, [sp, #4]
+ 681 0008 0293     		str	r3, [sp, #8]
+ 682 000a 8DF80C30 		strb	r3, [sp, #12]
+ 478:App/Src/control.c **** 	GetStringFromFlash(bsn, BSN_LENGTH + 1, BSN_ADDR);
+ 683              		.loc 1 478 2 is_stmt 1 view .LVU136
+ 684 000e 064A     		ldr	r2, .L35
+ 685 0010 0921     		movs	r1, #9
+ 686 0012 01A8     		add	r0, sp, #4
+ 687              	.LVL53:
+ 688              		.loc 1 478 2 is_stmt 0 view .LVU137
+ 689 0014 FFF7FEFF 		bl	GetStringFromFlash
+ 690              	.LVL54:
+ 479:App/Src/control.c **** 	ControlPrintf("message:%s\n", bsn);
+ 691              		.loc 1 479 2 is_stmt 1 view .LVU138
+ 692 0018 01A9     		add	r1, sp, #4
+ 693 001a 0448     		ldr	r0, .L35+4
+ 694 001c FFF7FEFF 		bl	ControlPrintf
+ 695              	.LVL55:
+ 480:App/Src/control.c **** }
+ 696              		.loc 1 480 1 is_stmt 0 view .LVU139
+ 697 0020 05B0     		add	sp, sp, #20
+ 698              	.LCFI17:
+ 699              		.cfi_def_cfa_offset 4
+ 700              		@ sp needed
+ 701 0022 5DF804FB 		ldr	pc, [sp], #4
+ 702              	.L36:
+ 703 0026 00BF     		.align	2
+ 704              	.L35:
+ 705 0028 00000608 		.word	134610944
+ 706 002c 0C000000 		.word	.LC12
+ 707              		.cfi_endproc
+ 708              	.LFE259:
+ 710              		.section	.text.ControlInit,"ax",%progbits
+ 711              		.align	1
+ 712              		.global	ControlInit
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 24
+
+
+ 713              		.syntax unified
+ 714              		.thumb
+ 715              		.thumb_func
+ 717              	ControlInit:
+ 718              	.LFB239:
+ 102:App/Src/control.c **** 	HAL_UART_Receive_IT(&huart3, &controlRxBuf, 1);		
+ 719              		.loc 1 102 1 is_stmt 1 view -0
+ 720              		.cfi_startproc
+ 721              		@ args = 0, pretend = 0, frame = 0
+ 722              		@ frame_needed = 0, uses_anonymous_args = 0
+ 723 0000 08B5     		push	{r3, lr}
+ 724              	.LCFI18:
+ 725              		.cfi_def_cfa_offset 8
+ 726              		.cfi_offset 3, -8
+ 727              		.cfi_offset 14, -4
+ 103:App/Src/control.c ****     memset(g_controlRxBuff, 0x00, sizeof(g_controlRxBuff));
+ 728              		.loc 1 103 2 view .LVU141
+ 729 0002 0122     		movs	r2, #1
+ 730 0004 0749     		ldr	r1, .L39
+ 731 0006 0848     		ldr	r0, .L39+4
+ 732 0008 FFF7FEFF 		bl	HAL_UART_Receive_IT
+ 733              	.LVL56:
+ 104:App/Src/control.c **** 	memset(g_controlTxBuff, 0x00, sizeof(g_controlTxBuff));
+ 734              		.loc 1 104 5 view .LVU142
+ 735 000c C822     		movs	r2, #200
+ 736 000e 0021     		movs	r1, #0
+ 737 0010 0648     		ldr	r0, .L39+8
+ 738 0012 FFF7FEFF 		bl	memset
+ 739              	.LVL57:
+ 105:App/Src/control.c **** }
+ 740              		.loc 1 105 2 view .LVU143
+ 741 0016 4FF49672 		mov	r2, #300
+ 742 001a 0021     		movs	r1, #0
+ 743 001c 0448     		ldr	r0, .L39+12
+ 744 001e FFF7FEFF 		bl	memset
+ 745              	.LVL58:
+ 106:App/Src/control.c **** 
+ 746              		.loc 1 106 1 is_stmt 0 view .LVU144
+ 747 0022 08BD     		pop	{r3, pc}
+ 748              	.L40:
+ 749              		.align	2
+ 750              	.L39:
+ 751 0024 00000000 		.word	.LANCHOR1
+ 752 0028 00000000 		.word	huart3
+ 753 002c 00000000 		.word	.LANCHOR2
+ 754 0030 00000000 		.word	.LANCHOR0
+ 755              		.cfi_endproc
+ 756              	.LFE239:
+ 758              		.section	.rodata.OPERATE_READ_FLASH_Handle.str1.4,"aMS",%progbits,1
+ 759              		.align	2
+ 760              	.LC14:
+ 761 0000 6D657373 		.ascii	"message:\325\375\324\332\307\345\277\325\243\254\311"
+ 761      6167653A 
+ 761      D5FDD4DA 
+ 761      C7E5BFD5 
+ 761      A3ACC9
+ 762 0013 D4BAF3D4 		.ascii	"\324\272\363\324\331\312\324\012\000"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 25
+
+
+ 762      D9CAD40A 
+ 762      00
+ 763              		.align	2
+ 764              	.LC15:
+ 765 001c 6F6B4E75 		.ascii	"okNumber:%d chipName:%d message:%s\012\000"
+ 765      6D626572 
+ 765      3A256420 
+ 765      63686970 
+ 765      4E616D65 
+ 766              		.section	.text.OPERATE_READ_FLASH_Handle,"ax",%progbits
+ 767              		.align	1
+ 768              		.global	OPERATE_READ_FLASH_Handle
+ 769              		.syntax unified
+ 770              		.thumb
+ 771              		.thumb_func
+ 773              	OPERATE_READ_FLASH_Handle:
+ 774              	.LFB242:
+ 163:App/Src/control.c **** 	uint8_t buffer[MAX_CHIP_NUMBER] = {0xff};
+ 775              		.loc 1 163 1 is_stmt 1 view -0
+ 776              		.cfi_startproc
+ 777              		@ args = 0, pretend = 0, frame = 192
+ 778              		@ frame_needed = 0, uses_anonymous_args = 0
+ 779 0000 70B5     		push	{r4, r5, r6, lr}
+ 780              	.LCFI19:
+ 781              		.cfi_def_cfa_offset 16
+ 782              		.cfi_offset 4, -16
+ 783              		.cfi_offset 5, -12
+ 784              		.cfi_offset 6, -8
+ 785              		.cfi_offset 14, -4
+ 786 0002 B0B0     		sub	sp, sp, #192
+ 787              	.LCFI20:
+ 788              		.cfi_def_cfa_offset 208
+ 164:App/Src/control.c **** 	uint32_t address;
+ 789              		.loc 1 164 2 view .LVU146
+ 164:App/Src/control.c **** 	uint32_t address;
+ 790              		.loc 1 164 10 is_stmt 0 view .LVU147
+ 791 0004 FF23     		movs	r3, #255
+ 792 0006 2393     		str	r3, [sp, #140]
+ 793 0008 2E22     		movs	r2, #46
+ 794 000a 0021     		movs	r1, #0
+ 795 000c 24A8     		add	r0, sp, #144
+ 796 000e FFF7FEFF 		bl	memset
+ 797              	.LVL59:
+ 165:App/Src/control.c **** 	uint8_t count, lastCount = 0;
+ 798              		.loc 1 165 2 is_stmt 1 view .LVU148
+ 166:App/Src/control.c **** 	int i, j;
+ 799              		.loc 1 166 2 view .LVU149
+ 167:App/Src/control.c **** 	char message[7][20] = {
+ 800              		.loc 1 167 2 view .LVU150
+ 168:App/Src/control.c **** 		"已清空数据", "温度计", "温补测试", "计算", "烧录", "机台测试", "取料记录"};
+ 801              		.loc 1 168 2 view .LVU151
+ 168:App/Src/control.c **** 		"已清空数据", "温度计", "温补测试", "计算", "烧录", "机台测试", "取料记录"};
+ 802              		.loc 1 168 7 is_stmt 0 view .LVU152
+ 803 0012 8C22     		movs	r2, #140
+ 804 0014 2649     		ldr	r1, .L59
+ 805 0016 6846     		mov	r0, sp
+ 806 0018 FFF7FEFF 		bl	memcpy
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 26
+
+
+ 807              	.LVL60:
+ 170:App/Src/control.c **** 		ControlPrintf("message:正在清空，稍后再试\n");
+ 808              		.loc 1 170 2 is_stmt 1 view .LVU153
+ 170:App/Src/control.c **** 		ControlPrintf("message:正在清空，稍后再试\n");
+ 809              		.loc 1 170 19 is_stmt 0 view .LVU154
+ 810 001c 254B     		ldr	r3, .L59+4
+ 811 001e 1D78     		ldrb	r5, [r3]	@ zero_extendqisi2
+ 170:App/Src/control.c **** 		ControlPrintf("message:正在清空，稍后再试\n");
+ 812              		.loc 1 170 5 view .LVU155
+ 813 0020 15B9     		cbnz	r5, .L53
+ 166:App/Src/control.c **** 	int i, j;
+ 814              		.loc 1 166 17 view .LVU156
+ 815 0022 2E46     		mov	r6, r5
+ 174:App/Src/control.c **** 		memset(buffer, 0xff, MAX_CHIP_NUMBER);
+ 816              		.loc 1 174 9 view .LVU157
+ 817 0024 0024     		movs	r4, #0
+ 818 0026 1FE0     		b	.L42
+ 819              	.L53:
+ 171:App/Src/control.c **** 		return;
+ 820              		.loc 1 171 3 is_stmt 1 view .LVU158
+ 821 0028 2348     		ldr	r0, .L59+8
+ 822 002a FFF7FEFF 		bl	ControlPrintf
+ 823              	.LVL61:
+ 172:App/Src/control.c **** 	}
+ 824              		.loc 1 172 3 view .LVU159
+ 825 002e 3DE0     		b	.L41
+ 826              	.LVL62:
+ 827              	.L56:
+ 181:App/Src/control.c **** 					count++;
+ 828              		.loc 1 181 5 view .LVU160
+ 181:App/Src/control.c **** 					count++;
+ 829              		.loc 1 181 15 is_stmt 0 view .LVU161
+ 830 0030 03F1C002 		add	r2, r3, #192
+ 831 0034 6A44     		add	r2, sp, r2
+ 832 0036 12F8342C 		ldrb	r2, [r2, #-52]	@ zero_extendqisi2
+ 181:App/Src/control.c **** 					count++;
+ 833              		.loc 1 181 8 view .LVU162
+ 834 003a E02A     		cmp	r2, #224
+ 835 003c 0ED0     		beq	.L54
+ 836              	.L46:
+ 179:App/Src/control.c **** 			if (j == 1) {
+ 837              		.loc 1 179 37 is_stmt 1 discriminator 2 view .LVU163
+ 179:App/Src/control.c **** 			if (j == 1) {
+ 838              		.loc 1 179 38 is_stmt 0 discriminator 2 view .LVU164
+ 839 003e 0133     		adds	r3, r3, #1
+ 840              	.LVL63:
+ 841              	.L44:
+ 179:App/Src/control.c **** 			if (j == 1) {
+ 842              		.loc 1 179 15 is_stmt 1 discriminator 1 view .LVU165
+ 179:App/Src/control.c **** 			if (j == 1) {
+ 843              		.loc 1 179 3 is_stmt 0 discriminator 1 view .LVU166
+ 844 0040 312B     		cmp	r3, #49
+ 845 0042 0EDC     		bgt	.L55
+ 180:App/Src/control.c **** 				if (buffer[i] == 0xE0) {
+ 846              		.loc 1 180 4 is_stmt 1 view .LVU167
+ 180:App/Src/control.c **** 				if (buffer[i] == 0xE0) {
+ 847              		.loc 1 180 7 is_stmt 0 view .LVU168
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 27
+
+
+ 848 0044 012C     		cmp	r4, #1
+ 849 0046 F3D0     		beq	.L56
+ 185:App/Src/control.c **** 					count++;
+ 850              		.loc 1 185 5 is_stmt 1 view .LVU169
+ 185:App/Src/control.c **** 					count++;
+ 851              		.loc 1 185 15 is_stmt 0 view .LVU170
+ 852 0048 03F1C002 		add	r2, r3, #192
+ 853 004c 6A44     		add	r2, sp, r2
+ 854 004e 12F8342C 		ldrb	r2, [r2, #-52]	@ zero_extendqisi2
+ 185:App/Src/control.c **** 					count++;
+ 855              		.loc 1 185 8 view .LVU171
+ 856 0052 312A     		cmp	r2, #49
+ 857 0054 F3D1     		bne	.L46
+ 186:App/Src/control.c **** 				}
+ 858              		.loc 1 186 6 is_stmt 1 view .LVU172
+ 186:App/Src/control.c **** 				}
+ 859              		.loc 1 186 11 is_stmt 0 view .LVU173
+ 860 0056 0131     		adds	r1, r1, #1
+ 861              	.LVL64:
+ 186:App/Src/control.c **** 				}
+ 862              		.loc 1 186 11 view .LVU174
+ 863 0058 C9B2     		uxtb	r1, r1
+ 864              	.LVL65:
+ 186:App/Src/control.c **** 				}
+ 865              		.loc 1 186 11 view .LVU175
+ 866 005a F0E7     		b	.L46
+ 867              	.L54:
+ 182:App/Src/control.c **** 				}
+ 868              		.loc 1 182 6 is_stmt 1 view .LVU176
+ 182:App/Src/control.c **** 				}
+ 869              		.loc 1 182 11 is_stmt 0 view .LVU177
+ 870 005c 0131     		adds	r1, r1, #1
+ 871              	.LVL66:
+ 182:App/Src/control.c **** 				}
+ 872              		.loc 1 182 11 view .LVU178
+ 873 005e C9B2     		uxtb	r1, r1
+ 874              	.LVL67:
+ 182:App/Src/control.c **** 				}
+ 875              		.loc 1 182 11 view .LVU179
+ 876 0060 EDE7     		b	.L46
+ 877              	.L55:
+ 190:App/Src/control.c **** 			ControlPrintf("okNumber:%d chipName:%d message:%s\n", lastCount, MAX_CHIP_NUMBER, message[j]);
+ 878              		.loc 1 190 3 is_stmt 1 view .LVU180
+ 190:App/Src/control.c **** 			ControlPrintf("okNumber:%d chipName:%d message:%s\n", lastCount, MAX_CHIP_NUMBER, message[j]);
+ 879              		.loc 1 190 6 is_stmt 0 view .LVU181
+ 880 0062 81B1     		cbz	r1, .L57
+ 194:App/Src/control.c **** 		}
+ 881              		.loc 1 194 4 is_stmt 1 discriminator 2 view .LVU182
+ 882              	.LVL68:
+ 174:App/Src/control.c **** 		memset(buffer, 0xff, MAX_CHIP_NUMBER);
+ 883              		.loc 1 174 21 discriminator 2 view .LVU183
+ 174:App/Src/control.c **** 		memset(buffer, 0xff, MAX_CHIP_NUMBER);
+ 884              		.loc 1 174 22 is_stmt 0 discriminator 2 view .LVU184
+ 885 0064 0134     		adds	r4, r4, #1
+ 886              	.LVL69:
+ 194:App/Src/control.c **** 		}
+ 887              		.loc 1 194 14 discriminator 2 view .LVU185
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 28
+
+
+ 888 0066 0E46     		mov	r6, r1
+ 889              	.LVL70:
+ 890              	.L42:
+ 174:App/Src/control.c **** 		memset(buffer, 0xff, MAX_CHIP_NUMBER);
+ 891              		.loc 1 174 14 is_stmt 1 discriminator 1 view .LVU186
+ 174:App/Src/control.c **** 		memset(buffer, 0xff, MAX_CHIP_NUMBER);
+ 892              		.loc 1 174 2 is_stmt 0 discriminator 1 view .LVU187
+ 893 0068 052C     		cmp	r4, #5
+ 894 006a 16DC     		bgt	.L58
+ 175:App/Src/control.c **** 		address = TEST_FALG_START_ADDR + j * PAGE_SIZE;
+ 895              		.loc 1 175 3 is_stmt 1 view .LVU188
+ 896 006c 3222     		movs	r2, #50
+ 897 006e FF21     		movs	r1, #255
+ 898 0070 23A8     		add	r0, sp, #140
+ 899 0072 FFF7FEFF 		bl	memset
+ 900              	.LVL71:
+ 176:App/Src/control.c **** 		flash_read_data(address, buffer, MAX_CHIP_NUMBER);
+ 901              		.loc 1 176 3 view .LVU189
+ 177:App/Src/control.c **** 		count = 0;
+ 902              		.loc 1 177 3 view .LVU190
+ 903 0076 3222     		movs	r2, #50
+ 904 0078 23A9     		add	r1, sp, #140
+ 905 007a 2002     		lsls	r0, r4, #8
+ 906              	.LVL72:
+ 177:App/Src/control.c **** 		count = 0;
+ 907              		.loc 1 177 3 is_stmt 0 view .LVU191
+ 908 007c FFF7FEFF 		bl	flash_read_data
+ 909              	.LVL73:
+ 178:App/Src/control.c **** 		for (i = 0; i < MAX_CHIP_NUMBER ; i++) {
+ 910              		.loc 1 178 3 is_stmt 1 view .LVU192
+ 179:App/Src/control.c **** 			if (j == 1) {
+ 911              		.loc 1 179 3 view .LVU193
+ 178:App/Src/control.c **** 		for (i = 0; i < MAX_CHIP_NUMBER ; i++) {
+ 912              		.loc 1 178 9 is_stmt 0 view .LVU194
+ 913 0080 2946     		mov	r1, r5
+ 179:App/Src/control.c **** 			if (j == 1) {
+ 914              		.loc 1 179 10 view .LVU195
+ 915 0082 0023     		movs	r3, #0
+ 179:App/Src/control.c **** 			if (j == 1) {
+ 916              		.loc 1 179 3 view .LVU196
+ 917 0084 DCE7     		b	.L44
+ 918              	.LVL74:
+ 919              	.L57:
+ 191:App/Src/control.c **** 			return;
+ 920              		.loc 1 191 4 is_stmt 1 view .LVU197
+ 191:App/Src/control.c **** 			return;
+ 921              		.loc 1 191 93 is_stmt 0 view .LVU198
+ 922 0086 04EB8404 		add	r4, r4, r4, lsl #2
+ 923              	.LVL75:
+ 191:App/Src/control.c **** 			return;
+ 924              		.loc 1 191 93 view .LVU199
+ 925 008a A300     		lsls	r3, r4, #2
+ 926              	.LVL76:
+ 191:App/Src/control.c **** 			return;
+ 927              		.loc 1 191 4 view .LVU200
+ 928 008c 6B44     		add	r3, r3, sp
+ 929 008e 3222     		movs	r2, #50
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 29
+
+
+ 930 0090 3146     		mov	r1, r6
+ 931              	.LVL77:
+ 191:App/Src/control.c **** 			return;
+ 932              		.loc 1 191 4 view .LVU201
+ 933 0092 0A48     		ldr	r0, .L59+12
+ 934 0094 FFF7FEFF 		bl	ControlPrintf
+ 935              	.LVL78:
+ 192:App/Src/control.c **** 		} else {
+ 936              		.loc 1 192 4 is_stmt 1 view .LVU202
+ 937 0098 08E0     		b	.L41
+ 938              	.LVL79:
+ 939              	.L58:
+ 197:App/Src/control.c **** }
+ 940              		.loc 1 197 2 view .LVU203
+ 197:App/Src/control.c **** }
+ 941              		.loc 1 197 91 is_stmt 0 view .LVU204
+ 942 009a 04EB8404 		add	r4, r4, r4, lsl #2
+ 943              	.LVL80:
+ 197:App/Src/control.c **** }
+ 944              		.loc 1 197 91 view .LVU205
+ 945 009e A300     		lsls	r3, r4, #2
+ 197:App/Src/control.c **** }
+ 946              		.loc 1 197 2 view .LVU206
+ 947 00a0 6B44     		add	r3, r3, sp
+ 948 00a2 3222     		movs	r2, #50
+ 949 00a4 3146     		mov	r1, r6
+ 950 00a6 0548     		ldr	r0, .L59+12
+ 951 00a8 FFF7FEFF 		bl	ControlPrintf
+ 952              	.LVL81:
+ 953              	.L41:
+ 198:App/Src/control.c **** 
+ 954              		.loc 1 198 1 view .LVU207
+ 955 00ac 30B0     		add	sp, sp, #192
+ 956              	.LCFI21:
+ 957              		.cfi_def_cfa_offset 16
+ 958              		@ sp needed
+ 959 00ae 70BD     		pop	{r4, r5, r6, pc}
+ 960              	.L60:
+ 961              		.align	2
+ 962              	.L59:
+ 963 00b0 00000000 		.word	.LANCHOR3
+ 964 00b4 00000000 		.word	.LANCHOR4
+ 965 00b8 00000000 		.word	.LC14
+ 966 00bc 1C000000 		.word	.LC15
+ 967              		.cfi_endproc
+ 968              	.LFE242:
+ 970              		.section	.rodata.OPERATE_ERASE_FLASH_Handle.str1.4,"aMS",%progbits,1
+ 971              		.align	2
+ 972              	.LC16:
+ 973 0000 6D657373 		.ascii	"message:\307\345\277\325\322\354\263\243\243\254\307"
+ 973      6167653A 
+ 973      C7E5BFD5 
+ 973      D2ECB3A3 
+ 973      A3ACC7
+ 974 0013 EBD6D8CA 		.ascii	"\353\326\330\312\324\012\000"
+ 974      D40A00
+ 975 001a 0000     		.align	2
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 30
+
+
+ 976              	.LC17:
+ 977 001c 6D657373 		.ascii	"message:\277\252\312\274\307\345\277\325\312\375\276"
+ 977      6167653A 
+ 977      BFAACABC 
+ 977      C7E5BFD5 
+ 977      CAFDBE
+ 978 002f DD0A00   		.ascii	"\335\012\000"
+ 979 0032 0000     		.align	2
+ 980              	.LC18:
+ 981 0034 65617273 		.ascii	"earse full chip need 40s ~ 200s\012\000"
+ 981      65206675 
+ 981      6C6C2063 
+ 981      68697020 
+ 981      6E656564 
+ 982              		.section	.text.OPERATE_ERASE_FLASH_Handle,"ax",%progbits
+ 983              		.align	1
+ 984              		.global	OPERATE_ERASE_FLASH_Handle
+ 985              		.syntax unified
+ 986              		.thumb
+ 987              		.thumb_func
+ 989              	OPERATE_ERASE_FLASH_Handle:
+ 990              	.LFB243:
+ 201:App/Src/control.c **** 	HAL_Delay(200);
+ 991              		.loc 1 201 1 is_stmt 1 view -0
+ 992              		.cfi_startproc
+ 993              		@ args = 0, pretend = 0, frame = 0
+ 994              		@ frame_needed = 0, uses_anonymous_args = 0
+ 995 0000 08B5     		push	{r3, lr}
+ 996              	.LCFI22:
+ 997              		.cfi_def_cfa_offset 8
+ 998              		.cfi_offset 3, -8
+ 999              		.cfi_offset 14, -4
+ 202:App/Src/control.c **** 	if (flash_erase(0, 0) != 1) {//全片擦除
+ 1000              		.loc 1 202 2 view .LVU209
+ 1001 0002 C820     		movs	r0, #200
+ 1002 0004 FFF7FEFF 		bl	HAL_Delay
+ 1003              	.LVL82:
+ 203:App/Src/control.c ****         ControlPrintf("message:清空异常，请重试\n");
+ 1004              		.loc 1 203 2 view .LVU210
+ 203:App/Src/control.c ****         ControlPrintf("message:清空异常，请重试\n");
+ 1005              		.loc 1 203 6 is_stmt 0 view .LVU211
+ 1006 0008 0021     		movs	r1, #0
+ 1007 000a 0846     		mov	r0, r1
+ 1008 000c FFF7FEFF 		bl	flash_erase
+ 1009              	.LVL83:
+ 203:App/Src/control.c ****         ControlPrintf("message:清空异常，请重试\n");
+ 1010              		.loc 1 203 5 view .LVU212
+ 1011 0010 0128     		cmp	r0, #1
+ 1012 0012 03D0     		beq	.L62
+ 204:App/Src/control.c **** 		return;
+ 1013              		.loc 1 204 9 is_stmt 1 view .LVU213
+ 1014 0014 0648     		ldr	r0, .L65
+ 1015 0016 FFF7FEFF 		bl	ControlPrintf
+ 1016              	.LVL84:
+ 205:App/Src/control.c ****     }
+ 1017              		.loc 1 205 3 view .LVU214
+ 1018              	.L61:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 31
+
+
+ 210:App/Src/control.c **** 
+ 1019              		.loc 1 210 1 is_stmt 0 view .LVU215
+ 1020 001a 08BD     		pop	{r3, pc}
+ 1021              	.L62:
+ 207:App/Src/control.c **** 	UsbPrintf("earse full chip need 40s ~ 200s\n");
+ 1022              		.loc 1 207 2 is_stmt 1 view .LVU216
+ 1023 001c 0548     		ldr	r0, .L65+4
+ 1024 001e FFF7FEFF 		bl	ControlPrintf
+ 1025              	.LVL85:
+ 208:App/Src/control.c **** 	g_earseFlash = 1;
+ 1026              		.loc 1 208 2 view .LVU217
+ 1027 0022 0548     		ldr	r0, .L65+8
+ 1028 0024 FFF7FEFF 		bl	UsbPrintf
+ 1029              	.LVL86:
+ 209:App/Src/control.c **** }
+ 1030              		.loc 1 209 2 view .LVU218
+ 209:App/Src/control.c **** }
+ 1031              		.loc 1 209 15 is_stmt 0 view .LVU219
+ 1032 0028 044B     		ldr	r3, .L65+12
+ 1033 002a 0122     		movs	r2, #1
+ 1034 002c 1A70     		strb	r2, [r3]
+ 1035 002e F4E7     		b	.L61
+ 1036              	.L66:
+ 1037              		.align	2
+ 1038              	.L65:
+ 1039 0030 00000000 		.word	.LC16
+ 1040 0034 1C000000 		.word	.LC17
+ 1041 0038 34000000 		.word	.LC18
+ 1042 003c 00000000 		.word	.LANCHOR4
+ 1043              		.cfi_endproc
+ 1044              	.LFE243:
+ 1046              		.section	.rodata.CheckFlashEarse.str1.4,"aMS",%progbits,1
+ 1047              		.align	2
+ 1048              	.LC19:
+ 1049 0000 77616974 		.ascii	"wait for %ds...\012\000"
+ 1049      20666F72 
+ 1049      20256473 
+ 1049      2E2E2E0A 
+ 1049      00
+ 1050 0011 000000   		.align	2
+ 1051              	.LC20:
+ 1052 0014 6D657373 		.ascii	"message:\307\353\265\310\264\375,\322\321\275\370\320"
+ 1052      6167653A 
+ 1052      C7EBB5C8 
+ 1052      B4FD2CD2 
+ 1052      D1BDF8D0 
+ 1053 0028 D0256473 		.ascii	"\320%ds\012\000"
+ 1053      0A00
+ 1054 002e 0000     		.align	2
+ 1055              	.LC21:
+ 1056 0030 6F6B4E75 		.ascii	"okNumber:%d chipName:%d message:\307\345\277\325\322"
+ 1056      6D626572 
+ 1056      3A256420 
+ 1056      63686970 
+ 1056      4E616D65 
+ 1057 0055 D1CDEAB3 		.ascii	"\321\315\352\263\311\243\241\012\000"
+ 1057      C9A3A10A 
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 32
+
+
+ 1057      00
+ 1058              		.section	.text.CheckFlashEarse,"ax",%progbits
+ 1059              		.align	1
+ 1060              		.global	CheckFlashEarse
+ 1061              		.syntax unified
+ 1062              		.thumb
+ 1063              		.thumb_func
+ 1065              	CheckFlashEarse:
+ 1066              	.LFB244:
+ 213:App/Src/control.c **** 	static uint32_t lastTick = 0;
+ 1067              		.loc 1 213 1 is_stmt 1 view -0
+ 1068              		.cfi_startproc
+ 1069              		@ args = 0, pretend = 0, frame = 0
+ 1070              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1071 0000 38B5     		push	{r3, r4, r5, lr}
+ 1072              	.LCFI23:
+ 1073              		.cfi_def_cfa_offset 16
+ 1074              		.cfi_offset 3, -16
+ 1075              		.cfi_offset 4, -12
+ 1076              		.cfi_offset 5, -8
+ 1077              		.cfi_offset 14, -4
+ 214:App/Src/control.c **** 	static uint32_t usedTime = 0;
+ 1078              		.loc 1 214 2 view .LVU221
+ 215:App/Src/control.c **** 	if (g_earseFlash == 1) {
+ 1079              		.loc 1 215 2 view .LVU222
+ 216:App/Src/control.c **** 		g_earseFlash = 2;
+ 1080              		.loc 1 216 2 view .LVU223
+ 216:App/Src/control.c **** 		g_earseFlash = 2;
+ 1081              		.loc 1 216 19 is_stmt 0 view .LVU224
+ 1082 0002 224B     		ldr	r3, .L73
+ 1083 0004 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 216:App/Src/control.c **** 		g_earseFlash = 2;
+ 1084              		.loc 1 216 5 view .LVU225
+ 1085 0006 012B     		cmp	r3, #1
+ 1086 0008 02D0     		beq	.L71
+ 220:App/Src/control.c **** 		if (HAL_GetTick() < lastTick + 2000) { return; }
+ 1087              		.loc 1 220 9 is_stmt 1 view .LVU226
+ 220:App/Src/control.c **** 		if (HAL_GetTick() < lastTick + 2000) { return; }
+ 1088              		.loc 1 220 12 is_stmt 0 view .LVU227
+ 1089 000a 022B     		cmp	r3, #2
+ 1090 000c 0BD0     		beq	.L72
+ 1091              	.L67:
+ 232:App/Src/control.c **** 
+ 1092              		.loc 1 232 1 view .LVU228
+ 1093 000e 38BD     		pop	{r3, r4, r5, pc}
+ 1094              	.L71:
+ 217:App/Src/control.c **** 		lastTick = HAL_GetTick();
+ 1095              		.loc 1 217 3 is_stmt 1 view .LVU229
+ 217:App/Src/control.c **** 		lastTick = HAL_GetTick();
+ 1096              		.loc 1 217 16 is_stmt 0 view .LVU230
+ 1097 0010 1E4B     		ldr	r3, .L73
+ 1098 0012 0222     		movs	r2, #2
+ 1099 0014 1A70     		strb	r2, [r3]
+ 218:App/Src/control.c **** 		usedTime = 0;
+ 1100              		.loc 1 218 3 is_stmt 1 view .LVU231
+ 218:App/Src/control.c **** 		usedTime = 0;
+ 1101              		.loc 1 218 14 is_stmt 0 view .LVU232
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 33
+
+
+ 1102 0016 FFF7FEFF 		bl	HAL_GetTick
+ 1103              	.LVL87:
+ 218:App/Src/control.c **** 		usedTime = 0;
+ 1104              		.loc 1 218 12 view .LVU233
+ 1105 001a 1D4B     		ldr	r3, .L73+4
+ 1106 001c 1860     		str	r0, [r3]
+ 219:App/Src/control.c **** 	} else if (g_earseFlash == 2) {
+ 1107              		.loc 1 219 3 is_stmt 1 view .LVU234
+ 219:App/Src/control.c **** 	} else if (g_earseFlash == 2) {
+ 1108              		.loc 1 219 12 is_stmt 0 view .LVU235
+ 1109 001e 1D4B     		ldr	r3, .L73+8
+ 1110 0020 0022     		movs	r2, #0
+ 1111 0022 1A60     		str	r2, [r3]
+ 1112 0024 F3E7     		b	.L67
+ 1113              	.L72:
+ 221:App/Src/control.c **** 		usedTime += HAL_GetTick() - lastTick;
+ 1114              		.loc 1 221 3 is_stmt 1 view .LVU236
+ 221:App/Src/control.c **** 		usedTime += HAL_GetTick() - lastTick;
+ 1115              		.loc 1 221 7 is_stmt 0 view .LVU237
+ 1116 0026 FFF7FEFF 		bl	HAL_GetTick
+ 1117              	.LVL88:
+ 221:App/Src/control.c **** 		usedTime += HAL_GetTick() - lastTick;
+ 1118              		.loc 1 221 32 view .LVU238
+ 1119 002a 194B     		ldr	r3, .L73+4
+ 1120 002c 1B68     		ldr	r3, [r3]
+ 1121 002e 03F5FA63 		add	r3, r3, #2000
+ 221:App/Src/control.c **** 		usedTime += HAL_GetTick() - lastTick;
+ 1122              		.loc 1 221 6 view .LVU239
+ 1123 0032 9842     		cmp	r0, r3
+ 1124 0034 EBD3     		bcc	.L67
+ 222:App/Src/control.c **** 		lastTick = HAL_GetTick();
+ 1125              		.loc 1 222 3 is_stmt 1 view .LVU240
+ 222:App/Src/control.c **** 		lastTick = HAL_GetTick();
+ 1126              		.loc 1 222 15 is_stmt 0 view .LVU241
+ 1127 0036 FFF7FEFF 		bl	HAL_GetTick
+ 1128              	.LVL89:
+ 222:App/Src/control.c **** 		lastTick = HAL_GetTick();
+ 1129              		.loc 1 222 29 view .LVU242
+ 1130 003a 154D     		ldr	r5, .L73+4
+ 1131 003c 2B68     		ldr	r3, [r5]
+ 1132 003e C01A     		subs	r0, r0, r3
+ 222:App/Src/control.c **** 		lastTick = HAL_GetTick();
+ 1133              		.loc 1 222 12 view .LVU243
+ 1134 0040 144C     		ldr	r4, .L73+8
+ 1135 0042 2368     		ldr	r3, [r4]
+ 1136 0044 0344     		add	r3, r3, r0
+ 1137 0046 2360     		str	r3, [r4]
+ 223:App/Src/control.c **** 		UsbPrintf("wait for %ds...\n", usedTime / 1000);
+ 1138              		.loc 1 223 3 is_stmt 1 view .LVU244
+ 223:App/Src/control.c **** 		UsbPrintf("wait for %ds...\n", usedTime / 1000);
+ 1139              		.loc 1 223 14 is_stmt 0 view .LVU245
+ 1140 0048 FFF7FEFF 		bl	HAL_GetTick
+ 1141              	.LVL90:
+ 223:App/Src/control.c **** 		UsbPrintf("wait for %ds...\n", usedTime / 1000);
+ 1142              		.loc 1 223 12 view .LVU246
+ 1143 004c 2860     		str	r0, [r5]
+ 224:App/Src/control.c **** 		ControlPrintf("message:请等待,已进行%ds\n", usedTime / 1000);
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 34
+
+
+ 1144              		.loc 1 224 3 is_stmt 1 view .LVU247
+ 1145 004e 2168     		ldr	r1, [r4]
+ 1146 0050 114D     		ldr	r5, .L73+12
+ 1147 0052 A5FB0131 		umull	r3, r1, r5, r1
+ 1148 0056 8909     		lsrs	r1, r1, #6
+ 1149 0058 1048     		ldr	r0, .L73+16
+ 1150 005a FFF7FEFF 		bl	UsbPrintf
+ 1151              	.LVL91:
+ 225:App/Src/control.c **** 		if (CheckBusy() == 1) {
+ 1152              		.loc 1 225 3 view .LVU248
+ 1153 005e 2168     		ldr	r1, [r4]
+ 1154 0060 A5FB0131 		umull	r3, r1, r5, r1
+ 1155 0064 8909     		lsrs	r1, r1, #6
+ 1156 0066 0E48     		ldr	r0, .L73+20
+ 1157 0068 FFF7FEFF 		bl	ControlPrintf
+ 1158              	.LVL92:
+ 226:App/Src/control.c **** 			log_list_init(); 
+ 1159              		.loc 1 226 3 view .LVU249
+ 226:App/Src/control.c **** 			log_list_init(); 
+ 1160              		.loc 1 226 7 is_stmt 0 view .LVU250
+ 1161 006c FFF7FEFF 		bl	CheckBusy
+ 1162              	.LVL93:
+ 226:App/Src/control.c **** 			log_list_init(); 
+ 1163              		.loc 1 226 6 view .LVU251
+ 1164 0070 0128     		cmp	r0, #1
+ 1165 0072 CCD1     		bne	.L67
+ 227:App/Src/control.c **** 			ControlPrintf("okNumber:%d chipName:%d message:清空已完成！\n", MAX_CHIP_NUMBER, MAX_CHIP_NUMBER
+ 1166              		.loc 1 227 4 is_stmt 1 view .LVU252
+ 1167 0074 FFF7FEFF 		bl	log_list_init
+ 1168              	.LVL94:
+ 228:App/Src/control.c **** 			g_earseFlash = 0;
+ 1169              		.loc 1 228 4 view .LVU253
+ 1170 0078 3222     		movs	r2, #50
+ 1171 007a 1146     		mov	r1, r2
+ 1172 007c 0948     		ldr	r0, .L73+24
+ 1173 007e FFF7FEFF 		bl	ControlPrintf
+ 1174              	.LVL95:
+ 229:App/Src/control.c **** 		}
+ 1175              		.loc 1 229 4 view .LVU254
+ 229:App/Src/control.c **** 		}
+ 1176              		.loc 1 229 17 is_stmt 0 view .LVU255
+ 1177 0082 024B     		ldr	r3, .L73
+ 1178 0084 0022     		movs	r2, #0
+ 1179 0086 1A70     		strb	r2, [r3]
+ 1180 0088 C1E7     		b	.L67
+ 1181              	.L74:
+ 1182 008a 00BF     		.align	2
+ 1183              	.L73:
+ 1184 008c 00000000 		.word	.LANCHOR4
+ 1185 0090 00000000 		.word	.LANCHOR5
+ 1186 0094 00000000 		.word	.LANCHOR6
+ 1187 0098 D34D6210 		.word	274877907
+ 1188 009c 00000000 		.word	.LC19
+ 1189 00a0 14000000 		.word	.LC20
+ 1190 00a4 30000000 		.word	.LC21
+ 1191              		.cfi_endproc
+ 1192              	.LFE244:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 35
+
+
+ 1194              		.section	.rodata.OPERATE_IIC_TEST_Handle.str1.4,"aMS",%progbits,1
+ 1195              		.align	2
+ 1196              	.LC22:
+ 1197 0000 6F6B4E75 		.ascii	"okNumber:0 chipName:0 message:\277\252\312\274iic\266"
+ 1197      6D626572 
+ 1197      3A302063 
+ 1197      6869704E 
+ 1197      616D653A 
+ 1198 0026 C1C8A10A 		.ascii	"\301\310\241\012\000"
+ 1198      00
+ 1199 002b 00       		.align	2
+ 1200              	.LC23:
+ 1201 002c 6F6B4E75 		.ascii	"okNumber:%d chipName:%d message:\322\321\315\352\263"
+ 1201      6D626572 
+ 1201      3A256420 
+ 1201      63686970 
+ 1201      4E616D65 
+ 1202 0051 C9A3A10A 		.ascii	"\311\243\241\012\000"
+ 1202      00
+ 1203              		.section	.text.OPERATE_IIC_TEST_Handle,"ax",%progbits
+ 1204              		.align	1
+ 1205              		.global	OPERATE_IIC_TEST_Handle
+ 1206              		.syntax unified
+ 1207              		.thumb
+ 1208              		.thumb_func
+ 1210              	OPERATE_IIC_TEST_Handle:
+ 1211              	.LFB245:
+ 236:App/Src/control.c **** 	int i = 0;
+ 1212              		.loc 1 236 1 is_stmt 1 view -0
+ 1213              		.cfi_startproc
+ 1214              		@ args = 0, pretend = 0, frame = 8
+ 1215              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1216 0000 70B5     		push	{r4, r5, r6, lr}
+ 1217              	.LCFI24:
+ 1218              		.cfi_def_cfa_offset 16
+ 1219              		.cfi_offset 4, -16
+ 1220              		.cfi_offset 5, -12
+ 1221              		.cfi_offset 6, -8
+ 1222              		.cfi_offset 14, -4
+ 1223 0002 82B0     		sub	sp, sp, #8
+ 1224              	.LCFI25:
+ 1225              		.cfi_def_cfa_offset 24
+ 237:App/Src/control.c **** 	uint8_t count = 0;
+ 1226              		.loc 1 237 2 view .LVU257
+ 1227              	.LVL96:
+ 238:App/Src/control.c **** 	uint8_t buffer;
+ 1228              		.loc 1 238 2 view .LVU258
+ 239:App/Src/control.c **** 	ControlPrintf("okNumber:0 chipName:0 message:开始iic读取\n");
+ 1229              		.loc 1 239 2 view .LVU259
+ 240:App/Src/control.c **** 	for (i = 1; i <= MAX_CHIP_NUMBER; i++) {
+ 1230              		.loc 1 240 2 view .LVU260
+ 1231 0004 1348     		ldr	r0, .L81
+ 1232 0006 FFF7FEFF 		bl	ControlPrintf
+ 1233              	.LVL97:
+ 241:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1234              		.loc 1 241 2 view .LVU261
+ 238:App/Src/control.c **** 	uint8_t buffer;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 36
+
+
+ 1235              		.loc 1 238 10 is_stmt 0 view .LVU262
+ 1236 000a 0026     		movs	r6, #0
+ 241:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1237              		.loc 1 241 9 view .LVU263
+ 1238 000c 0125     		movs	r5, #1
+ 241:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1239              		.loc 1 241 2 view .LVU264
+ 1240 000e 00E0     		b	.L76
+ 1241              	.LVL98:
+ 1242              	.L77:
+ 241:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1243              		.loc 1 241 36 is_stmt 1 discriminator 2 view .LVU265
+ 241:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1244              		.loc 1 241 37 is_stmt 0 discriminator 2 view .LVU266
+ 1245 0010 0135     		adds	r5, r5, #1
+ 1246              	.LVL99:
+ 1247              	.L76:
+ 241:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1248              		.loc 1 241 14 is_stmt 1 discriminator 1 view .LVU267
+ 241:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1249              		.loc 1 241 2 is_stmt 0 discriminator 1 view .LVU268
+ 1250 0012 322D     		cmp	r5, #50
+ 1251 0014 17DC     		bgt	.L80
+ 242:App/Src/control.c **** 		rtc_set_channel(i, RTC_SD8825);
+ 1252              		.loc 1 242 3 is_stmt 1 view .LVU269
+ 1253 0016 ECB2     		uxtb	r4, r5
+ 1254 0018 0121     		movs	r1, #1
+ 1255 001a 2046     		mov	r0, r4
+ 1256 001c FFF7FEFF 		bl	rtc_group_power
+ 1257              	.LVL100:
+ 243:App/Src/control.c **** 		HAL_Delay(5);
+ 1258              		.loc 1 243 3 view .LVU270
+ 1259 0020 0221     		movs	r1, #2
+ 1260 0022 2046     		mov	r0, r4
+ 1261 0024 FFF7FEFF 		bl	rtc_set_channel
+ 1262              	.LVL101:
+ 244:App/Src/control.c **** 		if (rtc_read_multi_bytes(0x64, 0x00, &buffer, 8) == I2C_OK) {
+ 1263              		.loc 1 244 3 view .LVU271
+ 1264 0028 0520     		movs	r0, #5
+ 1265 002a FFF7FEFF 		bl	HAL_Delay
+ 1266              	.LVL102:
+ 245:App/Src/control.c **** 			count++;
+ 1267              		.loc 1 245 3 view .LVU272
+ 245:App/Src/control.c **** 			count++;
+ 1268              		.loc 1 245 7 is_stmt 0 view .LVU273
+ 1269 002e 0823     		movs	r3, #8
+ 1270 0030 0DF10702 		add	r2, sp, #7
+ 1271 0034 0021     		movs	r1, #0
+ 1272 0036 6420     		movs	r0, #100
+ 1273 0038 FFF7FEFF 		bl	rtc_read_multi_bytes
+ 1274              	.LVL103:
+ 245:App/Src/control.c **** 			count++;
+ 1275              		.loc 1 245 6 view .LVU274
+ 1276 003c 0028     		cmp	r0, #0
+ 1277 003e E7D1     		bne	.L77
+ 246:App/Src/control.c **** 		}
+ 1278              		.loc 1 246 4 is_stmt 1 view .LVU275
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 37
+
+
+ 246:App/Src/control.c **** 		}
+ 1279              		.loc 1 246 9 is_stmt 0 view .LVU276
+ 1280 0040 0136     		adds	r6, r6, #1
+ 1281              	.LVL104:
+ 246:App/Src/control.c **** 		}
+ 1282              		.loc 1 246 9 view .LVU277
+ 1283 0042 F6B2     		uxtb	r6, r6
+ 1284              	.LVL105:
+ 246:App/Src/control.c **** 		}
+ 1285              		.loc 1 246 9 view .LVU278
+ 1286 0044 E4E7     		b	.L77
+ 1287              	.L80:
+ 249:App/Src/control.c **** }
+ 1288              		.loc 1 249 2 is_stmt 1 view .LVU279
+ 1289 0046 3222     		movs	r2, #50
+ 1290 0048 3146     		mov	r1, r6
+ 1291 004a 0348     		ldr	r0, .L81+4
+ 1292 004c FFF7FEFF 		bl	ControlPrintf
+ 1293              	.LVL106:
+ 250:App/Src/control.c **** 
+ 1294              		.loc 1 250 1 is_stmt 0 view .LVU280
+ 1295 0050 02B0     		add	sp, sp, #8
+ 1296              	.LCFI26:
+ 1297              		.cfi_def_cfa_offset 16
+ 1298              		@ sp needed
+ 1299 0052 70BD     		pop	{r4, r5, r6, pc}
+ 1300              	.LVL107:
+ 1301              	.L82:
+ 250:App/Src/control.c **** 
+ 1302              		.loc 1 250 1 view .LVU281
+ 1303              		.align	2
+ 1304              	.L81:
+ 1305 0054 00000000 		.word	.LC22
+ 1306 0058 2C000000 		.word	.LC23
+ 1307              		.cfi_endproc
+ 1308              	.LFE245:
+ 1310              		.section	.rodata.OPERATE_READ_TEMP_Handle.str1.4,"aMS",%progbits,1
+ 1311              		.align	2
+ 1312              	.LC24:
+ 1313 0000 6F6B4E75 		.ascii	"okNumber:0 chipName:0 message:\277\252\312\274\316\302"
+ 1313      6D626572 
+ 1313      3A302063 
+ 1313      6869704E 
+ 1313      616D653A 
+ 1314 0024 B6C8B6C1 		.ascii	"\266\310\266\301\310\241\012\000"
+ 1314      C8A10A00 
+ 1315              		.align	2
+ 1316              	.LC25:
+ 1317 002c 6F6B4E75 		.ascii	"okNumber:%d chipName:%d message:\266\340\312\375[%d"
+ 1317      6D626572 
+ 1317      3A256420 
+ 1317      63686970 
+ 1317      4E616D65 
+ 1318 0053 A1E65D3A 		.ascii	"\241\346]:%d\270\366\012\000"
+ 1318      2564B8F6 
+ 1318      0A00
+ 1319              		.section	.text.OPERATE_READ_TEMP_Handle,"ax",%progbits
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 38
+
+
+ 1320              		.align	1
+ 1321              		.global	OPERATE_READ_TEMP_Handle
+ 1322              		.syntax unified
+ 1323              		.thumb
+ 1324              		.thumb_func
+ 1326              	OPERATE_READ_TEMP_Handle:
+ 1327              	.LFB246:
+ 253:App/Src/control.c **** 	int i = 0;
+ 1328              		.loc 1 253 1 is_stmt 1 view -0
+ 1329              		.cfi_startproc
+ 1330              		@ args = 0, pretend = 0, frame = 616
+ 1331              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1332 0000 30B5     		push	{r4, r5, lr}
+ 1333              	.LCFI27:
+ 1334              		.cfi_def_cfa_offset 12
+ 1335              		.cfi_offset 4, -12
+ 1336              		.cfi_offset 5, -8
+ 1337              		.cfi_offset 14, -4
+ 1338 0002 ADF51D7D 		sub	sp, sp, #628
+ 1339              	.LCFI28:
+ 1340              		.cfi_def_cfa_offset 640
+ 254:App/Src/control.c **** 	uint8_t count = 0;
+ 1341              		.loc 1 254 2 view .LVU283
+ 1342              	.LVL108:
+ 255:App/Src/control.c **** 	uint8_t buffer[512] = {0};
+ 1343              		.loc 1 255 2 view .LVU284
+ 256:App/Src/control.c **** 	uint16_t temp[MAX_CHIP_NUMBER] = {0};
+ 1344              		.loc 1 256 2 view .LVU285
+ 256:App/Src/control.c **** 	uint16_t temp[MAX_CHIP_NUMBER] = {0};
+ 1345              		.loc 1 256 10 is_stmt 0 view .LVU286
+ 1346 0006 0025     		movs	r5, #0
+ 1347 0008 1C95     		str	r5, [sp, #112]
+ 1348 000a 4FF4FE72 		mov	r2, #508
+ 1349 000e 2946     		mov	r1, r5
+ 1350 0010 1DA8     		add	r0, sp, #116
+ 1351 0012 FFF7FEFF 		bl	memset
+ 1352              	.LVL109:
+ 257:App/Src/control.c **** 	uint8_t maxCount = 0;
+ 1353              		.loc 1 257 2 is_stmt 1 view .LVU287
+ 257:App/Src/control.c **** 	uint8_t maxCount = 0;
+ 1354              		.loc 1 257 11 is_stmt 0 view .LVU288
+ 1355 0016 6422     		movs	r2, #100
+ 1356 0018 2946     		mov	r1, r5
+ 1357 001a 03A8     		add	r0, sp, #12
+ 1358 001c FFF7FEFF 		bl	memset
+ 1359              	.LVL110:
+ 258:App/Src/control.c **** 	int maxIndex = 0;
+ 1360              		.loc 1 258 2 is_stmt 1 view .LVU289
+ 259:App/Src/control.c **** 
+ 1361              		.loc 1 259 2 view .LVU290
+ 261:App/Src/control.c **** 	for (i = 1; i <= MAX_CHIP_NUMBER; i++) {
+ 1362              		.loc 1 261 2 view .LVU291
+ 1363 0020 1E48     		ldr	r0, .L95
+ 1364 0022 FFF7FEFF 		bl	ControlPrintf
+ 1365              	.LVL111:
+ 262:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1366              		.loc 1 262 2 view .LVU292
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 39
+
+
+ 262:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1367              		.loc 1 262 9 is_stmt 0 view .LVU293
+ 1368 0026 0124     		movs	r4, #1
+ 262:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1369              		.loc 1 262 2 view .LVU294
+ 1370 0028 00E0     		b	.L84
+ 1371              	.LVL112:
+ 1372              	.L85:
+ 262:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1373              		.loc 1 262 36 is_stmt 1 discriminator 2 view .LVU295
+ 262:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1374              		.loc 1 262 37 is_stmt 0 discriminator 2 view .LVU296
+ 1375 002a 0134     		adds	r4, r4, #1
+ 1376              	.LVL113:
+ 1377              	.L84:
+ 262:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1378              		.loc 1 262 14 is_stmt 1 discriminator 1 view .LVU297
+ 262:App/Src/control.c **** 		rtc_group_power(i, POWER_I2C);
+ 1379              		.loc 1 262 2 is_stmt 0 discriminator 1 view .LVU298
+ 1380 002c 322C     		cmp	r4, #50
+ 1381 002e 17DC     		bgt	.L93
+ 263:App/Src/control.c **** 		HAL_Delay(5);
+ 1382              		.loc 1 263 3 is_stmt 1 view .LVU299
+ 1383 0030 0121     		movs	r1, #1
+ 1384 0032 E0B2     		uxtb	r0, r4
+ 1385 0034 FFF7FEFF 		bl	rtc_group_power
+ 1386              	.LVL114:
+ 264:App/Src/control.c **** 		if (wave1006_read_temp_adc(&temp[i]) == I2C_OK) {
+ 1387              		.loc 1 264 3 view .LVU300
+ 1388 0038 0520     		movs	r0, #5
+ 1389 003a FFF7FEFF 		bl	HAL_Delay
+ 1390              	.LVL115:
+ 265:App/Src/control.c **** 			count++;
+ 1391              		.loc 1 265 3 view .LVU301
+ 265:App/Src/control.c **** 			count++;
+ 1392              		.loc 1 265 7 is_stmt 0 view .LVU302
+ 1393 003e 03AB     		add	r3, sp, #12
+ 1394 0040 03EB4400 		add	r0, r3, r4, lsl #1
+ 1395 0044 FFF7FEFF 		bl	wave1006_read_temp_adc
+ 1396              	.LVL116:
+ 265:App/Src/control.c **** 			count++;
+ 1397              		.loc 1 265 6 view .LVU303
+ 1398 0048 0028     		cmp	r0, #0
+ 1399 004a EED1     		bne	.L85
+ 266:App/Src/control.c **** 			buffer[temp[i]]++;
+ 1400              		.loc 1 266 4 is_stmt 1 view .LVU304
+ 266:App/Src/control.c **** 			buffer[temp[i]]++;
+ 1401              		.loc 1 266 9 is_stmt 0 view .LVU305
+ 1402 004c 0135     		adds	r5, r5, #1
+ 1403              	.LVL117:
+ 266:App/Src/control.c **** 			buffer[temp[i]]++;
+ 1404              		.loc 1 266 9 view .LVU306
+ 1405 004e EDB2     		uxtb	r5, r5
+ 1406              	.LVL118:
+ 267:App/Src/control.c **** 		}
+ 1407              		.loc 1 267 4 is_stmt 1 view .LVU307
+ 267:App/Src/control.c **** 		}
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 40
+
+
+ 1408              		.loc 1 267 15 is_stmt 0 view .LVU308
+ 1409 0050 03AB     		add	r3, sp, #12
+ 1410 0052 33F81420 		ldrh	r2, [r3, r4, lsl #1]
+ 267:App/Src/control.c **** 		}
+ 1411              		.loc 1 267 10 view .LVU309
+ 1412 0056 1CA9     		add	r1, sp, #112
+ 1413 0058 8B5C     		ldrb	r3, [r1, r2]	@ zero_extendqisi2
+ 267:App/Src/control.c **** 		}
+ 1414              		.loc 1 267 19 view .LVU310
+ 1415 005a 0133     		adds	r3, r3, #1
+ 1416 005c 8B54     		strb	r3, [r1, r2]
+ 1417 005e E4E7     		b	.L85
+ 1418              	.L93:
+ 259:App/Src/control.c **** 
+ 1419              		.loc 1 259 6 view .LVU311
+ 1420 0060 0023     		movs	r3, #0
+ 258:App/Src/control.c **** 	int maxIndex = 0;
+ 1421              		.loc 1 258 10 view .LVU312
+ 1422 0062 1C46     		mov	r4, r3
+ 1423              	.LVL119:
+ 270:App/Src/control.c **** 		if (buffer[i] > maxCount) {
+ 1424              		.loc 1 270 9 view .LVU313
+ 1425 0064 1A46     		mov	r2, r3
+ 1426 0066 00E0     		b	.L87
+ 1427              	.LVL120:
+ 1428              	.L88:
+ 270:App/Src/control.c **** 		if (buffer[i] > maxCount) {
+ 1429              		.loc 1 270 23 is_stmt 1 discriminator 2 view .LVU314
+ 270:App/Src/control.c **** 		if (buffer[i] > maxCount) {
+ 1430              		.loc 1 270 24 is_stmt 0 discriminator 2 view .LVU315
+ 1431 0068 0132     		adds	r2, r2, #1
+ 1432              	.LVL121:
+ 1433              	.L87:
+ 270:App/Src/control.c **** 		if (buffer[i] > maxCount) {
+ 1434              		.loc 1 270 14 is_stmt 1 discriminator 1 view .LVU316
+ 270:App/Src/control.c **** 		if (buffer[i] > maxCount) {
+ 1435              		.loc 1 270 2 is_stmt 0 discriminator 1 view .LVU317
+ 1436 006a B2F5007F 		cmp	r2, #512
+ 1437 006e 06DA     		bge	.L94
+ 271:App/Src/control.c **** 			maxCount = buffer[i];
+ 1438              		.loc 1 271 3 is_stmt 1 view .LVU318
+ 271:App/Src/control.c **** 			maxCount = buffer[i];
+ 1439              		.loc 1 271 13 is_stmt 0 view .LVU319
+ 1440 0070 1CA8     		add	r0, sp, #112
+ 1441 0072 805C     		ldrb	r0, [r0, r2]	@ zero_extendqisi2
+ 271:App/Src/control.c **** 			maxCount = buffer[i];
+ 1442              		.loc 1 271 6 view .LVU320
+ 1443 0074 A042     		cmp	r0, r4
+ 1444 0076 F7D9     		bls	.L88
+ 273:App/Src/control.c **** 		}
+ 1445              		.loc 1 273 13 view .LVU321
+ 1446 0078 1346     		mov	r3, r2
+ 1447              	.LVL122:
+ 272:App/Src/control.c **** 			maxIndex = i;
+ 1448              		.loc 1 272 13 view .LVU322
+ 1449 007a 0446     		mov	r4, r0
+ 1450              	.LVL123:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 41
+
+
+ 272:App/Src/control.c **** 			maxIndex = i;
+ 1451              		.loc 1 272 13 view .LVU323
+ 1452 007c F4E7     		b	.L88
+ 1453              	.LVL124:
+ 1454              	.L94:
+ 276:App/Src/control.c **** 		maxIndex = maxIndex - 512;
+ 1455              		.loc 1 276 2 is_stmt 1 view .LVU324
+ 276:App/Src/control.c **** 		maxIndex = maxIndex - 512;
+ 1456              		.loc 1 276 5 is_stmt 0 view .LVU325
+ 1457 007e B3F5C87F 		cmp	r3, #400
+ 1458 0082 01DD     		ble	.L90
+ 277:App/Src/control.c **** 	}
+ 1459              		.loc 1 277 3 is_stmt 1 view .LVU326
+ 277:App/Src/control.c **** 	}
+ 1460              		.loc 1 277 12 is_stmt 0 view .LVU327
+ 1461 0084 A3F50073 		sub	r3, r3, #512
+ 1462              	.LVL125:
+ 1463              	.L90:
+ 279:App/Src/control.c **** }
+ 1464              		.loc 1 279 2 is_stmt 1 view .LVU328
+ 1465 0088 0094     		str	r4, [sp]
+ 1466 008a 3222     		movs	r2, #50
+ 1467              	.LVL126:
+ 279:App/Src/control.c **** }
+ 1468              		.loc 1 279 2 is_stmt 0 view .LVU329
+ 1469 008c 2946     		mov	r1, r5
+ 1470 008e 0448     		ldr	r0, .L95+4
+ 1471 0090 FFF7FEFF 		bl	ControlPrintf
+ 1472              	.LVL127:
+ 280:App/Src/control.c **** 
+ 1473              		.loc 1 280 1 view .LVU330
+ 1474 0094 0DF51D7D 		add	sp, sp, #628
+ 1475              	.LCFI29:
+ 1476              		.cfi_def_cfa_offset 12
+ 1477              		@ sp needed
+ 1478 0098 30BD     		pop	{r4, r5, pc}
+ 1479              	.LVL128:
+ 1480              	.L96:
+ 280:App/Src/control.c **** 
+ 1481              		.loc 1 280 1 view .LVU331
+ 1482 009a 00BF     		.align	2
+ 1483              	.L95:
+ 1484 009c 00000000 		.word	.LC24
+ 1485 00a0 2C000000 		.word	.LC25
+ 1486              		.cfi_endproc
+ 1487              	.LFE246:
+ 1489              		.section	.rodata.OPERATE_CAPADJUST_RESULT_Handle.str1.4,"aMS",%progbits,1
+ 1490              		.align	2
+ 1491              	.LC26:
+ 1492 0000 6F6B4E75 		.ascii	"okNumber:%d chipName:%d message:\266\340\312\375[%0"
+ 1492      6D626572 
+ 1492      3A256420 
+ 1492      63686970 
+ 1492      4E616D65 
+ 1493 0027 32585D3A 		.ascii	"2X]:%d\270\366\012\000"
+ 1493      2564B8F6 
+ 1493      0A00
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 42
+
+
+ 1494              		.section	.text.OPERATE_CAPADJUST_RESULT_Handle,"ax",%progbits
+ 1495              		.align	1
+ 1496              		.global	OPERATE_CAPADJUST_RESULT_Handle
+ 1497              		.syntax unified
+ 1498              		.thumb
+ 1499              		.thumb_func
+ 1501              	OPERATE_CAPADJUST_RESULT_Handle:
+ 1502              	.LFB247:
+ 284:App/Src/control.c **** 	uint8_t buffer[MAX_CHIP_NUMBER] = {0xff};
+ 1503              		.loc 1 284 1 is_stmt 1 view -0
+ 1504              		.cfi_startproc
+ 1505              		@ args = 0, pretend = 0, frame = 312
+ 1506              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1507 0000 10B5     		push	{r4, lr}
+ 1508              	.LCFI30:
+ 1509              		.cfi_def_cfa_offset 8
+ 1510              		.cfi_offset 4, -8
+ 1511              		.cfi_offset 14, -4
+ 1512 0002 D0B0     		sub	sp, sp, #320
+ 1513              	.LCFI31:
+ 1514              		.cfi_def_cfa_offset 328
+ 285:App/Src/control.c **** 	int i = 0;
+ 1515              		.loc 1 285 2 view .LVU333
+ 285:App/Src/control.c **** 	int i = 0;
+ 1516              		.loc 1 285 10 is_stmt 0 view .LVU334
+ 1517 0004 FF23     		movs	r3, #255
+ 1518 0006 4393     		str	r3, [sp, #268]
+ 1519 0008 2E22     		movs	r2, #46
+ 1520 000a 0021     		movs	r1, #0
+ 1521 000c 44A8     		add	r0, sp, #272
+ 1522 000e FFF7FEFF 		bl	memset
+ 1523              	.LVL129:
+ 286:App/Src/control.c **** 	uint8_t value[256] = {0};
+ 1524              		.loc 1 286 2 is_stmt 1 view .LVU335
+ 287:App/Src/control.c **** 	uint8_t maxCount = 0;
+ 1525              		.loc 1 287 2 view .LVU336
+ 287:App/Src/control.c **** 	uint8_t maxCount = 0;
+ 1526              		.loc 1 287 10 is_stmt 0 view .LVU337
+ 1527 0012 0024     		movs	r4, #0
+ 1528 0014 0394     		str	r4, [sp, #12]
+ 1529 0016 FC22     		movs	r2, #252
+ 1530 0018 2146     		mov	r1, r4
+ 1531 001a 04A8     		add	r0, sp, #16
+ 1532 001c FFF7FEFF 		bl	memset
+ 1533              	.LVL130:
+ 288:App/Src/control.c **** 	int maxIndex = 0;
+ 1534              		.loc 1 288 2 is_stmt 1 view .LVU338
+ 289:App/Src/control.c **** 	uint8_t count = 0;
+ 1535              		.loc 1 289 2 view .LVU339
+ 290:App/Src/control.c **** 
+ 1536              		.loc 1 290 2 view .LVU340
+ 292:App/Src/control.c **** 	for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 1537              		.loc 1 292 2 view .LVU341
+ 1538 0020 3222     		movs	r2, #50
+ 1539 0022 43A9     		add	r1, sp, #268
+ 1540 0024 4FF48070 		mov	r0, #256
+ 1541 0028 FFF7FEFF 		bl	flash_read_data
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 43
+
+
+ 1542              	.LVL131:
+ 293:App/Src/control.c **** 		value[buffer[i]]++;
+ 1543              		.loc 1 293 2 view .LVU342
+ 290:App/Src/control.c **** 
+ 1544              		.loc 1 290 10 is_stmt 0 view .LVU343
+ 1545 002c 2146     		mov	r1, r4
+ 293:App/Src/control.c **** 		value[buffer[i]]++;
+ 1546              		.loc 1 293 9 view .LVU344
+ 1547 002e 2346     		mov	r3, r4
+ 293:App/Src/control.c **** 		value[buffer[i]]++;
+ 1548              		.loc 1 293 2 view .LVU345
+ 1549 0030 00E0     		b	.L98
+ 1550              	.LVL132:
+ 1551              	.L99:
+ 293:App/Src/control.c **** 		value[buffer[i]]++;
+ 1552              		.loc 1 293 35 is_stmt 1 discriminator 2 view .LVU346
+ 293:App/Src/control.c **** 		value[buffer[i]]++;
+ 1553              		.loc 1 293 36 is_stmt 0 discriminator 2 view .LVU347
+ 1554 0032 0133     		adds	r3, r3, #1
+ 1555              	.LVL133:
+ 1556              	.L98:
+ 293:App/Src/control.c **** 		value[buffer[i]]++;
+ 1557              		.loc 1 293 14 is_stmt 1 discriminator 1 view .LVU348
+ 293:App/Src/control.c **** 		value[buffer[i]]++;
+ 1558              		.loc 1 293 2 is_stmt 0 discriminator 1 view .LVU349
+ 1559 0034 312B     		cmp	r3, #49
+ 1560 0036 0DDC     		bgt	.L106
+ 294:App/Src/control.c **** 		if (buffer[i] != 0xff) {
+ 1561              		.loc 1 294 3 is_stmt 1 view .LVU350
+ 294:App/Src/control.c **** 		if (buffer[i] != 0xff) {
+ 1562              		.loc 1 294 15 is_stmt 0 view .LVU351
+ 1563 0038 03F5A072 		add	r2, r3, #320
+ 1564 003c 6A44     		add	r2, sp, r2
+ 1565 003e 12F8342C 		ldrb	r2, [r2, #-52]	@ zero_extendqisi2
+ 294:App/Src/control.c **** 		if (buffer[i] != 0xff) {
+ 1566              		.loc 1 294 8 view .LVU352
+ 1567 0042 03AC     		add	r4, sp, #12
+ 1568 0044 A05C     		ldrb	r0, [r4, r2]	@ zero_extendqisi2
+ 294:App/Src/control.c **** 		if (buffer[i] != 0xff) {
+ 1569              		.loc 1 294 19 view .LVU353
+ 1570 0046 0130     		adds	r0, r0, #1
+ 1571 0048 A054     		strb	r0, [r4, r2]
+ 295:App/Src/control.c **** 			count++;
+ 1572              		.loc 1 295 3 is_stmt 1 view .LVU354
+ 295:App/Src/control.c **** 			count++;
+ 1573              		.loc 1 295 6 is_stmt 0 view .LVU355
+ 1574 004a FF2A     		cmp	r2, #255
+ 1575 004c F1D0     		beq	.L99
+ 296:App/Src/control.c **** 		}
+ 1576              		.loc 1 296 4 is_stmt 1 view .LVU356
+ 296:App/Src/control.c **** 		}
+ 1577              		.loc 1 296 9 is_stmt 0 view .LVU357
+ 1578 004e 0131     		adds	r1, r1, #1
+ 1579              	.LVL134:
+ 296:App/Src/control.c **** 		}
+ 1580              		.loc 1 296 9 view .LVU358
+ 1581 0050 C9B2     		uxtb	r1, r1
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 44
+
+
+ 1582              	.LVL135:
+ 296:App/Src/control.c **** 		}
+ 1583              		.loc 1 296 9 view .LVU359
+ 1584 0052 EEE7     		b	.L99
+ 1585              	.L106:
+ 289:App/Src/control.c **** 	uint8_t count = 0;
+ 1586              		.loc 1 289 6 view .LVU360
+ 1587 0054 0023     		movs	r3, #0
+ 1588              	.LVL136:
+ 288:App/Src/control.c **** 	int maxIndex = 0;
+ 1589              		.loc 1 288 10 view .LVU361
+ 1590 0056 1C46     		mov	r4, r3
+ 299:App/Src/control.c **** 		if (value[i] > maxCount) {
+ 1591              		.loc 1 299 9 view .LVU362
+ 1592 0058 1A46     		mov	r2, r3
+ 1593 005a 00E0     		b	.L101
+ 1594              	.LVL137:
+ 1595              	.L102:
+ 299:App/Src/control.c **** 		if (value[i] > maxCount) {
+ 1596              		.loc 1 299 23 is_stmt 1 discriminator 2 view .LVU363
+ 299:App/Src/control.c **** 		if (value[i] > maxCount) {
+ 1597              		.loc 1 299 24 is_stmt 0 discriminator 2 view .LVU364
+ 1598 005c 0132     		adds	r2, r2, #1
+ 1599              	.LVL138:
+ 1600              	.L101:
+ 299:App/Src/control.c **** 		if (value[i] > maxCount) {
+ 1601              		.loc 1 299 14 is_stmt 1 discriminator 1 view .LVU365
+ 299:App/Src/control.c **** 		if (value[i] > maxCount) {
+ 1602              		.loc 1 299 2 is_stmt 0 discriminator 1 view .LVU366
+ 1603 005e FF2A     		cmp	r2, #255
+ 1604 0060 06DC     		bgt	.L107
+ 300:App/Src/control.c **** 			maxCount = value[i];
+ 1605              		.loc 1 300 3 is_stmt 1 view .LVU367
+ 300:App/Src/control.c **** 			maxCount = value[i];
+ 1606              		.loc 1 300 12 is_stmt 0 view .LVU368
+ 1607 0062 03A8     		add	r0, sp, #12
+ 1608 0064 805C     		ldrb	r0, [r0, r2]	@ zero_extendqisi2
+ 300:App/Src/control.c **** 			maxCount = value[i];
+ 1609              		.loc 1 300 6 view .LVU369
+ 1610 0066 A042     		cmp	r0, r4
+ 1611 0068 F8D9     		bls	.L102
+ 302:App/Src/control.c **** 		}
+ 1612              		.loc 1 302 13 view .LVU370
+ 1613 006a 1346     		mov	r3, r2
+ 1614              	.LVL139:
+ 301:App/Src/control.c **** 			maxIndex = i;
+ 1615              		.loc 1 301 13 view .LVU371
+ 1616 006c 0446     		mov	r4, r0
+ 1617              	.LVL140:
+ 301:App/Src/control.c **** 			maxIndex = i;
+ 1618              		.loc 1 301 13 view .LVU372
+ 1619 006e F5E7     		b	.L102
+ 1620              	.LVL141:
+ 1621              	.L107:
+ 305:App/Src/control.c **** }
+ 1622              		.loc 1 305 2 is_stmt 1 view .LVU373
+ 1623 0070 0094     		str	r4, [sp]
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 45
+
+
+ 1624 0072 3222     		movs	r2, #50
+ 1625              	.LVL142:
+ 305:App/Src/control.c **** }
+ 1626              		.loc 1 305 2 is_stmt 0 view .LVU374
+ 1627 0074 0248     		ldr	r0, .L108
+ 1628 0076 FFF7FEFF 		bl	ControlPrintf
+ 1629              	.LVL143:
+ 306:App/Src/control.c **** 
+ 1630              		.loc 1 306 1 view .LVU375
+ 1631 007a 50B0     		add	sp, sp, #320
+ 1632              	.LCFI32:
+ 1633              		.cfi_def_cfa_offset 8
+ 1634              		@ sp needed
+ 1635 007c 10BD     		pop	{r4, pc}
+ 1636              	.LVL144:
+ 1637              	.L109:
+ 306:App/Src/control.c **** 
+ 1638              		.loc 1 306 1 view .LVU376
+ 1639 007e 00BF     		.align	2
+ 1640              	.L108:
+ 1641 0080 00000000 		.word	.LC26
+ 1642              		.cfi_endproc
+ 1643              	.LFE247:
+ 1645              		.section	.rodata.OPERATE_RESULT_Handle.str1.4,"aMS",%progbits,1
+ 1646              		.align	2
+ 1647              	.LC27:
+ 1648 0000 6F6B4E75 		.ascii	"okNumber:%d chipName:%d message:\266\301\310\241\315"
+ 1648      6D626572 
+ 1648      3A256420 
+ 1648      63686970 
+ 1648      4E616D65 
+ 1649 0025 EAB3C90A 		.ascii	"\352\263\311\012\000"
+ 1649      00
+ 1650              		.section	.text.OPERATE_RESULT_Handle,"ax",%progbits
+ 1651              		.align	1
+ 1652              		.global	OPERATE_RESULT_Handle
+ 1653              		.syntax unified
+ 1654              		.thumb
+ 1655              		.thumb_func
+ 1657              	OPERATE_RESULT_Handle:
+ 1658              	.LVL145:
+ 1659              	.LFB248:
+ 309:App/Src/control.c **** 	uint8_t buffer[MAX_CHIP_NUMBER] = {0xff};
+ 1660              		.loc 1 309 1 is_stmt 1 view -0
+ 1661              		.cfi_startproc
+ 1662              		@ args = 0, pretend = 0, frame = 56
+ 1663              		@ frame_needed = 0, uses_anonymous_args = 0
+ 309:App/Src/control.c **** 	uint8_t buffer[MAX_CHIP_NUMBER] = {0xff};
+ 1664              		.loc 1 309 1 is_stmt 0 view .LVU378
+ 1665 0000 10B5     		push	{r4, lr}
+ 1666              	.LCFI33:
+ 1667              		.cfi_def_cfa_offset 8
+ 1668              		.cfi_offset 4, -8
+ 1669              		.cfi_offset 14, -4
+ 1670 0002 8EB0     		sub	sp, sp, #56
+ 1671              	.LCFI34:
+ 1672              		.cfi_def_cfa_offset 64
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 46
+
+
+ 1673 0004 0446     		mov	r4, r0
+ 310:App/Src/control.c **** 	int i = 0;
+ 1674              		.loc 1 310 2 is_stmt 1 view .LVU379
+ 310:App/Src/control.c **** 	int i = 0;
+ 1675              		.loc 1 310 10 is_stmt 0 view .LVU380
+ 1676 0006 FF23     		movs	r3, #255
+ 1677 0008 0193     		str	r3, [sp, #4]
+ 1678 000a 2E22     		movs	r2, #46
+ 1679 000c 0021     		movs	r1, #0
+ 1680 000e 02A8     		add	r0, sp, #8
+ 1681              	.LVL146:
+ 310:App/Src/control.c **** 	int i = 0;
+ 1682              		.loc 1 310 10 view .LVU381
+ 1683 0010 FFF7FEFF 		bl	memset
+ 1684              	.LVL147:
+ 311:App/Src/control.c **** 
+ 1685              		.loc 1 311 2 is_stmt 1 view .LVU382
+ 313:App/Src/control.c **** 
+ 1686              		.loc 1 313 2 view .LVU383
+ 315:App/Src/control.c **** 	for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 1687              		.loc 1 315 2 view .LVU384
+ 1688 0014 3222     		movs	r2, #50
+ 1689 0016 01A9     		add	r1, sp, #4
+ 1690 0018 2002     		lsls	r0, r4, #8
+ 1691 001a FFF7FEFF 		bl	flash_read_data
+ 1692              	.LVL148:
+ 316:App/Src/control.c **** 		if (buffer[i] == '1') {
+ 1693              		.loc 1 316 2 view .LVU385
+ 313:App/Src/control.c **** 
+ 1694              		.loc 1 313 10 is_stmt 0 view .LVU386
+ 1695 001e 0021     		movs	r1, #0
+ 316:App/Src/control.c **** 		if (buffer[i] == '1') {
+ 1696              		.loc 1 316 9 view .LVU387
+ 1697 0020 0B46     		mov	r3, r1
+ 316:App/Src/control.c **** 		if (buffer[i] == '1') {
+ 1698              		.loc 1 316 2 view .LVU388
+ 1699 0022 00E0     		b	.L111
+ 1700              	.LVL149:
+ 1701              	.L112:
+ 316:App/Src/control.c **** 		if (buffer[i] == '1') {
+ 1702              		.loc 1 316 35 is_stmt 1 discriminator 2 view .LVU389
+ 316:App/Src/control.c **** 		if (buffer[i] == '1') {
+ 1703              		.loc 1 316 36 is_stmt 0 discriminator 2 view .LVU390
+ 1704 0024 0133     		adds	r3, r3, #1
+ 1705              	.LVL150:
+ 1706              	.L111:
+ 316:App/Src/control.c **** 		if (buffer[i] == '1') {
+ 1707              		.loc 1 316 14 is_stmt 1 discriminator 1 view .LVU391
+ 316:App/Src/control.c **** 		if (buffer[i] == '1') {
+ 1708              		.loc 1 316 2 is_stmt 0 discriminator 1 view .LVU392
+ 1709 0026 312B     		cmp	r3, #49
+ 1710 0028 09DC     		bgt	.L115
+ 317:App/Src/control.c **** 			count++;
+ 1711              		.loc 1 317 3 is_stmt 1 view .LVU393
+ 317:App/Src/control.c **** 			count++;
+ 1712              		.loc 1 317 13 is_stmt 0 view .LVU394
+ 1713 002a 03F13802 		add	r2, r3, #56
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 47
+
+
+ 1714 002e 6A44     		add	r2, sp, r2
+ 1715 0030 12F8342C 		ldrb	r2, [r2, #-52]	@ zero_extendqisi2
+ 317:App/Src/control.c **** 			count++;
+ 1716              		.loc 1 317 6 view .LVU395
+ 1717 0034 312A     		cmp	r2, #49
+ 1718 0036 F5D1     		bne	.L112
+ 318:App/Src/control.c **** 		}
+ 1719              		.loc 1 318 4 is_stmt 1 view .LVU396
+ 318:App/Src/control.c **** 		}
+ 1720              		.loc 1 318 9 is_stmt 0 view .LVU397
+ 1721 0038 0131     		adds	r1, r1, #1
+ 1722              	.LVL151:
+ 318:App/Src/control.c **** 		}
+ 1723              		.loc 1 318 9 view .LVU398
+ 1724 003a C9B2     		uxtb	r1, r1
+ 1725              	.LVL152:
+ 318:App/Src/control.c **** 		}
+ 1726              		.loc 1 318 9 view .LVU399
+ 1727 003c F2E7     		b	.L112
+ 1728              	.L115:
+ 321:App/Src/control.c **** }
+ 1729              		.loc 1 321 2 is_stmt 1 view .LVU400
+ 1730 003e 3222     		movs	r2, #50
+ 1731 0040 0248     		ldr	r0, .L116
+ 1732 0042 FFF7FEFF 		bl	ControlPrintf
+ 1733              	.LVL153:
+ 322:App/Src/control.c **** 
+ 1734              		.loc 1 322 1 is_stmt 0 view .LVU401
+ 1735 0046 0EB0     		add	sp, sp, #56
+ 1736              	.LCFI35:
+ 1737              		.cfi_def_cfa_offset 8
+ 1738              		@ sp needed
+ 1739 0048 10BD     		pop	{r4, pc}
+ 1740              	.L117:
+ 1741 004a 00BF     		.align	2
+ 1742              	.L116:
+ 1743 004c 00000000 		.word	.LC27
+ 1744              		.cfi_endproc
+ 1745              	.LFE248:
+ 1747              		.section	.rodata.CTL_OPERATE_Handle.str1.4,"aMS",%progbits,1
+ 1748              		.align	2
+ 1749              	.LC28:
+ 1750 0000 72656365 		.ascii	"receive system:%s\000"
+ 1750      69766520 
+ 1750      73797374 
+ 1750      656D3A25 
+ 1750      7300
+ 1751 0012 0000     		.align	2
+ 1752              	.LC29:
+ 1753 0014 41545E4F 		.ascii	"AT^OPERATE=\000"
+ 1753      50455241 
+ 1753      54453D00 
+ 1754              		.align	2
+ 1755              	.LC30:
+ 1756 0020 6F6B4E75 		.ascii	"okNumber:0 chipName:0 message:\325\375\324\332\301\254"
+ 1756      6D626572 
+ 1756      3A302063 
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 48
+
+
+ 1756      6869704E 
+ 1756      616D653A 
+ 1757 0044 CDA8B2E2 		.ascii	"\315\250\262\342\312\324\012\000"
+ 1757      CAD40A00 
+ 1758              		.align	2
+ 1759              	.LC31:
+ 1760 004c 6F6B4E75 		.ascii	"okNumber:0 chipName:0 message:\277\252\312\274\305\344"
+ 1760      6D626572 
+ 1760      3A302063 
+ 1760      6869704E 
+ 1760      616D653A 
+ 1761 0070 D6C32E2E 		.ascii	"\326\303...\012\000"
+ 1761      2E0A00
+ 1762 0077 00       		.align	2
+ 1763              	.LC32:
+ 1764 0078 6F6B4E75 		.ascii	"okNumber:0 chipName:0 message:\277\252\312\274\265\245"
+ 1764      6D626572 
+ 1764      3A302063 
+ 1764      6869704E 
+ 1764      616D653A 
+ 1765 009c B5E3B2E2 		.ascii	"\265\343\262\342\312\324...\012\000"
+ 1765      CAD42E2E 
+ 1765      2E0A00
+ 1766 00a7 00       		.align	2
+ 1767              	.LC33:
+ 1768 00a8 6F6B4E75 		.ascii	"okNumber:0 chipName:0 message:\307\345\277\325\324\331"
+ 1768      6D626572 
+ 1768      3A302063 
+ 1768      6869704E 
+ 1768      616D653A 
+ 1769 00cc B5A5B5E3 		.ascii	"\265\245\265\343\262\342\312\324...\012\000"
+ 1769      B2E2CAD4 
+ 1769      2E2E2E0A 
+ 1769      00
+ 1770 00d9 000000   		.align	2
+ 1771              	.LC34:
+ 1772 00dc 6F6B4E75 		.ascii	"okNumber:0 chipName:0 message:\277\252\312\274\274\306"
+ 1772      6D626572 
+ 1772      3A302063 
+ 1772      6869704E 
+ 1772      616D653A 
+ 1773 0100 CBE32E2E 		.ascii	"\313\343...\012\000"
+ 1773      2E0A00
+ 1774 0107 00       		.align	2
+ 1775              	.LC35:
+ 1776 0108 6F6B4E75 		.ascii	"okNumber:0 chipName:0 message:\277\252\312\274\311\325"
+ 1776      6D626572 
+ 1776      3A302063 
+ 1776      6869704E 
+ 1776      616D653A 
+ 1777 012c C2BCCEC2 		.ascii	"\302\274\316\302\262\271\312\375\276\335\012\000"
+ 1777      B2B9CAFD 
+ 1777      BEDD0A00 
+ 1778              		.align	2
+ 1779              	.LC36:
+ 1780 0138 6F6B4E75 		.ascii	"okNumber:0 chipName:0 message:\273\372\314\250\306\325"
+ 1780      6D626572 
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 49
+
+
+ 1780      3A302063 
+ 1780      6869704E 
+ 1780      616D653A 
+ 1781 015c CDA8B2E2 		.ascii	"\315\250\262\342\312\324\012\000"
+ 1781      CAD40A00 
+ 1782              		.align	2
+ 1783              	.LC37:
+ 1784 0164 6F6B4E75 		.ascii	"okNumber:0 chipName:0 message:\316\336\264\313\304\243"
+ 1784      6D626572 
+ 1784      3A302063 
+ 1784      6869704E 
+ 1784      616D653A 
+ 1785 0188 CABD0A00 		.ascii	"\312\275\012\000"
+ 1786              		.align	2
+ 1787              	.LC38:
+ 1788 018c 6F6B4E75 		.ascii	"okNumber:0 chipName:0 message:\317\310\307\345\277\325"
+ 1788      6D626572 
+ 1788      3A302063 
+ 1788      6869704E 
+ 1788      616D653A 
+ 1789 01b0 D4D9BBFA 		.ascii	"\324\331\273\372\314\250\262\342\312\324\012\000"
+ 1789      CCA8B2E2 
+ 1789      CAD40A00 
+ 1790              		.section	.text.CTL_OPERATE_Handle,"ax",%progbits
+ 1791              		.align	1
+ 1792              		.global	CTL_OPERATE_Handle
+ 1793              		.syntax unified
+ 1794              		.thumb
+ 1795              		.thumb_func
+ 1797              	CTL_OPERATE_Handle:
+ 1798              	.LVL154:
+ 1799              	.LFB254:
+ 351:App/Src/control.c **** 	int num = 0;
+ 1800              		.loc 1 351 1 is_stmt 1 view -0
+ 1801              		.cfi_startproc
+ 1802              		@ args = 0, pretend = 0, frame = 8
+ 1803              		@ frame_needed = 0, uses_anonymous_args = 0
+ 351:App/Src/control.c **** 	int num = 0;
+ 1804              		.loc 1 351 1 is_stmt 0 view .LVU403
+ 1805 0000 30B5     		push	{r4, r5, lr}
+ 1806              	.LCFI36:
+ 1807              		.cfi_def_cfa_offset 12
+ 1808              		.cfi_offset 4, -12
+ 1809              		.cfi_offset 5, -8
+ 1810              		.cfi_offset 14, -4
+ 1811 0002 83B0     		sub	sp, sp, #12
+ 1812              	.LCFI37:
+ 1813              		.cfi_def_cfa_offset 24
+ 1814 0004 0446     		mov	r4, r0
+ 352:App/Src/control.c **** 	int inNumber = 0;
+ 1815              		.loc 1 352 2 is_stmt 1 view .LVU404
+ 1816              	.LVL155:
+ 353:App/Src/control.c **** 
+ 1817              		.loc 1 353 2 view .LVU405
+ 353:App/Src/control.c **** 
+ 1818              		.loc 1 353 6 is_stmt 0 view .LVU406
+ 1819 0006 0023     		movs	r3, #0
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 50
+
+
+ 1820 0008 0193     		str	r3, [sp, #4]
+ 355:App/Src/control.c **** 	log_printf("receive system:%s", command);
+ 1821              		.loc 1 355 2 is_stmt 1 view .LVU407
+ 1822 000a 5B4D     		ldr	r5, .L146
+ 1823 000c 0146     		mov	r1, r0
+ 1824 000e 2846     		mov	r0, r5
+ 1825              	.LVL156:
+ 355:App/Src/control.c **** 	log_printf("receive system:%s", command);
+ 1826              		.loc 1 355 2 is_stmt 0 view .LVU408
+ 1827 0010 FFF7FEFF 		bl	UsbPrintf
+ 1828              	.LVL157:
+ 356:App/Src/control.c **** 	num = strSearch(command, "AT^OPERATE=");
+ 1829              		.loc 1 356 2 is_stmt 1 view .LVU409
+ 1830 0014 2146     		mov	r1, r4
+ 1831 0016 2846     		mov	r0, r5
+ 1832 0018 FFF7FEFF 		bl	log_printf
+ 1833              	.LVL158:
+ 357:App/Src/control.c **** 	if (num >= 0) {
+ 1834              		.loc 1 357 2 view .LVU410
+ 357:App/Src/control.c **** 	if (num >= 0) {
+ 1835              		.loc 1 357 8 is_stmt 0 view .LVU411
+ 1836 001c 5749     		ldr	r1, .L146+4
+ 1837 001e 2046     		mov	r0, r4
+ 1838 0020 FFF7FEFF 		bl	strSearch
+ 1839              	.LVL159:
+ 358:App/Src/control.c **** 		num += strlen("AT^OPERATE=");
+ 1840              		.loc 1 358 2 is_stmt 1 view .LVU412
+ 358:App/Src/control.c **** 		num += strlen("AT^OPERATE=");
+ 1841              		.loc 1 358 5 is_stmt 0 view .LVU413
+ 1842 0024 0028     		cmp	r0, #0
+ 358:App/Src/control.c **** 		num += strlen("AT^OPERATE=");
+ 1843              		.loc 1 358 5 view .LVU414
+ 1844 0026 01DA     		bge	.L145
+ 1845              	.LVL160:
+ 1846              	.L118:
+ 445:App/Src/control.c **** 
+ 1847              		.loc 1 445 1 view .LVU415
+ 1848 0028 03B0     		add	sp, sp, #12
+ 1849              	.LCFI38:
+ 1850              		.cfi_remember_state
+ 1851              		.cfi_def_cfa_offset 12
+ 1852              		@ sp needed
+ 1853 002a 30BD     		pop	{r4, r5, pc}
+ 1854              	.LVL161:
+ 1855              	.L145:
+ 1856              	.LCFI39:
+ 1857              		.cfi_restore_state
+ 359:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 1858              		.loc 1 359 3 is_stmt 1 view .LVU416
+ 359:App/Src/control.c **** 		if (CharToInt(command, num, &inNumber) == 0 ) {	return; }
+ 1859              		.loc 1 359 7 is_stmt 0 view .LVU417
+ 1860 002c 0B30     		adds	r0, r0, #11
+ 1861              	.LVL162:
+ 360:App/Src/control.c **** 		switch (inNumber) {
+ 1862              		.loc 1 360 3 is_stmt 1 view .LVU418
+ 360:App/Src/control.c **** 		switch (inNumber) {
+ 1863              		.loc 1 360 7 is_stmt 0 view .LVU419
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 51
+
+
+ 1864 002e 01AA     		add	r2, sp, #4
+ 1865 0030 C1B2     		uxtb	r1, r0
+ 1866 0032 2046     		mov	r0, r4
+ 1867              	.LVL163:
+ 360:App/Src/control.c **** 		switch (inNumber) {
+ 1868              		.loc 1 360 7 view .LVU420
+ 1869 0034 FFF7FEFF 		bl	CharToInt
+ 1870              	.LVL164:
+ 360:App/Src/control.c **** 		switch (inNumber) {
+ 1871              		.loc 1 360 6 view .LVU421
+ 1872 0038 0028     		cmp	r0, #0
+ 1873 003a F5D0     		beq	.L118
+ 361:App/Src/control.c **** 			case OPERATE_FREE_MODE:
+ 1874              		.loc 1 361 3 is_stmt 1 view .LVU422
+ 1875 003c 019B     		ldr	r3, [sp, #4]
+ 1876 003e 013B     		subs	r3, r3, #1
+ 1877 0040 152B     		cmp	r3, #21
+ 1878 0042 F1D8     		bhi	.L118
+ 1879 0044 01A2     		adr	r2, .L123
+ 1880 0046 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 1881 004a 00BF     		.p2align 2
+ 1882              	.L123:
+ 1883 004c A5000000 		.word	.L143+1
+ 1884 0050 AB000000 		.word	.L142+1
+ 1885 0054 B1000000 		.word	.L141+1
+ 1886 0058 B7000000 		.word	.L140+1
+ 1887 005c BD000000 		.word	.L139+1
+ 1888 0060 CB000000 		.word	.L138+1
+ 1889 0064 29000000 		.word	.L118+1
+ 1890 0068 D9000000 		.word	.L137+1
+ 1891 006c E7000000 		.word	.L136+1
+ 1892 0070 F5000000 		.word	.L135+1
+ 1893 0074 FB000000 		.word	.L134+1
+ 1894 0078 09010000 		.word	.L133+1
+ 1895 007c 11010000 		.word	.L132+1
+ 1896 0080 1F010000 		.word	.L131+1
+ 1897 0084 27010000 		.word	.L130+1
+ 1898 0088 2F010000 		.word	.L129+1
+ 1899 008c 37010000 		.word	.L128+1
+ 1900 0090 3F010000 		.word	.L127+1
+ 1901 0094 47010000 		.word	.L126+1
+ 1902 0098 55010000 		.word	.L125+1
+ 1903 009c 63010000 		.word	.L124+1
+ 1904 00a0 71010000 		.word	.L122+1
+ 1905              		.p2align 1
+ 1906              	.L143:
+ 365:App/Src/control.c **** 			break;
+ 1907              		.loc 1 365 5 view .LVU423
+ 1908 00a4 FFF7FEFF 		bl	OPERATE_READ_FLASH_Handle
+ 1909              	.LVL165:
+ 366:App/Src/control.c **** 			case OPERATE_ERASE_FLASH:
+ 1910              		.loc 1 366 4 view .LVU424
+ 1911 00a8 BEE7     		b	.L118
+ 1912              	.L142:
+ 368:App/Src/control.c **** 			break;
+ 1913              		.loc 1 368 5 view .LVU425
+ 1914 00aa FFF7FEFF 		bl	OPERATE_ERASE_FLASH_Handle
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 52
+
+
+ 1915              	.LVL166:
+ 369:App/Src/control.c **** 			case OPERATE_IIC_TEST:
+ 1916              		.loc 1 369 4 view .LVU426
+ 1917 00ae BBE7     		b	.L118
+ 1918              	.L141:
+ 371:App/Src/control.c **** 			break;
+ 1919              		.loc 1 371 5 view .LVU427
+ 1920 00b0 FFF7FEFF 		bl	OPERATE_IIC_TEST_Handle
+ 1921              	.LVL167:
+ 372:App/Src/control.c **** 			case OPERATE_READ_TEMP:
+ 1922              		.loc 1 372 4 view .LVU428
+ 1923 00b4 B8E7     		b	.L118
+ 1924              	.L140:
+ 374:App/Src/control.c **** 			break;
+ 1925              		.loc 1 374 5 view .LVU429
+ 1926 00b6 FFF7FEFF 		bl	OPERATE_READ_TEMP_Handle
+ 1927              	.LVL168:
+ 375:App/Src/control.c **** 			case OPERATE_CONNECT:
+ 1928              		.loc 1 375 4 view .LVU430
+ 1929 00ba B5E7     		b	.L118
+ 1930              	.L139:
+ 377:App/Src/control.c **** 				manager_set_mode(FREQ_CONNECT);
+ 1931              		.loc 1 377 5 view .LVU431
+ 1932 00bc 3048     		ldr	r0, .L146+8
+ 1933 00be FFF7FEFF 		bl	ControlPrintf
+ 1934              	.LVL169:
+ 378:App/Src/control.c **** 			break;
+ 1935              		.loc 1 378 5 view .LVU432
+ 1936 00c2 0120     		movs	r0, #1
+ 1937 00c4 FFF7FEFF 		bl	manager_set_mode
+ 1938              	.LVL170:
+ 379:App/Src/control.c **** 			case OPERATE_SET_CONFIG9:
+ 1939              		.loc 1 379 4 view .LVU433
+ 1940 00c8 AEE7     		b	.L118
+ 1941              	.L138:
+ 381:App/Src/control.c **** 				manager_set_mode(TEMP_TEST);
+ 1942              		.loc 1 381 5 view .LVU434
+ 1943 00ca 2E48     		ldr	r0, .L146+12
+ 1944 00cc FFF7FEFF 		bl	ControlPrintf
+ 1945              	.LVL171:
+ 382:App/Src/control.c **** 			break;
+ 1946              		.loc 1 382 5 view .LVU435
+ 1947 00d0 0220     		movs	r0, #2
+ 1948 00d2 FFF7FEFF 		bl	manager_set_mode
+ 1949              	.LVL172:
+ 383:App/Src/control.c **** 			case OPERATE_SHOW_CONFIG9:
+ 1950              		.loc 1 383 4 view .LVU436
+ 1951 00d6 A7E7     		b	.L118
+ 1952              	.L137:
+ 388:App/Src/control.c **** 				manager_set_mode(CAP_ADJUST);
+ 1953              		.loc 1 388 5 view .LVU437
+ 1954 00d8 2B48     		ldr	r0, .L146+16
+ 1955 00da FFF7FEFF 		bl	ControlPrintf
+ 1956              	.LVL173:
+ 389:App/Src/control.c **** 			break;
+ 1957              		.loc 1 389 5 view .LVU438
+ 1958 00de 0320     		movs	r0, #3
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 53
+
+
+ 1959 00e0 FFF7FEFF 		bl	manager_set_mode
+ 1960              	.LVL174:
+ 390:App/Src/control.c **** 			case OPERATE_CAPADJUST_COVER:
+ 1961              		.loc 1 390 4 view .LVU439
+ 1962 00e4 A0E7     		b	.L118
+ 1963              	.L136:
+ 392:App/Src/control.c **** 				manager_set_mode(CAP_ADJUST_COVER);
+ 1964              		.loc 1 392 5 view .LVU440
+ 1965 00e6 2948     		ldr	r0, .L146+20
+ 1966 00e8 FFF7FEFF 		bl	ControlPrintf
+ 1967              	.LVL175:
+ 393:App/Src/control.c **** 			break;
+ 1968              		.loc 1 393 5 view .LVU441
+ 1969 00ec 0420     		movs	r0, #4
+ 1970 00ee FFF7FEFF 		bl	manager_set_mode
+ 1971              	.LVL176:
+ 394:App/Src/control.c **** 			case OPERATE_CAPADJUST_RESULT:
+ 1972              		.loc 1 394 4 view .LVU442
+ 1973 00f2 99E7     		b	.L118
+ 1974              	.L135:
+ 396:App/Src/control.c **** 			break;
+ 1975              		.loc 1 396 5 view .LVU443
+ 1976 00f4 FFF7FEFF 		bl	OPERATE_CAPADJUST_RESULT_Handle
+ 1977              	.LVL177:
+ 397:App/Src/control.c **** 			case OPERATE_CALCULATE:
+ 1978              		.loc 1 397 4 view .LVU444
+ 1979 00f8 96E7     		b	.L118
+ 1980              	.L134:
+ 399:App/Src/control.c **** 				manager_set_mode(CALCULATE);
+ 1981              		.loc 1 399 5 view .LVU445
+ 1982 00fa 2548     		ldr	r0, .L146+24
+ 1983 00fc FFF7FEFF 		bl	ControlPrintf
+ 1984              	.LVL178:
+ 400:App/Src/control.c **** 			break;
+ 1985              		.loc 1 400 5 view .LVU446
+ 1986 0100 0520     		movs	r0, #5
+ 1987 0102 FFF7FEFF 		bl	manager_set_mode
+ 1988              	.LVL179:
+ 401:App/Src/control.c **** 			case OPERATE_CALCUL_RESULT:
+ 1989              		.loc 1 401 4 view .LVU447
+ 1990 0106 8FE7     		b	.L118
+ 1991              	.L133:
+ 403:App/Src/control.c **** 			break;
+ 1992              		.loc 1 403 5 view .LVU448
+ 1993 0108 0220     		movs	r0, #2
+ 1994 010a FFF7FEFF 		bl	OPERATE_RESULT_Handle
+ 1995              	.LVL180:
+ 404:App/Src/control.c **** 			case OPERATE_DOWNLOAD:
+ 1996              		.loc 1 404 4 view .LVU449
+ 1997 010e 8BE7     		b	.L118
+ 1998              	.L132:
+ 406:App/Src/control.c **** 				manager_set_mode(CAP_DOWNLOAD);
+ 1999              		.loc 1 406 5 view .LVU450
+ 2000 0110 2048     		ldr	r0, .L146+28
+ 2001 0112 FFF7FEFF 		bl	ControlPrintf
+ 2002              	.LVL181:
+ 407:App/Src/control.c **** 			break;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 54
+
+
+ 2003              		.loc 1 407 5 view .LVU451
+ 2004 0116 0620     		movs	r0, #6
+ 2005 0118 FFF7FEFF 		bl	manager_set_mode
+ 2006              	.LVL182:
+ 408:App/Src/control.c **** 			case OPERATE_LOAD_RESULT:
+ 2007              		.loc 1 408 4 view .LVU452
+ 2008 011c 84E7     		b	.L118
+ 2009              	.L131:
+ 410:App/Src/control.c **** 			break;
+ 2010              		.loc 1 410 5 view .LVU453
+ 2011 011e 0320     		movs	r0, #3
+ 2012 0120 FFF7FEFF 		bl	OPERATE_RESULT_Handle
+ 2013              	.LVL183:
+ 411:App/Src/control.c **** 			case OPERATE_COLD_SYNC:
+ 2014              		.loc 1 411 4 view .LVU454
+ 2015 0124 80E7     		b	.L118
+ 2016              	.L130:
+ 413:App/Src/control.c **** 			break;
+ 2017              		.loc 1 413 5 view .LVU455
+ 2018 0126 0720     		movs	r0, #7
+ 2019 0128 FFF7FEFF 		bl	manager_set_mode
+ 2020              	.LVL184:
+ 414:App/Src/control.c **** 			case OPERATE_COLD_ERROR:
+ 2021              		.loc 1 414 4 view .LVU456
+ 2022 012c 7CE7     		b	.L118
+ 2023              	.L129:
+ 416:App/Src/control.c **** 			break;
+ 2024              		.loc 1 416 5 view .LVU457
+ 2025 012e 0820     		movs	r0, #8
+ 2026 0130 FFF7FEFF 		bl	manager_set_mode
+ 2027              	.LVL185:
+ 417:App/Src/control.c **** 			case OPERATE_HOT_SYNC:
+ 2028              		.loc 1 417 4 view .LVU458
+ 2029 0134 78E7     		b	.L118
+ 2030              	.L128:
+ 419:App/Src/control.c **** 			break;
+ 2031              		.loc 1 419 5 view .LVU459
+ 2032 0136 0720     		movs	r0, #7
+ 2033 0138 FFF7FEFF 		bl	manager_set_mode
+ 2034              	.LVL186:
+ 420:App/Src/control.c **** 			case OPERATE_HOT_ERROR:
+ 2035              		.loc 1 420 4 view .LVU460
+ 2036 013c 74E7     		b	.L118
+ 2037              	.L127:
+ 422:App/Src/control.c **** 			break;
+ 2038              		.loc 1 422 5 view .LVU461
+ 2039 013e 0820     		movs	r0, #8
+ 2040 0140 FFF7FEFF 		bl	manager_set_mode
+ 2041              	.LVL187:
+ 423:App/Src/control.c **** 			case OPERATE_MACHINE_TEST:
+ 2042              		.loc 1 423 4 view .LVU462
+ 2043 0144 70E7     		b	.L118
+ 2044              	.L126:
+ 425:App/Src/control.c **** 				manager_set_mode(MACHINE_TEST);
+ 2045              		.loc 1 425 5 view .LVU463
+ 2046 0146 1448     		ldr	r0, .L146+32
+ 2047 0148 FFF7FEFF 		bl	ControlPrintf
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 55
+
+
+ 2048              	.LVL188:
+ 426:App/Src/control.c **** 			break;
+ 2049              		.loc 1 426 5 view .LVU464
+ 2050 014c 0920     		movs	r0, #9
+ 2051 014e FFF7FEFF 		bl	manager_set_mode
+ 2052              	.LVL189:
+ 427:App/Src/control.c **** 			case OPERATE_MACHINE_WRITE:
+ 2053              		.loc 1 427 4 view .LVU465
+ 2054 0152 69E7     		b	.L118
+ 2055              	.L125:
+ 429:App/Src/control.c **** 				manager_set_mode(MACHINE_WRITE);
+ 2056              		.loc 1 429 5 view .LVU466
+ 2057 0154 1148     		ldr	r0, .L146+36
+ 2058 0156 FFF7FEFF 		bl	ControlPrintf
+ 2059              	.LVL190:
+ 430:App/Src/control.c **** 			break;
+ 2060              		.loc 1 430 5 view .LVU467
+ 2061 015a 0B20     		movs	r0, #11
+ 2062 015c FFF7FEFF 		bl	manager_set_mode
+ 2063              	.LVL191:
+ 431:App/Src/control.c **** 			case OPERATE_MACHINE_COVER:
+ 2064              		.loc 1 431 4 view .LVU468
+ 2065 0160 62E7     		b	.L118
+ 2066              	.L124:
+ 433:App/Src/control.c **** 				manager_set_mode(MACHINE_COVER);
+ 2067              		.loc 1 433 5 view .LVU469
+ 2068 0162 0F48     		ldr	r0, .L146+40
+ 2069 0164 FFF7FEFF 		bl	ControlPrintf
+ 2070              	.LVL192:
+ 434:App/Src/control.c **** 			break;
+ 2071              		.loc 1 434 5 view .LVU470
+ 2072 0168 0A20     		movs	r0, #10
+ 2073 016a FFF7FEFF 		bl	manager_set_mode
+ 2074              	.LVL193:
+ 435:App/Src/control.c **** 			case OPERATE_MACHINE_RESULT:
+ 2075              		.loc 1 435 4 view .LVU471
+ 2076 016e 5BE7     		b	.L118
+ 2077              	.L122:
+ 437:App/Src/control.c **** 			break;
+ 2078              		.loc 1 437 5 view .LVU472
+ 2079 0170 0420     		movs	r0, #4
+ 2080 0172 FFF7FEFF 		bl	OPERATE_RESULT_Handle
+ 2081              	.LVL194:
+ 438:App/Src/control.c **** 			case OPERATE_TAKE_OUT_MESSAGE:
+ 2082              		.loc 1 438 4 view .LVU473
+ 2083 0176 57E7     		b	.L118
+ 2084              	.L147:
+ 2085              		.align	2
+ 2086              	.L146:
+ 2087 0178 00000000 		.word	.LC28
+ 2088 017c 14000000 		.word	.LC29
+ 2089 0180 20000000 		.word	.LC30
+ 2090 0184 4C000000 		.word	.LC31
+ 2091 0188 78000000 		.word	.LC32
+ 2092 018c A8000000 		.word	.LC33
+ 2093 0190 DC000000 		.word	.LC34
+ 2094 0194 08010000 		.word	.LC35
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 56
+
+
+ 2095 0198 38010000 		.word	.LC36
+ 2096 019c 64010000 		.word	.LC37
+ 2097 01a0 8C010000 		.word	.LC38
+ 2098              		.cfi_endproc
+ 2099              	.LFE254:
+ 2101              		.section	.text.OPERATE_COLD_SYNC_Handle,"ax",%progbits
+ 2102              		.align	1
+ 2103              		.global	OPERATE_COLD_SYNC_Handle
+ 2104              		.syntax unified
+ 2105              		.thumb
+ 2106              		.thumb_func
+ 2108              	OPERATE_COLD_SYNC_Handle:
+ 2109              	.LFB249:
+ 325:App/Src/control.c **** 
+ 2110              		.loc 1 325 1 view -0
+ 2111              		.cfi_startproc
+ 2112              		@ args = 0, pretend = 0, frame = 0
+ 2113              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2114              		@ link register save eliminated.
+ 327:App/Src/control.c **** 
+ 2115              		.loc 1 327 1 view .LVU475
+ 2116 0000 7047     		bx	lr
+ 2117              		.cfi_endproc
+ 2118              	.LFE249:
+ 2120              		.section	.text.OPERATE_COLD_ERROR_Handle,"ax",%progbits
+ 2121              		.align	1
+ 2122              		.global	OPERATE_COLD_ERROR_Handle
+ 2123              		.syntax unified
+ 2124              		.thumb
+ 2125              		.thumb_func
+ 2127              	OPERATE_COLD_ERROR_Handle:
+ 2128              	.LFB250:
+ 330:App/Src/control.c **** 
+ 2129              		.loc 1 330 1 view -0
+ 2130              		.cfi_startproc
+ 2131              		@ args = 0, pretend = 0, frame = 0
+ 2132              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2133              		@ link register save eliminated.
+ 332:App/Src/control.c **** 
+ 2134              		.loc 1 332 1 view .LVU477
+ 2135 0000 7047     		bx	lr
+ 2136              		.cfi_endproc
+ 2137              	.LFE250:
+ 2139              		.section	.text.OPERATE_HOT_SYNC_Handle,"ax",%progbits
+ 2140              		.align	1
+ 2141              		.global	OPERATE_HOT_SYNC_Handle
+ 2142              		.syntax unified
+ 2143              		.thumb
+ 2144              		.thumb_func
+ 2146              	OPERATE_HOT_SYNC_Handle:
+ 2147              	.LFB251:
+ 335:App/Src/control.c **** 
+ 2148              		.loc 1 335 1 view -0
+ 2149              		.cfi_startproc
+ 2150              		@ args = 0, pretend = 0, frame = 0
+ 2151              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2152              		@ link register save eliminated.
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 57
+
+
+ 337:App/Src/control.c **** 
+ 2153              		.loc 1 337 1 view .LVU479
+ 2154 0000 7047     		bx	lr
+ 2155              		.cfi_endproc
+ 2156              	.LFE251:
+ 2158              		.section	.text.OPERATE_HOT_ERROR_Handle,"ax",%progbits
+ 2159              		.align	1
+ 2160              		.global	OPERATE_HOT_ERROR_Handle
+ 2161              		.syntax unified
+ 2162              		.thumb
+ 2163              		.thumb_func
+ 2165              	OPERATE_HOT_ERROR_Handle:
+ 2166              	.LFB252:
+ 340:App/Src/control.c **** 
+ 2167              		.loc 1 340 1 view -0
+ 2168              		.cfi_startproc
+ 2169              		@ args = 0, pretend = 0, frame = 0
+ 2170              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2171              		@ link register save eliminated.
+ 342:App/Src/control.c **** 
+ 2172              		.loc 1 342 1 view .LVU481
+ 2173 0000 7047     		bx	lr
+ 2174              		.cfi_endproc
+ 2175              	.LFE252:
+ 2177              		.section	.text.OPERATE_TAKE_OUT_MESSAGE_Handle,"ax",%progbits
+ 2178              		.align	1
+ 2179              		.global	OPERATE_TAKE_OUT_MESSAGE_Handle
+ 2180              		.syntax unified
+ 2181              		.thumb
+ 2182              		.thumb_func
+ 2184              	OPERATE_TAKE_OUT_MESSAGE_Handle:
+ 2185              	.LFB253:
+ 345:App/Src/control.c **** 
+ 2186              		.loc 1 345 1 view -0
+ 2187              		.cfi_startproc
+ 2188              		@ args = 0, pretend = 0, frame = 0
+ 2189              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2190              		@ link register save eliminated.
+ 347:App/Src/control.c **** 
+ 2191              		.loc 1 347 1 view .LVU483
+ 2192 0000 7047     		bx	lr
+ 2193              		.cfi_endproc
+ 2194              	.LFE253:
+ 2196              		.section	.text.control_usart_receive,"ax",%progbits
+ 2197              		.align	1
+ 2198              		.global	control_usart_receive
+ 2199              		.syntax unified
+ 2200              		.thumb
+ 2201              		.thumb_func
+ 2203              	control_usart_receive:
+ 2204              	.LFB260:
+ 481:App/Src/control.c **** 
+ 482:App/Src/control.c **** typedef void(*function)(char* s);
+ 483:App/Src/control.c **** function ControlCommand[MAX_CONTROL_NUMBER] = {
+ 484:App/Src/control.c ****     CTL_CONNECT_Handle,
+ 485:App/Src/control.c ****     CTL_REALTIME_Handle,
+ 486:App/Src/control.c ****     CTL_OPERATE_Handle,
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 58
+
+
+ 487:App/Src/control.c **** 	CTL_VDDMODE_Handle,
+ 488:App/Src/control.c **** 	CTL_VERSION_Handle,
+ 489:App/Src/control.c **** 	CTL_CSN_Handle,
+ 490:App/Src/control.c **** 	CTL_BSN_Handle,
+ 491:App/Src/control.c **** 	CTL_GETCSN_Handle,
+ 492:App/Src/control.c **** };
+ 493:App/Src/control.c **** 
+ 494:App/Src/control.c **** void control_usart_receive(void)
+ 495:App/Src/control.c **** {
+ 2205              		.loc 1 495 1 view -0
+ 2206              		.cfi_startproc
+ 2207              		@ args = 0, pretend = 0, frame = 0
+ 2208              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2209 0000 08B5     		push	{r3, lr}
+ 2210              	.LCFI40:
+ 2211              		.cfi_def_cfa_offset 8
+ 2212              		.cfi_offset 3, -8
+ 2213              		.cfi_offset 14, -4
+ 496:App/Src/control.c ****     if (control_Rx_Cnt < CONTROL_RECEIVE_BUFF_NUMBER && g_controlATStatus == 0) {
+ 2214              		.loc 1 496 5 view .LVU485
+ 2215              		.loc 1 496 24 is_stmt 0 view .LVU486
+ 2216 0002 0F4B     		ldr	r3, .L158
+ 2217 0004 1B88     		ldrh	r3, [r3]
+ 2218              		.loc 1 496 8 view .LVU487
+ 2219 0006 C72B     		cmp	r3, #199
+ 2220 0008 09D8     		bhi	.L154
+ 2221              		.loc 1 496 75 discriminator 1 view .LVU488
+ 2222 000a 0E4A     		ldr	r2, .L158+4
+ 2223 000c 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 2224              		.loc 1 496 54 discriminator 1 view .LVU489
+ 2225 000e 32B9     		cbnz	r2, .L154
+ 497:App/Src/control.c ****         g_controlRxBuff[control_Rx_Cnt] = controlRxBuf;
+ 2226              		.loc 1 497 9 is_stmt 1 view .LVU490
+ 2227              		.loc 1 497 41 is_stmt 0 view .LVU491
+ 2228 0010 0D4A     		ldr	r2, .L158+8
+ 2229 0012 1178     		ldrb	r1, [r2]	@ zero_extendqisi2
+ 2230 0014 0D4A     		ldr	r2, .L158+12
+ 2231 0016 D154     		strb	r1, [r2, r3]
+ 498:App/Src/control.c ****     	control_Rx_Cnt++;
+ 2232              		.loc 1 498 6 is_stmt 1 view .LVU492
+ 2233              		.loc 1 498 20 is_stmt 0 view .LVU493
+ 2234 0018 0133     		adds	r3, r3, #1
+ 2235 001a 094A     		ldr	r2, .L158
+ 2236 001c 1380     		strh	r3, [r2]	@ movhi
+ 2237              	.L154:
+ 499:App/Src/control.c ****     }
+ 500:App/Src/control.c ****     if (control_Rx_Cnt >= CONTROL_RECEIVE_BUFF_NUMBER || controlRxBuf == '\n') {
+ 2238              		.loc 1 500 5 is_stmt 1 view .LVU494
+ 2239              		.loc 1 500 24 is_stmt 0 view .LVU495
+ 2240 001e 084B     		ldr	r3, .L158
+ 2241 0020 1B88     		ldrh	r3, [r3]
+ 2242              		.loc 1 500 8 view .LVU496
+ 2243 0022 C72B     		cmp	r3, #199
+ 2244 0024 03D8     		bhi	.L155
+ 2245              		.loc 1 500 71 discriminator 1 view .LVU497
+ 2246 0026 084B     		ldr	r3, .L158+8
+ 2247 0028 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 59
+
+
+ 2248              		.loc 1 500 55 discriminator 1 view .LVU498
+ 2249 002a 0A2B     		cmp	r3, #10
+ 2250 002c 02D1     		bne	.L156
+ 2251              	.L155:
+ 501:App/Src/control.c ****         g_controlATStatus = 1;
+ 2252              		.loc 1 501 9 is_stmt 1 view .LVU499
+ 2253              		.loc 1 501 27 is_stmt 0 view .LVU500
+ 2254 002e 054B     		ldr	r3, .L158+4
+ 2255 0030 0122     		movs	r2, #1
+ 2256 0032 1A70     		strb	r2, [r3]
+ 2257              	.L156:
+ 502:App/Src/control.c ****     }
+ 503:App/Src/control.c ****     HAL_UART_Receive_IT(&huart3, &controlRxBuf, 1);
+ 2258              		.loc 1 503 5 is_stmt 1 view .LVU501
+ 2259 0034 0122     		movs	r2, #1
+ 2260 0036 0449     		ldr	r1, .L158+8
+ 2261 0038 0548     		ldr	r0, .L158+16
+ 2262 003a FFF7FEFF 		bl	HAL_UART_Receive_IT
+ 2263              	.LVL195:
+ 504:App/Src/control.c **** }
+ 2264              		.loc 1 504 1 is_stmt 0 view .LVU502
+ 2265 003e 08BD     		pop	{r3, pc}
+ 2266              	.L159:
+ 2267              		.align	2
+ 2268              	.L158:
+ 2269 0040 00000000 		.word	.LANCHOR7
+ 2270 0044 00000000 		.word	.LANCHOR8
+ 2271 0048 00000000 		.word	.LANCHOR1
+ 2272 004c 00000000 		.word	.LANCHOR2
+ 2273 0050 00000000 		.word	huart3
+ 2274              		.cfi_endproc
+ 2275              	.LFE260:
+ 2277              		.section	.text.CheckControlList,"ax",%progbits
+ 2278              		.align	1
+ 2279              		.global	CheckControlList
+ 2280              		.syntax unified
+ 2281              		.thumb
+ 2282              		.thumb_func
+ 2284              	CheckControlList:
+ 2285              	.LFB261:
+ 505:App/Src/control.c **** 
+ 506:App/Src/control.c **** void CheckControlList(void)
+ 507:App/Src/control.c **** {
+ 2286              		.loc 1 507 1 is_stmt 1 view -0
+ 2287              		.cfi_startproc
+ 2288              		@ args = 0, pretend = 0, frame = 0
+ 2289              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2290 0000 38B5     		push	{r3, r4, r5, lr}
+ 2291              	.LCFI41:
+ 2292              		.cfi_def_cfa_offset 16
+ 2293              		.cfi_offset 3, -16
+ 2294              		.cfi_offset 4, -12
+ 2295              		.cfi_offset 5, -8
+ 2296              		.cfi_offset 14, -4
+ 508:App/Src/control.c ****     uint8_t i;
+ 2297              		.loc 1 508 5 view .LVU504
+ 509:App/Src/control.c ****     static uint16_t controlTick = 0;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 60
+
+
+ 2298              		.loc 1 509 5 view .LVU505
+ 510:App/Src/control.c ****     static uint16_t lastControlRx = 0;
+ 2299              		.loc 1 510 5 view .LVU506
+ 511:App/Src/control.c **** 
+ 512:App/Src/control.c **** 	if (g_earseFlash > 0) { CheckFlashEarse(); }//与串口通信无关，擦除flash的临时任务
+ 2300              		.loc 1 512 2 view .LVU507
+ 2301              		.loc 1 512 19 is_stmt 0 view .LVU508
+ 2302 0002 254B     		ldr	r3, .L174
+ 2303 0004 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 2304              		.loc 1 512 5 view .LVU509
+ 2305 0006 B3B9     		cbnz	r3, .L173
+ 2306              	.L161:
+ 513:App/Src/control.c ****     if (control_Rx_Cnt == 0) { return; }
+ 2307              		.loc 1 513 5 is_stmt 1 view .LVU510
+ 2308              		.loc 1 513 24 is_stmt 0 view .LVU511
+ 2309 0008 244B     		ldr	r3, .L174+4
+ 2310 000a 1B88     		ldrh	r3, [r3]
+ 2311              		.loc 1 513 8 view .LVU512
+ 2312 000c 002B     		cmp	r3, #0
+ 2313 000e 3FD0     		beq	.L160
+ 514:App/Src/control.c **** 
+ 515:App/Src/control.c ****     if (control_Rx_Cnt > lastControlRx) {
+ 2314              		.loc 1 515 5 is_stmt 1 view .LVU513
+ 2315              		.loc 1 515 24 is_stmt 0 view .LVU514
+ 2316 0010 234A     		ldr	r2, .L174+8
+ 2317 0012 1288     		ldrh	r2, [r2]
+ 2318              		.loc 1 515 8 view .LVU515
+ 2319 0014 9342     		cmp	r3, r2
+ 2320 0016 11D9     		bls	.L163
+ 516:App/Src/control.c ****         lastControlRx = control_Rx_Cnt;
+ 2321              		.loc 1 516 9 is_stmt 1 view .LVU516
+ 2322              		.loc 1 516 23 is_stmt 0 view .LVU517
+ 2323 0018 214A     		ldr	r2, .L174+8
+ 2324 001a 1380     		strh	r3, [r2]	@ movhi
+ 517:App/Src/control.c ****         controlTick = 0;
+ 2325              		.loc 1 517 9 is_stmt 1 view .LVU518
+ 2326              		.loc 1 517 21 is_stmt 0 view .LVU519
+ 2327 001c 214B     		ldr	r3, .L174+12
+ 2328 001e 0022     		movs	r2, #0
+ 2329 0020 1A80     		strh	r2, [r3]	@ movhi
+ 2330              	.L164:
+ 518:App/Src/control.c ****     } else {
+ 519:App/Src/control.c ****         controlTick++;
+ 520:App/Src/control.c ****     }
+ 521:App/Src/control.c ****     if (controlTick >= CTRL_UART_TICK_CLEAR || g_controlATStatus == 1) {
+ 2331              		.loc 1 521 5 is_stmt 1 view .LVU520
+ 2332              		.loc 1 521 21 is_stmt 0 view .LVU521
+ 2333 0022 204B     		ldr	r3, .L174+12
+ 2334 0024 1B88     		ldrh	r3, [r3]
+ 2335              		.loc 1 521 8 view .LVU522
+ 2336 0026 092B     		cmp	r3, #9
+ 2337 0028 33D8     		bhi	.L170
+ 2338              		.loc 1 521 66 discriminator 1 view .LVU523
+ 2339 002a 1F4B     		ldr	r3, .L174+16
+ 2340 002c 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 2341              		.loc 1 521 45 discriminator 1 view .LVU524
+ 2342 002e 012B     		cmp	r3, #1
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 61
+
+
+ 2343 0030 2ED1     		bne	.L160
+ 2344 0032 0024     		movs	r4, #0
+ 2345 0034 09E0     		b	.L168
+ 2346              	.L173:
+ 512:App/Src/control.c ****     if (control_Rx_Cnt == 0) { return; }
+ 2347              		.loc 1 512 26 is_stmt 1 discriminator 1 view .LVU525
+ 2348 0036 FFF7FEFF 		bl	CheckFlashEarse
+ 2349              	.LVL196:
+ 2350 003a E5E7     		b	.L161
+ 2351              	.L163:
+ 519:App/Src/control.c ****     }
+ 2352              		.loc 1 519 9 view .LVU526
+ 519:App/Src/control.c ****     }
+ 2353              		.loc 1 519 20 is_stmt 0 view .LVU527
+ 2354 003c 194A     		ldr	r2, .L174+12
+ 2355 003e 1388     		ldrh	r3, [r2]
+ 2356 0040 0133     		adds	r3, r3, #1
+ 2357 0042 1380     		strh	r3, [r2]	@ movhi
+ 2358 0044 EDE7     		b	.L164
+ 2359              	.LVL197:
+ 2360              	.L166:
+ 522:App/Src/control.c ****         for (i = 0; i < MAX_CONTROL_NUMBER; i++) {
+ 2361              		.loc 1 522 45 is_stmt 1 discriminator 2 view .LVU528
+ 2362              		.loc 1 522 46 is_stmt 0 discriminator 2 view .LVU529
+ 2363 0046 0134     		adds	r4, r4, #1
+ 2364              	.LVL198:
+ 2365              		.loc 1 522 46 discriminator 2 view .LVU530
+ 2366 0048 E4B2     		uxtb	r4, r4
+ 2367              	.LVL199:
+ 2368              	.L168:
+ 2369              		.loc 1 522 21 is_stmt 1 discriminator 1 view .LVU531
+ 2370              		.loc 1 522 9 is_stmt 0 discriminator 1 view .LVU532
+ 2371 004a 0E2C     		cmp	r4, #14
+ 2372 004c 12D8     		bhi	.L167
+ 523:App/Src/control.c ****             if (strlen(CtrlStringList[i]) > 0 && strSearch((char*)g_controlRxBuff, CtrlStringList[i
+ 2373              		.loc 1 523 13 is_stmt 1 view .LVU533
+ 2374              		.loc 1 523 38 is_stmt 0 view .LVU534
+ 2375 004e 174B     		ldr	r3, .L174+20
+ 2376 0050 04EB8402 		add	r2, r4, r4, lsl #2
+ 2377 0054 03EB8201 		add	r1, r3, r2, lsl #2
+ 2378              		.loc 1 523 43 view .LVU535
+ 2379 0058 13F82230 		ldrb	r3, [r3, r2, lsl #2]	@ zero_extendqisi2
+ 2380              		.loc 1 523 16 view .LVU536
+ 2381 005c 002B     		cmp	r3, #0
+ 2382 005e F2D0     		beq	.L166
+ 2383              		.loc 1 523 50 discriminator 1 view .LVU537
+ 2384 0060 1348     		ldr	r0, .L174+24
+ 2385 0062 FFF7FEFF 		bl	strSearch
+ 2386              	.LVL200:
+ 2387              		.loc 1 523 47 discriminator 1 view .LVU538
+ 2388 0066 0028     		cmp	r0, #0
+ 2389 0068 EDD1     		bne	.L166
+ 524:App/Src/control.c ****                 ControlCommand[i]((char*)g_controlRxBuff);
+ 2390              		.loc 1 524 17 is_stmt 1 view .LVU539
+ 2391              		.loc 1 524 31 is_stmt 0 view .LVU540
+ 2392 006a 124B     		ldr	r3, .L174+28
+ 2393 006c 53F82430 		ldr	r3, [r3, r4, lsl #2]
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 62
+
+
+ 2394              		.loc 1 524 17 view .LVU541
+ 2395 0070 0F48     		ldr	r0, .L174+24
+ 2396 0072 9847     		blx	r3
+ 2397              	.LVL201:
+ 525:App/Src/control.c ****                 break;
+ 2398              		.loc 1 525 17 is_stmt 1 view .LVU542
+ 2399              	.L167:
+ 526:App/Src/control.c ****             }
+ 527:App/Src/control.c ****         }			
+ 528:App/Src/control.c ****         memset(g_controlRxBuff, 0, CONTROL_RECEIVE_BUFF_NUMBER);
+ 2400              		.loc 1 528 9 view .LVU543
+ 2401 0074 C822     		movs	r2, #200
+ 2402 0076 0021     		movs	r1, #0
+ 2403 0078 0D48     		ldr	r0, .L174+24
+ 2404 007a FFF7FEFF 		bl	memset
+ 2405              	.LVL202:
+ 529:App/Src/control.c ****         control_Rx_Cnt = 0;
+ 2406              		.loc 1 529 9 view .LVU544
+ 2407              		.loc 1 529 24 is_stmt 0 view .LVU545
+ 2408 007e 0023     		movs	r3, #0
+ 2409 0080 064A     		ldr	r2, .L174+4
+ 2410 0082 1380     		strh	r3, [r2]	@ movhi
+ 530:App/Src/control.c ****         g_controlATStatus = 0;
+ 2411              		.loc 1 530 9 is_stmt 1 view .LVU546
+ 2412              		.loc 1 530 27 is_stmt 0 view .LVU547
+ 2413 0084 084A     		ldr	r2, .L174+16
+ 2414 0086 1370     		strb	r3, [r2]
+ 531:App/Src/control.c ****         controlTick = 0;
+ 2415              		.loc 1 531 9 is_stmt 1 view .LVU548
+ 2416              		.loc 1 531 21 is_stmt 0 view .LVU549
+ 2417 0088 064A     		ldr	r2, .L174+12
+ 2418 008a 1380     		strh	r3, [r2]	@ movhi
+ 532:App/Src/control.c ****         lastControlRx = 0;
+ 2419              		.loc 1 532 9 is_stmt 1 view .LVU550
+ 2420              		.loc 1 532 23 is_stmt 0 view .LVU551
+ 2421 008c 044A     		ldr	r2, .L174+8
+ 2422 008e 1380     		strh	r3, [r2]	@ movhi
+ 2423              	.LVL203:
+ 2424              	.L160:
+ 533:App/Src/control.c ****     }
+ 534:App/Src/control.c **** }...
+ 2425              		.loc 1 534 1 view .LVU552
+ 2426 0090 38BD     		pop	{r3, r4, r5, pc}
+ 2427              	.L170:
+ 2428 0092 0024     		movs	r4, #0
+ 2429 0094 D9E7     		b	.L168
+ 2430              	.L175:
+ 2431 0096 00BF     		.align	2
+ 2432              	.L174:
+ 2433 0098 00000000 		.word	.LANCHOR4
+ 2434 009c 00000000 		.word	.LANCHOR7
+ 2435 00a0 00000000 		.word	.LANCHOR9
+ 2436 00a4 00000000 		.word	.LANCHOR10
+ 2437 00a8 00000000 		.word	.LANCHOR8
+ 2438 00ac 00000000 		.word	.LANCHOR11
+ 2439 00b0 00000000 		.word	.LANCHOR2
+ 2440 00b4 00000000 		.word	.LANCHOR12
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 63
+
+
+ 2441              		.cfi_endproc
+ 2442              	.LFE261:
+ 2444              		.global	ControlCommand
+ 2445              		.global	g_controlATStatus
+ 2446              		.global	g_controlTxBuff
+ 2447              		.global	g_controlRxBuff
+ 2448              		.section	.rodata
+ 2449              		.align	2
+ 2450              		.set	.LANCHOR3,. + 0
+ 2451              	.LC0:
+ 2452 0000 D2D1C7E5 		.ascii	"\322\321\307\345\277\325\312\375\276\335\000"
+ 2452      BFD5CAFD 
+ 2452      BEDD00
+ 2453 000b 00000000 		.space	9
+ 2453      00000000 
+ 2453      00
+ 2454 0014 CEC2B6C8 		.ascii	"\316\302\266\310\274\306\000"
+ 2454      BCC600
+ 2455 001b 00000000 		.space	13
+ 2455      00000000 
+ 2455      00000000 
+ 2455      00
+ 2456 0028 CEC2B2B9 		.ascii	"\316\302\262\271\262\342\312\324\000"
+ 2456      B2E2CAD4 
+ 2456      00
+ 2457 0031 00000000 		.space	11
+ 2457      00000000 
+ 2457      000000
+ 2458 003c BCC6CBE3 		.ascii	"\274\306\313\343\000"
+ 2458      00
+ 2459 0041 00000000 		.space	15
+ 2459      00000000 
+ 2459      00000000 
+ 2459      000000
+ 2460 0050 C9D5C2BC 		.ascii	"\311\325\302\274\000"
+ 2460      00
+ 2461 0055 00000000 		.space	15
+ 2461      00000000 
+ 2461      00000000 
+ 2461      000000
+ 2462 0064 BBFACCA8 		.ascii	"\273\372\314\250\262\342\312\324\000"
+ 2462      B2E2CAD4 
+ 2462      00
+ 2463 006d 00000000 		.space	11
+ 2463      00000000 
+ 2463      000000
+ 2464 0078 C8A1C1CF 		.ascii	"\310\241\301\317\274\307\302\274\000"
+ 2464      BCC7C2BC 
+ 2464      00
+ 2465 0081 00000000 		.space	11
+ 2465      00000000 
+ 2465      000000
+ 2466              		.section	.bss.controlRxBuf,"aw",%nobits
+ 2467              		.set	.LANCHOR1,. + 0
+ 2470              	controlRxBuf:
+ 2471 0000 00       		.space	1
+ 2472              		.section	.bss.controlTick.0,"aw",%nobits
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 64
+
+
+ 2473              		.align	1
+ 2474              		.set	.LANCHOR10,. + 0
+ 2477              	controlTick.0:
+ 2478 0000 0000     		.space	2
+ 2479              		.section	.bss.control_Rx_Cnt,"aw",%nobits
+ 2480              		.align	1
+ 2481              		.set	.LANCHOR7,. + 0
+ 2484              	control_Rx_Cnt:
+ 2485 0000 0000     		.space	2
+ 2486              		.section	.bss.g_controlATStatus,"aw",%nobits
+ 2487              		.set	.LANCHOR8,. + 0
+ 2490              	g_controlATStatus:
+ 2491 0000 00       		.space	1
+ 2492              		.section	.bss.g_controlRxBuff,"aw",%nobits
+ 2493              		.align	2
+ 2494              		.set	.LANCHOR2,. + 0
+ 2497              	g_controlRxBuff:
+ 2498 0000 00000000 		.space	200
+ 2498      00000000 
+ 2498      00000000 
+ 2498      00000000 
+ 2498      00000000 
+ 2499              		.section	.bss.g_controlTxBuff,"aw",%nobits
+ 2500              		.align	2
+ 2501              		.set	.LANCHOR0,. + 0
+ 2504              	g_controlTxBuff:
+ 2505 0000 00000000 		.space	300
+ 2505      00000000 
+ 2505      00000000 
+ 2505      00000000 
+ 2505      00000000 
+ 2506              		.section	.bss.g_earseFlash,"aw",%nobits
+ 2507              		.set	.LANCHOR4,. + 0
+ 2510              	g_earseFlash:
+ 2511 0000 00       		.space	1
+ 2512              		.section	.bss.lastControlRx.1,"aw",%nobits
+ 2513              		.align	1
+ 2514              		.set	.LANCHOR9,. + 0
+ 2517              	lastControlRx.1:
+ 2518 0000 0000     		.space	2
+ 2519              		.section	.bss.lastTick.3,"aw",%nobits
+ 2520              		.align	2
+ 2521              		.set	.LANCHOR5,. + 0
+ 2524              	lastTick.3:
+ 2525 0000 00000000 		.space	4
+ 2526              		.section	.bss.usedTime.2,"aw",%nobits
+ 2527              		.align	2
+ 2528              		.set	.LANCHOR6,. + 0
+ 2531              	usedTime.2:
+ 2532 0000 00000000 		.space	4
+ 2533              		.section	.data.ControlCommand,"aw"
+ 2534              		.align	2
+ 2535              		.set	.LANCHOR12,. + 0
+ 2538              	ControlCommand:
+ 2539 0000 00000000 		.word	CTL_CONNECT_Handle
+ 2540 0004 00000000 		.word	CTL_REALTIME_Handle
+ 2541 0008 00000000 		.word	CTL_OPERATE_Handle
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 65
+
+
+ 2542 000c 00000000 		.word	CTL_VDDMODE_Handle
+ 2543 0010 00000000 		.word	CTL_VERSION_Handle
+ 2544 0014 00000000 		.word	CTL_CSN_Handle
+ 2545 0018 00000000 		.word	CTL_BSN_Handle
+ 2546 001c 00000000 		.word	CTL_GETCSN_Handle
+ 2547 0020 00000000 		.space	28
+ 2547      00000000 
+ 2547      00000000 
+ 2547      00000000 
+ 2547      00000000 
+ 2548              		.section	.data.CtrlStringList,"aw"
+ 2549              		.align	2
+ 2550              		.set	.LANCHOR11,. + 0
+ 2553              	CtrlStringList:
+ 2554 0000 41545E43 		.ascii	"AT^CONNECT?\000"
+ 2554      4F4E4E45 
+ 2554      43543F00 
+ 2555 000c 00000000 		.space	8
+ 2555      00000000 
+ 2556 0014 41545E52 		.ascii	"AT^REALTIME\000"
+ 2556      45414C54 
+ 2556      494D4500 
+ 2557 0020 00000000 		.space	8
+ 2557      00000000 
+ 2558 0028 41545E4F 		.ascii	"AT^OPERATE\000"
+ 2558      50455241 
+ 2558      544500
+ 2559 0033 00000000 		.space	9
+ 2559      00000000 
+ 2559      00
+ 2560 003c 41545E56 		.ascii	"AT^VDDMODE\000"
+ 2560      44444D4F 
+ 2560      444500
+ 2561 0047 00000000 		.space	9
+ 2561      00000000 
+ 2561      00
+ 2562 0050 41545E56 		.ascii	"AT^VERSION?\000"
+ 2562      45525349 
+ 2562      4F4E3F00 
+ 2563 005c 00000000 		.space	8
+ 2563      00000000 
+ 2564 0064 41545E43 		.ascii	"AT^CSN\000"
+ 2564      534E00
+ 2565 006b 00000000 		.space	13
+ 2565      00000000 
+ 2565      00000000 
+ 2565      00
+ 2566 0078 41545E42 		.ascii	"AT^BSN?\000"
+ 2566      534E3F00 
+ 2567 0080 00000000 		.space	12
+ 2567      00000000 
+ 2567      00000000 
+ 2568 008c 41545E47 		.ascii	"AT^GETCSN\000"
+ 2568      45544353 
+ 2568      4E00
+ 2569 0096 00000000 		.space	10
+ 2569      00000000 
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 66
+
+
+ 2569      0000
+ 2570 00a0 00000000 		.space	140
+ 2570      00000000 
+ 2570      00000000 
+ 2570      00000000 
+ 2570      00000000 
+ 2571              		.text
+ 2572              	.Letext0:
+ 2573              		.file 2 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_default_
+ 2574              		.file 3 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 2575              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 2576              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 2577              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 2578              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h"
+ 2579              		.file 8 "Core/Inc/main.h"
+ 2580              		.file 9 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\lib\\gcc\\arm-none-eabi\\10.3.1\\include\\
+ 2581              		.file 10 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\stdio.h"
+ 2582              		.file 11 "Device/Inc/flash.h"
+ 2583              		.file 12 "App/Inc/manager.h"
+ 2584              		.file 13 "Drivers/User_Driver/Inc/soft_i2c.h"
+ 2585              		.file 14 "Drivers/User_Driver/Inc/rtc_i2c.h"
+ 2586              		.file 15 "Device/Inc/power.h"
+ 2587              		.file 16 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 2588              		.file 17 "Device/Inc/rtc.h"
+ 2589              		.file 18 "<built-in>"
+ 2590              		.file 19 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\string.h"
+ 2591              		.file 20 "App/Inc/task.h"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 67
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 control.c
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:20     .text.CTL_CONNECT_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:26     .text.CTL_CONNECT_Handle:00000000 CTL_CONNECT_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:41     .text.CTL_VDDMODE_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:47     .text.CTL_VDDMODE_Handle:00000000 CTL_VDDMODE_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:61     .rodata.CTL_CSN_Handle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:71     .text.CTL_CSN_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:77     .text.CTL_CSN_Handle:00000000 CTL_CSN_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:147    .text.CTL_CSN_Handle:0000003c $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:155    .text.ControlPrintf:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:161    .text.ControlPrintf:00000000 ControlPrintf
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:244    .text.ControlPrintf:00000048 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:250    .rodata.CTL_REALTIME_Handle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:272    .text.CTL_REALTIME_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:278    .text.CTL_REALTIME_Handle:00000000 CTL_REALTIME_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:558    .text.CTL_REALTIME_Handle:0000016c $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:570    .rodata.CTL_VERSION_Handle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:577    .text.CTL_VERSION_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:583    .text.CTL_VERSION_Handle:00000000 CTL_VERSION_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:608    .text.CTL_VERSION_Handle:0000000c $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:614    .rodata.CTL_GETCSN_Handle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:618    .text.CTL_GETCSN_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:624    .text.CTL_GETCSN_Handle:00000000 CTL_GETCSN_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:650    .text.CTL_GETCSN_Handle:00000010 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:656    .text.CTL_BSN_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:662    .text.CTL_BSN_Handle:00000000 CTL_BSN_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:705    .text.CTL_BSN_Handle:00000028 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:711    .text.ControlInit:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:717    .text.ControlInit:00000000 ControlInit
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:751    .text.ControlInit:00000024 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:759    .rodata.OPERATE_READ_FLASH_Handle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:767    .text.OPERATE_READ_FLASH_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:773    .text.OPERATE_READ_FLASH_Handle:00000000 OPERATE_READ_FLASH_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:963    .text.OPERATE_READ_FLASH_Handle:000000b0 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:971    .rodata.OPERATE_ERASE_FLASH_Handle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:983    .text.OPERATE_ERASE_FLASH_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:989    .text.OPERATE_ERASE_FLASH_Handle:00000000 OPERATE_ERASE_FLASH_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1039   .text.OPERATE_ERASE_FLASH_Handle:00000030 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1047   .rodata.CheckFlashEarse.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1059   .text.CheckFlashEarse:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1065   .text.CheckFlashEarse:00000000 CheckFlashEarse
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1184   .text.CheckFlashEarse:0000008c $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1195   .rodata.OPERATE_IIC_TEST_Handle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1204   .text.OPERATE_IIC_TEST_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1210   .text.OPERATE_IIC_TEST_Handle:00000000 OPERATE_IIC_TEST_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1305   .text.OPERATE_IIC_TEST_Handle:00000054 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1311   .rodata.OPERATE_READ_TEMP_Handle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1320   .text.OPERATE_READ_TEMP_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1326   .text.OPERATE_READ_TEMP_Handle:00000000 OPERATE_READ_TEMP_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1484   .text.OPERATE_READ_TEMP_Handle:0000009c $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1490   .rodata.OPERATE_CAPADJUST_RESULT_Handle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1495   .text.OPERATE_CAPADJUST_RESULT_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1501   .text.OPERATE_CAPADJUST_RESULT_Handle:00000000 OPERATE_CAPADJUST_RESULT_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1641   .text.OPERATE_CAPADJUST_RESULT_Handle:00000080 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1646   .rodata.OPERATE_RESULT_Handle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1651   .text.OPERATE_RESULT_Handle:00000000 $t
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 68
+
+
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1657   .text.OPERATE_RESULT_Handle:00000000 OPERATE_RESULT_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1743   .text.OPERATE_RESULT_Handle:0000004c $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1748   .rodata.CTL_OPERATE_Handle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1791   .text.CTL_OPERATE_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1797   .text.CTL_OPERATE_Handle:00000000 CTL_OPERATE_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1883   .text.CTL_OPERATE_Handle:0000004c $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:1905   .text.CTL_OPERATE_Handle:000000a4 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2087   .text.CTL_OPERATE_Handle:00000178 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2102   .text.OPERATE_COLD_SYNC_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2108   .text.OPERATE_COLD_SYNC_Handle:00000000 OPERATE_COLD_SYNC_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2121   .text.OPERATE_COLD_ERROR_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2127   .text.OPERATE_COLD_ERROR_Handle:00000000 OPERATE_COLD_ERROR_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2140   .text.OPERATE_HOT_SYNC_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2146   .text.OPERATE_HOT_SYNC_Handle:00000000 OPERATE_HOT_SYNC_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2159   .text.OPERATE_HOT_ERROR_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2165   .text.OPERATE_HOT_ERROR_Handle:00000000 OPERATE_HOT_ERROR_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2178   .text.OPERATE_TAKE_OUT_MESSAGE_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2184   .text.OPERATE_TAKE_OUT_MESSAGE_Handle:00000000 OPERATE_TAKE_OUT_MESSAGE_Handle
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2197   .text.control_usart_receive:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2203   .text.control_usart_receive:00000000 control_usart_receive
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2269   .text.control_usart_receive:00000040 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2278   .text.CheckControlList:00000000 $t
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2284   .text.CheckControlList:00000000 CheckControlList
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2433   .text.CheckControlList:00000098 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2538   .data.ControlCommand:00000000 ControlCommand
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2490   .bss.g_controlATStatus:00000000 g_controlATStatus
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2504   .bss.g_controlTxBuff:00000000 g_controlTxBuff
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2497   .bss.g_controlRxBuff:00000000 g_controlRxBuff
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2449   .rodata:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2470   .bss.controlRxBuf:00000000 controlRxBuf
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2471   .bss.controlRxBuf:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2473   .bss.controlTick.0:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2477   .bss.controlTick.0:00000000 controlTick.0
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2480   .bss.control_Rx_Cnt:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2484   .bss.control_Rx_Cnt:00000000 control_Rx_Cnt
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2491   .bss.g_controlATStatus:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2493   .bss.g_controlRxBuff:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2500   .bss.g_controlTxBuff:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2510   .bss.g_earseFlash:00000000 g_earseFlash
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2511   .bss.g_earseFlash:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2513   .bss.lastControlRx.1:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2517   .bss.lastControlRx.1:00000000 lastControlRx.1
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2520   .bss.lastTick.3:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2524   .bss.lastTick.3:00000000 lastTick.3
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2527   .bss.usedTime.2:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2531   .bss.usedTime.2:00000000 usedTime.2
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2534   .data.ControlCommand:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2549   .data.CtrlStringList:00000000 $d
+C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s:2553   .data.CtrlStringList:00000000 CtrlStringList
+
+UNDEFINED SYMBOLS
+strSearch
+CharToInt
+UsbPrintf
+log_printf
+g_csn
+memset
+ARM GAS  C:\Users\86158\AppData\Local\Temp\cc3XwUpT.s 			page 69
+
+
+vsnprintf
+strlen
+HAL_UART_Transmit
+huart3
+system_get_real_time
+system_set_real_time
+GetStringFromFlash
+HAL_UART_Receive_IT
+memcpy
+flash_read_data
+HAL_Delay
+flash_erase
+HAL_GetTick
+CheckBusy
+log_list_init
+rtc_group_power
+rtc_set_channel
+rtc_read_multi_bytes
+wave1006_read_temp_adc
+manager_set_mode
