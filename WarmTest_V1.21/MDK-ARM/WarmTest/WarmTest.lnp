@@ -1,0 +1,28 @@
+--cpu=Cortex-M4.fp.sp
+"warmtest\startup_stm32f407xx.o"
+"warmtest\main.o"
+"warmtest\gpio.o"
+"warmtest\usart.o"
+"warmtest\stm32f4xx_it.o"
+"warmtest\stm32f4xx_hal_msp.o"
+"warmtest\stm32f4xx_hal_tim.o"
+"warmtest\stm32f4xx_hal_tim_ex.o"
+"warmtest\stm32f4xx_hal_uart.o"
+"warmtest\stm32f4xx_hal_rcc.o"
+"warmtest\stm32f4xx_hal_rcc_ex.o"
+"warmtest\stm32f4xx_hal_flash.o"
+"warmtest\stm32f4xx_hal_flash_ex.o"
+"warmtest\stm32f4xx_hal_flash_ramfunc.o"
+"warmtest\stm32f4xx_hal_gpio.o"
+"warmtest\stm32f4xx_hal_dma_ex.o"
+"warmtest\stm32f4xx_hal_dma.o"
+"warmtest\stm32f4xx_hal_pwr.o"
+"warmtest\stm32f4xx_hal_pwr_ex.o"
+"warmtest\stm32f4xx_hal_cortex.o"
+"warmtest\stm32f4xx_hal.o"
+"warmtest\stm32f4xx_hal_exti.o"
+"warmtest\system_stm32f4xx.o"
+--library_type=microlib --strict --scatter "WarmTest\WarmTest.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "WarmTest.map" -o WarmTest\WarmTest.axf

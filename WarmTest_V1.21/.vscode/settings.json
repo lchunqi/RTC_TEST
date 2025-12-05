@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "iic_soft.h": "c",
+        "main.h": "c"
+    }
+}

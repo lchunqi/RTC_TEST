@@ -1,0 +1,4730 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"iic_soft.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.IIC_GPIO_Init,"ax",%progbits
+  20              		.align	1
+  21              		.global	IIC_GPIO_Init
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	IIC_GPIO_Init:
+  27              	.LVL0:
+  28              	.LFB133:
+  29              		.file 1 "USER/Src/iic_soft.c"
+   1:USER/Src/iic_soft.c **** /* 
+   2:USER/Src/iic_soft.c **** *2024.11.16更新 SD3178 SD3077 温度强制转换 RTC_3178_TEMP/3078
+   3:USER/Src/iic_soft.c **** *
+   4:USER/Src/iic_soft.c **** */ 
+   5:USER/Src/iic_soft.c **** #include "main.h"
+   6:USER/Src/iic_soft.c **** #include "usart.h"
+   7:USER/Src/iic_soft.c **** #include "iic_soft.h"
+   8:USER/Src/iic_soft.c **** typedef struct {
+   9:USER/Src/iic_soft.c **** 	GPIO_TypeDef* busSda;
+  10:USER/Src/iic_soft.c **** 	uint16_t pinSda;
+  11:USER/Src/iic_soft.c **** 	GPIO_TypeDef* busScl;
+  12:USER/Src/iic_soft.c **** 	uint16_t pinScl;
+  13:USER/Src/iic_soft.c **** }I2cGpio;
+  14:USER/Src/iic_soft.c **** static I2cGpio  g_i2c = {0};
+  15:USER/Src/iic_soft.c **** void IIC_GPIO_Init(uint16_t pinScl, uint16_t pinSda)
+  16:USER/Src/iic_soft.c **** {
+  30              		.loc 1 16 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 24
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 16 1 is_stmt 0 view .LVU1
+  35 0000 70B5     		push	{r4, r5, r6, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 16
+  38              		.cfi_offset 4, -16
+  39              		.cfi_offset 5, -12
+  40              		.cfi_offset 6, -8
+  41              		.cfi_offset 14, -4
+  42 0002 86B0     		sub	sp, sp, #24
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 2
+
+
+  43              	.LCFI1:
+  44              		.cfi_def_cfa_offset 40
+  17:USER/Src/iic_soft.c **** 
+  18:USER/Src/iic_soft.c **** 	GPIO_InitTypeDef GPIO_InitStruct = {0};
+  45              		.loc 1 18 2 is_stmt 1 view .LVU2
+  46              		.loc 1 18 19 is_stmt 0 view .LVU3
+  47 0004 0024     		movs	r4, #0
+  48 0006 0194     		str	r4, [sp, #4]
+  49 0008 0294     		str	r4, [sp, #8]
+  50 000a 0394     		str	r4, [sp, #12]
+  51 000c 0494     		str	r4, [sp, #16]
+  52 000e 0594     		str	r4, [sp, #20]
+  19:USER/Src/iic_soft.c **** 
+  20:USER/Src/iic_soft.c **** 	g_i2c.busScl = I2C_GPIO;
+  53              		.loc 1 20 2 is_stmt 1 view .LVU4
+  54              		.loc 1 20 15 is_stmt 0 view .LVU5
+  55 0010 0F4D     		ldr	r5, .L3
+  56 0012 104A     		ldr	r2, .L3+4
+  57 0014 AA60     		str	r2, [r5, #8]
+  21:USER/Src/iic_soft.c **** 	g_i2c.busSda = I2C_GPIO;
+  58              		.loc 1 21 2 is_stmt 1 view .LVU6
+  59              		.loc 1 21 15 is_stmt 0 view .LVU7
+  60 0016 2A60     		str	r2, [r5]
+  22:USER/Src/iic_soft.c **** 
+  23:USER/Src/iic_soft.c **** 	g_i2c.pinSda = GPIO_PIN_0 << pinSda;
+  61              		.loc 1 23 2 is_stmt 1 view .LVU8
+  62              		.loc 1 23 28 is_stmt 0 view .LVU9
+  63 0018 0123     		movs	r3, #1
+  64 001a 03FA01F1 		lsl	r1, r3, r1
+  65              	.LVL1:
+  66              		.loc 1 23 15 view .LVU10
+  67 001e 89B2     		uxth	r1, r1
+  68 0020 A980     		strh	r1, [r5, #4]	@ movhi
+  24:USER/Src/iic_soft.c **** 	g_i2c.pinScl = GPIO_PIN_8 << pinScl;
+  69              		.loc 1 24 2 is_stmt 1 view .LVU11
+  70              		.loc 1 24 28 is_stmt 0 view .LVU12
+  71 0022 4FF48073 		mov	r3, #256
+  72 0026 8340     		lsls	r3, r3, r0
+  73              		.loc 1 24 15 view .LVU13
+  74 0028 AB81     		strh	r3, [r5, #12]	@ movhi
+  25:USER/Src/iic_soft.c **** 
+  26:USER/Src/iic_soft.c **** 	GPIO_InitStruct.Pin = g_i2c.pinSda;
+  75              		.loc 1 26 2 is_stmt 1 view .LVU14
+  76              		.loc 1 26 22 is_stmt 0 view .LVU15
+  77 002a 0191     		str	r1, [sp, #4]
+  27:USER/Src/iic_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  78              		.loc 1 27 2 is_stmt 1 view .LVU16
+  79              		.loc 1 27 23 is_stmt 0 view .LVU17
+  80 002c 1126     		movs	r6, #17
+  81 002e 0296     		str	r6, [sp, #8]
+  28:USER/Src/iic_soft.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  82              		.loc 1 28 2 is_stmt 1 view .LVU18
+  29:USER/Src/iic_soft.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  83              		.loc 1 29 2 view .LVU19
+  30:USER/Src/iic_soft.c **** 	HAL_GPIO_Init(g_i2c.busSda, &GPIO_InitStruct);
+  84              		.loc 1 30 2 view .LVU20
+  85 0030 01A9     		add	r1, sp, #4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 3
+
+
+  86 0032 1046     		mov	r0, r2
+  87              	.LVL2:
+  88              		.loc 1 30 2 is_stmt 0 view .LVU21
+  89 0034 FFF7FEFF 		bl	HAL_GPIO_Init
+  90              	.LVL3:
+  31:USER/Src/iic_soft.c **** 		
+  32:USER/Src/iic_soft.c **** 	GPIO_InitStruct.Pin = g_i2c.pinScl;
+  91              		.loc 1 32 2 is_stmt 1 view .LVU22
+  92              		.loc 1 32 29 is_stmt 0 view .LVU23
+  93 0038 AB89     		ldrh	r3, [r5, #12]
+  94              		.loc 1 32 22 view .LVU24
+  95 003a 0193     		str	r3, [sp, #4]
+  33:USER/Src/iic_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  96              		.loc 1 33 2 is_stmt 1 view .LVU25
+  97              		.loc 1 33 23 is_stmt 0 view .LVU26
+  98 003c 0296     		str	r6, [sp, #8]
+  34:USER/Src/iic_soft.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  99              		.loc 1 34 2 is_stmt 1 view .LVU27
+ 100              		.loc 1 34 23 is_stmt 0 view .LVU28
+ 101 003e 0394     		str	r4, [sp, #12]
+  35:USER/Src/iic_soft.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 102              		.loc 1 35 2 is_stmt 1 view .LVU29
+ 103              		.loc 1 35 24 is_stmt 0 view .LVU30
+ 104 0040 0494     		str	r4, [sp, #16]
+  36:USER/Src/iic_soft.c **** 	HAL_GPIO_Init(g_i2c.busScl, &GPIO_InitStruct);
+ 105              		.loc 1 36 2 is_stmt 1 view .LVU31
+ 106 0042 01A9     		add	r1, sp, #4
+ 107 0044 A868     		ldr	r0, [r5, #8]
+ 108 0046 FFF7FEFF 		bl	HAL_GPIO_Init
+ 109              	.LVL4:
+  37:USER/Src/iic_soft.c **** 
+  38:USER/Src/iic_soft.c **** }
+ 110              		.loc 1 38 1 is_stmt 0 view .LVU32
+ 111 004a 06B0     		add	sp, sp, #24
+ 112              	.LCFI2:
+ 113              		.cfi_def_cfa_offset 16
+ 114              		@ sp needed
+ 115 004c 70BD     		pop	{r4, r5, r6, pc}
+ 116              	.L4:
+ 117 004e 00BF     		.align	2
+ 118              	.L3:
+ 119 0050 00000000 		.word	.LANCHOR0
+ 120 0054 00080240 		.word	1073874944
+ 121              		.cfi_endproc
+ 122              	.LFE133:
+ 124              		.section	.text.IIC_SDA_H,"ax",%progbits
+ 125              		.align	1
+ 126              		.global	IIC_SDA_H
+ 127              		.syntax unified
+ 128              		.thumb
+ 129              		.thumb_func
+ 131              	IIC_SDA_H:
+ 132              	.LFB134:
+  39:USER/Src/iic_soft.c **** void IIC_SDA_H()
+  40:USER/Src/iic_soft.c **** {
+ 133              		.loc 1 40 1 is_stmt 1 view -0
+ 134              		.cfi_startproc
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 4
+
+
+ 135              		@ args = 0, pretend = 0, frame = 0
+ 136              		@ frame_needed = 0, uses_anonymous_args = 0
+ 137 0000 08B5     		push	{r3, lr}
+ 138              	.LCFI3:
+ 139              		.cfi_def_cfa_offset 8
+ 140              		.cfi_offset 3, -8
+ 141              		.cfi_offset 14, -4
+  41:USER/Src/iic_soft.c **** 	HAL_GPIO_WritePin(g_i2c.busSda, g_i2c.pinSda, GPIO_PIN_SET);
+ 142              		.loc 1 41 2 view .LVU34
+ 143 0002 034B     		ldr	r3, .L7
+ 144 0004 0122     		movs	r2, #1
+ 145 0006 9988     		ldrh	r1, [r3, #4]
+ 146 0008 1868     		ldr	r0, [r3]
+ 147 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 148              	.LVL5:
+  42:USER/Src/iic_soft.c **** 	
+  43:USER/Src/iic_soft.c **** }
+ 149              		.loc 1 43 1 is_stmt 0 view .LVU35
+ 150 000e 08BD     		pop	{r3, pc}
+ 151              	.L8:
+ 152              		.align	2
+ 153              	.L7:
+ 154 0010 00000000 		.word	.LANCHOR0
+ 155              		.cfi_endproc
+ 156              	.LFE134:
+ 158              		.section	.text.IIC_SDA_L,"ax",%progbits
+ 159              		.align	1
+ 160              		.global	IIC_SDA_L
+ 161              		.syntax unified
+ 162              		.thumb
+ 163              		.thumb_func
+ 165              	IIC_SDA_L:
+ 166              	.LFB135:
+  44:USER/Src/iic_soft.c **** 
+  45:USER/Src/iic_soft.c **** void IIC_SDA_L()
+  46:USER/Src/iic_soft.c **** {
+ 167              		.loc 1 46 1 is_stmt 1 view -0
+ 168              		.cfi_startproc
+ 169              		@ args = 0, pretend = 0, frame = 0
+ 170              		@ frame_needed = 0, uses_anonymous_args = 0
+ 171 0000 08B5     		push	{r3, lr}
+ 172              	.LCFI4:
+ 173              		.cfi_def_cfa_offset 8
+ 174              		.cfi_offset 3, -8
+ 175              		.cfi_offset 14, -4
+  47:USER/Src/iic_soft.c **** 	HAL_GPIO_WritePin(g_i2c.busSda, g_i2c.pinSda, GPIO_PIN_RESET);
+ 176              		.loc 1 47 2 view .LVU37
+ 177 0002 034B     		ldr	r3, .L11
+ 178 0004 0022     		movs	r2, #0
+ 179 0006 9988     		ldrh	r1, [r3, #4]
+ 180 0008 1868     		ldr	r0, [r3]
+ 181 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 182              	.LVL6:
+  48:USER/Src/iic_soft.c **** }
+ 183              		.loc 1 48 1 is_stmt 0 view .LVU38
+ 184 000e 08BD     		pop	{r3, pc}
+ 185              	.L12:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 5
+
+
+ 186              		.align	2
+ 187              	.L11:
+ 188 0010 00000000 		.word	.LANCHOR0
+ 189              		.cfi_endproc
+ 190              	.LFE135:
+ 192              		.section	.text.IIC_SCL_H,"ax",%progbits
+ 193              		.align	1
+ 194              		.global	IIC_SCL_H
+ 195              		.syntax unified
+ 196              		.thumb
+ 197              		.thumb_func
+ 199              	IIC_SCL_H:
+ 200              	.LFB136:
+  49:USER/Src/iic_soft.c **** 
+  50:USER/Src/iic_soft.c **** void IIC_SCL_H() 
+  51:USER/Src/iic_soft.c **** {
+ 201              		.loc 1 51 1 is_stmt 1 view -0
+ 202              		.cfi_startproc
+ 203              		@ args = 0, pretend = 0, frame = 0
+ 204              		@ frame_needed = 0, uses_anonymous_args = 0
+ 205 0000 08B5     		push	{r3, lr}
+ 206              	.LCFI5:
+ 207              		.cfi_def_cfa_offset 8
+ 208              		.cfi_offset 3, -8
+ 209              		.cfi_offset 14, -4
+  52:USER/Src/iic_soft.c **** 	HAL_GPIO_WritePin(g_i2c.busScl, g_i2c.pinScl ,GPIO_PIN_SET);
+ 210              		.loc 1 52 2 view .LVU40
+ 211 0002 034B     		ldr	r3, .L15
+ 212 0004 0122     		movs	r2, #1
+ 213 0006 9989     		ldrh	r1, [r3, #12]
+ 214 0008 9868     		ldr	r0, [r3, #8]
+ 215 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 216              	.LVL7:
+  53:USER/Src/iic_soft.c **** }
+ 217              		.loc 1 53 1 is_stmt 0 view .LVU41
+ 218 000e 08BD     		pop	{r3, pc}
+ 219              	.L16:
+ 220              		.align	2
+ 221              	.L15:
+ 222 0010 00000000 		.word	.LANCHOR0
+ 223              		.cfi_endproc
+ 224              	.LFE136:
+ 226              		.section	.text.IIC_SCL_L,"ax",%progbits
+ 227              		.align	1
+ 228              		.global	IIC_SCL_L
+ 229              		.syntax unified
+ 230              		.thumb
+ 231              		.thumb_func
+ 233              	IIC_SCL_L:
+ 234              	.LFB137:
+  54:USER/Src/iic_soft.c **** 
+  55:USER/Src/iic_soft.c **** void IIC_SCL_L()
+  56:USER/Src/iic_soft.c **** {
+ 235              		.loc 1 56 1 is_stmt 1 view -0
+ 236              		.cfi_startproc
+ 237              		@ args = 0, pretend = 0, frame = 0
+ 238              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 6
+
+
+ 239 0000 08B5     		push	{r3, lr}
+ 240              	.LCFI6:
+ 241              		.cfi_def_cfa_offset 8
+ 242              		.cfi_offset 3, -8
+ 243              		.cfi_offset 14, -4
+  57:USER/Src/iic_soft.c **** 	HAL_GPIO_WritePin(g_i2c.busScl, g_i2c.pinScl , GPIO_PIN_RESET);
+ 244              		.loc 1 57 2 view .LVU43
+ 245 0002 034B     		ldr	r3, .L19
+ 246 0004 0022     		movs	r2, #0
+ 247 0006 9989     		ldrh	r1, [r3, #12]
+ 248 0008 9868     		ldr	r0, [r3, #8]
+ 249 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 250              	.LVL8:
+  58:USER/Src/iic_soft.c **** }
+ 251              		.loc 1 58 1 is_stmt 0 view .LVU44
+ 252 000e 08BD     		pop	{r3, pc}
+ 253              	.L20:
+ 254              		.align	2
+ 255              	.L19:
+ 256 0010 00000000 		.word	.LANCHOR0
+ 257              		.cfi_endproc
+ 258              	.LFE137:
+ 260              		.section	.text.IIC_SDA_IN,"ax",%progbits
+ 261              		.align	1
+ 262              		.global	IIC_SDA_IN
+ 263              		.syntax unified
+ 264              		.thumb
+ 265              		.thumb_func
+ 267              	IIC_SDA_IN:
+ 268              	.LFB138:
+  59:USER/Src/iic_soft.c **** 
+  60:USER/Src/iic_soft.c **** void IIC_SDA_IN(void)
+  61:USER/Src/iic_soft.c **** {
+ 269              		.loc 1 61 1 is_stmt 1 view -0
+ 270              		.cfi_startproc
+ 271              		@ args = 0, pretend = 0, frame = 24
+ 272              		@ frame_needed = 0, uses_anonymous_args = 0
+ 273 0000 00B5     		push	{lr}
+ 274              	.LCFI7:
+ 275              		.cfi_def_cfa_offset 4
+ 276              		.cfi_offset 14, -4
+ 277 0002 87B0     		sub	sp, sp, #28
+ 278              	.LCFI8:
+ 279              		.cfi_def_cfa_offset 32
+  62:USER/Src/iic_soft.c **** 	GPIO_InitTypeDef GPIO_Init={0};
+ 280              		.loc 1 62 2 view .LVU46
+ 281              		.loc 1 62 19 is_stmt 0 view .LVU47
+ 282 0004 0023     		movs	r3, #0
+ 283 0006 0193     		str	r3, [sp, #4]
+ 284 0008 0293     		str	r3, [sp, #8]
+ 285 000a 0393     		str	r3, [sp, #12]
+ 286 000c 0493     		str	r3, [sp, #16]
+ 287 000e 0593     		str	r3, [sp, #20]
+  63:USER/Src/iic_soft.c **** 	GPIO_Init.Pin=g_i2c.pinSda;
+ 288              		.loc 1 63 2 is_stmt 1 view .LVU48
+ 289              		.loc 1 63 21 is_stmt 0 view .LVU49
+ 290 0010 044B     		ldr	r3, .L23
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 7
+
+
+ 291 0012 9A88     		ldrh	r2, [r3, #4]
+ 292              		.loc 1 63 15 view .LVU50
+ 293 0014 0192     		str	r2, [sp, #4]
+  64:USER/Src/iic_soft.c **** 	GPIO_Init.Pull=GPIO_NOPULL;
+ 294              		.loc 1 64 2 is_stmt 1 view .LVU51
+  65:USER/Src/iic_soft.c **** 	GPIO_Init.Mode=GPIO_MODE_INPUT;
+ 295              		.loc 1 65 2 view .LVU52
+  66:USER/Src/iic_soft.c **** 	GPIO_Init.Speed=GPIO_SPEED_FREQ_LOW;
+ 296              		.loc 1 66 2 view .LVU53
+  67:USER/Src/iic_soft.c **** 	HAL_GPIO_Init(g_i2c.busSda,&GPIO_Init);
+ 297              		.loc 1 67 2 view .LVU54
+ 298 0016 01A9     		add	r1, sp, #4
+ 299 0018 1868     		ldr	r0, [r3]
+ 300 001a FFF7FEFF 		bl	HAL_GPIO_Init
+ 301              	.LVL9:
+  68:USER/Src/iic_soft.c **** 	
+  69:USER/Src/iic_soft.c **** }
+ 302              		.loc 1 69 1 is_stmt 0 view .LVU55
+ 303 001e 07B0     		add	sp, sp, #28
+ 304              	.LCFI9:
+ 305              		.cfi_def_cfa_offset 4
+ 306              		@ sp needed
+ 307 0020 5DF804FB 		ldr	pc, [sp], #4
+ 308              	.L24:
+ 309              		.align	2
+ 310              	.L23:
+ 311 0024 00000000 		.word	.LANCHOR0
+ 312              		.cfi_endproc
+ 313              	.LFE138:
+ 315              		.section	.text.IIC_SDA_OUT,"ax",%progbits
+ 316              		.align	1
+ 317              		.global	IIC_SDA_OUT
+ 318              		.syntax unified
+ 319              		.thumb
+ 320              		.thumb_func
+ 322              	IIC_SDA_OUT:
+ 323              	.LFB139:
+  70:USER/Src/iic_soft.c **** 
+  71:USER/Src/iic_soft.c **** void IIC_SDA_OUT(void)
+  72:USER/Src/iic_soft.c **** {
+ 324              		.loc 1 72 1 is_stmt 1 view -0
+ 325              		.cfi_startproc
+ 326              		@ args = 0, pretend = 0, frame = 24
+ 327              		@ frame_needed = 0, uses_anonymous_args = 0
+ 328 0000 00B5     		push	{lr}
+ 329              	.LCFI10:
+ 330              		.cfi_def_cfa_offset 4
+ 331              		.cfi_offset 14, -4
+ 332 0002 87B0     		sub	sp, sp, #28
+ 333              	.LCFI11:
+ 334              		.cfi_def_cfa_offset 32
+  73:USER/Src/iic_soft.c **** 	GPIO_InitTypeDef GPIO_Init={0};
+ 335              		.loc 1 73 2 view .LVU57
+ 336              		.loc 1 73 19 is_stmt 0 view .LVU58
+ 337 0004 0023     		movs	r3, #0
+ 338 0006 0193     		str	r3, [sp, #4]
+ 339 0008 0293     		str	r3, [sp, #8]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 8
+
+
+ 340 000a 0393     		str	r3, [sp, #12]
+ 341 000c 0493     		str	r3, [sp, #16]
+ 342 000e 0593     		str	r3, [sp, #20]
+  74:USER/Src/iic_soft.c **** 	GPIO_Init.Pin=g_i2c.pinSda;
+ 343              		.loc 1 74 2 is_stmt 1 view .LVU59
+ 344              		.loc 1 74 21 is_stmt 0 view .LVU60
+ 345 0010 064B     		ldr	r3, .L27
+ 346 0012 9A88     		ldrh	r2, [r3, #4]
+ 347              		.loc 1 74 15 view .LVU61
+ 348 0014 0192     		str	r2, [sp, #4]
+  75:USER/Src/iic_soft.c **** 	GPIO_Init.Pull=GPIO_PULLUP;
+ 349              		.loc 1 75 2 is_stmt 1 view .LVU62
+ 350              		.loc 1 75 16 is_stmt 0 view .LVU63
+ 351 0016 0122     		movs	r2, #1
+ 352 0018 0392     		str	r2, [sp, #12]
+  76:USER/Src/iic_soft.c **** 	GPIO_Init.Mode=GPIO_MODE_OUTPUT_OD;
+ 353              		.loc 1 76 2 is_stmt 1 view .LVU64
+ 354              		.loc 1 76 16 is_stmt 0 view .LVU65
+ 355 001a 1122     		movs	r2, #17
+ 356 001c 0292     		str	r2, [sp, #8]
+  77:USER/Src/iic_soft.c **** 	GPIO_Init.Speed=GPIO_SPEED_FREQ_LOW;
+ 357              		.loc 1 77 2 is_stmt 1 view .LVU66
+  78:USER/Src/iic_soft.c **** 	HAL_GPIO_Init(g_i2c.busSda,&GPIO_Init);
+ 358              		.loc 1 78 2 view .LVU67
+ 359 001e 01A9     		add	r1, sp, #4
+ 360 0020 1868     		ldr	r0, [r3]
+ 361 0022 FFF7FEFF 		bl	HAL_GPIO_Init
+ 362              	.LVL10:
+  79:USER/Src/iic_soft.c **** 	
+  80:USER/Src/iic_soft.c **** }
+ 363              		.loc 1 80 1 is_stmt 0 view .LVU68
+ 364 0026 07B0     		add	sp, sp, #28
+ 365              	.LCFI12:
+ 366              		.cfi_def_cfa_offset 4
+ 367              		@ sp needed
+ 368 0028 5DF804FB 		ldr	pc, [sp], #4
+ 369              	.L28:
+ 370              		.align	2
+ 371              	.L27:
+ 372 002c 00000000 		.word	.LANCHOR0
+ 373              		.cfi_endproc
+ 374              	.LFE139:
+ 376              		.section	.text.IIC_Read_SDA,"ax",%progbits
+ 377              		.align	1
+ 378              		.global	IIC_Read_SDA
+ 379              		.syntax unified
+ 380              		.thumb
+ 381              		.thumb_func
+ 383              	IIC_Read_SDA:
+ 384              	.LFB140:
+  81:USER/Src/iic_soft.c **** 
+  82:USER/Src/iic_soft.c **** uint8_t IIC_Read_SDA(void)
+  83:USER/Src/iic_soft.c **** {
+ 385              		.loc 1 83 1 is_stmt 1 view -0
+ 386              		.cfi_startproc
+ 387              		@ args = 0, pretend = 0, frame = 0
+ 388              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 9
+
+
+ 389 0000 08B5     		push	{r3, lr}
+ 390              	.LCFI13:
+ 391              		.cfi_def_cfa_offset 8
+ 392              		.cfi_offset 3, -8
+ 393              		.cfi_offset 14, -4
+  84:USER/Src/iic_soft.c **** 	return  HAL_GPIO_ReadPin(g_i2c.busSda,g_i2c.pinSda);
+ 394              		.loc 1 84 2 view .LVU70
+ 395              		.loc 1 84 10 is_stmt 0 view .LVU71
+ 396 0002 034B     		ldr	r3, .L31
+ 397 0004 9988     		ldrh	r1, [r3, #4]
+ 398 0006 1868     		ldr	r0, [r3]
+ 399 0008 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 400              	.LVL11:
+  85:USER/Src/iic_soft.c **** }
+ 401              		.loc 1 85 1 view .LVU72
+ 402 000c 08BD     		pop	{r3, pc}
+ 403              	.L32:
+ 404 000e 00BF     		.align	2
+ 405              	.L31:
+ 406 0010 00000000 		.word	.LANCHOR0
+ 407              		.cfi_endproc
+ 408              	.LFE140:
+ 410              		.section	.text.IIC_Start,"ax",%progbits
+ 411              		.align	1
+ 412              		.global	IIC_Start
+ 413              		.syntax unified
+ 414              		.thumb
+ 415              		.thumb_func
+ 417              	IIC_Start:
+ 418              	.LFB142:
+  86:USER/Src/iic_soft.c **** 
+  87:USER/Src/iic_soft.c **** static inline  void IIC_delay(int i)
+  88:USER/Src/iic_soft.c **** {
+  89:USER/Src/iic_soft.c **** 	while(i--);
+  90:USER/Src/iic_soft.c **** }
+  91:USER/Src/iic_soft.c **** 
+  92:USER/Src/iic_soft.c **** //开始信号
+  93:USER/Src/iic_soft.c **** IIC_soft IIC_Start(void)
+  94:USER/Src/iic_soft.c **** {
+ 419              		.loc 1 94 1 is_stmt 1 view -0
+ 420              		.cfi_startproc
+ 421              		@ args = 0, pretend = 0, frame = 0
+ 422              		@ frame_needed = 0, uses_anonymous_args = 0
+ 423 0000 08B5     		push	{r3, lr}
+ 424              	.LCFI14:
+ 425              		.cfi_def_cfa_offset 8
+ 426              		.cfi_offset 3, -8
+ 427              		.cfi_offset 14, -4
+  95:USER/Src/iic_soft.c **** 	IIC_SDA_OUT();
+ 428              		.loc 1 95 2 view .LVU74
+ 429 0002 FFF7FEFF 		bl	IIC_SDA_OUT
+ 430              	.LVL12:
+  96:USER/Src/iic_soft.c **** 	IIC_SCL_H();
+ 431              		.loc 1 96 2 view .LVU75
+ 432 0006 FFF7FEFF 		bl	IIC_SCL_H
+ 433              	.LVL13:
+  97:USER/Src/iic_soft.c **** 	IIC_SDA_H();
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 10
+
+
+ 434              		.loc 1 97 2 view .LVU76
+ 435 000a FFF7FEFF 		bl	IIC_SDA_H
+ 436              	.LVL14:
+  98:USER/Src/iic_soft.c **** 	
+  99:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 437              		.loc 1 99 2 view .LVU77
+ 438              	.LBB34:
+ 439              	.LBI34:
+  87:USER/Src/iic_soft.c **** {
+ 440              		.loc 1 87 21 view .LVU78
+ 441              	.LBB35:
+  89:USER/Src/iic_soft.c **** }
+ 442              		.loc 1 89 2 view .LVU79
+  89:USER/Src/iic_soft.c **** }
+ 443              		.loc 1 89 7 is_stmt 0 view .LVU80
+ 444 000e 4FF4FA73 		mov	r3, #500
+ 445              	.LVL15:
+ 446              	.L34:
+  89:USER/Src/iic_soft.c **** }
+ 447              		.loc 1 89 12 is_stmt 1 view .LVU81
+  89:USER/Src/iic_soft.c **** }
+ 448              		.loc 1 89 7 view .LVU82
+ 449 0012 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 450              		.loc 1 89 9 is_stmt 0 view .LVU83
+ 451 0014 013B     		subs	r3, r3, #1
+ 452              	.LVL16:
+  89:USER/Src/iic_soft.c **** }
+ 453              		.loc 1 89 7 view .LVU84
+ 454 0016 002A     		cmp	r2, #0
+ 455 0018 FBD1     		bne	.L34
+ 456              	.LVL17:
+  89:USER/Src/iic_soft.c **** }
+ 457              		.loc 1 89 7 view .LVU85
+ 458              	.LBE35:
+ 459              	.LBE34:
+ 100:USER/Src/iic_soft.c **** 	if(!IIC_Read_SDA())
+ 460              		.loc 1 100 2 is_stmt 1 view .LVU86
+ 461              		.loc 1 100 6 is_stmt 0 view .LVU87
+ 462 001a FFF7FEFF 		bl	IIC_Read_SDA
+ 463              	.LVL18:
+ 464              		.loc 1 100 4 view .LVU88
+ 465 001e 08B9     		cbnz	r0, .L40
+ 101:USER/Src/iic_soft.c **** 	{
+ 102:USER/Src/iic_soft.c **** 		return I2C_Start_FAIL;
+ 466              		.loc 1 102 10 view .LVU89
+ 467 0020 0320     		movs	r0, #3
+ 468              	.L35:
+ 103:USER/Src/iic_soft.c **** 	}
+ 104:USER/Src/iic_soft.c **** 
+ 105:USER/Src/iic_soft.c **** 	IIC_SDA_L();
+ 106:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 107:USER/Src/iic_soft.c **** 	
+ 108:USER/Src/iic_soft.c **** 	IIC_SCL_L();
+ 109:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 110:USER/Src/iic_soft.c **** 	
+ 111:USER/Src/iic_soft.c **** 	return I2C_OK;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 11
+
+
+ 112:USER/Src/iic_soft.c **** }
+ 469              		.loc 1 112 1 view .LVU90
+ 470 0022 08BD     		pop	{r3, pc}
+ 471              	.L40:
+ 105:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 472              		.loc 1 105 2 is_stmt 1 view .LVU91
+ 473 0024 FFF7FEFF 		bl	IIC_SDA_L
+ 474              	.LVL19:
+ 106:USER/Src/iic_soft.c **** 	
+ 475              		.loc 1 106 2 view .LVU92
+ 476              	.LBB36:
+ 477              	.LBI36:
+  87:USER/Src/iic_soft.c **** {
+ 478              		.loc 1 87 21 view .LVU93
+ 479              	.LBB37:
+  89:USER/Src/iic_soft.c **** }
+ 480              		.loc 1 89 2 view .LVU94
+  89:USER/Src/iic_soft.c **** }
+ 481              		.loc 1 89 7 is_stmt 0 view .LVU95
+ 482 0028 4FF4FA73 		mov	r3, #500
+ 483              	.LVL20:
+ 484              	.L36:
+  89:USER/Src/iic_soft.c **** }
+ 485              		.loc 1 89 12 is_stmt 1 view .LVU96
+  89:USER/Src/iic_soft.c **** }
+ 486              		.loc 1 89 7 view .LVU97
+ 487 002c 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 488              		.loc 1 89 9 is_stmt 0 view .LVU98
+ 489 002e 013B     		subs	r3, r3, #1
+ 490              	.LVL21:
+  89:USER/Src/iic_soft.c **** }
+ 491              		.loc 1 89 7 view .LVU99
+ 492 0030 002A     		cmp	r2, #0
+ 493 0032 FBD1     		bne	.L36
+ 494              	.LVL22:
+  89:USER/Src/iic_soft.c **** }
+ 495              		.loc 1 89 7 view .LVU100
+ 496              	.LBE37:
+ 497              	.LBE36:
+ 108:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 498              		.loc 1 108 2 is_stmt 1 view .LVU101
+ 499 0034 FFF7FEFF 		bl	IIC_SCL_L
+ 500              	.LVL23:
+ 109:USER/Src/iic_soft.c **** 	
+ 501              		.loc 1 109 2 view .LVU102
+ 502              	.LBB38:
+ 503              	.LBI38:
+  87:USER/Src/iic_soft.c **** {
+ 504              		.loc 1 87 21 view .LVU103
+ 505              	.LBE38:
+ 108:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 506              		.loc 1 108 2 is_stmt 0 view .LVU104
+ 507 0038 4FF4FA73 		mov	r3, #500
+ 508              	.LVL24:
+ 509              	.L37:
+ 510              	.LBB41:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 12
+
+
+ 511              	.LBB39:
+  89:USER/Src/iic_soft.c **** }
+ 512              		.loc 1 89 12 is_stmt 1 view .LVU105
+  89:USER/Src/iic_soft.c **** }
+ 513              		.loc 1 89 7 view .LVU106
+ 514 003c 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 515              		.loc 1 89 9 is_stmt 0 view .LVU107
+ 516 003e 013B     		subs	r3, r3, #1
+ 517              	.LVL25:
+  89:USER/Src/iic_soft.c **** }
+ 518              		.loc 1 89 7 view .LVU108
+ 519 0040 002A     		cmp	r2, #0
+ 520 0042 FBD1     		bne	.L37
+ 521              	.LBE39:
+ 522              	.LBE41:
+ 111:USER/Src/iic_soft.c **** }
+ 523              		.loc 1 111 9 view .LVU109
+ 524 0044 0220     		movs	r0, #2
+ 525              	.LBB42:
+ 526              	.LBB40:
+ 527 0046 ECE7     		b	.L35
+ 528              	.LBE40:
+ 529              	.LBE42:
+ 530              		.cfi_endproc
+ 531              	.LFE142:
+ 533              		.section	.text.IIC_Stop,"ax",%progbits
+ 534              		.align	1
+ 535              		.global	IIC_Stop
+ 536              		.syntax unified
+ 537              		.thumb
+ 538              		.thumb_func
+ 540              	IIC_Stop:
+ 541              	.LFB143:
+ 113:USER/Src/iic_soft.c **** 
+ 114:USER/Src/iic_soft.c **** //停止信号
+ 115:USER/Src/iic_soft.c **** void IIC_Stop(void)
+ 116:USER/Src/iic_soft.c **** {
+ 542              		.loc 1 116 1 is_stmt 1 view -0
+ 543              		.cfi_startproc
+ 544              		@ args = 0, pretend = 0, frame = 0
+ 545              		@ frame_needed = 0, uses_anonymous_args = 0
+ 546 0000 08B5     		push	{r3, lr}
+ 547              	.LCFI15:
+ 548              		.cfi_def_cfa_offset 8
+ 549              		.cfi_offset 3, -8
+ 550              		.cfi_offset 14, -4
+ 117:USER/Src/iic_soft.c **** 	IIC_SDA_OUT();
+ 551              		.loc 1 117 2 view .LVU111
+ 552 0002 FFF7FEFF 		bl	IIC_SDA_OUT
+ 553              	.LVL26:
+ 118:USER/Src/iic_soft.c **** 	IIC_SCL_L();
+ 554              		.loc 1 118 2 view .LVU112
+ 555 0006 FFF7FEFF 		bl	IIC_SCL_L
+ 556              	.LVL27:
+ 119:USER/Src/iic_soft.c **** 	IIC_SDA_L();
+ 557              		.loc 1 119 2 view .LVU113
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 13
+
+
+ 558 000a FFF7FEFF 		bl	IIC_SDA_L
+ 559              	.LVL28:
+ 120:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 560              		.loc 1 120 2 view .LVU114
+ 561              	.LBB43:
+ 562              	.LBI43:
+  87:USER/Src/iic_soft.c **** {
+ 563              		.loc 1 87 21 view .LVU115
+ 564              	.LBB44:
+  89:USER/Src/iic_soft.c **** }
+ 565              		.loc 1 89 2 view .LVU116
+  89:USER/Src/iic_soft.c **** }
+ 566              		.loc 1 89 7 is_stmt 0 view .LVU117
+ 567 000e 4FF4FA73 		mov	r3, #500
+ 568              	.LVL29:
+ 569              	.L42:
+  89:USER/Src/iic_soft.c **** }
+ 570              		.loc 1 89 12 is_stmt 1 view .LVU118
+  89:USER/Src/iic_soft.c **** }
+ 571              		.loc 1 89 7 view .LVU119
+ 572 0012 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 573              		.loc 1 89 9 is_stmt 0 view .LVU120
+ 574 0014 013B     		subs	r3, r3, #1
+ 575              	.LVL30:
+  89:USER/Src/iic_soft.c **** }
+ 576              		.loc 1 89 7 view .LVU121
+ 577 0016 002A     		cmp	r2, #0
+ 578 0018 FBD1     		bne	.L42
+ 579              	.LVL31:
+  89:USER/Src/iic_soft.c **** }
+ 580              		.loc 1 89 7 view .LVU122
+ 581              	.LBE44:
+ 582              	.LBE43:
+ 121:USER/Src/iic_soft.c **** 	IIC_SCL_H();
+ 583              		.loc 1 121 2 is_stmt 1 view .LVU123
+ 584 001a FFF7FEFF 		bl	IIC_SCL_H
+ 585              	.LVL32:
+ 122:USER/Src/iic_soft.c **** 	
+ 123:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 586              		.loc 1 123 2 view .LVU124
+ 587              	.LBB45:
+ 588              	.LBI45:
+  87:USER/Src/iic_soft.c **** {
+ 589              		.loc 1 87 21 view .LVU125
+ 590              	.LBE45:
+ 121:USER/Src/iic_soft.c **** 	IIC_SCL_H();
+ 591              		.loc 1 121 2 is_stmt 0 view .LVU126
+ 592 001e 4FF4FA73 		mov	r3, #500
+ 593              	.LVL33:
+ 594              	.L43:
+ 595              	.LBB47:
+ 596              	.LBB46:
+  89:USER/Src/iic_soft.c **** }
+ 597              		.loc 1 89 12 is_stmt 1 view .LVU127
+  89:USER/Src/iic_soft.c **** }
+ 598              		.loc 1 89 7 view .LVU128
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 14
+
+
+ 599 0022 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 600              		.loc 1 89 9 is_stmt 0 view .LVU129
+ 601 0024 013B     		subs	r3, r3, #1
+ 602              	.LVL34:
+  89:USER/Src/iic_soft.c **** }
+ 603              		.loc 1 89 7 view .LVU130
+ 604 0026 002A     		cmp	r2, #0
+ 605 0028 FBD1     		bne	.L43
+ 606              	.LVL35:
+  89:USER/Src/iic_soft.c **** }
+ 607              		.loc 1 89 7 view .LVU131
+ 608              	.LBE46:
+ 609              	.LBE47:
+ 124:USER/Src/iic_soft.c **** 	IIC_SDA_H();
+ 610              		.loc 1 124 2 is_stmt 1 view .LVU132
+ 611 002a FFF7FEFF 		bl	IIC_SDA_H
+ 612              	.LVL36:
+ 125:USER/Src/iic_soft.c **** }
+ 613              		.loc 1 125 1 is_stmt 0 view .LVU133
+ 614 002e 08BD     		pop	{r3, pc}
+ 615              		.cfi_endproc
+ 616              	.LFE143:
+ 618              		.section	.text.IIC_ACK,"ax",%progbits
+ 619              		.align	1
+ 620              		.global	IIC_ACK
+ 621              		.syntax unified
+ 622              		.thumb
+ 623              		.thumb_func
+ 625              	IIC_ACK:
+ 626              	.LFB144:
+ 126:USER/Src/iic_soft.c **** 
+ 127:USER/Src/iic_soft.c **** //ACK
+ 128:USER/Src/iic_soft.c **** void IIC_ACK(void)
+ 129:USER/Src/iic_soft.c **** {
+ 627              		.loc 1 129 1 is_stmt 1 view -0
+ 628              		.cfi_startproc
+ 629              		@ args = 0, pretend = 0, frame = 0
+ 630              		@ frame_needed = 0, uses_anonymous_args = 0
+ 631 0000 08B5     		push	{r3, lr}
+ 632              	.LCFI16:
+ 633              		.cfi_def_cfa_offset 8
+ 634              		.cfi_offset 3, -8
+ 635              		.cfi_offset 14, -4
+ 130:USER/Src/iic_soft.c **** 	IIC_SCL_L();
+ 636              		.loc 1 130 2 view .LVU135
+ 637 0002 FFF7FEFF 		bl	IIC_SCL_L
+ 638              	.LVL37:
+ 131:USER/Src/iic_soft.c **** 	IIC_SDA_L();
+ 639              		.loc 1 131 2 view .LVU136
+ 640 0006 FFF7FEFF 		bl	IIC_SDA_L
+ 641              	.LVL38:
+ 132:USER/Src/iic_soft.c **** 	
+ 133:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 642              		.loc 1 133 2 view .LVU137
+ 643              	.LBB48:
+ 644              	.LBI48:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 15
+
+
+  87:USER/Src/iic_soft.c **** {
+ 645              		.loc 1 87 21 view .LVU138
+ 646              	.LBB49:
+  89:USER/Src/iic_soft.c **** }
+ 647              		.loc 1 89 2 view .LVU139
+  89:USER/Src/iic_soft.c **** }
+ 648              		.loc 1 89 7 is_stmt 0 view .LVU140
+ 649 000a 4FF4FA73 		mov	r3, #500
+ 650              	.LVL39:
+ 651              	.L46:
+  89:USER/Src/iic_soft.c **** }
+ 652              		.loc 1 89 12 is_stmt 1 view .LVU141
+  89:USER/Src/iic_soft.c **** }
+ 653              		.loc 1 89 7 view .LVU142
+ 654 000e 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 655              		.loc 1 89 9 is_stmt 0 view .LVU143
+ 656 0010 013B     		subs	r3, r3, #1
+ 657              	.LVL40:
+  89:USER/Src/iic_soft.c **** }
+ 658              		.loc 1 89 7 view .LVU144
+ 659 0012 002A     		cmp	r2, #0
+ 660 0014 FBD1     		bne	.L46
+ 661              	.LVL41:
+  89:USER/Src/iic_soft.c **** }
+ 662              		.loc 1 89 7 view .LVU145
+ 663              	.LBE49:
+ 664              	.LBE48:
+ 134:USER/Src/iic_soft.c **** 	IIC_SCL_H();
+ 665              		.loc 1 134 2 is_stmt 1 view .LVU146
+ 666 0016 FFF7FEFF 		bl	IIC_SCL_H
+ 667              	.LVL42:
+ 135:USER/Src/iic_soft.c **** 	
+ 136:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 668              		.loc 1 136 2 view .LVU147
+ 669              	.LBB50:
+ 670              	.LBI50:
+  87:USER/Src/iic_soft.c **** {
+ 671              		.loc 1 87 21 view .LVU148
+ 672              	.LBE50:
+ 134:USER/Src/iic_soft.c **** 	IIC_SCL_H();
+ 673              		.loc 1 134 2 is_stmt 0 view .LVU149
+ 674 001a 4FF4FA73 		mov	r3, #500
+ 675              	.LVL43:
+ 676              	.L47:
+ 677              	.LBB52:
+ 678              	.LBB51:
+  89:USER/Src/iic_soft.c **** }
+ 679              		.loc 1 89 12 is_stmt 1 view .LVU150
+  89:USER/Src/iic_soft.c **** }
+ 680              		.loc 1 89 7 view .LVU151
+ 681 001e 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 682              		.loc 1 89 9 is_stmt 0 view .LVU152
+ 683 0020 013B     		subs	r3, r3, #1
+ 684              	.LVL44:
+  89:USER/Src/iic_soft.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 16
+
+
+ 685              		.loc 1 89 7 view .LVU153
+ 686 0022 002A     		cmp	r2, #0
+ 687 0024 FBD1     		bne	.L47
+ 688              	.LVL45:
+  89:USER/Src/iic_soft.c **** }
+ 689              		.loc 1 89 7 view .LVU154
+ 690              	.LBE51:
+ 691              	.LBE52:
+ 137:USER/Src/iic_soft.c **** 	IIC_SCL_L();
+ 692              		.loc 1 137 2 is_stmt 1 view .LVU155
+ 693 0026 FFF7FEFF 		bl	IIC_SCL_L
+ 694              	.LVL46:
+ 138:USER/Src/iic_soft.c **** }
+ 695              		.loc 1 138 1 is_stmt 0 view .LVU156
+ 696 002a 08BD     		pop	{r3, pc}
+ 697              		.cfi_endproc
+ 698              	.LFE144:
+ 700              		.section	.text.IIC_NACK,"ax",%progbits
+ 701              		.align	1
+ 702              		.global	IIC_NACK
+ 703              		.syntax unified
+ 704              		.thumb
+ 705              		.thumb_func
+ 707              	IIC_NACK:
+ 708              	.LFB145:
+ 139:USER/Src/iic_soft.c **** 
+ 140:USER/Src/iic_soft.c **** void IIC_NACK(void)
+ 141:USER/Src/iic_soft.c **** {
+ 709              		.loc 1 141 1 is_stmt 1 view -0
+ 710              		.cfi_startproc
+ 711              		@ args = 0, pretend = 0, frame = 0
+ 712              		@ frame_needed = 0, uses_anonymous_args = 0
+ 713 0000 08B5     		push	{r3, lr}
+ 714              	.LCFI17:
+ 715              		.cfi_def_cfa_offset 8
+ 716              		.cfi_offset 3, -8
+ 717              		.cfi_offset 14, -4
+ 142:USER/Src/iic_soft.c **** 	
+ 143:USER/Src/iic_soft.c **** 	IIC_SCL_L();
+ 718              		.loc 1 143 2 view .LVU158
+ 719 0002 FFF7FEFF 		bl	IIC_SCL_L
+ 720              	.LVL47:
+ 144:USER/Src/iic_soft.c **** 	IIC_SDA_H();
+ 721              		.loc 1 144 2 view .LVU159
+ 722 0006 FFF7FEFF 		bl	IIC_SDA_H
+ 723              	.LVL48:
+ 145:USER/Src/iic_soft.c **** 	
+ 146:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 724              		.loc 1 146 2 view .LVU160
+ 725              	.LBB53:
+ 726              	.LBI53:
+  87:USER/Src/iic_soft.c **** {
+ 727              		.loc 1 87 21 view .LVU161
+ 728              	.LBB54:
+  89:USER/Src/iic_soft.c **** }
+ 729              		.loc 1 89 2 view .LVU162
+  89:USER/Src/iic_soft.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 17
+
+
+ 730              		.loc 1 89 7 is_stmt 0 view .LVU163
+ 731 000a 4FF4FA73 		mov	r3, #500
+ 732              	.LVL49:
+ 733              	.L50:
+  89:USER/Src/iic_soft.c **** }
+ 734              		.loc 1 89 12 is_stmt 1 view .LVU164
+  89:USER/Src/iic_soft.c **** }
+ 735              		.loc 1 89 7 view .LVU165
+ 736 000e 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 737              		.loc 1 89 9 is_stmt 0 view .LVU166
+ 738 0010 013B     		subs	r3, r3, #1
+ 739              	.LVL50:
+  89:USER/Src/iic_soft.c **** }
+ 740              		.loc 1 89 7 view .LVU167
+ 741 0012 002A     		cmp	r2, #0
+ 742 0014 FBD1     		bne	.L50
+ 743              	.LVL51:
+  89:USER/Src/iic_soft.c **** }
+ 744              		.loc 1 89 7 view .LVU168
+ 745              	.LBE54:
+ 746              	.LBE53:
+ 147:USER/Src/iic_soft.c **** 	IIC_SCL_H();
+ 747              		.loc 1 147 2 is_stmt 1 view .LVU169
+ 748 0016 FFF7FEFF 		bl	IIC_SCL_H
+ 749              	.LVL52:
+ 148:USER/Src/iic_soft.c **** 	
+ 149:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 750              		.loc 1 149 2 view .LVU170
+ 751              	.LBB55:
+ 752              	.LBI55:
+  87:USER/Src/iic_soft.c **** {
+ 753              		.loc 1 87 21 view .LVU171
+ 754              	.LBE55:
+ 147:USER/Src/iic_soft.c **** 	IIC_SCL_H();
+ 755              		.loc 1 147 2 is_stmt 0 view .LVU172
+ 756 001a 4FF4FA73 		mov	r3, #500
+ 757              	.LVL53:
+ 758              	.L51:
+ 759              	.LBB57:
+ 760              	.LBB56:
+  89:USER/Src/iic_soft.c **** }
+ 761              		.loc 1 89 12 is_stmt 1 view .LVU173
+  89:USER/Src/iic_soft.c **** }
+ 762              		.loc 1 89 7 view .LVU174
+ 763 001e 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 764              		.loc 1 89 9 is_stmt 0 view .LVU175
+ 765 0020 013B     		subs	r3, r3, #1
+ 766              	.LVL54:
+  89:USER/Src/iic_soft.c **** }
+ 767              		.loc 1 89 7 view .LVU176
+ 768 0022 002A     		cmp	r2, #0
+ 769 0024 FBD1     		bne	.L51
+ 770              	.LVL55:
+  89:USER/Src/iic_soft.c **** }
+ 771              		.loc 1 89 7 view .LVU177
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 18
+
+
+ 772              	.LBE56:
+ 773              	.LBE57:
+ 150:USER/Src/iic_soft.c **** 	IIC_SCL_L();
+ 774              		.loc 1 150 2 is_stmt 1 view .LVU178
+ 775 0026 FFF7FEFF 		bl	IIC_SCL_L
+ 776              	.LVL56:
+ 151:USER/Src/iic_soft.c **** 
+ 152:USER/Src/iic_soft.c **** }
+ 777              		.loc 1 152 1 is_stmt 0 view .LVU179
+ 778 002a 08BD     		pop	{r3, pc}
+ 779              		.cfi_endproc
+ 780              	.LFE145:
+ 782              		.section	.text.IIC_Wait_ACK,"ax",%progbits
+ 783              		.align	1
+ 784              		.global	IIC_Wait_ACK
+ 785              		.syntax unified
+ 786              		.thumb
+ 787              		.thumb_func
+ 789              	IIC_Wait_ACK:
+ 790              	.LFB146:
+ 153:USER/Src/iic_soft.c **** 	
+ 154:USER/Src/iic_soft.c **** IIC_soft IIC_Wait_ACK(void)
+ 155:USER/Src/iic_soft.c **** {
+ 791              		.loc 1 155 1 is_stmt 1 view -0
+ 792              		.cfi_startproc
+ 793              		@ args = 0, pretend = 0, frame = 0
+ 794              		@ frame_needed = 0, uses_anonymous_args = 0
+ 795 0000 08B5     		push	{r3, lr}
+ 796              	.LCFI18:
+ 797              		.cfi_def_cfa_offset 8
+ 798              		.cfi_offset 3, -8
+ 799              		.cfi_offset 14, -4
+ 156:USER/Src/iic_soft.c **** 	IIC_SDA_IN();
+ 800              		.loc 1 156 2 view .LVU181
+ 801 0002 FFF7FEFF 		bl	IIC_SDA_IN
+ 802              	.LVL57:
+ 157:USER/Src/iic_soft.c **** 	IIC_SCL_H();
+ 803              		.loc 1 157 2 view .LVU182
+ 804 0006 FFF7FEFF 		bl	IIC_SCL_H
+ 805              	.LVL58:
+ 158:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 806              		.loc 1 158 2 view .LVU183
+ 807              	.LBB58:
+ 808              	.LBI58:
+  87:USER/Src/iic_soft.c **** {
+ 809              		.loc 1 87 21 view .LVU184
+ 810              	.LBB59:
+  89:USER/Src/iic_soft.c **** }
+ 811              		.loc 1 89 2 view .LVU185
+  89:USER/Src/iic_soft.c **** }
+ 812              		.loc 1 89 7 is_stmt 0 view .LVU186
+ 813 000a 4FF4FA73 		mov	r3, #500
+ 814              	.LVL59:
+ 815              	.L54:
+  89:USER/Src/iic_soft.c **** }
+ 816              		.loc 1 89 12 is_stmt 1 view .LVU187
+  89:USER/Src/iic_soft.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 19
+
+
+ 817              		.loc 1 89 7 view .LVU188
+ 818 000e 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 819              		.loc 1 89 9 is_stmt 0 view .LVU189
+ 820 0010 013B     		subs	r3, r3, #1
+ 821              	.LVL60:
+  89:USER/Src/iic_soft.c **** }
+ 822              		.loc 1 89 7 view .LVU190
+ 823 0012 002A     		cmp	r2, #0
+ 824 0014 FBD1     		bne	.L54
+ 825              	.LVL61:
+  89:USER/Src/iic_soft.c **** }
+ 826              		.loc 1 89 7 view .LVU191
+ 827              	.LBE59:
+ 828              	.LBE58:
+ 159:USER/Src/iic_soft.c **** 	
+ 160:USER/Src/iic_soft.c **** 	if(IIC_Read_SDA())
+ 829              		.loc 1 160 2 is_stmt 1 view .LVU192
+ 830              		.loc 1 160 5 is_stmt 0 view .LVU193
+ 831 0016 FFF7FEFF 		bl	IIC_Read_SDA
+ 832              	.LVL62:
+ 833              		.loc 1 160 4 view .LVU194
+ 834 001a 08B1     		cbz	r0, .L59
+ 161:USER/Src/iic_soft.c **** 	{
+ 162:USER/Src/iic_soft.c **** 		return I2C_NO_ACK;
+ 835              		.loc 1 162 10 view .LVU195
+ 836 001c 0020     		movs	r0, #0
+ 837              	.L55:
+ 163:USER/Src/iic_soft.c **** 	}
+ 164:USER/Src/iic_soft.c **** 	
+ 165:USER/Src/iic_soft.c **** 	IIC_SCL_L();
+ 166:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 167:USER/Src/iic_soft.c **** 	
+ 168:USER/Src/iic_soft.c **** 	IIC_SDA_H();
+ 169:USER/Src/iic_soft.c **** 	IIC_SDA_OUT();
+ 170:USER/Src/iic_soft.c **** 	
+ 171:USER/Src/iic_soft.c **** 	return I2C_ACK;
+ 172:USER/Src/iic_soft.c **** }
+ 838              		.loc 1 172 1 view .LVU196
+ 839 001e 08BD     		pop	{r3, pc}
+ 840              	.L59:
+ 165:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 841              		.loc 1 165 2 is_stmt 1 view .LVU197
+ 842 0020 FFF7FEFF 		bl	IIC_SCL_L
+ 843              	.LVL63:
+ 166:USER/Src/iic_soft.c **** 	
+ 844              		.loc 1 166 2 view .LVU198
+ 845              	.LBB60:
+ 846              	.LBI60:
+  87:USER/Src/iic_soft.c **** {
+ 847              		.loc 1 87 21 view .LVU199
+ 848              	.LBB61:
+  89:USER/Src/iic_soft.c **** }
+ 849              		.loc 1 89 2 view .LVU200
+  89:USER/Src/iic_soft.c **** }
+ 850              		.loc 1 89 7 is_stmt 0 view .LVU201
+ 851 0024 4FF4FA73 		mov	r3, #500
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 20
+
+
+ 852              	.LVL64:
+ 853              	.L56:
+  89:USER/Src/iic_soft.c **** }
+ 854              		.loc 1 89 12 is_stmt 1 view .LVU202
+  89:USER/Src/iic_soft.c **** }
+ 855              		.loc 1 89 7 view .LVU203
+ 856 0028 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 857              		.loc 1 89 9 is_stmt 0 view .LVU204
+ 858 002a 013B     		subs	r3, r3, #1
+ 859              	.LVL65:
+  89:USER/Src/iic_soft.c **** }
+ 860              		.loc 1 89 7 view .LVU205
+ 861 002c 002A     		cmp	r2, #0
+ 862 002e FBD1     		bne	.L56
+ 863              	.LVL66:
+  89:USER/Src/iic_soft.c **** }
+ 864              		.loc 1 89 7 view .LVU206
+ 865              	.LBE61:
+ 866              	.LBE60:
+ 168:USER/Src/iic_soft.c **** 	IIC_SDA_OUT();
+ 867              		.loc 1 168 2 is_stmt 1 view .LVU207
+ 868 0030 FFF7FEFF 		bl	IIC_SDA_H
+ 869              	.LVL67:
+ 169:USER/Src/iic_soft.c **** 	
+ 870              		.loc 1 169 2 view .LVU208
+ 871 0034 FFF7FEFF 		bl	IIC_SDA_OUT
+ 872              	.LVL68:
+ 171:USER/Src/iic_soft.c **** }
+ 873              		.loc 1 171 2 view .LVU209
+ 171:USER/Src/iic_soft.c **** }
+ 874              		.loc 1 171 9 is_stmt 0 view .LVU210
+ 875 0038 0120     		movs	r0, #1
+ 876 003a F0E7     		b	.L55
+ 877              		.cfi_endproc
+ 878              	.LFE146:
+ 880              		.section	.text.IIC_Send_Data,"ax",%progbits
+ 881              		.align	1
+ 882              		.global	IIC_Send_Data
+ 883              		.syntax unified
+ 884              		.thumb
+ 885              		.thumb_func
+ 887              	IIC_Send_Data:
+ 888              	.LVL69:
+ 889              	.LFB147:
+ 173:USER/Src/iic_soft.c **** 
+ 174:USER/Src/iic_soft.c **** //发 1 byte
+ 175:USER/Src/iic_soft.c **** void IIC_Send_Data(uint8_t data)
+ 176:USER/Src/iic_soft.c **** {
+ 890              		.loc 1 176 1 is_stmt 1 view -0
+ 891              		.cfi_startproc
+ 892              		@ args = 0, pretend = 0, frame = 0
+ 893              		@ frame_needed = 0, uses_anonymous_args = 0
+ 894              		.loc 1 176 1 is_stmt 0 view .LVU212
+ 895 0000 38B5     		push	{r3, r4, r5, lr}
+ 896              	.LCFI19:
+ 897              		.cfi_def_cfa_offset 16
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 21
+
+
+ 898              		.cfi_offset 3, -16
+ 899              		.cfi_offset 4, -12
+ 900              		.cfi_offset 5, -8
+ 901              		.cfi_offset 14, -4
+ 902 0002 0446     		mov	r4, r0
+ 177:USER/Src/iic_soft.c **** 	uint8_t i=0;
+ 903              		.loc 1 177 2 is_stmt 1 view .LVU213
+ 904              	.LVL70:
+ 178:USER/Src/iic_soft.c **** 	IIC_SCL_L();
+ 905              		.loc 1 178 2 view .LVU214
+ 906 0004 FFF7FEFF 		bl	IIC_SCL_L
+ 907              	.LVL71:
+ 179:USER/Src/iic_soft.c **** 	for(i=0;i<8;i++)
+ 908              		.loc 1 179 2 view .LVU215
+ 909              		.loc 1 179 7 is_stmt 0 view .LVU216
+ 910 0008 0025     		movs	r5, #0
+ 911              		.loc 1 179 2 view .LVU217
+ 912 000a 15E0     		b	.L61
+ 913              	.LVL72:
+ 914              	.L69:
+ 180:USER/Src/iic_soft.c **** 	{
+ 181:USER/Src/iic_soft.c **** 		if(data&0X80)
+ 182:USER/Src/iic_soft.c **** 		{
+ 183:USER/Src/iic_soft.c **** 			IIC_SDA_H();
+ 915              		.loc 1 183 4 is_stmt 1 view .LVU218
+ 916 000c FFF7FEFF 		bl	IIC_SDA_H
+ 917              	.LVL73:
+ 918              	.L63:
+ 184:USER/Src/iic_soft.c **** 		}else{
+ 185:USER/Src/iic_soft.c **** 			
+ 186:USER/Src/iic_soft.c **** 			IIC_SDA_L();
+ 187:USER/Src/iic_soft.c **** 		}
+ 188:USER/Src/iic_soft.c **** 		IIC_delay(I2C_delay);
+ 919              		.loc 1 188 3 discriminator 2 view .LVU219
+ 920              	.LBB62:
+ 921              	.LBI62:
+  87:USER/Src/iic_soft.c **** {
+ 922              		.loc 1 87 21 discriminator 2 view .LVU220
+ 923              	.LBB63:
+  89:USER/Src/iic_soft.c **** }
+ 924              		.loc 1 89 2 discriminator 2 view .LVU221
+  89:USER/Src/iic_soft.c **** }
+ 925              		.loc 1 89 7 is_stmt 0 discriminator 2 view .LVU222
+ 926 0010 4FF4FA73 		mov	r3, #500
+ 927              	.LVL74:
+ 928              	.L64:
+  89:USER/Src/iic_soft.c **** }
+ 929              		.loc 1 89 12 is_stmt 1 view .LVU223
+  89:USER/Src/iic_soft.c **** }
+ 930              		.loc 1 89 7 view .LVU224
+ 931 0014 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 932              		.loc 1 89 9 is_stmt 0 view .LVU225
+ 933 0016 013B     		subs	r3, r3, #1
+ 934              	.LVL75:
+  89:USER/Src/iic_soft.c **** }
+ 935              		.loc 1 89 7 view .LVU226
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 22
+
+
+ 936 0018 002A     		cmp	r2, #0
+ 937 001a FBD1     		bne	.L64
+ 938              	.LVL76:
+  89:USER/Src/iic_soft.c **** }
+ 939              		.loc 1 89 7 view .LVU227
+ 940              	.LBE63:
+ 941              	.LBE62:
+ 189:USER/Src/iic_soft.c **** 		data <<= 1;
+ 942              		.loc 1 189 3 is_stmt 1 discriminator 2 view .LVU228
+ 943              		.loc 1 189 8 is_stmt 0 discriminator 2 view .LVU229
+ 944 001c 6400     		lsls	r4, r4, #1
+ 945              	.LVL77:
+ 946              		.loc 1 189 8 discriminator 2 view .LVU230
+ 947 001e E4B2     		uxtb	r4, r4
+ 948              	.LVL78:
+ 190:USER/Src/iic_soft.c **** 		IIC_SCL_H();
+ 949              		.loc 1 190 3 is_stmt 1 discriminator 2 view .LVU231
+ 950 0020 FFF7FEFF 		bl	IIC_SCL_H
+ 951              	.LVL79:
+ 191:USER/Src/iic_soft.c **** 		IIC_delay(I2C_delay);
+ 952              		.loc 1 191 3 discriminator 2 view .LVU232
+ 953              	.LBB64:
+ 954              	.LBI64:
+  87:USER/Src/iic_soft.c **** {
+ 955              		.loc 1 87 21 discriminator 2 view .LVU233
+ 956              	.LBE64:
+ 190:USER/Src/iic_soft.c **** 		IIC_SCL_H();
+ 957              		.loc 1 190 3 is_stmt 0 discriminator 2 view .LVU234
+ 958 0024 4FF4FA73 		mov	r3, #500
+ 959              	.LVL80:
+ 960              	.L65:
+ 961              	.LBB66:
+ 962              	.LBB65:
+  89:USER/Src/iic_soft.c **** }
+ 963              		.loc 1 89 12 is_stmt 1 view .LVU235
+  89:USER/Src/iic_soft.c **** }
+ 964              		.loc 1 89 7 view .LVU236
+ 965 0028 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 966              		.loc 1 89 9 is_stmt 0 view .LVU237
+ 967 002a 013B     		subs	r3, r3, #1
+ 968              	.LVL81:
+  89:USER/Src/iic_soft.c **** }
+ 969              		.loc 1 89 7 view .LVU238
+ 970 002c 002A     		cmp	r2, #0
+ 971 002e FBD1     		bne	.L65
+ 972              	.LVL82:
+  89:USER/Src/iic_soft.c **** }
+ 973              		.loc 1 89 7 view .LVU239
+ 974              	.LBE65:
+ 975              	.LBE66:
+ 192:USER/Src/iic_soft.c **** 		IIC_SCL_L();
+ 976              		.loc 1 192 3 is_stmt 1 discriminator 2 view .LVU240
+ 977 0030 FFF7FEFF 		bl	IIC_SCL_L
+ 978              	.LVL83:
+ 179:USER/Src/iic_soft.c **** 	{
+ 979              		.loc 1 179 14 discriminator 2 view .LVU241
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 23
+
+
+ 179:USER/Src/iic_soft.c **** 	{
+ 980              		.loc 1 179 15 is_stmt 0 discriminator 2 view .LVU242
+ 981 0034 0135     		adds	r5, r5, #1
+ 982              	.LVL84:
+ 179:USER/Src/iic_soft.c **** 	{
+ 983              		.loc 1 179 15 discriminator 2 view .LVU243
+ 984 0036 EDB2     		uxtb	r5, r5
+ 985              	.LVL85:
+ 986              	.L61:
+ 179:USER/Src/iic_soft.c **** 	{
+ 987              		.loc 1 179 10 is_stmt 1 discriminator 1 view .LVU244
+ 179:USER/Src/iic_soft.c **** 	{
+ 988              		.loc 1 179 2 is_stmt 0 discriminator 1 view .LVU245
+ 989 0038 072D     		cmp	r5, #7
+ 990 003a 05D8     		bhi	.L68
+ 181:USER/Src/iic_soft.c **** 		{
+ 991              		.loc 1 181 3 is_stmt 1 view .LVU246
+ 181:USER/Src/iic_soft.c **** 		{
+ 992              		.loc 1 181 5 is_stmt 0 view .LVU247
+ 993 003c 14F0800F 		tst	r4, #128
+ 994 0040 E4D1     		bne	.L69
+ 186:USER/Src/iic_soft.c **** 		}
+ 995              		.loc 1 186 4 is_stmt 1 view .LVU248
+ 996 0042 FFF7FEFF 		bl	IIC_SDA_L
+ 997              	.LVL86:
+ 998 0046 E3E7     		b	.L63
+ 999              	.L68:
+ 193:USER/Src/iic_soft.c **** 	}
+ 194:USER/Src/iic_soft.c **** }
+ 1000              		.loc 1 194 1 is_stmt 0 view .LVU249
+ 1001 0048 38BD     		pop	{r3, r4, r5, pc}
+ 1002              		.loc 1 194 1 view .LVU250
+ 1003              		.cfi_endproc
+ 1004              	.LFE147:
+ 1006              		.section	.text.IIC_Receive_Data,"ax",%progbits
+ 1007              		.align	1
+ 1008              		.global	IIC_Receive_Data
+ 1009              		.syntax unified
+ 1010              		.thumb
+ 1011              		.thumb_func
+ 1013              	IIC_Receive_Data:
+ 1014              	.LFB148:
+ 195:USER/Src/iic_soft.c **** 
+ 196:USER/Src/iic_soft.c **** //收 1 byte
+ 197:USER/Src/iic_soft.c **** uint8_t IIC_Receive_Data(void)
+ 198:USER/Src/iic_soft.c **** {	
+ 1015              		.loc 1 198 1 is_stmt 1 view -0
+ 1016              		.cfi_startproc
+ 1017              		@ args = 0, pretend = 0, frame = 0
+ 1018              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1019 0000 38B5     		push	{r3, r4, r5, lr}
+ 1020              	.LCFI20:
+ 1021              		.cfi_def_cfa_offset 16
+ 1022              		.cfi_offset 3, -16
+ 1023              		.cfi_offset 4, -12
+ 1024              		.cfi_offset 5, -8
+ 1025              		.cfi_offset 14, -4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 24
+
+
+ 199:USER/Src/iic_soft.c **** 	uint8_t i=0,data=0;
+ 1026              		.loc 1 199 2 view .LVU252
+ 1027              	.LVL87:
+ 200:USER/Src/iic_soft.c **** 	IIC_SDA_IN();
+ 1028              		.loc 1 200 2 view .LVU253
+ 1029 0002 FFF7FEFF 		bl	IIC_SDA_IN
+ 1030              	.LVL88:
+ 201:USER/Src/iic_soft.c **** 	IIC_SDA_H();
+ 1031              		.loc 1 201 2 view .LVU254
+ 1032 0006 FFF7FEFF 		bl	IIC_SDA_H
+ 1033              	.LVL89:
+ 202:USER/Src/iic_soft.c **** 	for(i=0;i<8;i++)
+ 1034              		.loc 1 202 2 view .LVU255
+ 199:USER/Src/iic_soft.c **** 	IIC_SDA_IN();
+ 1035              		.loc 1 199 14 is_stmt 0 view .LVU256
+ 1036 000a 0024     		movs	r4, #0
+ 1037              		.loc 1 202 7 view .LVU257
+ 1038 000c 2546     		mov	r5, r4
+ 1039              		.loc 1 202 2 view .LVU258
+ 1040 000e 01E0     		b	.L71
+ 1041              	.LVL90:
+ 1042              	.L74:
+ 1043              		.loc 1 202 14 is_stmt 1 discriminator 2 view .LVU259
+ 1044              		.loc 1 202 15 is_stmt 0 discriminator 2 view .LVU260
+ 1045 0010 0135     		adds	r5, r5, #1
+ 1046              	.LVL91:
+ 1047              		.loc 1 202 15 discriminator 2 view .LVU261
+ 1048 0012 EDB2     		uxtb	r5, r5
+ 1049              	.LVL92:
+ 1050              	.L71:
+ 1051              		.loc 1 202 10 is_stmt 1 discriminator 1 view .LVU262
+ 1052              		.loc 1 202 2 is_stmt 0 discriminator 1 view .LVU263
+ 1053 0014 072D     		cmp	r5, #7
+ 1054 0016 18D8     		bhi	.L78
+ 203:USER/Src/iic_soft.c **** 	{
+ 204:USER/Src/iic_soft.c **** 		IIC_SCL_L();
+ 1055              		.loc 1 204 3 is_stmt 1 view .LVU264
+ 1056 0018 FFF7FEFF 		bl	IIC_SCL_L
+ 1057              	.LVL93:
+ 205:USER/Src/iic_soft.c **** 		data <<= 1;
+ 1058              		.loc 1 205 3 view .LVU265
+ 1059              		.loc 1 205 8 is_stmt 0 view .LVU266
+ 1060 001c 6400     		lsls	r4, r4, #1
+ 1061              	.LVL94:
+ 1062              		.loc 1 205 8 view .LVU267
+ 1063 001e E4B2     		uxtb	r4, r4
+ 1064              	.LVL95:
+ 206:USER/Src/iic_soft.c **** 		IIC_delay(I2C_delay);
+ 1065              		.loc 1 206 3 is_stmt 1 view .LVU268
+ 1066              	.LBB67:
+ 1067              	.LBI67:
+  87:USER/Src/iic_soft.c **** {
+ 1068              		.loc 1 87 21 view .LVU269
+ 1069              	.LBB68:
+  89:USER/Src/iic_soft.c **** }
+ 1070              		.loc 1 89 2 view .LVU270
+  89:USER/Src/iic_soft.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 25
+
+
+ 1071              		.loc 1 89 7 is_stmt 0 view .LVU271
+ 1072 0020 4FF4FA73 		mov	r3, #500
+ 1073              	.LVL96:
+ 1074              	.L72:
+  89:USER/Src/iic_soft.c **** }
+ 1075              		.loc 1 89 12 is_stmt 1 view .LVU272
+  89:USER/Src/iic_soft.c **** }
+ 1076              		.loc 1 89 7 view .LVU273
+ 1077 0024 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 1078              		.loc 1 89 9 is_stmt 0 view .LVU274
+ 1079 0026 013B     		subs	r3, r3, #1
+ 1080              	.LVL97:
+  89:USER/Src/iic_soft.c **** }
+ 1081              		.loc 1 89 7 view .LVU275
+ 1082 0028 002A     		cmp	r2, #0
+ 1083 002a FBD1     		bne	.L72
+ 1084              	.LVL98:
+  89:USER/Src/iic_soft.c **** }
+ 1085              		.loc 1 89 7 view .LVU276
+ 1086              	.LBE68:
+ 1087              	.LBE67:
+ 207:USER/Src/iic_soft.c **** 		IIC_SCL_H();
+ 1088              		.loc 1 207 3 is_stmt 1 view .LVU277
+ 1089 002c FFF7FEFF 		bl	IIC_SCL_H
+ 1090              	.LVL99:
+ 208:USER/Src/iic_soft.c **** 		IIC_delay(I2C_delay);
+ 1091              		.loc 1 208 3 view .LVU278
+ 1092              	.LBB69:
+ 1093              	.LBI69:
+  87:USER/Src/iic_soft.c **** {
+ 1094              		.loc 1 87 21 view .LVU279
+ 1095              	.LBE69:
+ 207:USER/Src/iic_soft.c **** 		IIC_SCL_H();
+ 1096              		.loc 1 207 3 is_stmt 0 view .LVU280
+ 1097 0030 4FF4FA73 		mov	r3, #500
+ 1098              	.LVL100:
+ 1099              	.L73:
+ 1100              	.LBB71:
+ 1101              	.LBB70:
+  89:USER/Src/iic_soft.c **** }
+ 1102              		.loc 1 89 12 is_stmt 1 view .LVU281
+  89:USER/Src/iic_soft.c **** }
+ 1103              		.loc 1 89 7 view .LVU282
+ 1104 0034 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 1105              		.loc 1 89 9 is_stmt 0 view .LVU283
+ 1106 0036 013B     		subs	r3, r3, #1
+ 1107              	.LVL101:
+  89:USER/Src/iic_soft.c **** }
+ 1108              		.loc 1 89 7 view .LVU284
+ 1109 0038 002A     		cmp	r2, #0
+ 1110 003a FBD1     		bne	.L73
+ 1111              	.LVL102:
+  89:USER/Src/iic_soft.c **** }
+ 1112              		.loc 1 89 7 view .LVU285
+ 1113              	.LBE70:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 26
+
+
+ 1114              	.LBE71:
+ 209:USER/Src/iic_soft.c **** 		if(IIC_Read_SDA())
+ 1115              		.loc 1 209 3 is_stmt 1 view .LVU286
+ 1116              		.loc 1 209 6 is_stmt 0 view .LVU287
+ 1117 003c FFF7FEFF 		bl	IIC_Read_SDA
+ 1118              	.LVL103:
+ 1119              		.loc 1 209 5 view .LVU288
+ 1120 0040 0028     		cmp	r0, #0
+ 1121 0042 E5D0     		beq	.L74
+ 210:USER/Src/iic_soft.c **** 		{
+ 211:USER/Src/iic_soft.c **** 			data |= 0x01;		
+ 1122              		.loc 1 211 4 is_stmt 1 view .LVU289
+ 1123              		.loc 1 211 9 is_stmt 0 view .LVU290
+ 1124 0044 44F00104 		orr	r4, r4, #1
+ 1125              	.LVL104:
+ 1126              		.loc 1 211 9 view .LVU291
+ 1127 0048 E2E7     		b	.L74
+ 1128              	.L78:
+ 212:USER/Src/iic_soft.c **** 		}
+ 213:USER/Src/iic_soft.c **** 	}
+ 214:USER/Src/iic_soft.c **** 	IIC_SCL_L();
+ 1129              		.loc 1 214 2 is_stmt 1 view .LVU292
+ 1130 004a FFF7FEFF 		bl	IIC_SCL_L
+ 1131              	.LVL105:
+ 215:USER/Src/iic_soft.c **** 	IIC_delay(I2C_delay);
+ 1132              		.loc 1 215 2 view .LVU293
+ 1133              	.LBB72:
+ 1134              	.LBI72:
+  87:USER/Src/iic_soft.c **** {
+ 1135              		.loc 1 87 21 view .LVU294
+ 1136              	.LBB73:
+  89:USER/Src/iic_soft.c **** }
+ 1137              		.loc 1 89 2 view .LVU295
+  89:USER/Src/iic_soft.c **** }
+ 1138              		.loc 1 89 7 is_stmt 0 view .LVU296
+ 1139 004e 4FF4FA73 		mov	r3, #500
+ 1140              	.LVL106:
+ 1141              	.L76:
+  89:USER/Src/iic_soft.c **** }
+ 1142              		.loc 1 89 12 is_stmt 1 view .LVU297
+  89:USER/Src/iic_soft.c **** }
+ 1143              		.loc 1 89 7 view .LVU298
+ 1144 0052 1A46     		mov	r2, r3
+  89:USER/Src/iic_soft.c **** }
+ 1145              		.loc 1 89 9 is_stmt 0 view .LVU299
+ 1146 0054 013B     		subs	r3, r3, #1
+ 1147              	.LVL107:
+  89:USER/Src/iic_soft.c **** }
+ 1148              		.loc 1 89 7 view .LVU300
+ 1149 0056 002A     		cmp	r2, #0
+ 1150 0058 FBD1     		bne	.L76
+ 1151              	.LVL108:
+  89:USER/Src/iic_soft.c **** }
+ 1152              		.loc 1 89 7 view .LVU301
+ 1153              	.LBE73:
+ 1154              	.LBE72:
+ 216:USER/Src/iic_soft.c **** 	IIC_SDA_OUT();
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 27
+
+
+ 1155              		.loc 1 216 2 is_stmt 1 view .LVU302
+ 1156 005a FFF7FEFF 		bl	IIC_SDA_OUT
+ 1157              	.LVL109:
+ 217:USER/Src/iic_soft.c **** 	
+ 218:USER/Src/iic_soft.c **** 	return data;
+ 1158              		.loc 1 218 2 view .LVU303
+ 219:USER/Src/iic_soft.c **** }
+ 1159              		.loc 1 219 1 is_stmt 0 view .LVU304
+ 1160 005e 2046     		mov	r0, r4
+ 1161 0060 38BD     		pop	{r3, r4, r5, pc}
+ 1162              		.loc 1 219 1 view .LVU305
+ 1163              		.cfi_endproc
+ 1164              	.LFE148:
+ 1166              		.section	.text.IIC_Write_multi_bytes,"ax",%progbits
+ 1167              		.align	1
+ 1168              		.global	IIC_Write_multi_bytes
+ 1169              		.syntax unified
+ 1170              		.thumb
+ 1171              		.thumb_func
+ 1173              	IIC_Write_multi_bytes:
+ 1174              	.LVL110:
+ 1175              	.LFB149:
+ 220:USER/Src/iic_soft.c **** 
+ 221:USER/Src/iic_soft.c **** IIC_soft IIC_Write_multi_bytes(uint8_t dev_addr, uint8_t reg_addr, const uint8_t *buf, uint8_t size
+ 222:USER/Src/iic_soft.c **** {
+ 1176              		.loc 1 222 1 is_stmt 1 view -0
+ 1177              		.cfi_startproc
+ 1178              		@ args = 0, pretend = 0, frame = 0
+ 1179              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1180              		.loc 1 222 1 is_stmt 0 view .LVU307
+ 1181 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 1182              	.LCFI21:
+ 1183              		.cfi_def_cfa_offset 24
+ 1184              		.cfi_offset 4, -24
+ 1185              		.cfi_offset 5, -20
+ 1186              		.cfi_offset 6, -16
+ 1187              		.cfi_offset 7, -12
+ 1188              		.cfi_offset 8, -8
+ 1189              		.cfi_offset 14, -4
+ 1190 0004 0446     		mov	r4, r0
+ 1191 0006 8846     		mov	r8, r1
+ 1192 0008 1746     		mov	r7, r2
+ 1193 000a 1E46     		mov	r6, r3
+ 223:USER/Src/iic_soft.c **** 	
+ 224:USER/Src/iic_soft.c **** 	uint8_t i = 0;
+ 1194              		.loc 1 224 2 is_stmt 1 view .LVU308
+ 1195              	.LVL111:
+ 225:USER/Src/iic_soft.c **** 	
+ 226:USER/Src/iic_soft.c **** 	if(IIC_Start() != I2C_OK )//开始信号
+ 1196              		.loc 1 226 2 view .LVU309
+ 1197              		.loc 1 226 5 is_stmt 0 view .LVU310
+ 1198 000c FFF7FEFF 		bl	IIC_Start
+ 1199              	.LVL112:
+ 1200              		.loc 1 226 4 view .LVU311
+ 1201 0010 0228     		cmp	r0, #2
+ 1202 0012 03D0     		beq	.L87
+ 227:USER/Src/iic_soft.c **** 	{
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 28
+
+
+ 228:USER/Src/iic_soft.c **** 		return I2C_Start_FAIL;
+ 1203              		.loc 1 228 10 view .LVU312
+ 1204 0014 0325     		movs	r5, #3
+ 1205              	.LVL113:
+ 1206              	.L80:
+ 229:USER/Src/iic_soft.c **** 	}
+ 230:USER/Src/iic_soft.c **** 	
+ 231:USER/Src/iic_soft.c **** 	IIC_Send_Data(dev_addr);//等待从机应答
+ 232:USER/Src/iic_soft.c **** 	if(IIC_Wait_ACK() != I2C_ACK)
+ 233:USER/Src/iic_soft.c **** 	{
+ 234:USER/Src/iic_soft.c **** 		IIC_Stop();
+ 235:USER/Src/iic_soft.c **** 		return I2C_Start_FAIL;
+ 236:USER/Src/iic_soft.c **** 	}
+ 237:USER/Src/iic_soft.c **** 	
+ 238:USER/Src/iic_soft.c **** 	IIC_Send_Data(reg_addr);//器件地址
+ 239:USER/Src/iic_soft.c **** 	if(IIC_Wait_ACK() != I2C_ACK)
+ 240:USER/Src/iic_soft.c **** 	{
+ 241:USER/Src/iic_soft.c **** 		IIC_Stop();
+ 242:USER/Src/iic_soft.c **** 		return I2C_NO_ACK;
+ 243:USER/Src/iic_soft.c **** 	}
+ 244:USER/Src/iic_soft.c **** 	
+ 245:USER/Src/iic_soft.c **** 	for ( i = 0; i < size; i++)//发数据
+ 246:USER/Src/iic_soft.c ****   {
+ 247:USER/Src/iic_soft.c **** 		IIC_Send_Data(*(buf+i));
+ 248:USER/Src/iic_soft.c **** 		IIC_Wait_ACK();
+ 249:USER/Src/iic_soft.c **** 	}
+ 250:USER/Src/iic_soft.c **** 	
+ 251:USER/Src/iic_soft.c **** 	IIC_Stop();
+ 252:USER/Src/iic_soft.c **** 	return I2C_OK;
+ 253:USER/Src/iic_soft.c **** }
+ 1207              		.loc 1 253 1 view .LVU313
+ 1208 0016 2846     		mov	r0, r5
+ 1209 0018 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 1210              	.LVL114:
+ 1211              	.L87:
+ 1212              		.loc 1 253 1 view .LVU314
+ 1213 001c 0546     		mov	r5, r0
+ 231:USER/Src/iic_soft.c **** 	if(IIC_Wait_ACK() != I2C_ACK)
+ 1214              		.loc 1 231 2 is_stmt 1 view .LVU315
+ 1215 001e 2046     		mov	r0, r4
+ 1216 0020 FFF7FEFF 		bl	IIC_Send_Data
+ 1217              	.LVL115:
+ 232:USER/Src/iic_soft.c **** 	{
+ 1218              		.loc 1 232 2 view .LVU316
+ 232:USER/Src/iic_soft.c **** 	{
+ 1219              		.loc 1 232 5 is_stmt 0 view .LVU317
+ 1220 0024 FFF7FEFF 		bl	IIC_Wait_ACK
+ 1221              	.LVL116:
+ 232:USER/Src/iic_soft.c **** 	{
+ 1222              		.loc 1 232 4 view .LVU318
+ 1223 0028 0128     		cmp	r0, #1
+ 1224 002a 08D1     		bne	.L88
+ 238:USER/Src/iic_soft.c **** 	if(IIC_Wait_ACK() != I2C_ACK)
+ 1225              		.loc 1 238 2 is_stmt 1 view .LVU319
+ 1226 002c 4046     		mov	r0, r8
+ 1227 002e FFF7FEFF 		bl	IIC_Send_Data
+ 1228              	.LVL117:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 29
+
+
+ 239:USER/Src/iic_soft.c **** 	{
+ 1229              		.loc 1 239 2 view .LVU320
+ 239:USER/Src/iic_soft.c **** 	{
+ 1230              		.loc 1 239 5 is_stmt 0 view .LVU321
+ 1231 0032 FFF7FEFF 		bl	IIC_Wait_ACK
+ 1232              	.LVL118:
+ 239:USER/Src/iic_soft.c **** 	{
+ 1233              		.loc 1 239 4 view .LVU322
+ 1234 0036 0128     		cmp	r0, #1
+ 1235 0038 05D1     		bne	.L89
+ 245:USER/Src/iic_soft.c ****   {
+ 1236              		.loc 1 245 10 view .LVU323
+ 1237 003a 0024     		movs	r4, #0
+ 1238 003c 0EE0     		b	.L82
+ 1239              	.L88:
+ 234:USER/Src/iic_soft.c **** 		return I2C_Start_FAIL;
+ 1240              		.loc 1 234 3 is_stmt 1 view .LVU324
+ 1241 003e FFF7FEFF 		bl	IIC_Stop
+ 1242              	.LVL119:
+ 235:USER/Src/iic_soft.c **** 	}
+ 1243              		.loc 1 235 3 view .LVU325
+ 235:USER/Src/iic_soft.c **** 	}
+ 1244              		.loc 1 235 10 is_stmt 0 view .LVU326
+ 1245 0042 0325     		movs	r5, #3
+ 1246 0044 E7E7     		b	.L80
+ 1247              	.L89:
+ 241:USER/Src/iic_soft.c **** 		return I2C_NO_ACK;
+ 1248              		.loc 1 241 3 is_stmt 1 view .LVU327
+ 1249 0046 FFF7FEFF 		bl	IIC_Stop
+ 1250              	.LVL120:
+ 242:USER/Src/iic_soft.c **** 	}
+ 1251              		.loc 1 242 3 view .LVU328
+ 242:USER/Src/iic_soft.c **** 	}
+ 1252              		.loc 1 242 10 is_stmt 0 view .LVU329
+ 1253 004a 0025     		movs	r5, #0
+ 1254 004c E3E7     		b	.L80
+ 1255              	.LVL121:
+ 1256              	.L83:
+ 247:USER/Src/iic_soft.c **** 		IIC_Wait_ACK();
+ 1257              		.loc 1 247 3 is_stmt 1 discriminator 3 view .LVU330
+ 1258 004e 385D     		ldrb	r0, [r7, r4]	@ zero_extendqisi2
+ 1259 0050 FFF7FEFF 		bl	IIC_Send_Data
+ 1260              	.LVL122:
+ 248:USER/Src/iic_soft.c **** 	}
+ 1261              		.loc 1 248 3 discriminator 3 view .LVU331
+ 1262 0054 FFF7FEFF 		bl	IIC_Wait_ACK
+ 1263              	.LVL123:
+ 245:USER/Src/iic_soft.c ****   {
+ 1264              		.loc 1 245 25 discriminator 3 view .LVU332
+ 245:USER/Src/iic_soft.c ****   {
+ 1265              		.loc 1 245 26 is_stmt 0 discriminator 3 view .LVU333
+ 1266 0058 0134     		adds	r4, r4, #1
+ 1267              	.LVL124:
+ 245:USER/Src/iic_soft.c ****   {
+ 1268              		.loc 1 245 26 discriminator 3 view .LVU334
+ 1269 005a E4B2     		uxtb	r4, r4
+ 1270              	.LVL125:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 30
+
+
+ 1271              	.L82:
+ 245:USER/Src/iic_soft.c ****   {
+ 1272              		.loc 1 245 15 is_stmt 1 discriminator 1 view .LVU335
+ 245:USER/Src/iic_soft.c ****   {
+ 1273              		.loc 1 245 2 is_stmt 0 discriminator 1 view .LVU336
+ 1274 005c B442     		cmp	r4, r6
+ 1275 005e F6D3     		bcc	.L83
+ 251:USER/Src/iic_soft.c **** 	return I2C_OK;
+ 1276              		.loc 1 251 2 is_stmt 1 view .LVU337
+ 1277 0060 FFF7FEFF 		bl	IIC_Stop
+ 1278              	.LVL126:
+ 252:USER/Src/iic_soft.c **** }
+ 1279              		.loc 1 252 2 view .LVU338
+ 252:USER/Src/iic_soft.c **** }
+ 1280              		.loc 1 252 9 is_stmt 0 view .LVU339
+ 1281 0064 D7E7     		b	.L80
+ 1282              		.cfi_endproc
+ 1283              	.LFE149:
+ 1285              		.section	.text.IIC_Read_multi_bytes,"ax",%progbits
+ 1286              		.align	1
+ 1287              		.global	IIC_Read_multi_bytes
+ 1288              		.syntax unified
+ 1289              		.thumb
+ 1290              		.thumb_func
+ 1292              	IIC_Read_multi_bytes:
+ 1293              	.LVL127:
+ 1294              	.LFB150:
+ 254:USER/Src/iic_soft.c **** 
+ 255:USER/Src/iic_soft.c **** IIC_soft IIC_Read_multi_bytes(uint8_t dev_addr,uint8_t reg_addr, uint8_t *buf, uint8_t size)
+ 256:USER/Src/iic_soft.c **** {
+ 1295              		.loc 1 256 1 is_stmt 1 view -0
+ 1296              		.cfi_startproc
+ 1297              		@ args = 0, pretend = 0, frame = 0
+ 1298              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1299              		.loc 1 256 1 is_stmt 0 view .LVU341
+ 1300 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 1301              	.LCFI22:
+ 1302              		.cfi_def_cfa_offset 24
+ 1303              		.cfi_offset 4, -24
+ 1304              		.cfi_offset 5, -20
+ 1305              		.cfi_offset 6, -16
+ 1306              		.cfi_offset 7, -12
+ 1307              		.cfi_offset 8, -8
+ 1308              		.cfi_offset 14, -4
+ 1309 0004 0446     		mov	r4, r0
+ 1310 0006 8846     		mov	r8, r1
+ 1311 0008 1746     		mov	r7, r2
+ 1312 000a 1E46     		mov	r6, r3
+ 257:USER/Src/iic_soft.c **** 	uint8_t i = 0;
+ 1313              		.loc 1 257 2 is_stmt 1 view .LVU342
+ 1314              	.LVL128:
+ 258:USER/Src/iic_soft.c **** 	
+ 259:USER/Src/iic_soft.c **** 	if(IIC_Start() != I2C_OK )//开始信号
+ 1315              		.loc 1 259 2 view .LVU343
+ 1316              		.loc 1 259 5 is_stmt 0 view .LVU344
+ 1317 000c FFF7FEFF 		bl	IIC_Start
+ 1318              	.LVL129:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 31
+
+
+ 1319              		.loc 1 259 4 view .LVU345
+ 1320 0010 0228     		cmp	r0, #2
+ 1321 0012 03D0     		beq	.L99
+ 260:USER/Src/iic_soft.c **** 	{
+ 261:USER/Src/iic_soft.c **** 		return I2C_Start_FAIL;
+ 1322              		.loc 1 261 10 view .LVU346
+ 1323 0014 0325     		movs	r5, #3
+ 1324              	.LVL130:
+ 1325              	.L91:
+ 262:USER/Src/iic_soft.c **** 	}
+ 263:USER/Src/iic_soft.c **** 	
+ 264:USER/Src/iic_soft.c **** 	IIC_Send_Data(dev_addr );//等待从机应答
+ 265:USER/Src/iic_soft.c **** 	if(IIC_Wait_ACK() != I2C_ACK)
+ 266:USER/Src/iic_soft.c **** 	{
+ 267:USER/Src/iic_soft.c **** 		IIC_Stop();
+ 268:USER/Src/iic_soft.c **** 		return I2C_slave_FAIL;
+ 269:USER/Src/iic_soft.c **** 	}
+ 270:USER/Src/iic_soft.c **** 	
+ 271:USER/Src/iic_soft.c **** 	IIC_Send_Data(reg_addr);//器件地址
+ 272:USER/Src/iic_soft.c **** 	if(IIC_Wait_ACK() != I2C_ACK)
+ 273:USER/Src/iic_soft.c **** 	{
+ 274:USER/Src/iic_soft.c **** 		IIC_Stop();
+ 275:USER/Src/iic_soft.c **** 		return I2C_NO_ACK;
+ 276:USER/Src/iic_soft.c **** 	}
+ 277:USER/Src/iic_soft.c **** 	
+ 278:USER/Src/iic_soft.c **** 	//*重新********//
+ 279:USER/Src/iic_soft.c **** 	IIC_Start();
+ 280:USER/Src/iic_soft.c **** 	IIC_Send_Data(dev_addr | 0X01 );
+ 281:USER/Src/iic_soft.c **** 	IIC_Wait_ACK();
+ 282:USER/Src/iic_soft.c **** 	
+ 283:USER/Src/iic_soft.c **** 	for ( i = 0; i < size; i++)
+ 284:USER/Src/iic_soft.c **** 	{
+ 285:USER/Src/iic_soft.c **** 		*(buf+i) = IIC_Receive_Data();
+ 286:USER/Src/iic_soft.c **** 
+ 287:USER/Src/iic_soft.c **** 		if (i != size-1) { IIC_ACK(); }			
+ 288:USER/Src/iic_soft.c **** 	}
+ 289:USER/Src/iic_soft.c **** 	
+ 290:USER/Src/iic_soft.c **** 	IIC_NACK();
+ 291:USER/Src/iic_soft.c **** 	IIC_Stop();
+ 292:USER/Src/iic_soft.c **** 
+ 293:USER/Src/iic_soft.c **** 	return I2C_OK;
+ 294:USER/Src/iic_soft.c **** }
+ 1326              		.loc 1 294 1 view .LVU347
+ 1327 0016 2846     		mov	r0, r5
+ 1328 0018 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 1329              	.LVL131:
+ 1330              	.L99:
+ 1331              		.loc 1 294 1 view .LVU348
+ 1332 001c 0546     		mov	r5, r0
+ 264:USER/Src/iic_soft.c **** 	if(IIC_Wait_ACK() != I2C_ACK)
+ 1333              		.loc 1 264 2 is_stmt 1 view .LVU349
+ 1334 001e 2046     		mov	r0, r4
+ 1335 0020 FFF7FEFF 		bl	IIC_Send_Data
+ 1336              	.LVL132:
+ 265:USER/Src/iic_soft.c **** 	{
+ 1337              		.loc 1 265 2 view .LVU350
+ 265:USER/Src/iic_soft.c **** 	{
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 32
+
+
+ 1338              		.loc 1 265 5 is_stmt 0 view .LVU351
+ 1339 0024 FFF7FEFF 		bl	IIC_Wait_ACK
+ 1340              	.LVL133:
+ 265:USER/Src/iic_soft.c **** 	{
+ 1341              		.loc 1 265 4 view .LVU352
+ 1342 0028 0128     		cmp	r0, #1
+ 1343 002a 0AD1     		bne	.L100
+ 271:USER/Src/iic_soft.c **** 	if(IIC_Wait_ACK() != I2C_ACK)
+ 1344              		.loc 1 271 2 is_stmt 1 view .LVU353
+ 1345 002c 4046     		mov	r0, r8
+ 1346 002e FFF7FEFF 		bl	IIC_Send_Data
+ 1347              	.LVL134:
+ 272:USER/Src/iic_soft.c **** 	{
+ 1348              		.loc 1 272 2 view .LVU354
+ 272:USER/Src/iic_soft.c **** 	{
+ 1349              		.loc 1 272 5 is_stmt 0 view .LVU355
+ 1350 0032 FFF7FEFF 		bl	IIC_Wait_ACK
+ 1351              	.LVL135:
+ 272:USER/Src/iic_soft.c **** 	{
+ 1352              		.loc 1 272 4 view .LVU356
+ 1353 0036 0128     		cmp	r0, #1
+ 1354 0038 07D0     		beq	.L93
+ 274:USER/Src/iic_soft.c **** 		return I2C_NO_ACK;
+ 1355              		.loc 1 274 3 is_stmt 1 view .LVU357
+ 1356 003a FFF7FEFF 		bl	IIC_Stop
+ 1357              	.LVL136:
+ 275:USER/Src/iic_soft.c **** 	}
+ 1358              		.loc 1 275 3 view .LVU358
+ 275:USER/Src/iic_soft.c **** 	}
+ 1359              		.loc 1 275 10 is_stmt 0 view .LVU359
+ 1360 003e 0025     		movs	r5, #0
+ 1361 0040 E9E7     		b	.L91
+ 1362              	.L100:
+ 267:USER/Src/iic_soft.c **** 		return I2C_slave_FAIL;
+ 1363              		.loc 1 267 3 is_stmt 1 view .LVU360
+ 1364 0042 FFF7FEFF 		bl	IIC_Stop
+ 1365              	.LVL137:
+ 268:USER/Src/iic_soft.c **** 	}
+ 1366              		.loc 1 268 3 view .LVU361
+ 268:USER/Src/iic_soft.c **** 	}
+ 1367              		.loc 1 268 10 is_stmt 0 view .LVU362
+ 1368 0046 0425     		movs	r5, #4
+ 1369 0048 E5E7     		b	.L91
+ 1370              	.L93:
+ 279:USER/Src/iic_soft.c **** 	IIC_Send_Data(dev_addr | 0X01 );
+ 1371              		.loc 1 279 2 is_stmt 1 view .LVU363
+ 1372 004a FFF7FEFF 		bl	IIC_Start
+ 1373              	.LVL138:
+ 280:USER/Src/iic_soft.c **** 	IIC_Wait_ACK();
+ 1374              		.loc 1 280 2 view .LVU364
+ 1375 004e 44F00100 		orr	r0, r4, #1
+ 1376 0052 FFF7FEFF 		bl	IIC_Send_Data
+ 1377              	.LVL139:
+ 281:USER/Src/iic_soft.c **** 	
+ 1378              		.loc 1 281 2 view .LVU365
+ 1379 0056 FFF7FEFF 		bl	IIC_Wait_ACK
+ 1380              	.LVL140:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 33
+
+
+ 283:USER/Src/iic_soft.c **** 	{
+ 1381              		.loc 1 283 2 view .LVU366
+ 283:USER/Src/iic_soft.c **** 	{
+ 1382              		.loc 1 283 10 is_stmt 0 view .LVU367
+ 1383 005a 0024     		movs	r4, #0
+ 283:USER/Src/iic_soft.c **** 	{
+ 1384              		.loc 1 283 2 view .LVU368
+ 1385 005c 01E0     		b	.L94
+ 1386              	.LVL141:
+ 1387              	.L95:
+ 283:USER/Src/iic_soft.c **** 	{
+ 1388              		.loc 1 283 25 is_stmt 1 discriminator 2 view .LVU369
+ 283:USER/Src/iic_soft.c **** 	{
+ 1389              		.loc 1 283 26 is_stmt 0 discriminator 2 view .LVU370
+ 1390 005e 0134     		adds	r4, r4, #1
+ 1391              	.LVL142:
+ 283:USER/Src/iic_soft.c **** 	{
+ 1392              		.loc 1 283 26 discriminator 2 view .LVU371
+ 1393 0060 E4B2     		uxtb	r4, r4
+ 1394              	.LVL143:
+ 1395              	.L94:
+ 283:USER/Src/iic_soft.c **** 	{
+ 1396              		.loc 1 283 15 is_stmt 1 discriminator 1 view .LVU372
+ 283:USER/Src/iic_soft.c **** 	{
+ 1397              		.loc 1 283 2 is_stmt 0 discriminator 1 view .LVU373
+ 1398 0062 B442     		cmp	r4, r6
+ 1399 0064 08D2     		bcs	.L101
+ 285:USER/Src/iic_soft.c **** 
+ 1400              		.loc 1 285 3 is_stmt 1 view .LVU374
+ 285:USER/Src/iic_soft.c **** 
+ 1401              		.loc 1 285 14 is_stmt 0 view .LVU375
+ 1402 0066 FFF7FEFF 		bl	IIC_Receive_Data
+ 1403              	.LVL144:
+ 285:USER/Src/iic_soft.c **** 
+ 1404              		.loc 1 285 12 view .LVU376
+ 1405 006a 3855     		strb	r0, [r7, r4]
+ 287:USER/Src/iic_soft.c **** 	}
+ 1406              		.loc 1 287 3 is_stmt 1 view .LVU377
+ 287:USER/Src/iic_soft.c **** 	}
+ 1407              		.loc 1 287 16 is_stmt 0 view .LVU378
+ 1408 006c 731E     		subs	r3, r6, #1
+ 287:USER/Src/iic_soft.c **** 	}
+ 1409              		.loc 1 287 6 view .LVU379
+ 1410 006e 9C42     		cmp	r4, r3
+ 1411 0070 F5D0     		beq	.L95
+ 287:USER/Src/iic_soft.c **** 	}
+ 1412              		.loc 1 287 22 is_stmt 1 discriminator 1 view .LVU380
+ 1413 0072 FFF7FEFF 		bl	IIC_ACK
+ 1414              	.LVL145:
+ 1415 0076 F2E7     		b	.L95
+ 1416              	.L101:
+ 290:USER/Src/iic_soft.c **** 	IIC_Stop();
+ 1417              		.loc 1 290 2 view .LVU381
+ 1418 0078 FFF7FEFF 		bl	IIC_NACK
+ 1419              	.LVL146:
+ 291:USER/Src/iic_soft.c **** 
+ 1420              		.loc 1 291 2 view .LVU382
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 34
+
+
+ 1421 007c FFF7FEFF 		bl	IIC_Stop
+ 1422              	.LVL147:
+ 293:USER/Src/iic_soft.c **** }
+ 1423              		.loc 1 293 2 view .LVU383
+ 293:USER/Src/iic_soft.c **** }
+ 1424              		.loc 1 293 9 is_stmt 0 view .LVU384
+ 1425 0080 C9E7     		b	.L91
+ 1426              		.cfi_endproc
+ 1427              	.LFE150:
+ 1429              		.section	.rodata.I2C_Connect.str1.4,"aMS",%progbits,1
+ 1430              		.align	2
+ 1431              	.LC0:
+ 1432 0000 310900   		.ascii	"1\011\000"
+ 1433 0003 00       		.align	2
+ 1434              	.LC1:
+ 1435 0004 0A00     		.ascii	"\012\000"
+ 1436 0006 0000     		.align	2
+ 1437              	.LC2:
+ 1438 0008 300900   		.ascii	"0\011\000"
+ 1439              		.section	.text.I2C_Connect,"ax",%progbits
+ 1440              		.align	1
+ 1441              		.global	I2C_Connect
+ 1442              		.syntax unified
+ 1443              		.thumb
+ 1444              		.thumb_func
+ 1446              	I2C_Connect:
+ 1447              	.LFB151:
+ 295:USER/Src/iic_soft.c **** 
+ 296:USER/Src/iic_soft.c **** uint8_t I2C_Connect(void)//测试iic的连接
+ 297:USER/Src/iic_soft.c **** {
+ 1448              		.loc 1 297 1 is_stmt 1 view -0
+ 1449              		.cfi_startproc
+ 1450              		@ args = 0, pretend = 0, frame = 8
+ 1451              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1452 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 1453              	.LCFI23:
+ 1454              		.cfi_def_cfa_offset 20
+ 1455              		.cfi_offset 4, -20
+ 1456              		.cfi_offset 5, -16
+ 1457              		.cfi_offset 6, -12
+ 1458              		.cfi_offset 7, -8
+ 1459              		.cfi_offset 14, -4
+ 1460 0002 83B0     		sub	sp, sp, #12
+ 1461              	.LCFI24:
+ 1462              		.cfi_def_cfa_offset 32
+ 298:USER/Src/iic_soft.c **** 	uint8_t buf[8]={0},Count_OK=0,count=0;
+ 1463              		.loc 1 298 2 view .LVU386
+ 1464              		.loc 1 298 10 is_stmt 0 view .LVU387
+ 1465 0004 0025     		movs	r5, #0
+ 1466 0006 0095     		str	r5, [sp]
+ 1467 0008 0195     		str	r5, [sp, #4]
+ 1468              	.LVL148:
+ 299:USER/Src/iic_soft.c **** 	uint8_t SDA_i=0,SCL_i=0;
+ 1469              		.loc 1 299 2 is_stmt 1 view .LVU388
+ 300:USER/Src/iic_soft.c **** 	for( SDA_i = 0; SDA_i < 3; SDA_i++) 
+ 1470              		.loc 1 300 2 view .LVU389
+ 1471              		.loc 1 300 13 is_stmt 0 view .LVU390
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 35
+
+
+ 1472 000a 2F46     		mov	r7, r5
+ 298:USER/Src/iic_soft.c **** 	uint8_t buf[8]={0},Count_OK=0,count=0;
+ 1473              		.loc 1 298 32 view .LVU391
+ 1474 000c 2E46     		mov	r6, r5
+ 1475              		.loc 1 300 2 view .LVU392
+ 1476 000e 36E0     		b	.L103
+ 1477              	.LVL149:
+ 1478              	.L104:
+ 301:USER/Src/iic_soft.c **** 	{
+ 302:USER/Src/iic_soft.c **** 		for ( SCL_i = 0; SCL_i < 8; SCL_i++) 
+ 303:USER/Src/iic_soft.c **** 		{
+ 304:USER/Src/iic_soft.c **** 			IIC_GPIO_Init(SDA_i,SCL_i);
+ 305:USER/Src/iic_soft.c **** 			HAL_Delay(10);	
+ 306:USER/Src/iic_soft.c **** 			if (IIC_Read_multi_bytes(RTC_8931_ADDRESS, RTC_8931_REG, buf, 7)== I2C_OK || 
+ 307:USER/Src/iic_soft.c **** 			IIC_Read_multi_bytes(RTC_8825_ADDRESS, RTC_8825_REG, buf, 7)== I2C_OK) 
+ 308:USER/Src/iic_soft.c **** 			{
+ 309:USER/Src/iic_soft.c **** 				UsbPrintf("1\t");
+ 1479              		.loc 1 309 5 is_stmt 1 view .LVU393
+ 1480 0010 1E48     		ldr	r0, .L114
+ 1481 0012 FFF7FEFF 		bl	UsbPrintf
+ 1482              	.LVL150:
+ 310:USER/Src/iic_soft.c **** 				count++;
+ 1483              		.loc 1 310 5 view .LVU394
+ 1484              		.loc 1 310 10 is_stmt 0 view .LVU395
+ 1485 0016 731C     		adds	r3, r6, #1
+ 1486 0018 DEB2     		uxtb	r6, r3
+ 1487              	.LVL151:
+ 311:USER/Src/iic_soft.c **** 				Count_OK++;
+ 1488              		.loc 1 311 5 is_stmt 1 view .LVU396
+ 1489              		.loc 1 311 13 is_stmt 0 view .LVU397
+ 1490 001a 0135     		adds	r5, r5, #1
+ 1491              	.LVL152:
+ 1492              		.loc 1 311 13 view .LVU398
+ 1493 001c EDB2     		uxtb	r5, r5
+ 1494              	.LVL153:
+ 312:USER/Src/iic_soft.c **** 				if (count % 8 == 0) 
+ 1495              		.loc 1 312 5 is_stmt 1 view .LVU399
+ 1496              		.loc 1 312 8 is_stmt 0 view .LVU400
+ 1497 001e 13F0070F 		tst	r3, #7
+ 1498 0022 26D0     		beq	.L111
+ 1499              	.L106:
+ 302:USER/Src/iic_soft.c **** 		{
+ 1500              		.loc 1 302 31 is_stmt 1 discriminator 2 view .LVU401
+ 302:USER/Src/iic_soft.c **** 		{
+ 1501              		.loc 1 302 36 is_stmt 0 discriminator 2 view .LVU402
+ 1502 0024 0134     		adds	r4, r4, #1
+ 1503              	.LVL154:
+ 302:USER/Src/iic_soft.c **** 		{
+ 1504              		.loc 1 302 36 discriminator 2 view .LVU403
+ 1505 0026 E4B2     		uxtb	r4, r4
+ 1506              	.LVL155:
+ 1507              	.L108:
+ 302:USER/Src/iic_soft.c **** 		{
+ 1508              		.loc 1 302 20 is_stmt 1 discriminator 1 view .LVU404
+ 302:USER/Src/iic_soft.c **** 		{
+ 1509              		.loc 1 302 3 is_stmt 0 discriminator 1 view .LVU405
+ 1510 0028 072C     		cmp	r4, #7
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 36
+
+
+ 1511 002a 26D8     		bhi	.L112
+ 304:USER/Src/iic_soft.c **** 			HAL_Delay(10);	
+ 1512              		.loc 1 304 4 is_stmt 1 view .LVU406
+ 1513 002c 2146     		mov	r1, r4
+ 1514 002e 3846     		mov	r0, r7
+ 1515 0030 FFF7FEFF 		bl	IIC_GPIO_Init
+ 1516              	.LVL156:
+ 305:USER/Src/iic_soft.c **** 			if (IIC_Read_multi_bytes(RTC_8931_ADDRESS, RTC_8931_REG, buf, 7)== I2C_OK || 
+ 1517              		.loc 1 305 4 view .LVU407
+ 1518 0034 0A20     		movs	r0, #10
+ 1519 0036 FFF7FEFF 		bl	HAL_Delay
+ 1520              	.LVL157:
+ 306:USER/Src/iic_soft.c **** 			IIC_Read_multi_bytes(RTC_8825_ADDRESS, RTC_8825_REG, buf, 7)== I2C_OK) 
+ 1521              		.loc 1 306 4 view .LVU408
+ 306:USER/Src/iic_soft.c **** 			IIC_Read_multi_bytes(RTC_8825_ADDRESS, RTC_8825_REG, buf, 7)== I2C_OK) 
+ 1522              		.loc 1 306 8 is_stmt 0 view .LVU409
+ 1523 003a 0723     		movs	r3, #7
+ 1524 003c 6A46     		mov	r2, sp
+ 1525 003e 0021     		movs	r1, #0
+ 1526 0040 D020     		movs	r0, #208
+ 1527 0042 FFF7FEFF 		bl	IIC_Read_multi_bytes
+ 1528              	.LVL158:
+ 306:USER/Src/iic_soft.c **** 			IIC_Read_multi_bytes(RTC_8825_ADDRESS, RTC_8825_REG, buf, 7)== I2C_OK) 
+ 1529              		.loc 1 306 7 view .LVU410
+ 1530 0046 0228     		cmp	r0, #2
+ 1531 0048 E2D0     		beq	.L104
+ 307:USER/Src/iic_soft.c **** 			{
+ 1532              		.loc 1 307 4 discriminator 1 view .LVU411
+ 1533 004a 0723     		movs	r3, #7
+ 1534 004c 6A46     		mov	r2, sp
+ 1535 004e 0021     		movs	r1, #0
+ 1536 0050 6420     		movs	r0, #100
+ 1537 0052 FFF7FEFF 		bl	IIC_Read_multi_bytes
+ 1538              	.LVL159:
+ 306:USER/Src/iic_soft.c **** 			IIC_Read_multi_bytes(RTC_8825_ADDRESS, RTC_8825_REG, buf, 7)== I2C_OK) 
+ 1539              		.loc 1 306 78 discriminator 1 view .LVU412
+ 1540 0056 0228     		cmp	r0, #2
+ 1541 0058 DAD0     		beq	.L104
+ 313:USER/Src/iic_soft.c **** 				{ 
+ 314:USER/Src/iic_soft.c **** 					UsbPrintf("\n");
+ 315:USER/Src/iic_soft.c **** 				}
+ 316:USER/Src/iic_soft.c **** 			} else {
+ 317:USER/Src/iic_soft.c **** 				UsbPrintf("0\t");
+ 1542              		.loc 1 317 5 is_stmt 1 view .LVU413
+ 1543 005a 0D48     		ldr	r0, .L114+4
+ 1544 005c FFF7FEFF 		bl	UsbPrintf
+ 1545              	.LVL160:
+ 318:USER/Src/iic_soft.c **** 				count++;
+ 1546              		.loc 1 318 5 view .LVU414
+ 1547              		.loc 1 318 10 is_stmt 0 view .LVU415
+ 1548 0060 731C     		adds	r3, r6, #1
+ 1549 0062 DEB2     		uxtb	r6, r3
+ 1550              	.LVL161:
+ 319:USER/Src/iic_soft.c **** 				if (count % 8 == 0) 
+ 1551              		.loc 1 319 5 is_stmt 1 view .LVU416
+ 1552              		.loc 1 319 8 is_stmt 0 view .LVU417
+ 1553 0064 13F0070F 		tst	r3, #7
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 37
+
+
+ 1554 0068 DCD1     		bne	.L106
+ 320:USER/Src/iic_soft.c **** 				{ 
+ 321:USER/Src/iic_soft.c **** 					UsbPrintf("\n");
+ 1555              		.loc 1 321 6 is_stmt 1 view .LVU418
+ 1556 006a 0A48     		ldr	r0, .L114+8
+ 1557 006c FFF7FEFF 		bl	UsbPrintf
+ 1558              	.LVL162:
+ 1559 0070 D8E7     		b	.L106
+ 1560              	.L111:
+ 314:USER/Src/iic_soft.c **** 				}
+ 1561              		.loc 1 314 6 view .LVU419
+ 1562 0072 0848     		ldr	r0, .L114+8
+ 1563 0074 FFF7FEFF 		bl	UsbPrintf
+ 1564              	.LVL163:
+ 1565 0078 D4E7     		b	.L106
+ 1566              	.L112:
+ 322:USER/Src/iic_soft.c **** 				}
+ 323:USER/Src/iic_soft.c **** 			}
+ 324:USER/Src/iic_soft.c **** 		}
+ 325:USER/Src/iic_soft.c **** 		SCL_i=0;
+ 1567              		.loc 1 325 3 discriminator 2 view .LVU420
+ 1568              	.LVL164:
+ 300:USER/Src/iic_soft.c **** 	{
+ 1569              		.loc 1 300 29 discriminator 2 view .LVU421
+ 300:USER/Src/iic_soft.c **** 	{
+ 1570              		.loc 1 300 34 is_stmt 0 discriminator 2 view .LVU422
+ 1571 007a 0137     		adds	r7, r7, #1
+ 1572              	.LVL165:
+ 300:USER/Src/iic_soft.c **** 	{
+ 1573              		.loc 1 300 34 discriminator 2 view .LVU423
+ 1574 007c FFB2     		uxtb	r7, r7
+ 1575              	.LVL166:
+ 1576              	.L103:
+ 300:USER/Src/iic_soft.c **** 	{
+ 1577              		.loc 1 300 18 is_stmt 1 discriminator 1 view .LVU424
+ 300:USER/Src/iic_soft.c **** 	{
+ 1578              		.loc 1 300 2 is_stmt 0 discriminator 1 view .LVU425
+ 1579 007e 022F     		cmp	r7, #2
+ 1580 0080 01D8     		bhi	.L113
+ 302:USER/Src/iic_soft.c **** 		{
+ 1581              		.loc 1 302 15 view .LVU426
+ 1582 0082 0024     		movs	r4, #0
+ 1583 0084 D0E7     		b	.L108
+ 1584              	.L113:
+ 326:USER/Src/iic_soft.c **** 	}	
+ 327:USER/Src/iic_soft.c **** 	
+ 328:USER/Src/iic_soft.c **** 	return Count_OK;
+ 1585              		.loc 1 328 2 is_stmt 1 view .LVU427
+ 329:USER/Src/iic_soft.c **** }
+ 1586              		.loc 1 329 1 is_stmt 0 view .LVU428
+ 1587 0086 2846     		mov	r0, r5
+ 1588 0088 03B0     		add	sp, sp, #12
+ 1589              	.LCFI25:
+ 1590              		.cfi_def_cfa_offset 20
+ 1591              		@ sp needed
+ 1592 008a F0BD     		pop	{r4, r5, r6, r7, pc}
+ 1593              	.LVL167:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 38
+
+
+ 1594              	.L115:
+ 1595              		.loc 1 329 1 view .LVU429
+ 1596              		.align	2
+ 1597              	.L114:
+ 1598 008c 00000000 		.word	.LC0
+ 1599 0090 08000000 		.word	.LC2
+ 1600 0094 04000000 		.word	.LC1
+ 1601              		.cfi_endproc
+ 1602              	.LFE151:
+ 1604              		.section	.rodata.I2C_ReadTime.str1.4,"aMS",%progbits,1
+ 1605              		.align	2
+ 1606              	.LC3:
+ 1607 0000 2D2D496E 		.ascii	"--Input error !\015\012\000"
+ 1607      70757420 
+ 1607      6572726F 
+ 1607      7220210D 
+ 1607      0A00
+ 1608 0012 0000     		.align	2
+ 1609              	.LC4:
+ 1610 0014 32302530 		.ascii	"20%02X-%02X-%02X \320\307\306\332%X %X:%X:%X \015\012"
+ 1610      32582D25 
+ 1610      3032582D 
+ 1610      25303258 
+ 1610      20D0C7C6 
+ 1611 0037 00       		.ascii	"\000"
+ 1612              		.align	2
+ 1613              	.LC5:
+ 1614 0038 2D2D4E6F 		.ascii	"--No Connect !\015\012\000"
+ 1614      20436F6E 
+ 1614      6E656374 
+ 1614      20210D0A 
+ 1614      00
+ 1615              		.section	.text.I2C_ReadTime,"ax",%progbits
+ 1616              		.align	1
+ 1617              		.global	I2C_ReadTime
+ 1618              		.syntax unified
+ 1619              		.thumb
+ 1620              		.thumb_func
+ 1622              	I2C_ReadTime:
+ 1623              	.LVL168:
+ 1624              	.LFB152:
+ 330:USER/Src/iic_soft.c **** uint8_t I2C_ReadTime(uint8_t i,uint8_t j)
+ 331:USER/Src/iic_soft.c **** {
+ 1625              		.loc 1 331 1 is_stmt 1 view -0
+ 1626              		.cfi_startproc
+ 1627              		@ args = 0, pretend = 0, frame = 8
+ 1628              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1629              		.loc 1 331 1 is_stmt 0 view .LVU431
+ 1630 0000 10B5     		push	{r4, lr}
+ 1631              	.LCFI26:
+ 1632              		.cfi_def_cfa_offset 8
+ 1633              		.cfi_offset 4, -8
+ 1634              		.cfi_offset 14, -4
+ 1635 0002 86B0     		sub	sp, sp, #24
+ 1636              	.LCFI27:
+ 1637              		.cfi_def_cfa_offset 32
+ 332:USER/Src/iic_soft.c **** 	uint8_t buf[8]={0};
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 39
+
+
+ 1638              		.loc 1 332 2 is_stmt 1 view .LVU432
+ 1639              		.loc 1 332 10 is_stmt 0 view .LVU433
+ 1640 0004 0023     		movs	r3, #0
+ 1641 0006 0493     		str	r3, [sp, #16]
+ 1642 0008 0593     		str	r3, [sp, #20]
+ 333:USER/Src/iic_soft.c **** 	if(i < 0 || i > 3 || j < 0 || j > 8)
+ 1643              		.loc 1 333 2 is_stmt 1 view .LVU434
+ 1644              		.loc 1 333 4 is_stmt 0 view .LVU435
+ 1645 000a 0328     		cmp	r0, #3
+ 1646 000c 01D8     		bhi	.L117
+ 1647              		.loc 1 333 29 discriminator 1 view .LVU436
+ 1648 000e 0829     		cmp	r1, #8
+ 1649 0010 06D9     		bls	.L118
+ 1650              	.L117:
+ 334:USER/Src/iic_soft.c **** 	{
+ 335:USER/Src/iic_soft.c **** 		UsbPrintf("--Input error !\r\n");
+ 1651              		.loc 1 335 3 is_stmt 1 view .LVU437
+ 1652 0012 2848     		ldr	r0, .L125
+ 1653              	.LVL169:
+ 1654              		.loc 1 335 3 is_stmt 0 view .LVU438
+ 1655 0014 FFF7FEFF 		bl	UsbPrintf
+ 1656              	.LVL170:
+ 336:USER/Src/iic_soft.c **** 		return 0;
+ 1657              		.loc 1 336 3 is_stmt 1 view .LVU439
+ 1658              		.loc 1 336 10 is_stmt 0 view .LVU440
+ 1659 0018 0024     		movs	r4, #0
+ 1660              	.L119:
+ 337:USER/Src/iic_soft.c **** 	}else{
+ 338:USER/Src/iic_soft.c **** 		IIC_GPIO_Init( i-1,j-1);
+ 339:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8931_ADDRESS, RTC_8931_REG, buf, 7)== I2C_OK)
+ 340:USER/Src/iic_soft.c **** 		{
+ 341:USER/Src/iic_soft.c **** 			//UsbPrintf("D0\n");
+ 342:USER/Src/iic_soft.c **** 			UsbPrintf("20%02X-%02X-%02X 星期%X %X:%X:%X \r\n",buf[6],buf[5],buf[4],buf[3],buf[2],buf[1],buf[
+ 343:USER/Src/iic_soft.c **** 		}
+ 344:USER/Src/iic_soft.c **** 		else if(IIC_Read_multi_bytes(RTC_8825_ADDRESS, RTC_8825_REG, buf, 7)== I2C_OK)
+ 345:USER/Src/iic_soft.c **** 		{
+ 346:USER/Src/iic_soft.c **** 			//UsbPrintf("64\n");
+ 347:USER/Src/iic_soft.c **** 			UsbPrintf("20%02X-%02X-%02X 星期%X %X:%X:%X \r\n",buf[6],buf[5],buf[4],buf[3],buf[2],buf[1],buf[
+ 348:USER/Src/iic_soft.c **** 		}
+ 349:USER/Src/iic_soft.c **** 		else{
+ 350:USER/Src/iic_soft.c **** 			UsbPrintf("--No Connect !\r\n");
+ 351:USER/Src/iic_soft.c **** 			return 0;
+ 352:USER/Src/iic_soft.c **** 		}
+ 353:USER/Src/iic_soft.c **** 	}
+ 354:USER/Src/iic_soft.c **** 	return I2C_OK;
+ 355:USER/Src/iic_soft.c **** }
+ 1661              		.loc 1 355 1 view .LVU441
+ 1662 001a 2046     		mov	r0, r4
+ 1663 001c 06B0     		add	sp, sp, #24
+ 1664              	.LCFI28:
+ 1665              		.cfi_remember_state
+ 1666              		.cfi_def_cfa_offset 8
+ 1667              		@ sp needed
+ 1668 001e 10BD     		pop	{r4, pc}
+ 1669              	.LVL171:
+ 1670              	.L118:
+ 1671              	.LCFI29:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 40
+
+
+ 1672              		.cfi_restore_state
+ 338:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8931_ADDRESS, RTC_8931_REG, buf, 7)== I2C_OK)
+ 1673              		.loc 1 338 3 is_stmt 1 view .LVU442
+ 1674 0020 0139     		subs	r1, r1, #1
+ 1675              	.LVL172:
+ 338:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8931_ADDRESS, RTC_8931_REG, buf, 7)== I2C_OK)
+ 1676              		.loc 1 338 3 is_stmt 0 view .LVU443
+ 1677 0022 0138     		subs	r0, r0, #1
+ 1678              	.LVL173:
+ 338:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8931_ADDRESS, RTC_8931_REG, buf, 7)== I2C_OK)
+ 1679              		.loc 1 338 3 view .LVU444
+ 1680 0024 89B2     		uxth	r1, r1
+ 1681 0026 80B2     		uxth	r0, r0
+ 1682 0028 FFF7FEFF 		bl	IIC_GPIO_Init
+ 1683              	.LVL174:
+ 339:USER/Src/iic_soft.c **** 		{
+ 1684              		.loc 1 339 3 is_stmt 1 view .LVU445
+ 339:USER/Src/iic_soft.c **** 		{
+ 1685              		.loc 1 339 6 is_stmt 0 view .LVU446
+ 1686 002c 0723     		movs	r3, #7
+ 1687 002e 04AA     		add	r2, sp, #16
+ 1688 0030 0021     		movs	r1, #0
+ 1689 0032 D020     		movs	r0, #208
+ 1690 0034 FFF7FEFF 		bl	IIC_Read_multi_bytes
+ 1691              	.LVL175:
+ 1692 0038 0446     		mov	r4, r0
+ 339:USER/Src/iic_soft.c **** 		{
+ 1693              		.loc 1 339 5 view .LVU447
+ 1694 003a 0228     		cmp	r0, #2
+ 1695 003c 0DD0     		beq	.L123
+ 344:USER/Src/iic_soft.c **** 		{
+ 1696              		.loc 1 344 8 is_stmt 1 view .LVU448
+ 344:USER/Src/iic_soft.c **** 		{
+ 1697              		.loc 1 344 11 is_stmt 0 view .LVU449
+ 1698 003e 0723     		movs	r3, #7
+ 1699 0040 04AA     		add	r2, sp, #16
+ 1700 0042 0021     		movs	r1, #0
+ 1701 0044 6420     		movs	r0, #100
+ 1702 0046 FFF7FEFF 		bl	IIC_Read_multi_bytes
+ 1703              	.LVL176:
+ 1704 004a 0446     		mov	r4, r0
+ 344:USER/Src/iic_soft.c **** 		{
+ 1705              		.loc 1 344 10 view .LVU450
+ 1706 004c 0228     		cmp	r0, #2
+ 1707 004e 1AD0     		beq	.L124
+ 350:USER/Src/iic_soft.c **** 			return 0;
+ 1708              		.loc 1 350 4 is_stmt 1 view .LVU451
+ 1709 0050 1948     		ldr	r0, .L125+4
+ 1710 0052 FFF7FEFF 		bl	UsbPrintf
+ 1711              	.LVL177:
+ 351:USER/Src/iic_soft.c **** 		}
+ 1712              		.loc 1 351 4 view .LVU452
+ 351:USER/Src/iic_soft.c **** 		}
+ 1713              		.loc 1 351 11 is_stmt 0 view .LVU453
+ 1714 0056 0024     		movs	r4, #0
+ 1715 0058 DFE7     		b	.L119
+ 1716              	.L123:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 41
+
+
+ 342:USER/Src/iic_soft.c **** 		}
+ 1717              		.loc 1 342 4 is_stmt 1 view .LVU454
+ 342:USER/Src/iic_soft.c **** 		}
+ 1718              		.loc 1 342 78 is_stmt 0 view .LVU455
+ 1719 005a 9DF81330 		ldrb	r3, [sp, #19]	@ zero_extendqisi2
+ 342:USER/Src/iic_soft.c **** 		}
+ 1720              		.loc 1 342 85 view .LVU456
+ 1721 005e 9DF81220 		ldrb	r2, [sp, #18]	@ zero_extendqisi2
+ 342:USER/Src/iic_soft.c **** 		}
+ 1722              		.loc 1 342 92 view .LVU457
+ 1723 0062 9DF81110 		ldrb	r1, [sp, #17]	@ zero_extendqisi2
+ 342:USER/Src/iic_soft.c **** 		}
+ 1724              		.loc 1 342 99 view .LVU458
+ 1725 0066 9DF81000 		ldrb	r0, [sp, #16]	@ zero_extendqisi2
+ 342:USER/Src/iic_soft.c **** 		}
+ 1726              		.loc 1 342 4 view .LVU459
+ 1727 006a 0390     		str	r0, [sp, #12]
+ 1728 006c 0291     		str	r1, [sp, #8]
+ 1729 006e 0192     		str	r2, [sp, #4]
+ 1730 0070 0093     		str	r3, [sp]
+ 1731 0072 9DF81430 		ldrb	r3, [sp, #20]	@ zero_extendqisi2
+ 1732 0076 9DF81520 		ldrb	r2, [sp, #21]	@ zero_extendqisi2
+ 1733 007a 9DF81610 		ldrb	r1, [sp, #22]	@ zero_extendqisi2
+ 1734 007e 0F48     		ldr	r0, .L125+8
+ 1735 0080 FFF7FEFF 		bl	UsbPrintf
+ 1736              	.LVL178:
+ 1737 0084 C9E7     		b	.L119
+ 1738              	.L124:
+ 347:USER/Src/iic_soft.c **** 		}
+ 1739              		.loc 1 347 4 is_stmt 1 view .LVU460
+ 347:USER/Src/iic_soft.c **** 		}
+ 1740              		.loc 1 347 78 is_stmt 0 view .LVU461
+ 1741 0086 9DF81330 		ldrb	r3, [sp, #19]	@ zero_extendqisi2
+ 347:USER/Src/iic_soft.c **** 		}
+ 1742              		.loc 1 347 85 view .LVU462
+ 1743 008a 9DF81220 		ldrb	r2, [sp, #18]	@ zero_extendqisi2
+ 347:USER/Src/iic_soft.c **** 		}
+ 1744              		.loc 1 347 92 view .LVU463
+ 1745 008e 9DF81110 		ldrb	r1, [sp, #17]	@ zero_extendqisi2
+ 347:USER/Src/iic_soft.c **** 		}
+ 1746              		.loc 1 347 99 view .LVU464
+ 1747 0092 9DF81000 		ldrb	r0, [sp, #16]	@ zero_extendqisi2
+ 347:USER/Src/iic_soft.c **** 		}
+ 1748              		.loc 1 347 4 view .LVU465
+ 1749 0096 0390     		str	r0, [sp, #12]
+ 1750 0098 0291     		str	r1, [sp, #8]
+ 1751 009a 0192     		str	r2, [sp, #4]
+ 1752 009c 0093     		str	r3, [sp]
+ 1753 009e 9DF81430 		ldrb	r3, [sp, #20]	@ zero_extendqisi2
+ 1754 00a2 9DF81520 		ldrb	r2, [sp, #21]	@ zero_extendqisi2
+ 1755 00a6 9DF81610 		ldrb	r1, [sp, #22]	@ zero_extendqisi2
+ 1756 00aa 0448     		ldr	r0, .L125+8
+ 1757 00ac FFF7FEFF 		bl	UsbPrintf
+ 1758              	.LVL179:
+ 1759 00b0 B3E7     		b	.L119
+ 1760              	.L126:
+ 1761 00b2 00BF     		.align	2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 42
+
+
+ 1762              	.L125:
+ 1763 00b4 00000000 		.word	.LC3
+ 1764 00b8 38000000 		.word	.LC5
+ 1765 00bc 14000000 		.word	.LC4
+ 1766              		.cfi_endproc
+ 1767              	.LFE152:
+ 1769              		.section	.text.Close3077_FREQ,"ax",%progbits
+ 1770              		.align	1
+ 1771              		.global	Close3077_FREQ
+ 1772              		.syntax unified
+ 1773              		.thumb
+ 1774              		.thumb_func
+ 1776              	Close3077_FREQ:
+ 1777              	.LFB153:
+ 356:USER/Src/iic_soft.c **** void Close3077_FREQ(void)
+ 357:USER/Src/iic_soft.c **** {
+ 1778              		.loc 1 357 1 is_stmt 1 view -0
+ 1779              		.cfi_startproc
+ 1780              		@ args = 0, pretend = 0, frame = 8
+ 1781              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1782 0000 30B5     		push	{r4, r5, lr}
+ 1783              	.LCFI30:
+ 1784              		.cfi_def_cfa_offset 12
+ 1785              		.cfi_offset 4, -12
+ 1786              		.cfi_offset 5, -8
+ 1787              		.cfi_offset 14, -4
+ 1788 0002 83B0     		sub	sp, sp, #12
+ 1789              	.LCFI31:
+ 1790              		.cfi_def_cfa_offset 24
+ 358:USER/Src/iic_soft.c **** 	uint8_t i=0,j=0;
+ 1791              		.loc 1 358 2 view .LVU467
+ 1792              	.LVL180:
+ 359:USER/Src/iic_soft.c **** 	uint8_t INTFE=0x80;		
+ 1793              		.loc 1 359 2 view .LVU468
+ 1794              		.loc 1 359 10 is_stmt 0 view .LVU469
+ 1795 0004 8023     		movs	r3, #128
+ 1796 0006 8DF80730 		strb	r3, [sp, #7]
+ 360:USER/Src/iic_soft.c **** 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET);
+ 1797              		.loc 1 360 2 is_stmt 1 view .LVU470
+ 1798 000a 0122     		movs	r2, #1
+ 1799 000c 1321     		movs	r1, #19
+ 1800 000e 0F48     		ldr	r0, .L134
+ 1801 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1802              	.LVL181:
+ 361:USER/Src/iic_soft.c ****     for( i = 1; i < 4; i++ )  
+ 1803              		.loc 1 361 5 view .LVU471
+ 1804              		.loc 1 361 12 is_stmt 0 view .LVU472
+ 1805 0014 0125     		movs	r5, #1
+ 1806              		.loc 1 361 5 view .LVU473
+ 1807 0016 12E0     		b	.L128
+ 1808              	.LVL182:
+ 1809              	.L129:
+ 362:USER/Src/iic_soft.c **** 	{
+ 363:USER/Src/iic_soft.c **** 		for ( j = 1; j < 9; j++ ) 
+ 364:USER/Src/iic_soft.c **** 		{
+ 365:USER/Src/iic_soft.c **** 			IIC_GPIO_Init(i-1,j-1);  
+ 1810              		.loc 1 365 4 is_stmt 1 discriminator 3 view .LVU474
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 43
+
+
+ 1811 0018 611E     		subs	r1, r4, #1
+ 1812 001a 681E     		subs	r0, r5, #1
+ 1813 001c 89B2     		uxth	r1, r1
+ 1814 001e 80B2     		uxth	r0, r0
+ 1815 0020 FFF7FEFF 		bl	IIC_GPIO_Init
+ 1816              	.LVL183:
+ 366:USER/Src/iic_soft.c **** 			IIC_Write_multi_bytes(RTC_3178_ADDRESS, 0x10, &INTFE, 1);
+ 1817              		.loc 1 366 4 discriminator 3 view .LVU475
+ 1818 0024 0123     		movs	r3, #1
+ 1819 0026 0DF10702 		add	r2, sp, #7
+ 1820 002a 1021     		movs	r1, #16
+ 1821 002c 6420     		movs	r0, #100
+ 1822 002e FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 1823              	.LVL184:
+ 363:USER/Src/iic_soft.c **** 		{
+ 1824              		.loc 1 363 23 discriminator 3 view .LVU476
+ 363:USER/Src/iic_soft.c **** 		{
+ 1825              		.loc 1 363 24 is_stmt 0 discriminator 3 view .LVU477
+ 1826 0032 0134     		adds	r4, r4, #1
+ 1827              	.LVL185:
+ 363:USER/Src/iic_soft.c **** 		{
+ 1828              		.loc 1 363 24 discriminator 3 view .LVU478
+ 1829 0034 E4B2     		uxtb	r4, r4
+ 1830              	.LVL186:
+ 1831              	.L130:
+ 363:USER/Src/iic_soft.c **** 		{
+ 1832              		.loc 1 363 16 is_stmt 1 discriminator 1 view .LVU479
+ 363:USER/Src/iic_soft.c **** 		{
+ 1833              		.loc 1 363 3 is_stmt 0 discriminator 1 view .LVU480
+ 1834 0036 082C     		cmp	r4, #8
+ 1835 0038 EED9     		bls	.L129
+ 361:USER/Src/iic_soft.c **** 	{
+ 1836              		.loc 1 361 24 is_stmt 1 discriminator 2 view .LVU481
+ 361:USER/Src/iic_soft.c **** 	{
+ 1837              		.loc 1 361 25 is_stmt 0 discriminator 2 view .LVU482
+ 1838 003a 0135     		adds	r5, r5, #1
+ 1839              	.LVL187:
+ 361:USER/Src/iic_soft.c **** 	{
+ 1840              		.loc 1 361 25 discriminator 2 view .LVU483
+ 1841 003c EDB2     		uxtb	r5, r5
+ 1842              	.LVL188:
+ 1843              	.L128:
+ 361:USER/Src/iic_soft.c **** 	{
+ 1844              		.loc 1 361 17 is_stmt 1 discriminator 1 view .LVU484
+ 361:USER/Src/iic_soft.c **** 	{
+ 1845              		.loc 1 361 5 is_stmt 0 discriminator 1 view .LVU485
+ 1846 003e 032D     		cmp	r5, #3
+ 1847 0040 01D8     		bhi	.L133
+ 363:USER/Src/iic_soft.c **** 		{
+ 1848              		.loc 1 363 11 view .LVU486
+ 1849 0042 0124     		movs	r4, #1
+ 1850 0044 F7E7     		b	.L130
+ 1851              	.L133:
+ 367:USER/Src/iic_soft.c ****         }
+ 368:USER/Src/iic_soft.c ****     }
+ 369:USER/Src/iic_soft.c **** }
+ 1852              		.loc 1 369 1 view .LVU487
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 44
+
+
+ 1853 0046 03B0     		add	sp, sp, #12
+ 1854              	.LCFI32:
+ 1855              		.cfi_def_cfa_offset 12
+ 1856              		@ sp needed
+ 1857 0048 30BD     		pop	{r4, r5, pc}
+ 1858              	.LVL189:
+ 1859              	.L135:
+ 1860              		.loc 1 369 1 view .LVU488
+ 1861 004a 00BF     		.align	2
+ 1862              	.L134:
+ 1863 004c 00000240 		.word	1073872896
+ 1864              		.cfi_endproc
+ 1865              	.LFE153:
+ 1867              		.section	.text.Close3178_FREQ,"ax",%progbits
+ 1868              		.align	1
+ 1869              		.global	Close3178_FREQ
+ 1870              		.syntax unified
+ 1871              		.thumb
+ 1872              		.thumb_func
+ 1874              	Close3178_FREQ:
+ 1875              	.LFB154:
+ 370:USER/Src/iic_soft.c **** void Close3178_FREQ(void)
+ 371:USER/Src/iic_soft.c **** {
+ 1876              		.loc 1 371 1 is_stmt 1 view -0
+ 1877              		.cfi_startproc
+ 1878              		@ args = 0, pretend = 0, frame = 8
+ 1879              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1880 0000 30B5     		push	{r4, r5, lr}
+ 1881              	.LCFI33:
+ 1882              		.cfi_def_cfa_offset 12
+ 1883              		.cfi_offset 4, -12
+ 1884              		.cfi_offset 5, -8
+ 1885              		.cfi_offset 14, -4
+ 1886 0002 83B0     		sub	sp, sp, #12
+ 1887              	.LCFI34:
+ 1888              		.cfi_def_cfa_offset 24
+ 372:USER/Src/iic_soft.c **** 	uint8_t i=0,j=0;
+ 1889              		.loc 1 372 2 view .LVU490
+ 1890              	.LVL190:
+ 373:USER/Src/iic_soft.c **** 	uint8_t INTFE=0x80;	
+ 1891              		.loc 1 373 2 view .LVU491
+ 1892              		.loc 1 373 10 is_stmt 0 view .LVU492
+ 1893 0004 8023     		movs	r3, #128
+ 1894 0006 8DF80730 		strb	r3, [sp, #7]
+ 374:USER/Src/iic_soft.c **** 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET);
+ 1895              		.loc 1 374 2 is_stmt 1 view .LVU493
+ 1896 000a 0122     		movs	r2, #1
+ 1897 000c 1321     		movs	r1, #19
+ 1898 000e 0F48     		ldr	r0, .L143
+ 1899 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1900              	.LVL191:
+ 375:USER/Src/iic_soft.c ****     for( i = 1; i < 4; i++ )  
+ 1901              		.loc 1 375 5 view .LVU494
+ 1902              		.loc 1 375 12 is_stmt 0 view .LVU495
+ 1903 0014 0125     		movs	r5, #1
+ 1904              		.loc 1 375 5 view .LVU496
+ 1905 0016 12E0     		b	.L137
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 45
+
+
+ 1906              	.LVL192:
+ 1907              	.L138:
+ 376:USER/Src/iic_soft.c **** 	{
+ 377:USER/Src/iic_soft.c **** 		for ( j = 1; j < 9; j++ ) 
+ 378:USER/Src/iic_soft.c **** 		{
+ 379:USER/Src/iic_soft.c **** 			IIC_GPIO_Init(i-1,j-1);  
+ 1908              		.loc 1 379 4 is_stmt 1 discriminator 3 view .LVU497
+ 1909 0018 611E     		subs	r1, r4, #1
+ 1910 001a 681E     		subs	r0, r5, #1
+ 1911 001c 89B2     		uxth	r1, r1
+ 1912 001e 80B2     		uxth	r0, r0
+ 1913 0020 FFF7FEFF 		bl	IIC_GPIO_Init
+ 1914              	.LVL193:
+ 380:USER/Src/iic_soft.c **** 			IIC_Write_multi_bytes(RTC_3178_ADDRESS, 0x10, &INTFE, 1);
+ 1915              		.loc 1 380 4 discriminator 3 view .LVU498
+ 1916 0024 0123     		movs	r3, #1
+ 1917 0026 0DF10702 		add	r2, sp, #7
+ 1918 002a 1021     		movs	r1, #16
+ 1919 002c 6420     		movs	r0, #100
+ 1920 002e FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 1921              	.LVL194:
+ 377:USER/Src/iic_soft.c **** 		{
+ 1922              		.loc 1 377 23 discriminator 3 view .LVU499
+ 377:USER/Src/iic_soft.c **** 		{
+ 1923              		.loc 1 377 24 is_stmt 0 discriminator 3 view .LVU500
+ 1924 0032 0134     		adds	r4, r4, #1
+ 1925              	.LVL195:
+ 377:USER/Src/iic_soft.c **** 		{
+ 1926              		.loc 1 377 24 discriminator 3 view .LVU501
+ 1927 0034 E4B2     		uxtb	r4, r4
+ 1928              	.LVL196:
+ 1929              	.L139:
+ 377:USER/Src/iic_soft.c **** 		{
+ 1930              		.loc 1 377 16 is_stmt 1 discriminator 1 view .LVU502
+ 377:USER/Src/iic_soft.c **** 		{
+ 1931              		.loc 1 377 3 is_stmt 0 discriminator 1 view .LVU503
+ 1932 0036 082C     		cmp	r4, #8
+ 1933 0038 EED9     		bls	.L138
+ 375:USER/Src/iic_soft.c **** 	{
+ 1934              		.loc 1 375 24 is_stmt 1 discriminator 2 view .LVU504
+ 375:USER/Src/iic_soft.c **** 	{
+ 1935              		.loc 1 375 25 is_stmt 0 discriminator 2 view .LVU505
+ 1936 003a 0135     		adds	r5, r5, #1
+ 1937              	.LVL197:
+ 375:USER/Src/iic_soft.c **** 	{
+ 1938              		.loc 1 375 25 discriminator 2 view .LVU506
+ 1939 003c EDB2     		uxtb	r5, r5
+ 1940              	.LVL198:
+ 1941              	.L137:
+ 375:USER/Src/iic_soft.c **** 	{
+ 1942              		.loc 1 375 17 is_stmt 1 discriminator 1 view .LVU507
+ 375:USER/Src/iic_soft.c **** 	{
+ 1943              		.loc 1 375 5 is_stmt 0 discriminator 1 view .LVU508
+ 1944 003e 032D     		cmp	r5, #3
+ 1945 0040 01D8     		bhi	.L142
+ 377:USER/Src/iic_soft.c **** 		{
+ 1946              		.loc 1 377 11 view .LVU509
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 46
+
+
+ 1947 0042 0124     		movs	r4, #1
+ 1948 0044 F7E7     		b	.L139
+ 1949              	.L142:
+ 381:USER/Src/iic_soft.c ****         }
+ 382:USER/Src/iic_soft.c ****     }
+ 383:USER/Src/iic_soft.c **** }
+ 1950              		.loc 1 383 1 view .LVU510
+ 1951 0046 03B0     		add	sp, sp, #12
+ 1952              	.LCFI35:
+ 1953              		.cfi_def_cfa_offset 12
+ 1954              		@ sp needed
+ 1955 0048 30BD     		pop	{r4, r5, pc}
+ 1956              	.LVL199:
+ 1957              	.L144:
+ 1958              		.loc 1 383 1 view .LVU511
+ 1959 004a 00BF     		.align	2
+ 1960              	.L143:
+ 1961 004c 00000240 		.word	1073872896
+ 1962              		.cfi_endproc
+ 1963              	.LFE154:
+ 1965              		.section	.text.Close8800_FREQ,"ax",%progbits
+ 1966              		.align	1
+ 1967              		.global	Close8800_FREQ
+ 1968              		.syntax unified
+ 1969              		.thumb
+ 1970              		.thumb_func
+ 1972              	Close8800_FREQ:
+ 1973              	.LFB155:
+ 384:USER/Src/iic_soft.c **** void Close8800_FREQ(void)
+ 385:USER/Src/iic_soft.c **** {
+ 1974              		.loc 1 385 1 is_stmt 1 view -0
+ 1975              		.cfi_startproc
+ 1976              		@ args = 0, pretend = 0, frame = 0
+ 1977              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1978 0000 08B5     		push	{r3, lr}
+ 1979              	.LCFI36:
+ 1980              		.cfi_def_cfa_offset 8
+ 1981              		.cfi_offset 3, -8
+ 1982              		.cfi_offset 14, -4
+ 386:USER/Src/iic_soft.c **** 	Control_level(0,0);
+ 1983              		.loc 1 386 2 view .LVU513
+ 1984 0002 0021     		movs	r1, #0
+ 1985 0004 0846     		mov	r0, r1
+ 1986 0006 FFF7FEFF 		bl	Control_level
+ 1987              	.LVL200:
+ 387:USER/Src/iic_soft.c **** 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET);
+ 1988              		.loc 1 387 2 view .LVU514
+ 1989 000a 0122     		movs	r2, #1
+ 1990 000c 1321     		movs	r1, #19
+ 1991 000e 0248     		ldr	r0, .L147
+ 1992 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1993              	.LVL201:
+ 388:USER/Src/iic_soft.c **** }
+ 1994              		.loc 1 388 1 is_stmt 0 view .LVU515
+ 1995 0014 08BD     		pop	{r3, pc}
+ 1996              	.L148:
+ 1997 0016 00BF     		.align	2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 47
+
+
+ 1998              	.L147:
+ 1999 0018 00000240 		.word	1073872896
+ 2000              		.cfi_endproc
+ 2001              	.LFE155:
+ 2003              		.section	.text.Close8801_FREQ,"ax",%progbits
+ 2004              		.align	1
+ 2005              		.global	Close8801_FREQ
+ 2006              		.syntax unified
+ 2007              		.thumb
+ 2008              		.thumb_func
+ 2010              	Close8801_FREQ:
+ 2011              	.LFB156:
+ 389:USER/Src/iic_soft.c **** void Close8801_FREQ(void)
+ 390:USER/Src/iic_soft.c **** {
+ 2012              		.loc 1 390 1 is_stmt 1 view -0
+ 2013              		.cfi_startproc
+ 2014              		@ args = 0, pretend = 0, frame = 0
+ 2015              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2016 0000 08B5     		push	{r3, lr}
+ 2017              	.LCFI37:
+ 2018              		.cfi_def_cfa_offset 8
+ 2019              		.cfi_offset 3, -8
+ 2020              		.cfi_offset 14, -4
+ 391:USER/Src/iic_soft.c **** 
+ 392:USER/Src/iic_soft.c **** 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET);
+ 2021              		.loc 1 392 2 view .LVU517
+ 2022 0002 0122     		movs	r2, #1
+ 2023 0004 1321     		movs	r1, #19
+ 2024 0006 0248     		ldr	r0, .L151
+ 2025 0008 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 2026              	.LVL202:
+ 393:USER/Src/iic_soft.c ****     
+ 394:USER/Src/iic_soft.c **** }
+ 2027              		.loc 1 394 1 is_stmt 0 view .LVU518
+ 2028 000c 08BD     		pop	{r3, pc}
+ 2029              	.L152:
+ 2030 000e 00BF     		.align	2
+ 2031              	.L151:
+ 2032 0010 00000240 		.word	1073872896
+ 2033              		.cfi_endproc
+ 2034              	.LFE156:
+ 2036              		.section	.text.Close8810_FREQ,"ax",%progbits
+ 2037              		.align	1
+ 2038              		.global	Close8810_FREQ
+ 2039              		.syntax unified
+ 2040              		.thumb
+ 2041              		.thumb_func
+ 2043              	Close8810_FREQ:
+ 2044              	.LFB157:
+ 395:USER/Src/iic_soft.c **** void Close8810_FREQ(void)
+ 396:USER/Src/iic_soft.c **** {
+ 2045              		.loc 1 396 1 is_stmt 1 view -0
+ 2046              		.cfi_startproc
+ 2047              		@ args = 0, pretend = 0, frame = 8
+ 2048              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2049 0000 30B5     		push	{r4, r5, lr}
+ 2050              	.LCFI38:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 48
+
+
+ 2051              		.cfi_def_cfa_offset 12
+ 2052              		.cfi_offset 4, -12
+ 2053              		.cfi_offset 5, -8
+ 2054              		.cfi_offset 14, -4
+ 2055 0002 83B0     		sub	sp, sp, #12
+ 2056              	.LCFI39:
+ 2057              		.cfi_def_cfa_offset 24
+ 397:USER/Src/iic_soft.c **** 	uint8_t i=0,j=0;
+ 2058              		.loc 1 397 2 view .LVU520
+ 2059              	.LVL203:
+ 398:USER/Src/iic_soft.c **** 	uint8_t SD8810_CLOSE=0X00;
+ 2060              		.loc 1 398 2 view .LVU521
+ 2061              		.loc 1 398 10 is_stmt 0 view .LVU522
+ 2062 0004 0023     		movs	r3, #0
+ 2063 0006 8DF80730 		strb	r3, [sp, #7]
+ 399:USER/Src/iic_soft.c **** 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET);
+ 2064              		.loc 1 399 2 is_stmt 1 view .LVU523
+ 2065 000a 0122     		movs	r2, #1
+ 2066 000c 1321     		movs	r1, #19
+ 2067 000e 0F48     		ldr	r0, .L160
+ 2068 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 2069              	.LVL204:
+ 400:USER/Src/iic_soft.c ****     for( i = 1; i < 4; i++ )  
+ 2070              		.loc 1 400 5 view .LVU524
+ 2071              		.loc 1 400 12 is_stmt 0 view .LVU525
+ 2072 0014 0125     		movs	r5, #1
+ 2073              		.loc 1 400 5 view .LVU526
+ 2074 0016 12E0     		b	.L154
+ 2075              	.LVL205:
+ 2076              	.L155:
+ 401:USER/Src/iic_soft.c **** 	{
+ 402:USER/Src/iic_soft.c **** 		for ( j = 1; j < 9; j++ ) 
+ 403:USER/Src/iic_soft.c **** 		{
+ 404:USER/Src/iic_soft.c **** 			IIC_GPIO_Init(i-1,j-1);    
+ 2077              		.loc 1 404 4 is_stmt 1 discriminator 3 view .LVU527
+ 2078 0018 611E     		subs	r1, r4, #1
+ 2079 001a 681E     		subs	r0, r5, #1
+ 2080 001c 89B2     		uxth	r1, r1
+ 2081 001e 80B2     		uxth	r0, r0
+ 2082 0020 FFF7FEFF 		bl	IIC_GPIO_Init
+ 2083              	.LVL206:
+ 405:USER/Src/iic_soft.c **** 			IIC_Write_multi_bytes(RTC_8810_ADDRESS, 0X1D,&SD8810_CLOSE, 1);
+ 2084              		.loc 1 405 4 discriminator 3 view .LVU528
+ 2085 0024 0123     		movs	r3, #1
+ 2086 0026 0DF10702 		add	r2, sp, #7
+ 2087 002a 1D21     		movs	r1, #29
+ 2088 002c 6420     		movs	r0, #100
+ 2089 002e FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2090              	.LVL207:
+ 402:USER/Src/iic_soft.c **** 		{
+ 2091              		.loc 1 402 23 discriminator 3 view .LVU529
+ 402:USER/Src/iic_soft.c **** 		{
+ 2092              		.loc 1 402 24 is_stmt 0 discriminator 3 view .LVU530
+ 2093 0032 0134     		adds	r4, r4, #1
+ 2094              	.LVL208:
+ 402:USER/Src/iic_soft.c **** 		{
+ 2095              		.loc 1 402 24 discriminator 3 view .LVU531
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 49
+
+
+ 2096 0034 E4B2     		uxtb	r4, r4
+ 2097              	.LVL209:
+ 2098              	.L156:
+ 402:USER/Src/iic_soft.c **** 		{
+ 2099              		.loc 1 402 16 is_stmt 1 discriminator 1 view .LVU532
+ 402:USER/Src/iic_soft.c **** 		{
+ 2100              		.loc 1 402 3 is_stmt 0 discriminator 1 view .LVU533
+ 2101 0036 082C     		cmp	r4, #8
+ 2102 0038 EED9     		bls	.L155
+ 400:USER/Src/iic_soft.c **** 	{
+ 2103              		.loc 1 400 24 is_stmt 1 discriminator 2 view .LVU534
+ 400:USER/Src/iic_soft.c **** 	{
+ 2104              		.loc 1 400 25 is_stmt 0 discriminator 2 view .LVU535
+ 2105 003a 0135     		adds	r5, r5, #1
+ 2106              	.LVL210:
+ 400:USER/Src/iic_soft.c **** 	{
+ 2107              		.loc 1 400 25 discriminator 2 view .LVU536
+ 2108 003c EDB2     		uxtb	r5, r5
+ 2109              	.LVL211:
+ 2110              	.L154:
+ 400:USER/Src/iic_soft.c **** 	{
+ 2111              		.loc 1 400 17 is_stmt 1 discriminator 1 view .LVU537
+ 400:USER/Src/iic_soft.c **** 	{
+ 2112              		.loc 1 400 5 is_stmt 0 discriminator 1 view .LVU538
+ 2113 003e 032D     		cmp	r5, #3
+ 2114 0040 01D8     		bhi	.L159
+ 402:USER/Src/iic_soft.c **** 		{
+ 2115              		.loc 1 402 11 view .LVU539
+ 2116 0042 0124     		movs	r4, #1
+ 2117 0044 F7E7     		b	.L156
+ 2118              	.L159:
+ 406:USER/Src/iic_soft.c ****         }
+ 407:USER/Src/iic_soft.c ****     }
+ 408:USER/Src/iic_soft.c **** }
+ 2119              		.loc 1 408 1 view .LVU540
+ 2120 0046 03B0     		add	sp, sp, #12
+ 2121              	.LCFI40:
+ 2122              		.cfi_def_cfa_offset 12
+ 2123              		@ sp needed
+ 2124 0048 30BD     		pop	{r4, r5, pc}
+ 2125              	.LVL212:
+ 2126              	.L161:
+ 2127              		.loc 1 408 1 view .LVU541
+ 2128 004a 00BF     		.align	2
+ 2129              	.L160:
+ 2130 004c 00000240 		.word	1073872896
+ 2131              		.cfi_endproc
+ 2132              	.LFE157:
+ 2134              		.section	.text.Close8825_FREQ,"ax",%progbits
+ 2135              		.align	1
+ 2136              		.global	Close8825_FREQ
+ 2137              		.syntax unified
+ 2138              		.thumb
+ 2139              		.thumb_func
+ 2141              	Close8825_FREQ:
+ 2142              	.LFB158:
+ 409:USER/Src/iic_soft.c **** void Close8825_FREQ(void)//
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 50
+
+
+ 410:USER/Src/iic_soft.c **** {
+ 2143              		.loc 1 410 1 is_stmt 1 view -0
+ 2144              		.cfi_startproc
+ 2145              		@ args = 0, pretend = 0, frame = 0
+ 2146              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2147 0000 08B5     		push	{r3, lr}
+ 2148              	.LCFI41:
+ 2149              		.cfi_def_cfa_offset 8
+ 2150              		.cfi_offset 3, -8
+ 2151              		.cfi_offset 14, -4
+ 411:USER/Src/iic_soft.c **** 	Control_level(0,0);
+ 2152              		.loc 1 411 2 view .LVU543
+ 2153 0002 0021     		movs	r1, #0
+ 2154 0004 0846     		mov	r0, r1
+ 2155 0006 FFF7FEFF 		bl	Control_level
+ 2156              	.LVL213:
+ 412:USER/Src/iic_soft.c **** 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET);
+ 2157              		.loc 1 412 2 view .LVU544
+ 2158 000a 0122     		movs	r2, #1
+ 2159 000c 1321     		movs	r1, #19
+ 2160 000e 0248     		ldr	r0, .L164
+ 2161 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 2162              	.LVL214:
+ 413:USER/Src/iic_soft.c **** }
+ 2163              		.loc 1 413 1 is_stmt 0 view .LVU545
+ 2164 0014 08BD     		pop	{r3, pc}
+ 2165              	.L165:
+ 2166 0016 00BF     		.align	2
+ 2167              	.L164:
+ 2168 0018 00000240 		.word	1073872896
+ 2169              		.cfi_endproc
+ 2170              	.LFE158:
+ 2172              		.section	.text.Close8931_FREQ,"ax",%progbits
+ 2173              		.align	1
+ 2174              		.global	Close8931_FREQ
+ 2175              		.syntax unified
+ 2176              		.thumb
+ 2177              		.thumb_func
+ 2179              	Close8931_FREQ:
+ 2180              	.LFB159:
+ 414:USER/Src/iic_soft.c **** void Close8931_FREQ(void)//
+ 415:USER/Src/iic_soft.c **** {
+ 2181              		.loc 1 415 1 is_stmt 1 view -0
+ 2182              		.cfi_startproc
+ 2183              		@ args = 0, pretend = 0, frame = 8
+ 2184              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2185 0000 30B5     		push	{r4, r5, lr}
+ 2186              	.LCFI42:
+ 2187              		.cfi_def_cfa_offset 12
+ 2188              		.cfi_offset 4, -12
+ 2189              		.cfi_offset 5, -8
+ 2190              		.cfi_offset 14, -4
+ 2191 0002 83B0     		sub	sp, sp, #12
+ 2192              	.LCFI43:
+ 2193              		.cfi_def_cfa_offset 24
+ 416:USER/Src/iic_soft.c **** 	uint8_t i=0,j=0;
+ 2194              		.loc 1 416 2 view .LVU547
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 51
+
+
+ 2195              	.LVL215:
+ 417:USER/Src/iic_soft.c **** 	uint8_t SD8931_CLOSE[2]={0X04,0X00};
+ 2196              		.loc 1 417 2 view .LVU548
+ 2197              		.loc 1 417 10 is_stmt 0 view .LVU549
+ 2198 0004 0423     		movs	r3, #4
+ 2199 0006 ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 418:USER/Src/iic_soft.c **** 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET);
+ 2200              		.loc 1 418 2 is_stmt 1 view .LVU550
+ 2201 000a 0122     		movs	r2, #1
+ 2202 000c 1321     		movs	r1, #19
+ 2203 000e 0E48     		ldr	r0, .L173
+ 2204 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 2205              	.LVL216:
+ 419:USER/Src/iic_soft.c ****     for( i = 1; i < 4; i++ )  
+ 2206              		.loc 1 419 5 view .LVU551
+ 2207              		.loc 1 419 12 is_stmt 0 view .LVU552
+ 2208 0014 0125     		movs	r5, #1
+ 2209              		.loc 1 419 5 view .LVU553
+ 2210 0016 11E0     		b	.L167
+ 2211              	.LVL217:
+ 2212              	.L168:
+ 420:USER/Src/iic_soft.c **** 	{
+ 421:USER/Src/iic_soft.c **** 		for ( j = 1; j < 9; j++ ) 
+ 422:USER/Src/iic_soft.c **** 		{
+ 423:USER/Src/iic_soft.c **** 			IIC_GPIO_Init(i-1,j-1);    
+ 2213              		.loc 1 423 4 is_stmt 1 discriminator 3 view .LVU554
+ 2214 0018 611E     		subs	r1, r4, #1
+ 2215 001a 681E     		subs	r0, r5, #1
+ 2216 001c 89B2     		uxth	r1, r1
+ 2217 001e 80B2     		uxth	r0, r0
+ 2218 0020 FFF7FEFF 		bl	IIC_GPIO_Init
+ 2219              	.LVL218:
+ 424:USER/Src/iic_soft.c **** 			IIC_Write_multi_bytes(RTC_8931_ADDRESS, 0X0E,SD8931_CLOSE, 2);
+ 2220              		.loc 1 424 4 discriminator 3 view .LVU555
+ 2221 0024 0223     		movs	r3, #2
+ 2222 0026 01AA     		add	r2, sp, #4
+ 2223 0028 0E21     		movs	r1, #14
+ 2224 002a D020     		movs	r0, #208
+ 2225 002c FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2226              	.LVL219:
+ 421:USER/Src/iic_soft.c **** 		{
+ 2227              		.loc 1 421 23 discriminator 3 view .LVU556
+ 421:USER/Src/iic_soft.c **** 		{
+ 2228              		.loc 1 421 24 is_stmt 0 discriminator 3 view .LVU557
+ 2229 0030 0134     		adds	r4, r4, #1
+ 2230              	.LVL220:
+ 421:USER/Src/iic_soft.c **** 		{
+ 2231              		.loc 1 421 24 discriminator 3 view .LVU558
+ 2232 0032 E4B2     		uxtb	r4, r4
+ 2233              	.LVL221:
+ 2234              	.L169:
+ 421:USER/Src/iic_soft.c **** 		{
+ 2235              		.loc 1 421 16 is_stmt 1 discriminator 1 view .LVU559
+ 421:USER/Src/iic_soft.c **** 		{
+ 2236              		.loc 1 421 3 is_stmt 0 discriminator 1 view .LVU560
+ 2237 0034 082C     		cmp	r4, #8
+ 2238 0036 EFD9     		bls	.L168
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 52
+
+
+ 419:USER/Src/iic_soft.c **** 	{
+ 2239              		.loc 1 419 24 is_stmt 1 discriminator 2 view .LVU561
+ 419:USER/Src/iic_soft.c **** 	{
+ 2240              		.loc 1 419 25 is_stmt 0 discriminator 2 view .LVU562
+ 2241 0038 0135     		adds	r5, r5, #1
+ 2242              	.LVL222:
+ 419:USER/Src/iic_soft.c **** 	{
+ 2243              		.loc 1 419 25 discriminator 2 view .LVU563
+ 2244 003a EDB2     		uxtb	r5, r5
+ 2245              	.LVL223:
+ 2246              	.L167:
+ 419:USER/Src/iic_soft.c **** 	{
+ 2247              		.loc 1 419 17 is_stmt 1 discriminator 1 view .LVU564
+ 419:USER/Src/iic_soft.c **** 	{
+ 2248              		.loc 1 419 5 is_stmt 0 discriminator 1 view .LVU565
+ 2249 003c 032D     		cmp	r5, #3
+ 2250 003e 01D8     		bhi	.L172
+ 421:USER/Src/iic_soft.c **** 		{
+ 2251              		.loc 1 421 11 view .LVU566
+ 2252 0040 0124     		movs	r4, #1
+ 2253 0042 F7E7     		b	.L169
+ 2254              	.L172:
+ 425:USER/Src/iic_soft.c ****         }
+ 426:USER/Src/iic_soft.c ****     }
+ 427:USER/Src/iic_soft.c **** }
+ 2255              		.loc 1 427 1 view .LVU567
+ 2256 0044 03B0     		add	sp, sp, #12
+ 2257              	.LCFI44:
+ 2258              		.cfi_def_cfa_offset 12
+ 2259              		@ sp needed
+ 2260 0046 30BD     		pop	{r4, r5, pc}
+ 2261              	.LVL224:
+ 2262              	.L174:
+ 2263              		.loc 1 427 1 view .LVU568
+ 2264              		.align	2
+ 2265              	.L173:
+ 2266 0048 00000240 		.word	1073872896
+ 2267              		.cfi_endproc
+ 2268              	.LFE159:
+ 2270              		.section	.rodata.SD3077_Write_Enable.str1.4,"aMS",%progbits,1
+ 2271              		.align	2
+ 2272              	.LC6:
+ 2273 0000 2D2D456E 		.ascii	"--Enable ERROR ! \015\012\000"
+ 2273      61626C65 
+ 2273      20455252 
+ 2273      4F522021 
+ 2273      200D0A00 
+ 2274              		.section	.text.SD3077_Write_Enable,"ax",%progbits
+ 2275              		.align	1
+ 2276              		.global	SD3077_Write_Enable
+ 2277              		.syntax unified
+ 2278              		.thumb
+ 2279              		.thumb_func
+ 2281              	SD3077_Write_Enable:
+ 2282              	.LFB160:
+ 428:USER/Src/iic_soft.c **** void SD3077_Write_Enable(void)
+ 429:USER/Src/iic_soft.c **** {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 53
+
+
+ 2283              		.loc 1 429 1 is_stmt 1 view -0
+ 2284              		.cfi_startproc
+ 2285              		@ args = 0, pretend = 0, frame = 8
+ 2286              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2287 0000 00B5     		push	{lr}
+ 2288              	.LCFI45:
+ 2289              		.cfi_def_cfa_offset 4
+ 2290              		.cfi_offset 14, -4
+ 2291 0002 83B0     		sub	sp, sp, #12
+ 2292              	.LCFI46:
+ 2293              		.cfi_def_cfa_offset 16
+ 430:USER/Src/iic_soft.c **** 	uint8_t data3=0x80,data4=0x84;
+ 2294              		.loc 1 430 2 view .LVU570
+ 2295              		.loc 1 430 10 is_stmt 0 view .LVU571
+ 2296 0004 8023     		movs	r3, #128
+ 2297 0006 8DF80730 		strb	r3, [sp, #7]
+ 2298              		.loc 1 430 21 view .LVU572
+ 2299 000a 8423     		movs	r3, #132
+ 2300 000c 8DF80630 		strb	r3, [sp, #6]
+ 431:USER/Src/iic_soft.c **** 	if(IIC_Write_multi_bytes(RTC_3077_ADDRESS, 0x10, &data3, 1)== I2C_OK)
+ 2301              		.loc 1 431 2 is_stmt 1 view .LVU573
+ 2302              		.loc 1 431 5 is_stmt 0 view .LVU574
+ 2303 0010 0123     		movs	r3, #1
+ 2304 0012 0DF10702 		add	r2, sp, #7
+ 2305 0016 1021     		movs	r1, #16
+ 2306 0018 6420     		movs	r0, #100
+ 2307 001a FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2308              	.LVL225:
+ 2309              		.loc 1 431 4 view .LVU575
+ 2310 001e 0228     		cmp	r0, #2
+ 2311 0020 02D0     		beq	.L178
+ 2312              	.L175:
+ 432:USER/Src/iic_soft.c **** 	{
+ 433:USER/Src/iic_soft.c **** 		if(IIC_Write_multi_bytes(RTC_3077_ADDRESS, 0x0F, &data4, 1)== I2C_OK)
+ 434:USER/Src/iic_soft.c **** 		{
+ 435:USER/Src/iic_soft.c **** 		}else
+ 436:USER/Src/iic_soft.c **** 		{
+ 437:USER/Src/iic_soft.c **** 			UsbPrintf("--Enable ERROR ! \r\n");
+ 438:USER/Src/iic_soft.c **** 		}
+ 439:USER/Src/iic_soft.c **** 	}
+ 440:USER/Src/iic_soft.c **** }
+ 2313              		.loc 1 440 1 view .LVU576
+ 2314 0022 03B0     		add	sp, sp, #12
+ 2315              	.LCFI47:
+ 2316              		.cfi_remember_state
+ 2317              		.cfi_def_cfa_offset 4
+ 2318              		@ sp needed
+ 2319 0024 5DF804FB 		ldr	pc, [sp], #4
+ 2320              	.L178:
+ 2321              	.LCFI48:
+ 2322              		.cfi_restore_state
+ 433:USER/Src/iic_soft.c **** 		{
+ 2323              		.loc 1 433 3 is_stmt 1 view .LVU577
+ 433:USER/Src/iic_soft.c **** 		{
+ 2324              		.loc 1 433 6 is_stmt 0 view .LVU578
+ 2325 0028 0123     		movs	r3, #1
+ 2326 002a 0DF10602 		add	r2, sp, #6
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 54
+
+
+ 2327 002e 0F21     		movs	r1, #15
+ 2328 0030 6420     		movs	r0, #100
+ 2329 0032 FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2330              	.LVL226:
+ 433:USER/Src/iic_soft.c **** 		{
+ 2331              		.loc 1 433 5 view .LVU579
+ 2332 0036 0228     		cmp	r0, #2
+ 2333 0038 F3D0     		beq	.L175
+ 437:USER/Src/iic_soft.c **** 		}
+ 2334              		.loc 1 437 4 is_stmt 1 view .LVU580
+ 2335 003a 0248     		ldr	r0, .L179
+ 2336 003c FFF7FEFF 		bl	UsbPrintf
+ 2337              	.LVL227:
+ 2338              		.loc 1 440 1 is_stmt 0 view .LVU581
+ 2339 0040 EFE7     		b	.L175
+ 2340              	.L180:
+ 2341 0042 00BF     		.align	2
+ 2342              	.L179:
+ 2343 0044 00000000 		.word	.LC6
+ 2344              		.cfi_endproc
+ 2345              	.LFE160:
+ 2347              		.section	.rodata.SD3077_Write_Disable.str1.4,"aMS",%progbits,1
+ 2348              		.align	2
+ 2349              	.LC7:
+ 2350 0000 2D2D4469 		.ascii	"--Disable ERROR ! \015\012\000"
+ 2350      7361626C 
+ 2350      65204552 
+ 2350      524F5220 
+ 2350      21200D0A 
+ 2351              		.section	.text.SD3077_Write_Disable,"ax",%progbits
+ 2352              		.align	1
+ 2353              		.global	SD3077_Write_Disable
+ 2354              		.syntax unified
+ 2355              		.thumb
+ 2356              		.thumb_func
+ 2358              	SD3077_Write_Disable:
+ 2359              	.LFB161:
+ 441:USER/Src/iic_soft.c **** void SD3077_Write_Disable(void)
+ 442:USER/Src/iic_soft.c **** {
+ 2360              		.loc 1 442 1 is_stmt 1 view -0
+ 2361              		.cfi_startproc
+ 2362              		@ args = 0, pretend = 0, frame = 8
+ 2363              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2364 0000 00B5     		push	{lr}
+ 2365              	.LCFI49:
+ 2366              		.cfi_def_cfa_offset 4
+ 2367              		.cfi_offset 14, -4
+ 2368 0002 83B0     		sub	sp, sp, #12
+ 2369              	.LCFI50:
+ 2370              		.cfi_def_cfa_offset 16
+ 443:USER/Src/iic_soft.c **** 	uint8_t data1=0x00;
+ 2371              		.loc 1 443 2 view .LVU583
+ 2372              		.loc 1 443 10 is_stmt 0 view .LVU584
+ 2373 0004 0023     		movs	r3, #0
+ 2374 0006 8DF80730 		strb	r3, [sp, #7]
+ 444:USER/Src/iic_soft.c **** 	if(IIC_Write_multi_bytes(RTC_3077_ADDRESS, 0x0F, &data1, 1)== I2C_OK)
+ 2375              		.loc 1 444 2 is_stmt 1 view .LVU585
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 55
+
+
+ 2376              		.loc 1 444 5 is_stmt 0 view .LVU586
+ 2377 000a 0123     		movs	r3, #1
+ 2378 000c 0DF10702 		add	r2, sp, #7
+ 2379 0010 0F21     		movs	r1, #15
+ 2380 0012 6420     		movs	r0, #100
+ 2381 0014 FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2382              	.LVL228:
+ 2383              		.loc 1 444 4 view .LVU587
+ 2384 0018 0228     		cmp	r0, #2
+ 2385 001a 02D0     		beq	.L184
+ 2386              	.L181:
+ 445:USER/Src/iic_soft.c **** 	{
+ 446:USER/Src/iic_soft.c **** 		if(IIC_Write_multi_bytes(RTC_3077_ADDRESS, 0x10, &data1, 1)== I2C_OK)
+ 447:USER/Src/iic_soft.c **** 		{
+ 448:USER/Src/iic_soft.c **** 			//UsbPrintf("---Write Disable !\r\n");
+ 449:USER/Src/iic_soft.c **** 		}
+ 450:USER/Src/iic_soft.c **** 		else
+ 451:USER/Src/iic_soft.c **** 		{
+ 452:USER/Src/iic_soft.c **** 			UsbPrintf("--Disable ERROR ! \r\n");
+ 453:USER/Src/iic_soft.c **** 		}
+ 454:USER/Src/iic_soft.c **** 	}
+ 455:USER/Src/iic_soft.c **** }
+ 2387              		.loc 1 455 1 view .LVU588
+ 2388 001c 03B0     		add	sp, sp, #12
+ 2389              	.LCFI51:
+ 2390              		.cfi_remember_state
+ 2391              		.cfi_def_cfa_offset 4
+ 2392              		@ sp needed
+ 2393 001e 5DF804FB 		ldr	pc, [sp], #4
+ 2394              	.L184:
+ 2395              	.LCFI52:
+ 2396              		.cfi_restore_state
+ 446:USER/Src/iic_soft.c **** 		{
+ 2397              		.loc 1 446 3 is_stmt 1 view .LVU589
+ 446:USER/Src/iic_soft.c **** 		{
+ 2398              		.loc 1 446 6 is_stmt 0 view .LVU590
+ 2399 0022 0123     		movs	r3, #1
+ 2400 0024 0DF10702 		add	r2, sp, #7
+ 2401 0028 1021     		movs	r1, #16
+ 2402 002a 6420     		movs	r0, #100
+ 2403 002c FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2404              	.LVL229:
+ 446:USER/Src/iic_soft.c **** 		{
+ 2405              		.loc 1 446 5 view .LVU591
+ 2406 0030 0228     		cmp	r0, #2
+ 2407 0032 F3D0     		beq	.L181
+ 452:USER/Src/iic_soft.c **** 		}
+ 2408              		.loc 1 452 4 is_stmt 1 view .LVU592
+ 2409 0034 0148     		ldr	r0, .L185
+ 2410 0036 FFF7FEFF 		bl	UsbPrintf
+ 2411              	.LVL230:
+ 2412              		.loc 1 455 1 is_stmt 0 view .LVU593
+ 2413 003a EFE7     		b	.L181
+ 2414              	.L186:
+ 2415              		.align	2
+ 2416              	.L185:
+ 2417 003c 00000000 		.word	.LC7
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 56
+
+
+ 2418              		.cfi_endproc
+ 2419              	.LFE161:
+ 2421              		.section	.text.SD3178_Write_Enable,"ax",%progbits
+ 2422              		.align	1
+ 2423              		.global	SD3178_Write_Enable
+ 2424              		.syntax unified
+ 2425              		.thumb
+ 2426              		.thumb_func
+ 2428              	SD3178_Write_Enable:
+ 2429              	.LFB162:
+ 456:USER/Src/iic_soft.c **** void SD3178_Write_Enable(void)
+ 457:USER/Src/iic_soft.c **** {
+ 2430              		.loc 1 457 1 is_stmt 1 view -0
+ 2431              		.cfi_startproc
+ 2432              		@ args = 0, pretend = 0, frame = 8
+ 2433              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2434 0000 00B5     		push	{lr}
+ 2435              	.LCFI53:
+ 2436              		.cfi_def_cfa_offset 4
+ 2437              		.cfi_offset 14, -4
+ 2438 0002 83B0     		sub	sp, sp, #12
+ 2439              	.LCFI54:
+ 2440              		.cfi_def_cfa_offset 16
+ 458:USER/Src/iic_soft.c **** 	uint8_t data3=0x80,data4=0xFF;
+ 2441              		.loc 1 458 2 view .LVU595
+ 2442              		.loc 1 458 10 is_stmt 0 view .LVU596
+ 2443 0004 8023     		movs	r3, #128
+ 2444 0006 8DF80730 		strb	r3, [sp, #7]
+ 2445              		.loc 1 458 21 view .LVU597
+ 2446 000a FF23     		movs	r3, #255
+ 2447 000c 8DF80630 		strb	r3, [sp, #6]
+ 459:USER/Src/iic_soft.c **** 	if(IIC_Write_multi_bytes(RTC_3178_ADDRESS, 0x10, &data3, 1)== I2C_OK)
+ 2448              		.loc 1 459 2 is_stmt 1 view .LVU598
+ 2449              		.loc 1 459 5 is_stmt 0 view .LVU599
+ 2450 0010 0123     		movs	r3, #1
+ 2451 0012 0DF10702 		add	r2, sp, #7
+ 2452 0016 1021     		movs	r1, #16
+ 2453 0018 6420     		movs	r0, #100
+ 2454 001a FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2455              	.LVL231:
+ 2456              		.loc 1 459 4 view .LVU600
+ 2457 001e 0228     		cmp	r0, #2
+ 2458 0020 02D0     		beq	.L190
+ 2459              	.L187:
+ 460:USER/Src/iic_soft.c **** 		{
+ 461:USER/Src/iic_soft.c **** 			if(IIC_Write_multi_bytes(RTC_3178_ADDRESS, 0x0F, &data4, 1)== I2C_OK)
+ 462:USER/Src/iic_soft.c **** 			{
+ 463:USER/Src/iic_soft.c **** 			}
+ 464:USER/Src/iic_soft.c **** 			else
+ 465:USER/Src/iic_soft.c **** 			{
+ 466:USER/Src/iic_soft.c **** 				UsbPrintf("--Enable ERROR ! \r\n");
+ 467:USER/Src/iic_soft.c **** 			}
+ 468:USER/Src/iic_soft.c **** 		}
+ 469:USER/Src/iic_soft.c **** }
+ 2460              		.loc 1 469 1 view .LVU601
+ 2461 0022 03B0     		add	sp, sp, #12
+ 2462              	.LCFI55:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 57
+
+
+ 2463              		.cfi_remember_state
+ 2464              		.cfi_def_cfa_offset 4
+ 2465              		@ sp needed
+ 2466 0024 5DF804FB 		ldr	pc, [sp], #4
+ 2467              	.L190:
+ 2468              	.LCFI56:
+ 2469              		.cfi_restore_state
+ 461:USER/Src/iic_soft.c **** 			{
+ 2470              		.loc 1 461 4 is_stmt 1 view .LVU602
+ 461:USER/Src/iic_soft.c **** 			{
+ 2471              		.loc 1 461 7 is_stmt 0 view .LVU603
+ 2472 0028 0123     		movs	r3, #1
+ 2473 002a 0DF10602 		add	r2, sp, #6
+ 2474 002e 0F21     		movs	r1, #15
+ 2475 0030 6420     		movs	r0, #100
+ 2476 0032 FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2477              	.LVL232:
+ 461:USER/Src/iic_soft.c **** 			{
+ 2478              		.loc 1 461 6 view .LVU604
+ 2479 0036 0228     		cmp	r0, #2
+ 2480 0038 F3D0     		beq	.L187
+ 466:USER/Src/iic_soft.c **** 			}
+ 2481              		.loc 1 466 5 is_stmt 1 view .LVU605
+ 2482 003a 0248     		ldr	r0, .L191
+ 2483 003c FFF7FEFF 		bl	UsbPrintf
+ 2484              	.LVL233:
+ 2485              		.loc 1 469 1 is_stmt 0 view .LVU606
+ 2486 0040 EFE7     		b	.L187
+ 2487              	.L192:
+ 2488 0042 00BF     		.align	2
+ 2489              	.L191:
+ 2490 0044 00000000 		.word	.LC6
+ 2491              		.cfi_endproc
+ 2492              	.LFE162:
+ 2494              		.section	.text.SD3178_Write_Disable,"ax",%progbits
+ 2495              		.align	1
+ 2496              		.global	SD3178_Write_Disable
+ 2497              		.syntax unified
+ 2498              		.thumb
+ 2499              		.thumb_func
+ 2501              	SD3178_Write_Disable:
+ 2502              	.LFB163:
+ 470:USER/Src/iic_soft.c **** void SD3178_Write_Disable(void)
+ 471:USER/Src/iic_soft.c **** {
+ 2503              		.loc 1 471 1 is_stmt 1 view -0
+ 2504              		.cfi_startproc
+ 2505              		@ args = 0, pretend = 0, frame = 8
+ 2506              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2507 0000 00B5     		push	{lr}
+ 2508              	.LCFI57:
+ 2509              		.cfi_def_cfa_offset 4
+ 2510              		.cfi_offset 14, -4
+ 2511 0002 83B0     		sub	sp, sp, #12
+ 2512              	.LCFI58:
+ 2513              		.cfi_def_cfa_offset 16
+ 472:USER/Src/iic_soft.c **** 	uint8_t data1=0x7B,data2=0x00;
+ 2514              		.loc 1 472 2 view .LVU608
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 58
+
+
+ 2515              		.loc 1 472 10 is_stmt 0 view .LVU609
+ 2516 0004 7B23     		movs	r3, #123
+ 2517 0006 8DF80730 		strb	r3, [sp, #7]
+ 2518              		.loc 1 472 21 view .LVU610
+ 2519 000a 0023     		movs	r3, #0
+ 2520 000c 8DF80630 		strb	r3, [sp, #6]
+ 473:USER/Src/iic_soft.c **** 	if(IIC_Write_multi_bytes(RTC_3178_ADDRESS, 0x0F, &data1, 1)== I2C_OK)
+ 2521              		.loc 1 473 2 is_stmt 1 view .LVU611
+ 2522              		.loc 1 473 5 is_stmt 0 view .LVU612
+ 2523 0010 0123     		movs	r3, #1
+ 2524 0012 0DF10702 		add	r2, sp, #7
+ 2525 0016 0F21     		movs	r1, #15
+ 2526 0018 6420     		movs	r0, #100
+ 2527 001a FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2528              	.LVL234:
+ 2529              		.loc 1 473 4 view .LVU613
+ 2530 001e 0228     		cmp	r0, #2
+ 2531 0020 02D0     		beq	.L196
+ 2532              	.L193:
+ 474:USER/Src/iic_soft.c **** 		{
+ 475:USER/Src/iic_soft.c **** 			if(IIC_Write_multi_bytes(RTC_3178_ADDRESS, 0x10, &data2, 1)== I2C_OK)
+ 476:USER/Src/iic_soft.c **** 			{
+ 477:USER/Src/iic_soft.c **** 				//UsbPrintf("---Write Disable !\r\n");
+ 478:USER/Src/iic_soft.c **** 			}
+ 479:USER/Src/iic_soft.c **** 			else
+ 480:USER/Src/iic_soft.c **** 			{
+ 481:USER/Src/iic_soft.c **** 				UsbPrintf("--Disable ERROR ! \r\n");
+ 482:USER/Src/iic_soft.c **** 			}
+ 483:USER/Src/iic_soft.c **** 		}
+ 484:USER/Src/iic_soft.c **** }
+ 2533              		.loc 1 484 1 view .LVU614
+ 2534 0022 03B0     		add	sp, sp, #12
+ 2535              	.LCFI59:
+ 2536              		.cfi_remember_state
+ 2537              		.cfi_def_cfa_offset 4
+ 2538              		@ sp needed
+ 2539 0024 5DF804FB 		ldr	pc, [sp], #4
+ 2540              	.L196:
+ 2541              	.LCFI60:
+ 2542              		.cfi_restore_state
+ 475:USER/Src/iic_soft.c **** 			{
+ 2543              		.loc 1 475 4 is_stmt 1 view .LVU615
+ 475:USER/Src/iic_soft.c **** 			{
+ 2544              		.loc 1 475 7 is_stmt 0 view .LVU616
+ 2545 0028 0123     		movs	r3, #1
+ 2546 002a 0DF10602 		add	r2, sp, #6
+ 2547 002e 1021     		movs	r1, #16
+ 2548 0030 6420     		movs	r0, #100
+ 2549 0032 FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2550              	.LVL235:
+ 475:USER/Src/iic_soft.c **** 			{
+ 2551              		.loc 1 475 6 view .LVU617
+ 2552 0036 0228     		cmp	r0, #2
+ 2553 0038 F3D0     		beq	.L193
+ 481:USER/Src/iic_soft.c **** 			}
+ 2554              		.loc 1 481 5 is_stmt 1 view .LVU618
+ 2555 003a 0248     		ldr	r0, .L197
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 59
+
+
+ 2556 003c FFF7FEFF 		bl	UsbPrintf
+ 2557              	.LVL236:
+ 2558              		.loc 1 484 1 is_stmt 0 view .LVU619
+ 2559 0040 EFE7     		b	.L193
+ 2560              	.L198:
+ 2561 0042 00BF     		.align	2
+ 2562              	.L197:
+ 2563 0044 00000000 		.word	.LC7
+ 2564              		.cfi_endproc
+ 2565              	.LFE163:
+ 2567              		.global	__aeabi_f2d
+ 2568              		.section	.rodata.RTC_3077_TEMP.str1.4,"aMS",%progbits,1
+ 2569              		.align	2
+ 2570              	.LC8:
+ 2571 0000 2D2D7379 		.ascii	"--sysTemp = %.1f C , rtcTemp = %d C\012\000"
+ 2571      7354656D 
+ 2571      70203D20 
+ 2571      252E3166 
+ 2571      2043202C 
+ 2572              		.section	.text.RTC_3077_TEMP,"ax",%progbits
+ 2573              		.align	1
+ 2574              		.global	RTC_3077_TEMP
+ 2575              		.syntax unified
+ 2576              		.thumb
+ 2577              		.thumb_func
+ 2579              	RTC_3077_TEMP:
+ 2580              	.LVL237:
+ 2581              	.LFB164:
+ 485:USER/Src/iic_soft.c **** void RTC_3077_TEMP( float* sysTemp ,  uint8_t* rtcTemp )
+ 486:USER/Src/iic_soft.c **** {	
+ 2582              		.loc 1 486 1 is_stmt 1 view -0
+ 2583              		.cfi_startproc
+ 2584              		@ args = 0, pretend = 0, frame = 8
+ 2585              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2586              		.loc 1 486 1 is_stmt 0 view .LVU621
+ 2587 0000 30B5     		push	{r4, r5, lr}
+ 2588              	.LCFI61:
+ 2589              		.cfi_def_cfa_offset 12
+ 2590              		.cfi_offset 4, -12
+ 2591              		.cfi_offset 5, -8
+ 2592              		.cfi_offset 14, -4
+ 2593 0002 85B0     		sub	sp, sp, #20
+ 2594              	.LCFI62:
+ 2595              		.cfi_def_cfa_offset 32
+ 2596 0004 0546     		mov	r5, r0
+ 2597 0006 0C46     		mov	r4, r1
+ 487:USER/Src/iic_soft.c **** 	uint8_t temp_buf=0,CONT=0x10;
+ 2598              		.loc 1 487 2 is_stmt 1 view .LVU622
+ 2599              		.loc 1 487 10 is_stmt 0 view .LVU623
+ 2600 0008 0023     		movs	r3, #0
+ 2601 000a 8DF80F30 		strb	r3, [sp, #15]
+ 2602              		.loc 1 487 21 view .LVU624
+ 2603 000e 1023     		movs	r3, #16
+ 2604 0010 8DF80E30 		strb	r3, [sp, #14]
+ 488:USER/Src/iic_soft.c **** 	if(IIC_Write_multi_bytes(RTC_3077_ADDRESS, 0x17, &CONT, 1)== I2C_OK )
+ 2605              		.loc 1 488 2 is_stmt 1 view .LVU625
+ 2606              		.loc 1 488 5 is_stmt 0 view .LVU626
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 60
+
+
+ 2607 0014 0123     		movs	r3, #1
+ 2608 0016 0DF10E02 		add	r2, sp, #14
+ 2609 001a 1721     		movs	r1, #23
+ 2610              	.LVL238:
+ 2611              		.loc 1 488 5 view .LVU627
+ 2612 001c 6420     		movs	r0, #100
+ 2613              	.LVL239:
+ 2614              		.loc 1 488 5 view .LVU628
+ 2615 001e FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2616              	.LVL240:
+ 2617              		.loc 1 488 4 view .LVU629
+ 2618 0022 0228     		cmp	r0, #2
+ 2619 0024 01D0     		beq	.L202
+ 2620              	.LVL241:
+ 2621              	.L199:
+ 489:USER/Src/iic_soft.c **** 	{
+ 490:USER/Src/iic_soft.c **** 		HAL_Delay(3);
+ 491:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_3077_ADDRESS, 0x16, &temp_buf, 1)== I2C_OK )
+ 492:USER/Src/iic_soft.c **** 		{
+ 493:USER/Src/iic_soft.c **** 			*rtcTemp = temp_buf;
+ 494:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 495:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 496:USER/Src/iic_soft.c **** 		}
+ 497:USER/Src/iic_soft.c **** 	}
+ 498:USER/Src/iic_soft.c **** }
+ 2622              		.loc 1 498 1 view .LVU630
+ 2623 0026 05B0     		add	sp, sp, #20
+ 2624              	.LCFI63:
+ 2625              		.cfi_remember_state
+ 2626              		.cfi_def_cfa_offset 12
+ 2627              		@ sp needed
+ 2628 0028 30BD     		pop	{r4, r5, pc}
+ 2629              	.LVL242:
+ 2630              	.L202:
+ 2631              	.LCFI64:
+ 2632              		.cfi_restore_state
+ 490:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_3077_ADDRESS, 0x16, &temp_buf, 1)== I2C_OK )
+ 2633              		.loc 1 490 3 is_stmt 1 view .LVU631
+ 2634 002a 0320     		movs	r0, #3
+ 2635 002c FFF7FEFF 		bl	HAL_Delay
+ 2636              	.LVL243:
+ 491:USER/Src/iic_soft.c **** 		{
+ 2637              		.loc 1 491 3 view .LVU632
+ 491:USER/Src/iic_soft.c **** 		{
+ 2638              		.loc 1 491 6 is_stmt 0 view .LVU633
+ 2639 0030 0123     		movs	r3, #1
+ 2640 0032 0DF10F02 		add	r2, sp, #15
+ 2641 0036 1621     		movs	r1, #22
+ 2642 0038 6420     		movs	r0, #100
+ 2643 003a FFF7FEFF 		bl	IIC_Read_multi_bytes
+ 2644              	.LVL244:
+ 491:USER/Src/iic_soft.c **** 		{
+ 2645              		.loc 1 491 5 view .LVU634
+ 2646 003e 0228     		cmp	r0, #2
+ 2647 0040 F1D1     		bne	.L199
+ 493:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 2648              		.loc 1 493 4 is_stmt 1 view .LVU635
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 61
+
+
+ 493:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 2649              		.loc 1 493 13 is_stmt 0 view .LVU636
+ 2650 0042 9DF80F30 		ldrb	r3, [sp, #15]	@ zero_extendqisi2
+ 2651 0046 2370     		strb	r3, [r4]
+ 494:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 2652              		.loc 1 494 4 is_stmt 1 view .LVU637
+ 494:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 2653              		.loc 1 494 15 is_stmt 0 view .LVU638
+ 2654 0048 0120     		movs	r0, #1
+ 2655 004a FFF7FEFF 		bl	temp_read_value
+ 2656              	.LVL245:
+ 2657 004e 10EE100A 		vmov	r0, s0
+ 494:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 2658              		.loc 1 494 13 view .LVU639
+ 2659 0052 85ED000A 		vstr.32	s0, [r5]
+ 495:USER/Src/iic_soft.c **** 		}
+ 2660              		.loc 1 495 4 is_stmt 1 view .LVU640
+ 495:USER/Src/iic_soft.c **** 		}
+ 2661              		.loc 1 495 65 is_stmt 0 view .LVU641
+ 2662 0056 2478     		ldrb	r4, [r4]	@ zero_extendqisi2
+ 2663              	.LVL246:
+ 495:USER/Src/iic_soft.c **** 		}
+ 2664              		.loc 1 495 4 view .LVU642
+ 2665 0058 FFF7FEFF 		bl	__aeabi_f2d
+ 2666              	.LVL247:
+ 2667 005c 0246     		mov	r2, r0
+ 2668 005e 0B46     		mov	r3, r1
+ 2669 0060 0094     		str	r4, [sp]
+ 2670 0062 0248     		ldr	r0, .L203
+ 2671 0064 FFF7FEFF 		bl	UsbPrintf
+ 2672              	.LVL248:
+ 2673              		.loc 1 498 1 view .LVU643
+ 2674 0068 DDE7     		b	.L199
+ 2675              	.L204:
+ 2676 006a 00BF     		.align	2
+ 2677              	.L203:
+ 2678 006c 00000000 		.word	.LC8
+ 2679              		.cfi_endproc
+ 2680              	.LFE164:
+ 2682              		.section	.text.RTC_3178_TEMP,"ax",%progbits
+ 2683              		.align	1
+ 2684              		.global	RTC_3178_TEMP
+ 2685              		.syntax unified
+ 2686              		.thumb
+ 2687              		.thumb_func
+ 2689              	RTC_3178_TEMP:
+ 2690              	.LVL249:
+ 2691              	.LFB165:
+ 499:USER/Src/iic_soft.c **** void RTC_3178_TEMP( float* sysTemp ,  uint8_t* rtcTemp )
+ 500:USER/Src/iic_soft.c **** {	
+ 2692              		.loc 1 500 1 is_stmt 1 view -0
+ 2693              		.cfi_startproc
+ 2694              		@ args = 0, pretend = 0, frame = 8
+ 2695              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2696              		.loc 1 500 1 is_stmt 0 view .LVU645
+ 2697 0000 30B5     		push	{r4, r5, lr}
+ 2698              	.LCFI65:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 62
+
+
+ 2699              		.cfi_def_cfa_offset 12
+ 2700              		.cfi_offset 4, -12
+ 2701              		.cfi_offset 5, -8
+ 2702              		.cfi_offset 14, -4
+ 2703 0002 85B0     		sub	sp, sp, #20
+ 2704              	.LCFI66:
+ 2705              		.cfi_def_cfa_offset 32
+ 2706 0004 0546     		mov	r5, r0
+ 2707 0006 0C46     		mov	r4, r1
+ 501:USER/Src/iic_soft.c **** 	uint8_t temp_buf=0,CONT=0x10;
+ 2708              		.loc 1 501 2 is_stmt 1 view .LVU646
+ 2709              		.loc 1 501 10 is_stmt 0 view .LVU647
+ 2710 0008 0023     		movs	r3, #0
+ 2711 000a 8DF80F30 		strb	r3, [sp, #15]
+ 2712              		.loc 1 501 21 view .LVU648
+ 2713 000e 1023     		movs	r3, #16
+ 2714 0010 8DF80E30 		strb	r3, [sp, #14]
+ 502:USER/Src/iic_soft.c **** 	if(IIC_Write_multi_bytes(RTC_3178_ADDRESS, 0x17, &CONT, 1)== I2C_OK )
+ 2715              		.loc 1 502 2 is_stmt 1 view .LVU649
+ 2716              		.loc 1 502 5 is_stmt 0 view .LVU650
+ 2717 0014 0123     		movs	r3, #1
+ 2718 0016 0DF10E02 		add	r2, sp, #14
+ 2719 001a 1721     		movs	r1, #23
+ 2720              	.LVL250:
+ 2721              		.loc 1 502 5 view .LVU651
+ 2722 001c 6420     		movs	r0, #100
+ 2723              	.LVL251:
+ 2724              		.loc 1 502 5 view .LVU652
+ 2725 001e FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2726              	.LVL252:
+ 2727              		.loc 1 502 4 view .LVU653
+ 2728 0022 0228     		cmp	r0, #2
+ 2729 0024 01D0     		beq	.L208
+ 2730              	.LVL253:
+ 2731              	.L205:
+ 503:USER/Src/iic_soft.c **** 	{
+ 504:USER/Src/iic_soft.c **** 		HAL_Delay(3);
+ 505:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_3178_ADDRESS, 0x16, &temp_buf, 1)== I2C_OK )
+ 506:USER/Src/iic_soft.c **** 		{
+ 507:USER/Src/iic_soft.c **** 			*rtcTemp = temp_buf;
+ 508:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 509:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 510:USER/Src/iic_soft.c **** 		}
+ 511:USER/Src/iic_soft.c **** 	}
+ 512:USER/Src/iic_soft.c **** }
+ 2732              		.loc 1 512 1 view .LVU654
+ 2733 0026 05B0     		add	sp, sp, #20
+ 2734              	.LCFI67:
+ 2735              		.cfi_remember_state
+ 2736              		.cfi_def_cfa_offset 12
+ 2737              		@ sp needed
+ 2738 0028 30BD     		pop	{r4, r5, pc}
+ 2739              	.LVL254:
+ 2740              	.L208:
+ 2741              	.LCFI68:
+ 2742              		.cfi_restore_state
+ 504:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_3178_ADDRESS, 0x16, &temp_buf, 1)== I2C_OK )
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 63
+
+
+ 2743              		.loc 1 504 3 is_stmt 1 view .LVU655
+ 2744 002a 0320     		movs	r0, #3
+ 2745 002c FFF7FEFF 		bl	HAL_Delay
+ 2746              	.LVL255:
+ 505:USER/Src/iic_soft.c **** 		{
+ 2747              		.loc 1 505 3 view .LVU656
+ 505:USER/Src/iic_soft.c **** 		{
+ 2748              		.loc 1 505 6 is_stmt 0 view .LVU657
+ 2749 0030 0123     		movs	r3, #1
+ 2750 0032 0DF10F02 		add	r2, sp, #15
+ 2751 0036 1621     		movs	r1, #22
+ 2752 0038 6420     		movs	r0, #100
+ 2753 003a FFF7FEFF 		bl	IIC_Read_multi_bytes
+ 2754              	.LVL256:
+ 505:USER/Src/iic_soft.c **** 		{
+ 2755              		.loc 1 505 5 view .LVU658
+ 2756 003e 0228     		cmp	r0, #2
+ 2757 0040 F1D1     		bne	.L205
+ 507:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 2758              		.loc 1 507 4 is_stmt 1 view .LVU659
+ 507:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 2759              		.loc 1 507 13 is_stmt 0 view .LVU660
+ 2760 0042 9DF80F30 		ldrb	r3, [sp, #15]	@ zero_extendqisi2
+ 2761 0046 2370     		strb	r3, [r4]
+ 508:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 2762              		.loc 1 508 4 is_stmt 1 view .LVU661
+ 508:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 2763              		.loc 1 508 15 is_stmt 0 view .LVU662
+ 2764 0048 0120     		movs	r0, #1
+ 2765 004a FFF7FEFF 		bl	temp_read_value
+ 2766              	.LVL257:
+ 2767 004e 10EE100A 		vmov	r0, s0
+ 508:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 2768              		.loc 1 508 13 view .LVU663
+ 2769 0052 85ED000A 		vstr.32	s0, [r5]
+ 509:USER/Src/iic_soft.c **** 		}
+ 2770              		.loc 1 509 4 is_stmt 1 view .LVU664
+ 509:USER/Src/iic_soft.c **** 		}
+ 2771              		.loc 1 509 65 is_stmt 0 view .LVU665
+ 2772 0056 2478     		ldrb	r4, [r4]	@ zero_extendqisi2
+ 2773              	.LVL258:
+ 509:USER/Src/iic_soft.c **** 		}
+ 2774              		.loc 1 509 4 view .LVU666
+ 2775 0058 FFF7FEFF 		bl	__aeabi_f2d
+ 2776              	.LVL259:
+ 2777 005c 0246     		mov	r2, r0
+ 2778 005e 0B46     		mov	r3, r1
+ 2779 0060 0094     		str	r4, [sp]
+ 2780 0062 0248     		ldr	r0, .L209
+ 2781 0064 FFF7FEFF 		bl	UsbPrintf
+ 2782              	.LVL260:
+ 2783              		.loc 1 512 1 view .LVU667
+ 2784 0068 DDE7     		b	.L205
+ 2785              	.L210:
+ 2786 006a 00BF     		.align	2
+ 2787              	.L209:
+ 2788 006c 00000000 		.word	.LC8
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 64
+
+
+ 2789              		.cfi_endproc
+ 2790              	.LFE165:
+ 2792              		.section	.text.RTC_8825_TEMP,"ax",%progbits
+ 2793              		.align	1
+ 2794              		.global	RTC_8825_TEMP
+ 2795              		.syntax unified
+ 2796              		.thumb
+ 2797              		.thumb_func
+ 2799              	RTC_8825_TEMP:
+ 2800              	.LVL261:
+ 2801              	.LFB166:
+ 513:USER/Src/iic_soft.c **** void RTC_8825_TEMP( float* sysTemp ,  uint8_t* rtcTemp )
+ 514:USER/Src/iic_soft.c **** {
+ 2802              		.loc 1 514 1 is_stmt 1 view -0
+ 2803              		.cfi_startproc
+ 2804              		@ args = 0, pretend = 0, frame = 8
+ 2805              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2806              		.loc 1 514 1 is_stmt 0 view .LVU669
+ 2807 0000 30B5     		push	{r4, r5, lr}
+ 2808              	.LCFI69:
+ 2809              		.cfi_def_cfa_offset 12
+ 2810              		.cfi_offset 4, -12
+ 2811              		.cfi_offset 5, -8
+ 2812              		.cfi_offset 14, -4
+ 2813 0002 85B0     		sub	sp, sp, #20
+ 2814              	.LCFI70:
+ 2815              		.cfi_def_cfa_offset 32
+ 2816 0004 0546     		mov	r5, r0
+ 2817 0006 0C46     		mov	r4, r1
+ 515:USER/Src/iic_soft.c **** 	uint8_t CONT=0x10,T=0;
+ 2818              		.loc 1 515 2 is_stmt 1 view .LVU670
+ 2819              		.loc 1 515 10 is_stmt 0 view .LVU671
+ 2820 0008 1023     		movs	r3, #16
+ 2821 000a 8DF80F30 		strb	r3, [sp, #15]
+ 2822              		.loc 1 515 20 view .LVU672
+ 2823 000e 0023     		movs	r3, #0
+ 2824 0010 8DF80E30 		strb	r3, [sp, #14]
+ 516:USER/Src/iic_soft.c **** 	if(IIC_Write_multi_bytes(RTC_8825_ADDRESS, 0x57, &CONT, 1)== I2C_OK) 
+ 2825              		.loc 1 516 2 is_stmt 1 view .LVU673
+ 2826              		.loc 1 516 5 is_stmt 0 view .LVU674
+ 2827 0014 0123     		movs	r3, #1
+ 2828 0016 0DF10F02 		add	r2, sp, #15
+ 2829 001a 5721     		movs	r1, #87
+ 2830              	.LVL262:
+ 2831              		.loc 1 516 5 view .LVU675
+ 2832 001c 6420     		movs	r0, #100
+ 2833              	.LVL263:
+ 2834              		.loc 1 516 5 view .LVU676
+ 2835 001e FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2836              	.LVL264:
+ 2837              		.loc 1 516 4 view .LVU677
+ 2838 0022 0228     		cmp	r0, #2
+ 2839 0024 01D0     		beq	.L214
+ 2840              	.LVL265:
+ 2841              	.L211:
+ 517:USER/Src/iic_soft.c **** 	{
+ 518:USER/Src/iic_soft.c **** 		HAL_Delay(3);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 65
+
+
+ 519:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8825_ADDRESS, 0x56, &T, 1)== I2C_OK) 
+ 520:USER/Src/iic_soft.c **** 		{
+ 521:USER/Src/iic_soft.c **** 			*rtcTemp = T;
+ 522:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 523:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 524:USER/Src/iic_soft.c **** 		}
+ 525:USER/Src/iic_soft.c **** 	}
+ 526:USER/Src/iic_soft.c **** }
+ 2842              		.loc 1 526 1 view .LVU678
+ 2843 0026 05B0     		add	sp, sp, #20
+ 2844              	.LCFI71:
+ 2845              		.cfi_remember_state
+ 2846              		.cfi_def_cfa_offset 12
+ 2847              		@ sp needed
+ 2848 0028 30BD     		pop	{r4, r5, pc}
+ 2849              	.LVL266:
+ 2850              	.L214:
+ 2851              	.LCFI72:
+ 2852              		.cfi_restore_state
+ 518:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8825_ADDRESS, 0x56, &T, 1)== I2C_OK) 
+ 2853              		.loc 1 518 3 is_stmt 1 view .LVU679
+ 2854 002a 0320     		movs	r0, #3
+ 2855 002c FFF7FEFF 		bl	HAL_Delay
+ 2856              	.LVL267:
+ 519:USER/Src/iic_soft.c **** 		{
+ 2857              		.loc 1 519 3 view .LVU680
+ 519:USER/Src/iic_soft.c **** 		{
+ 2858              		.loc 1 519 6 is_stmt 0 view .LVU681
+ 2859 0030 0123     		movs	r3, #1
+ 2860 0032 0DF10E02 		add	r2, sp, #14
+ 2861 0036 5621     		movs	r1, #86
+ 2862 0038 6420     		movs	r0, #100
+ 2863 003a FFF7FEFF 		bl	IIC_Read_multi_bytes
+ 2864              	.LVL268:
+ 519:USER/Src/iic_soft.c **** 		{
+ 2865              		.loc 1 519 5 view .LVU682
+ 2866 003e 0228     		cmp	r0, #2
+ 2867 0040 F1D1     		bne	.L211
+ 521:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 2868              		.loc 1 521 4 is_stmt 1 view .LVU683
+ 521:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 2869              		.loc 1 521 13 is_stmt 0 view .LVU684
+ 2870 0042 9DF80E30 		ldrb	r3, [sp, #14]	@ zero_extendqisi2
+ 2871 0046 2370     		strb	r3, [r4]
+ 522:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 2872              		.loc 1 522 4 is_stmt 1 view .LVU685
+ 522:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 2873              		.loc 1 522 15 is_stmt 0 view .LVU686
+ 2874 0048 0120     		movs	r0, #1
+ 2875 004a FFF7FEFF 		bl	temp_read_value
+ 2876              	.LVL269:
+ 2877 004e 10EE100A 		vmov	r0, s0
+ 522:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 2878              		.loc 1 522 13 view .LVU687
+ 2879 0052 85ED000A 		vstr.32	s0, [r5]
+ 523:USER/Src/iic_soft.c **** 		}
+ 2880              		.loc 1 523 4 is_stmt 1 view .LVU688
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 66
+
+
+ 523:USER/Src/iic_soft.c **** 		}
+ 2881              		.loc 1 523 65 is_stmt 0 view .LVU689
+ 2882 0056 2478     		ldrb	r4, [r4]	@ zero_extendqisi2
+ 2883              	.LVL270:
+ 523:USER/Src/iic_soft.c **** 		}
+ 2884              		.loc 1 523 4 view .LVU690
+ 2885 0058 FFF7FEFF 		bl	__aeabi_f2d
+ 2886              	.LVL271:
+ 2887 005c 0246     		mov	r2, r0
+ 2888 005e 0B46     		mov	r3, r1
+ 2889 0060 0094     		str	r4, [sp]
+ 2890 0062 0248     		ldr	r0, .L215
+ 2891 0064 FFF7FEFF 		bl	UsbPrintf
+ 2892              	.LVL272:
+ 2893              		.loc 1 526 1 view .LVU691
+ 2894 0068 DDE7     		b	.L211
+ 2895              	.L216:
+ 2896 006a 00BF     		.align	2
+ 2897              	.L215:
+ 2898 006c 00000000 		.word	.LC8
+ 2899              		.cfi_endproc
+ 2900              	.LFE166:
+ 2902              		.global	__aeabi_ui2d
+ 2903              		.global	__aeabi_dsub
+ 2904              		.global	__aeabi_ddiv
+ 2905              		.global	__aeabi_d2f
+ 2906              		.section	.rodata.RTC_8800_TEMP.str1.4,"aMS",%progbits,1
+ 2907              		.align	2
+ 2908              	.LC9:
+ 2909 0000 2D2D7379 		.ascii	"--sysTemp = %.1f C , rtcTemp = %d C \012\000"
+ 2909      7354656D 
+ 2909      70203D20 
+ 2909      252E3166 
+ 2909      2043202C 
+ 2910              		.section	.text.RTC_8800_TEMP,"ax",%progbits
+ 2911              		.align	1
+ 2912              		.global	RTC_8800_TEMP
+ 2913              		.syntax unified
+ 2914              		.thumb
+ 2915              		.thumb_func
+ 2917              	RTC_8800_TEMP:
+ 2918              	.LVL273:
+ 2919              	.LFB167:
+ 527:USER/Src/iic_soft.c **** void RTC_8800_TEMP( float* sysTemp ,  uint8_t* rtcTemp )
+ 528:USER/Src/iic_soft.c **** {
+ 2920              		.loc 1 528 1 is_stmt 1 view -0
+ 2921              		.cfi_startproc
+ 2922              		@ args = 0, pretend = 0, frame = 8
+ 2923              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2924              		.loc 1 528 1 is_stmt 0 view .LVU693
+ 2925 0000 30B5     		push	{r4, r5, lr}
+ 2926              	.LCFI73:
+ 2927              		.cfi_def_cfa_offset 12
+ 2928              		.cfi_offset 4, -12
+ 2929              		.cfi_offset 5, -8
+ 2930              		.cfi_offset 14, -4
+ 2931 0002 85B0     		sub	sp, sp, #20
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 67
+
+
+ 2932              	.LCFI74:
+ 2933              		.cfi_def_cfa_offset 32
+ 2934 0004 0546     		mov	r5, r0
+ 2935 0006 0C46     		mov	r4, r1
+ 529:USER/Src/iic_soft.c **** 	uint8_t CONT=0x10,buf=0;
+ 2936              		.loc 1 529 2 is_stmt 1 view .LVU694
+ 2937              		.loc 1 529 10 is_stmt 0 view .LVU695
+ 2938 0008 1023     		movs	r3, #16
+ 2939 000a 8DF80F30 		strb	r3, [sp, #15]
+ 2940              		.loc 1 529 20 view .LVU696
+ 2941 000e 0023     		movs	r3, #0
+ 2942 0010 8DF80E30 		strb	r3, [sp, #14]
+ 530:USER/Src/iic_soft.c **** 	float 	temp = 0; 
+ 2943              		.loc 1 530 2 is_stmt 1 view .LVU697
+ 2944              	.LVL274:
+ 531:USER/Src/iic_soft.c **** 	if(IIC_Write_multi_bytes(RTC_8800_ADDRESS, 0x57, &CONT, 1)== I2C_OK) 
+ 2945              		.loc 1 531 2 view .LVU698
+ 2946              		.loc 1 531 5 is_stmt 0 view .LVU699
+ 2947 0014 0123     		movs	r3, #1
+ 2948 0016 0DF10F02 		add	r2, sp, #15
+ 2949 001a 5721     		movs	r1, #87
+ 2950              	.LVL275:
+ 2951              		.loc 1 531 5 view .LVU700
+ 2952 001c 6420     		movs	r0, #100
+ 2953              	.LVL276:
+ 2954              		.loc 1 531 5 view .LVU701
+ 2955 001e FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 2956              	.LVL277:
+ 2957              		.loc 1 531 4 view .LVU702
+ 2958 0022 0228     		cmp	r0, #2
+ 2959 0024 01D0     		beq	.L225
+ 2960              	.LVL278:
+ 2961              	.L217:
+ 532:USER/Src/iic_soft.c **** 	{
+ 533:USER/Src/iic_soft.c **** 		HAL_Delay(3);
+ 534:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8800_ADDRESS, 0x17, &buf, 1)== I2C_OK) 
+ 535:USER/Src/iic_soft.c **** 		{
+ 536:USER/Src/iic_soft.c **** 			temp = ((uint32_t)buf * 2 - 187.19 ) /3.218;
+ 537:USER/Src/iic_soft.c **** 			if (temp  < 0) {
+ 538:USER/Src/iic_soft.c **** 				*rtcTemp = (uint8_t)(temp + 256);
+ 539:USER/Src/iic_soft.c **** 			} else {
+ 540:USER/Src/iic_soft.c **** 				*rtcTemp = (uint8_t)(temp);
+ 541:USER/Src/iic_soft.c **** 			}
+ 542:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 543:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C \n", *sysTemp , *rtcTemp);
+ 544:USER/Src/iic_soft.c **** 		}
+ 545:USER/Src/iic_soft.c **** 	}
+ 546:USER/Src/iic_soft.c **** }
+ 2962              		.loc 1 546 1 view .LVU703
+ 2963 0026 05B0     		add	sp, sp, #20
+ 2964              	.LCFI75:
+ 2965              		.cfi_remember_state
+ 2966              		.cfi_def_cfa_offset 12
+ 2967              		@ sp needed
+ 2968 0028 30BD     		pop	{r4, r5, pc}
+ 2969              	.LVL279:
+ 2970              	.L225:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 68
+
+
+ 2971              	.LCFI76:
+ 2972              		.cfi_restore_state
+ 533:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8800_ADDRESS, 0x17, &buf, 1)== I2C_OK) 
+ 2973              		.loc 1 533 3 is_stmt 1 view .LVU704
+ 2974 002a 0320     		movs	r0, #3
+ 2975 002c FFF7FEFF 		bl	HAL_Delay
+ 2976              	.LVL280:
+ 534:USER/Src/iic_soft.c **** 		{
+ 2977              		.loc 1 534 3 view .LVU705
+ 534:USER/Src/iic_soft.c **** 		{
+ 2978              		.loc 1 534 6 is_stmt 0 view .LVU706
+ 2979 0030 0123     		movs	r3, #1
+ 2980 0032 0DF10E02 		add	r2, sp, #14
+ 2981 0036 1721     		movs	r1, #23
+ 2982 0038 6420     		movs	r0, #100
+ 2983 003a FFF7FEFF 		bl	IIC_Read_multi_bytes
+ 2984              	.LVL281:
+ 534:USER/Src/iic_soft.c **** 		{
+ 2985              		.loc 1 534 5 view .LVU707
+ 2986 003e 0228     		cmp	r0, #2
+ 2987 0040 F1D1     		bne	.L217
+ 536:USER/Src/iic_soft.c **** 			if (temp  < 0) {
+ 2988              		.loc 1 536 4 is_stmt 1 view .LVU708
+ 536:USER/Src/iic_soft.c **** 			if (temp  < 0) {
+ 2989              		.loc 1 536 12 is_stmt 0 view .LVU709
+ 2990 0042 9DF80E00 		ldrb	r0, [sp, #14]	@ zero_extendqisi2
+ 536:USER/Src/iic_soft.c **** 			if (temp  < 0) {
+ 2991              		.loc 1 536 30 view .LVU710
+ 2992 0046 4000     		lsls	r0, r0, #1
+ 2993 0048 FFF7FEFF 		bl	__aeabi_ui2d
+ 2994              	.LVL282:
+ 2995 004c 1CA3     		adr	r3, .L227+8
+ 2996 004e D3E90023 		ldrd	r2, [r3]
+ 2997 0052 FFF7FEFF 		bl	__aeabi_dsub
+ 2998              	.LVL283:
+ 536:USER/Src/iic_soft.c **** 			if (temp  < 0) {
+ 2999              		.loc 1 536 41 view .LVU711
+ 3000 0056 1CA3     		adr	r3, .L227+16
+ 3001 0058 D3E90023 		ldrd	r2, [r3]
+ 3002 005c FFF7FEFF 		bl	__aeabi_ddiv
+ 3003              	.LVL284:
+ 536:USER/Src/iic_soft.c **** 			if (temp  < 0) {
+ 3004              		.loc 1 536 9 view .LVU712
+ 3005 0060 FFF7FEFF 		bl	__aeabi_d2f
+ 3006              	.LVL285:
+ 3007 0064 07EE900A 		vmov	s15, r0
+ 3008              	.LVL286:
+ 537:USER/Src/iic_soft.c **** 				*rtcTemp = (uint8_t)(temp + 256);
+ 3009              		.loc 1 537 4 is_stmt 1 view .LVU713
+ 537:USER/Src/iic_soft.c **** 				*rtcTemp = (uint8_t)(temp + 256);
+ 3010              		.loc 1 537 7 is_stmt 0 view .LVU714
+ 3011 0068 F5EEC07A 		vcmpe.f32	s15, #0
+ 3012 006c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 3013 0070 15D4     		bmi	.L226
+ 540:USER/Src/iic_soft.c **** 			}
+ 3014              		.loc 1 540 5 is_stmt 1 view .LVU715
+ 540:USER/Src/iic_soft.c **** 			}
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 69
+
+
+ 3015              		.loc 1 540 16 is_stmt 0 view .LVU716
+ 3016 0072 FCEEE77A 		vcvt.u32.f32	s15, s15
+ 3017 0076 17EE903A 		vmov	r3, s15	@ int
+ 540:USER/Src/iic_soft.c **** 			}
+ 3018              		.loc 1 540 14 view .LVU717
+ 3019 007a 2370     		strb	r3, [r4]
+ 3020              	.L221:
+ 542:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C \n", *sysTemp , *rtcTemp);
+ 3021              		.loc 1 542 4 is_stmt 1 view .LVU718
+ 542:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C \n", *sysTemp , *rtcTemp);
+ 3022              		.loc 1 542 15 is_stmt 0 view .LVU719
+ 3023 007c 0120     		movs	r0, #1
+ 3024              	.LVL287:
+ 542:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C \n", *sysTemp , *rtcTemp);
+ 3025              		.loc 1 542 15 view .LVU720
+ 3026 007e FFF7FEFF 		bl	temp_read_value
+ 3027              	.LVL288:
+ 3028 0082 10EE100A 		vmov	r0, s0
+ 542:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C \n", *sysTemp , *rtcTemp);
+ 3029              		.loc 1 542 13 view .LVU721
+ 3030 0086 85ED000A 		vstr.32	s0, [r5]
+ 543:USER/Src/iic_soft.c **** 		}
+ 3031              		.loc 1 543 4 is_stmt 1 view .LVU722
+ 543:USER/Src/iic_soft.c **** 		}
+ 3032              		.loc 1 543 67 is_stmt 0 view .LVU723
+ 3033 008a 2478     		ldrb	r4, [r4]	@ zero_extendqisi2
+ 3034              	.LVL289:
+ 543:USER/Src/iic_soft.c **** 		}
+ 3035              		.loc 1 543 4 view .LVU724
+ 3036 008c FFF7FEFF 		bl	__aeabi_f2d
+ 3037              	.LVL290:
+ 3038 0090 0246     		mov	r2, r0
+ 3039 0092 0B46     		mov	r3, r1
+ 3040 0094 0094     		str	r4, [sp]
+ 3041 0096 0848     		ldr	r0, .L227
+ 3042 0098 FFF7FEFF 		bl	UsbPrintf
+ 3043              	.LVL291:
+ 3044              		.loc 1 546 1 view .LVU725
+ 3045 009c C3E7     		b	.L217
+ 3046              	.LVL292:
+ 3047              	.L226:
+ 538:USER/Src/iic_soft.c **** 			} else {
+ 3048              		.loc 1 538 5 is_stmt 1 view .LVU726
+ 538:USER/Src/iic_soft.c **** 			} else {
+ 3049              		.loc 1 538 31 is_stmt 0 view .LVU727
+ 3050 009e 9FED077A 		vldr.32	s14, .L227+4
+ 3051 00a2 77EE877A 		vadd.f32	s15, s15, s14
+ 538:USER/Src/iic_soft.c **** 			} else {
+ 3052              		.loc 1 538 16 view .LVU728
+ 3053 00a6 FCEEE77A 		vcvt.u32.f32	s15, s15
+ 3054 00aa 17EE903A 		vmov	r3, s15	@ int
+ 538:USER/Src/iic_soft.c **** 			} else {
+ 3055              		.loc 1 538 14 view .LVU729
+ 3056 00ae 2370     		strb	r3, [r4]
+ 3057 00b0 E4E7     		b	.L221
+ 3058              	.L228:
+ 3059 00b2 00BFAFF3 		.align	3
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 70
+
+
+ 3059      0080
+ 3060              	.L227:
+ 3061 00b8 00000000 		.word	.LC9
+ 3062 00bc 00008043 		.word	1132462080
+ 3063 00c0 AE47E17A 		.word	2061584302
+ 3064 00c4 14666740 		.word	1080518164
+ 3065 00c8 5839B4C8 		.word	-927712936
+ 3066 00cc 76BE0940 		.word	1074380406
+ 3067              		.cfi_endproc
+ 3068              	.LFE167:
+ 3070              		.section	.text.RTC_8804_TEMP,"ax",%progbits
+ 3071              		.align	1
+ 3072              		.global	RTC_8804_TEMP
+ 3073              		.syntax unified
+ 3074              		.thumb
+ 3075              		.thumb_func
+ 3077              	RTC_8804_TEMP:
+ 3078              	.LVL293:
+ 3079              	.LFB168:
+ 547:USER/Src/iic_soft.c **** void RTC_8804_TEMP( float* sysTemp ,  uint8_t* rtcTemp )
+ 548:USER/Src/iic_soft.c **** {
+ 3080              		.loc 1 548 1 is_stmt 1 view -0
+ 3081              		.cfi_startproc
+ 3082              		@ args = 0, pretend = 0, frame = 8
+ 3083              		@ frame_needed = 0, uses_anonymous_args = 0
+ 3084              		.loc 1 548 1 is_stmt 0 view .LVU731
+ 3085 0000 30B5     		push	{r4, r5, lr}
+ 3086              	.LCFI77:
+ 3087              		.cfi_def_cfa_offset 12
+ 3088              		.cfi_offset 4, -12
+ 3089              		.cfi_offset 5, -8
+ 3090              		.cfi_offset 14, -4
+ 3091 0002 85B0     		sub	sp, sp, #20
+ 3092              	.LCFI78:
+ 3093              		.cfi_def_cfa_offset 32
+ 3094 0004 0546     		mov	r5, r0
+ 3095 0006 0C46     		mov	r4, r1
+ 549:USER/Src/iic_soft.c **** 	uint8_t CONT=0x10,T=0;
+ 3096              		.loc 1 549 2 is_stmt 1 view .LVU732
+ 3097              		.loc 1 549 10 is_stmt 0 view .LVU733
+ 3098 0008 1023     		movs	r3, #16
+ 3099 000a 8DF80F30 		strb	r3, [sp, #15]
+ 3100              		.loc 1 549 20 view .LVU734
+ 3101 000e 0023     		movs	r3, #0
+ 3102 0010 8DF80E30 		strb	r3, [sp, #14]
+ 550:USER/Src/iic_soft.c **** 	if(IIC_Write_multi_bytes(RTC_8804_ADDRESS, 0x57, &CONT, 1)== I2C_OK) 
+ 3103              		.loc 1 550 2 is_stmt 1 view .LVU735
+ 3104              		.loc 1 550 5 is_stmt 0 view .LVU736
+ 3105 0014 0123     		movs	r3, #1
+ 3106 0016 0DF10F02 		add	r2, sp, #15
+ 3107 001a 5721     		movs	r1, #87
+ 3108              	.LVL294:
+ 3109              		.loc 1 550 5 view .LVU737
+ 3110 001c 6420     		movs	r0, #100
+ 3111              	.LVL295:
+ 3112              		.loc 1 550 5 view .LVU738
+ 3113 001e FFF7FEFF 		bl	IIC_Write_multi_bytes
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 71
+
+
+ 3114              	.LVL296:
+ 3115              		.loc 1 550 4 view .LVU739
+ 3116 0022 0228     		cmp	r0, #2
+ 3117 0024 01D0     		beq	.L232
+ 3118              	.LVL297:
+ 3119              	.L229:
+ 551:USER/Src/iic_soft.c **** 	{
+ 552:USER/Src/iic_soft.c **** 		HAL_Delay(3);
+ 553:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8804_ADDRESS, 0x56, &T, 1)== I2C_OK) 
+ 554:USER/Src/iic_soft.c **** 		{
+ 555:USER/Src/iic_soft.c **** 			*rtcTemp = T;
+ 556:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 557:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 558:USER/Src/iic_soft.c **** 		}
+ 559:USER/Src/iic_soft.c **** 	}
+ 560:USER/Src/iic_soft.c **** }
+ 3120              		.loc 1 560 1 view .LVU740
+ 3121 0026 05B0     		add	sp, sp, #20
+ 3122              	.LCFI79:
+ 3123              		.cfi_remember_state
+ 3124              		.cfi_def_cfa_offset 12
+ 3125              		@ sp needed
+ 3126 0028 30BD     		pop	{r4, r5, pc}
+ 3127              	.LVL298:
+ 3128              	.L232:
+ 3129              	.LCFI80:
+ 3130              		.cfi_restore_state
+ 552:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8804_ADDRESS, 0x56, &T, 1)== I2C_OK) 
+ 3131              		.loc 1 552 3 is_stmt 1 view .LVU741
+ 3132 002a 0320     		movs	r0, #3
+ 3133 002c FFF7FEFF 		bl	HAL_Delay
+ 3134              	.LVL299:
+ 553:USER/Src/iic_soft.c **** 		{
+ 3135              		.loc 1 553 3 view .LVU742
+ 553:USER/Src/iic_soft.c **** 		{
+ 3136              		.loc 1 553 6 is_stmt 0 view .LVU743
+ 3137 0030 0123     		movs	r3, #1
+ 3138 0032 0DF10E02 		add	r2, sp, #14
+ 3139 0036 5621     		movs	r1, #86
+ 3140 0038 6420     		movs	r0, #100
+ 3141 003a FFF7FEFF 		bl	IIC_Read_multi_bytes
+ 3142              	.LVL300:
+ 553:USER/Src/iic_soft.c **** 		{
+ 3143              		.loc 1 553 5 view .LVU744
+ 3144 003e 0228     		cmp	r0, #2
+ 3145 0040 F1D1     		bne	.L229
+ 555:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 3146              		.loc 1 555 4 is_stmt 1 view .LVU745
+ 555:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 3147              		.loc 1 555 13 is_stmt 0 view .LVU746
+ 3148 0042 9DF80E30 		ldrb	r3, [sp, #14]	@ zero_extendqisi2
+ 3149 0046 2370     		strb	r3, [r4]
+ 556:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 3150              		.loc 1 556 4 is_stmt 1 view .LVU747
+ 556:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 3151              		.loc 1 556 15 is_stmt 0 view .LVU748
+ 3152 0048 0120     		movs	r0, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 72
+
+
+ 3153 004a FFF7FEFF 		bl	temp_read_value
+ 3154              	.LVL301:
+ 3155 004e 10EE100A 		vmov	r0, s0
+ 556:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 3156              		.loc 1 556 13 view .LVU749
+ 3157 0052 85ED000A 		vstr.32	s0, [r5]
+ 557:USER/Src/iic_soft.c **** 		}
+ 3158              		.loc 1 557 4 is_stmt 1 view .LVU750
+ 557:USER/Src/iic_soft.c **** 		}
+ 3159              		.loc 1 557 65 is_stmt 0 view .LVU751
+ 3160 0056 2478     		ldrb	r4, [r4]	@ zero_extendqisi2
+ 3161              	.LVL302:
+ 557:USER/Src/iic_soft.c **** 		}
+ 3162              		.loc 1 557 4 view .LVU752
+ 3163 0058 FFF7FEFF 		bl	__aeabi_f2d
+ 3164              	.LVL303:
+ 3165 005c 0246     		mov	r2, r0
+ 3166 005e 0B46     		mov	r3, r1
+ 3167 0060 0094     		str	r4, [sp]
+ 3168 0062 0248     		ldr	r0, .L233
+ 3169 0064 FFF7FEFF 		bl	UsbPrintf
+ 3170              	.LVL304:
+ 3171              		.loc 1 560 1 view .LVU753
+ 3172 0068 DDE7     		b	.L229
+ 3173              	.L234:
+ 3174 006a 00BF     		.align	2
+ 3175              	.L233:
+ 3176 006c 00000000 		.word	.LC8
+ 3177              		.cfi_endproc
+ 3178              	.LFE168:
+ 3180              		.section	.text.RTC_8810_TEMP,"ax",%progbits
+ 3181              		.align	1
+ 3182              		.global	RTC_8810_TEMP
+ 3183              		.syntax unified
+ 3184              		.thumb
+ 3185              		.thumb_func
+ 3187              	RTC_8810_TEMP:
+ 3188              	.LVL305:
+ 3189              	.LFB169:
+ 561:USER/Src/iic_soft.c **** void RTC_8810_TEMP( float* sysTemp ,  uint8_t* rtcTemp )
+ 562:USER/Src/iic_soft.c **** {
+ 3190              		.loc 1 562 1 is_stmt 1 view -0
+ 3191              		.cfi_startproc
+ 3192              		@ args = 0, pretend = 0, frame = 8
+ 3193              		@ frame_needed = 0, uses_anonymous_args = 0
+ 3194              		.loc 1 562 1 is_stmt 0 view .LVU755
+ 3195 0000 30B5     		push	{r4, r5, lr}
+ 3196              	.LCFI81:
+ 3197              		.cfi_def_cfa_offset 12
+ 3198              		.cfi_offset 4, -12
+ 3199              		.cfi_offset 5, -8
+ 3200              		.cfi_offset 14, -4
+ 3201 0002 85B0     		sub	sp, sp, #20
+ 3202              	.LCFI82:
+ 3203              		.cfi_def_cfa_offset 32
+ 3204 0004 0546     		mov	r5, r0
+ 3205 0006 0C46     		mov	r4, r1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 73
+
+
+ 563:USER/Src/iic_soft.c **** 	uint8_t CONT=0x10,T=0;
+ 3206              		.loc 1 563 2 is_stmt 1 view .LVU756
+ 3207              		.loc 1 563 10 is_stmt 0 view .LVU757
+ 3208 0008 1023     		movs	r3, #16
+ 3209 000a 8DF80F30 		strb	r3, [sp, #15]
+ 3210              		.loc 1 563 20 view .LVU758
+ 3211 000e 0023     		movs	r3, #0
+ 3212 0010 8DF80E30 		strb	r3, [sp, #14]
+ 564:USER/Src/iic_soft.c **** 	if(IIC_Write_multi_bytes(RTC_8825_ADDRESS, 0x57, &CONT, 1)== I2C_OK) 
+ 3213              		.loc 1 564 2 is_stmt 1 view .LVU759
+ 3214              		.loc 1 564 5 is_stmt 0 view .LVU760
+ 3215 0014 0123     		movs	r3, #1
+ 3216 0016 0DF10F02 		add	r2, sp, #15
+ 3217 001a 5721     		movs	r1, #87
+ 3218              	.LVL306:
+ 3219              		.loc 1 564 5 view .LVU761
+ 3220 001c 6420     		movs	r0, #100
+ 3221              	.LVL307:
+ 3222              		.loc 1 564 5 view .LVU762
+ 3223 001e FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 3224              	.LVL308:
+ 3225              		.loc 1 564 4 view .LVU763
+ 3226 0022 0228     		cmp	r0, #2
+ 3227 0024 01D0     		beq	.L238
+ 3228              	.LVL309:
+ 3229              	.L235:
+ 565:USER/Src/iic_soft.c **** 	{
+ 566:USER/Src/iic_soft.c **** 		HAL_Delay(3);
+ 567:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8825_ADDRESS, 0x56, &T, 1)== I2C_OK) 
+ 568:USER/Src/iic_soft.c **** 		{
+ 569:USER/Src/iic_soft.c **** 			*rtcTemp = T;
+ 570:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 571:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 572:USER/Src/iic_soft.c **** 		}
+ 573:USER/Src/iic_soft.c **** 	}
+ 574:USER/Src/iic_soft.c **** }
+ 3230              		.loc 1 574 1 view .LVU764
+ 3231 0026 05B0     		add	sp, sp, #20
+ 3232              	.LCFI83:
+ 3233              		.cfi_remember_state
+ 3234              		.cfi_def_cfa_offset 12
+ 3235              		@ sp needed
+ 3236 0028 30BD     		pop	{r4, r5, pc}
+ 3237              	.LVL310:
+ 3238              	.L238:
+ 3239              	.LCFI84:
+ 3240              		.cfi_restore_state
+ 566:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8825_ADDRESS, 0x56, &T, 1)== I2C_OK) 
+ 3241              		.loc 1 566 3 is_stmt 1 view .LVU765
+ 3242 002a 0320     		movs	r0, #3
+ 3243 002c FFF7FEFF 		bl	HAL_Delay
+ 3244              	.LVL311:
+ 567:USER/Src/iic_soft.c **** 		{
+ 3245              		.loc 1 567 3 view .LVU766
+ 567:USER/Src/iic_soft.c **** 		{
+ 3246              		.loc 1 567 6 is_stmt 0 view .LVU767
+ 3247 0030 0123     		movs	r3, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 74
+
+
+ 3248 0032 0DF10E02 		add	r2, sp, #14
+ 3249 0036 5621     		movs	r1, #86
+ 3250 0038 6420     		movs	r0, #100
+ 3251 003a FFF7FEFF 		bl	IIC_Read_multi_bytes
+ 3252              	.LVL312:
+ 567:USER/Src/iic_soft.c **** 		{
+ 3253              		.loc 1 567 5 view .LVU768
+ 3254 003e 0228     		cmp	r0, #2
+ 3255 0040 F1D1     		bne	.L235
+ 569:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 3256              		.loc 1 569 4 is_stmt 1 view .LVU769
+ 569:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 3257              		.loc 1 569 13 is_stmt 0 view .LVU770
+ 3258 0042 9DF80E30 		ldrb	r3, [sp, #14]	@ zero_extendqisi2
+ 3259 0046 2370     		strb	r3, [r4]
+ 570:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 3260              		.loc 1 570 4 is_stmt 1 view .LVU771
+ 570:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 3261              		.loc 1 570 15 is_stmt 0 view .LVU772
+ 3262 0048 0120     		movs	r0, #1
+ 3263 004a FFF7FEFF 		bl	temp_read_value
+ 3264              	.LVL313:
+ 3265 004e 10EE100A 		vmov	r0, s0
+ 570:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 3266              		.loc 1 570 13 view .LVU773
+ 3267 0052 85ED000A 		vstr.32	s0, [r5]
+ 571:USER/Src/iic_soft.c **** 		}
+ 3268              		.loc 1 571 4 is_stmt 1 view .LVU774
+ 571:USER/Src/iic_soft.c **** 		}
+ 3269              		.loc 1 571 65 is_stmt 0 view .LVU775
+ 3270 0056 2478     		ldrb	r4, [r4]	@ zero_extendqisi2
+ 3271              	.LVL314:
+ 571:USER/Src/iic_soft.c **** 		}
+ 3272              		.loc 1 571 4 view .LVU776
+ 3273 0058 FFF7FEFF 		bl	__aeabi_f2d
+ 3274              	.LVL315:
+ 3275 005c 0246     		mov	r2, r0
+ 3276 005e 0B46     		mov	r3, r1
+ 3277 0060 0094     		str	r4, [sp]
+ 3278 0062 0248     		ldr	r0, .L239
+ 3279 0064 FFF7FEFF 		bl	UsbPrintf
+ 3280              	.LVL316:
+ 3281              		.loc 1 574 1 view .LVU777
+ 3282 0068 DDE7     		b	.L235
+ 3283              	.L240:
+ 3284 006a 00BF     		.align	2
+ 3285              	.L239:
+ 3286 006c 00000000 		.word	.LC8
+ 3287              		.cfi_endproc
+ 3288              	.LFE169:
+ 3290              		.section	.text.RTC_8931_TEMP,"ax",%progbits
+ 3291              		.align	1
+ 3292              		.global	RTC_8931_TEMP
+ 3293              		.syntax unified
+ 3294              		.thumb
+ 3295              		.thumb_func
+ 3297              	RTC_8931_TEMP:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 75
+
+
+ 3298              	.LVL317:
+ 3299              	.LFB170:
+ 575:USER/Src/iic_soft.c **** void RTC_8931_TEMP(float* sysTemp ,  uint8_t* rtcTemp )
+ 576:USER/Src/iic_soft.c **** {
+ 3300              		.loc 1 576 1 is_stmt 1 view -0
+ 3301              		.cfi_startproc
+ 3302              		@ args = 0, pretend = 0, frame = 8
+ 3303              		@ frame_needed = 0, uses_anonymous_args = 0
+ 3304              		.loc 1 576 1 is_stmt 0 view .LVU779
+ 3305 0000 30B5     		push	{r4, r5, lr}
+ 3306              	.LCFI85:
+ 3307              		.cfi_def_cfa_offset 12
+ 3308              		.cfi_offset 4, -12
+ 3309              		.cfi_offset 5, -8
+ 3310              		.cfi_offset 14, -4
+ 3311 0002 85B0     		sub	sp, sp, #20
+ 3312              	.LCFI86:
+ 3313              		.cfi_def_cfa_offset 32
+ 3314 0004 0546     		mov	r5, r0
+ 3315 0006 0C46     		mov	r4, r1
+ 577:USER/Src/iic_soft.c **** 	uint8_t CONT[2]={0x20,0X04},temp=0;
+ 3316              		.loc 1 577 2 is_stmt 1 view .LVU780
+ 3317              		.loc 1 577 10 is_stmt 0 view .LVU781
+ 3318 0008 4FF48463 		mov	r3, #1056
+ 3319 000c ADF80C30 		strh	r3, [sp, #12]	@ movhi
+ 3320              		.loc 1 577 30 view .LVU782
+ 3321 0010 0023     		movs	r3, #0
+ 3322 0012 8DF80B30 		strb	r3, [sp, #11]
+ 578:USER/Src/iic_soft.c **** 	if(IIC_Write_multi_bytes(RTC_8931_ADDRESS, 0x0E, CONT, 2)== I2C_OK) 
+ 3323              		.loc 1 578 2 is_stmt 1 view .LVU783
+ 3324              		.loc 1 578 5 is_stmt 0 view .LVU784
+ 3325 0016 0223     		movs	r3, #2
+ 3326 0018 03AA     		add	r2, sp, #12
+ 3327 001a 0E21     		movs	r1, #14
+ 3328              	.LVL318:
+ 3329              		.loc 1 578 5 view .LVU785
+ 3330 001c D020     		movs	r0, #208
+ 3331              	.LVL319:
+ 3332              		.loc 1 578 5 view .LVU786
+ 3333 001e FFF7FEFF 		bl	IIC_Write_multi_bytes
+ 3334              	.LVL320:
+ 3335              		.loc 1 578 4 view .LVU787
+ 3336 0022 0228     		cmp	r0, #2
+ 3337 0024 01D0     		beq	.L244
+ 3338              	.LVL321:
+ 3339              	.L241:
+ 579:USER/Src/iic_soft.c **** 	{
+ 580:USER/Src/iic_soft.c **** 		HAL_Delay(3);
+ 581:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8931_ADDRESS, 0x11, &temp, 1)== I2C_OK) 
+ 582:USER/Src/iic_soft.c **** 		{
+ 583:USER/Src/iic_soft.c **** 			*rtcTemp = temp;
+ 584:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 585:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 586:USER/Src/iic_soft.c **** 		}
+ 587:USER/Src/iic_soft.c **** 	}
+ 588:USER/Src/iic_soft.c **** }
+ 3340              		.loc 1 588 1 view .LVU788
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 76
+
+
+ 3341 0026 05B0     		add	sp, sp, #20
+ 3342              	.LCFI87:
+ 3343              		.cfi_remember_state
+ 3344              		.cfi_def_cfa_offset 12
+ 3345              		@ sp needed
+ 3346 0028 30BD     		pop	{r4, r5, pc}
+ 3347              	.LVL322:
+ 3348              	.L244:
+ 3349              	.LCFI88:
+ 3350              		.cfi_restore_state
+ 580:USER/Src/iic_soft.c **** 		if(IIC_Read_multi_bytes(RTC_8931_ADDRESS, 0x11, &temp, 1)== I2C_OK) 
+ 3351              		.loc 1 580 3 is_stmt 1 view .LVU789
+ 3352 002a 0320     		movs	r0, #3
+ 3353 002c FFF7FEFF 		bl	HAL_Delay
+ 3354              	.LVL323:
+ 581:USER/Src/iic_soft.c **** 		{
+ 3355              		.loc 1 581 3 view .LVU790
+ 581:USER/Src/iic_soft.c **** 		{
+ 3356              		.loc 1 581 6 is_stmt 0 view .LVU791
+ 3357 0030 0123     		movs	r3, #1
+ 3358 0032 0DF10B02 		add	r2, sp, #11
+ 3359 0036 1121     		movs	r1, #17
+ 3360 0038 D020     		movs	r0, #208
+ 3361 003a FFF7FEFF 		bl	IIC_Read_multi_bytes
+ 3362              	.LVL324:
+ 581:USER/Src/iic_soft.c **** 		{
+ 3363              		.loc 1 581 5 view .LVU792
+ 3364 003e 0228     		cmp	r0, #2
+ 3365 0040 F1D1     		bne	.L241
+ 583:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 3366              		.loc 1 583 4 is_stmt 1 view .LVU793
+ 583:USER/Src/iic_soft.c **** 			*sysTemp = temp_read_value(1);
+ 3367              		.loc 1 583 13 is_stmt 0 view .LVU794
+ 3368 0042 9DF80B30 		ldrb	r3, [sp, #11]	@ zero_extendqisi2
+ 3369 0046 2370     		strb	r3, [r4]
+ 584:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 3370              		.loc 1 584 4 is_stmt 1 view .LVU795
+ 584:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 3371              		.loc 1 584 15 is_stmt 0 view .LVU796
+ 3372 0048 0120     		movs	r0, #1
+ 3373 004a FFF7FEFF 		bl	temp_read_value
+ 3374              	.LVL325:
+ 3375 004e 10EE100A 		vmov	r0, s0
+ 584:USER/Src/iic_soft.c **** 			UsbPrintf("--sysTemp = %.1f C , rtcTemp = %d C\n",*sysTemp , *rtcTemp );
+ 3376              		.loc 1 584 13 view .LVU797
+ 3377 0052 85ED000A 		vstr.32	s0, [r5]
+ 585:USER/Src/iic_soft.c **** 		}
+ 3378              		.loc 1 585 4 is_stmt 1 view .LVU798
+ 585:USER/Src/iic_soft.c **** 		}
+ 3379              		.loc 1 585 65 is_stmt 0 view .LVU799
+ 3380 0056 2478     		ldrb	r4, [r4]	@ zero_extendqisi2
+ 3381              	.LVL326:
+ 585:USER/Src/iic_soft.c **** 		}
+ 3382              		.loc 1 585 4 view .LVU800
+ 3383 0058 FFF7FEFF 		bl	__aeabi_f2d
+ 3384              	.LVL327:
+ 3385 005c 0246     		mov	r2, r0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 77
+
+
+ 3386 005e 0B46     		mov	r3, r1
+ 3387 0060 0094     		str	r4, [sp]
+ 3388 0062 0248     		ldr	r0, .L245
+ 3389 0064 FFF7FEFF 		bl	UsbPrintf
+ 3390              	.LVL328:
+ 3391              		.loc 1 588 1 view .LVU801
+ 3392 0068 DDE7     		b	.L241
+ 3393              	.L246:
+ 3394 006a 00BF     		.align	2
+ 3395              	.L245:
+ 3396 006c 00000000 		.word	.LC8
+ 3397              		.cfi_endproc
+ 3398              	.LFE170:
+ 3400              		.section	.bss.g_i2c,"aw",%nobits
+ 3401              		.align	2
+ 3402              		.set	.LANCHOR0,. + 0
+ 3405              	g_i2c:
+ 3406 0000 00000000 		.space	16
+ 3406      00000000 
+ 3406      00000000 
+ 3406      00000000 
+ 3407              		.text
+ 3408              	.Letext0:
+ 3409              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 3410              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 3411              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 3412              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 3413              		.file 6 "USER/Inc/iic_soft.h"
+ 3414              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 3415              		.file 8 "USER/Inc/temp.h"
+ 3416              		.file 9 "Core/Inc/main.h"
+ 3417              		.file 10 "USER/Inc/manager.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 78
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 iic_soft.c
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:20     .text.IIC_GPIO_Init:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:26     .text.IIC_GPIO_Init:00000000 IIC_GPIO_Init
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:119    .text.IIC_GPIO_Init:00000050 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:125    .text.IIC_SDA_H:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:131    .text.IIC_SDA_H:00000000 IIC_SDA_H
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:154    .text.IIC_SDA_H:00000010 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:159    .text.IIC_SDA_L:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:165    .text.IIC_SDA_L:00000000 IIC_SDA_L
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:188    .text.IIC_SDA_L:00000010 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:193    .text.IIC_SCL_H:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:199    .text.IIC_SCL_H:00000000 IIC_SCL_H
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:222    .text.IIC_SCL_H:00000010 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:227    .text.IIC_SCL_L:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:233    .text.IIC_SCL_L:00000000 IIC_SCL_L
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:256    .text.IIC_SCL_L:00000010 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:261    .text.IIC_SDA_IN:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:267    .text.IIC_SDA_IN:00000000 IIC_SDA_IN
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:311    .text.IIC_SDA_IN:00000024 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:316    .text.IIC_SDA_OUT:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:322    .text.IIC_SDA_OUT:00000000 IIC_SDA_OUT
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:372    .text.IIC_SDA_OUT:0000002c $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:377    .text.IIC_Read_SDA:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:383    .text.IIC_Read_SDA:00000000 IIC_Read_SDA
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:406    .text.IIC_Read_SDA:00000010 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:411    .text.IIC_Start:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:417    .text.IIC_Start:00000000 IIC_Start
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:534    .text.IIC_Stop:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:540    .text.IIC_Stop:00000000 IIC_Stop
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:619    .text.IIC_ACK:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:625    .text.IIC_ACK:00000000 IIC_ACK
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:701    .text.IIC_NACK:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:707    .text.IIC_NACK:00000000 IIC_NACK
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:783    .text.IIC_Wait_ACK:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:789    .text.IIC_Wait_ACK:00000000 IIC_Wait_ACK
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:881    .text.IIC_Send_Data:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:887    .text.IIC_Send_Data:00000000 IIC_Send_Data
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1007   .text.IIC_Receive_Data:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1013   .text.IIC_Receive_Data:00000000 IIC_Receive_Data
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1167   .text.IIC_Write_multi_bytes:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1173   .text.IIC_Write_multi_bytes:00000000 IIC_Write_multi_bytes
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1286   .text.IIC_Read_multi_bytes:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1292   .text.IIC_Read_multi_bytes:00000000 IIC_Read_multi_bytes
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1430   .rodata.I2C_Connect.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1440   .text.I2C_Connect:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1446   .text.I2C_Connect:00000000 I2C_Connect
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1598   .text.I2C_Connect:0000008c $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1605   .rodata.I2C_ReadTime.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1616   .text.I2C_ReadTime:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1622   .text.I2C_ReadTime:00000000 I2C_ReadTime
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1763   .text.I2C_ReadTime:000000b4 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1770   .text.Close3077_FREQ:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1776   .text.Close3077_FREQ:00000000 Close3077_FREQ
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1863   .text.Close3077_FREQ:0000004c $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1868   .text.Close3178_FREQ:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1874   .text.Close3178_FREQ:00000000 Close3178_FREQ
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 79
+
+
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1961   .text.Close3178_FREQ:0000004c $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1966   .text.Close8800_FREQ:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1972   .text.Close8800_FREQ:00000000 Close8800_FREQ
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:1999   .text.Close8800_FREQ:00000018 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2004   .text.Close8801_FREQ:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2010   .text.Close8801_FREQ:00000000 Close8801_FREQ
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2032   .text.Close8801_FREQ:00000010 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2037   .text.Close8810_FREQ:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2043   .text.Close8810_FREQ:00000000 Close8810_FREQ
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2130   .text.Close8810_FREQ:0000004c $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2135   .text.Close8825_FREQ:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2141   .text.Close8825_FREQ:00000000 Close8825_FREQ
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2168   .text.Close8825_FREQ:00000018 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2173   .text.Close8931_FREQ:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2179   .text.Close8931_FREQ:00000000 Close8931_FREQ
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2266   .text.Close8931_FREQ:00000048 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2271   .rodata.SD3077_Write_Enable.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2275   .text.SD3077_Write_Enable:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2281   .text.SD3077_Write_Enable:00000000 SD3077_Write_Enable
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2343   .text.SD3077_Write_Enable:00000044 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2348   .rodata.SD3077_Write_Disable.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2352   .text.SD3077_Write_Disable:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2358   .text.SD3077_Write_Disable:00000000 SD3077_Write_Disable
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2417   .text.SD3077_Write_Disable:0000003c $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2422   .text.SD3178_Write_Enable:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2428   .text.SD3178_Write_Enable:00000000 SD3178_Write_Enable
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2490   .text.SD3178_Write_Enable:00000044 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2495   .text.SD3178_Write_Disable:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2501   .text.SD3178_Write_Disable:00000000 SD3178_Write_Disable
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2563   .text.SD3178_Write_Disable:00000044 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2569   .rodata.RTC_3077_TEMP.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2573   .text.RTC_3077_TEMP:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2579   .text.RTC_3077_TEMP:00000000 RTC_3077_TEMP
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2678   .text.RTC_3077_TEMP:0000006c $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2683   .text.RTC_3178_TEMP:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2689   .text.RTC_3178_TEMP:00000000 RTC_3178_TEMP
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2788   .text.RTC_3178_TEMP:0000006c $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2793   .text.RTC_8825_TEMP:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2799   .text.RTC_8825_TEMP:00000000 RTC_8825_TEMP
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2898   .text.RTC_8825_TEMP:0000006c $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2907   .rodata.RTC_8800_TEMP.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2911   .text.RTC_8800_TEMP:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:2917   .text.RTC_8800_TEMP:00000000 RTC_8800_TEMP
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:3061   .text.RTC_8800_TEMP:000000b8 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:3071   .text.RTC_8804_TEMP:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:3077   .text.RTC_8804_TEMP:00000000 RTC_8804_TEMP
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:3176   .text.RTC_8804_TEMP:0000006c $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:3181   .text.RTC_8810_TEMP:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:3187   .text.RTC_8810_TEMP:00000000 RTC_8810_TEMP
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:3286   .text.RTC_8810_TEMP:0000006c $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:3291   .text.RTC_8931_TEMP:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:3297   .text.RTC_8931_TEMP:00000000 RTC_8931_TEMP
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:3396   .text.RTC_8931_TEMP:0000006c $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:3401   .bss.g_i2c:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cckq8UzE.s:3405   .bss.g_i2c:00000000 g_i2c
+
+UNDEFINED SYMBOLS
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cckq8UzE.s 			page 80
+
+
+HAL_GPIO_Init
+HAL_GPIO_WritePin
+HAL_GPIO_ReadPin
+UsbPrintf
+HAL_Delay
+Control_level
+__aeabi_f2d
+temp_read_value
+__aeabi_ui2d
+__aeabi_dsub
+__aeabi_ddiv
+__aeabi_d2f

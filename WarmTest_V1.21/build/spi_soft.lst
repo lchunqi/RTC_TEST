@@ -1,0 +1,2248 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"spi_soft.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.SPI_DO,"ax",%progbits
+  20              		.align	1
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	SPI_DO:
+  26              	.LVL0:
+  27              	.LFB140:
+  28              		.file 1 "USER/Src/spi_soft.c"
+   1:USER/Src/spi_soft.c **** #include "spi_soft.h"
+   2:USER/Src/spi_soft.c **** #include "usart.h"
+   3:USER/Src/spi_soft.c **** 
+   4:USER/Src/spi_soft.c **** typedef struct {
+   5:USER/Src/spi_soft.c **** 	GPIO_TypeDef* busGPIOB;
+   6:USER/Src/spi_soft.c ****     uint16_t pinCS;
+   7:USER/Src/spi_soft.c ****     uint16_t pinCLK;
+   8:USER/Src/spi_soft.c **** 	uint16_t pinDI;
+   9:USER/Src/spi_soft.c ****     uint16_t pinDO;
+  10:USER/Src/spi_soft.c ****     uint8_t  pinDI_flag;
+  11:USER/Src/spi_soft.c **** 
+  12:USER/Src/spi_soft.c **** }SPIGpio;
+  13:USER/Src/spi_soft.c **** static SPIGpio  g_spi = {0};
+  14:USER/Src/spi_soft.c **** 
+  15:USER/Src/spi_soft.c **** void SPI_GPIO_Init(  uint16_t Row_pin , uint16_t pinCS )
+  16:USER/Src/spi_soft.c **** {
+  17:USER/Src/spi_soft.c **** 
+  18:USER/Src/spi_soft.c **** 	GPIO_InitTypeDef GPIO_InitStruct = {0};
+  19:USER/Src/spi_soft.c **** 
+  20:USER/Src/spi_soft.c ****     g_spi.busGPIOB  = SPI_GPIO;
+  21:USER/Src/spi_soft.c ****     g_spi.pinCS     = SPI_CS_PIN  << pinCS;
+  22:USER/Src/spi_soft.c ****     g_spi.pinCLK    = SPI_CLK_PIN << Row_pin;
+  23:USER/Src/spi_soft.c ****     g_spi.pinDO     = SPI_DO_PIN  << Row_pin;
+  24:USER/Src/spi_soft.c ****     g_spi.pinDI_flag= 0;
+  25:USER/Src/spi_soft.c **** 
+  26:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Pin = g_spi.pinCS ;
+  27:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  28:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  29:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  30:USER/Src/spi_soft.c **** 	HAL_GPIO_Init(g_spi.busGPIOB, &GPIO_InitStruct);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 2
+
+
+  31:USER/Src/spi_soft.c **** 		
+  32:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Pin = g_spi.pinCLK ;
+  33:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  34:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  35:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  36:USER/Src/spi_soft.c **** 	HAL_GPIO_Init(g_spi.busGPIOB, &GPIO_InitStruct);
+  37:USER/Src/spi_soft.c **** 
+  38:USER/Src/spi_soft.c **** 
+  39:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Pin = g_spi.pinDO;
+  40:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  41:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  42:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  43:USER/Src/spi_soft.c **** 	HAL_GPIO_Init(g_spi.busGPIOB, &GPIO_InitStruct);
+  44:USER/Src/spi_soft.c **** 		
+  45:USER/Src/spi_soft.c ****     if(Row_pin==2)//RTC_DI
+  46:USER/Src/spi_soft.c ****     {
+  47:USER/Src/spi_soft.c ****         g_spi.pinDI_flag=1;
+  48:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pin = GPIO_PIN_14;
+  49:USER/Src/spi_soft.c ****         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  50:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pull = GPIO_NOPULL;
+  51:USER/Src/spi_soft.c ****         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  52:USER/Src/spi_soft.c ****         HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  53:USER/Src/spi_soft.c **** 
+  54:USER/Src/spi_soft.c ****     }else{
+  55:USER/Src/spi_soft.c ****         g_spi.pinDI_flag = 0;
+  56:USER/Src/spi_soft.c ****         g_spi.pinDI = SPI_DI_PIN  << Row_pin;
+  57:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pin = g_spi.pinDI ;
+  58:USER/Src/spi_soft.c ****         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  59:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pull = GPIO_NOPULL;
+  60:USER/Src/spi_soft.c ****         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  61:USER/Src/spi_soft.c ****         HAL_GPIO_Init(g_spi.busGPIOB, &GPIO_InitStruct);
+  62:USER/Src/spi_soft.c **** 
+  63:USER/Src/spi_soft.c ****     }
+  64:USER/Src/spi_soft.c **** 
+  65:USER/Src/spi_soft.c **** }
+  66:USER/Src/spi_soft.c **** 
+  67:USER/Src/spi_soft.c **** void SPI_CS_HIGH()
+  68:USER/Src/spi_soft.c **** {
+  69:USER/Src/spi_soft.c **** 	HAL_GPIO_WritePin(g_spi.busGPIOB , g_spi.pinCS, GPIO_PIN_SET);	
+  70:USER/Src/spi_soft.c **** }
+  71:USER/Src/spi_soft.c **** 
+  72:USER/Src/spi_soft.c **** void SPI_CS_LOW()
+  73:USER/Src/spi_soft.c **** {
+  74:USER/Src/spi_soft.c **** 	HAL_GPIO_WritePin(g_spi.busGPIOB , g_spi.pinCS, GPIO_PIN_RESET);
+  75:USER/Src/spi_soft.c **** }
+  76:USER/Src/spi_soft.c **** 
+  77:USER/Src/spi_soft.c **** void SPI_CLK_HIGH() 
+  78:USER/Src/spi_soft.c **** {
+  79:USER/Src/spi_soft.c **** 	HAL_GPIO_WritePin(g_spi.busGPIOB , g_spi.pinCLK ,GPIO_PIN_SET);
+  80:USER/Src/spi_soft.c **** }
+  81:USER/Src/spi_soft.c **** 
+  82:USER/Src/spi_soft.c **** void SPI_CLK_LOW()
+  83:USER/Src/spi_soft.c **** {
+  84:USER/Src/spi_soft.c **** 	HAL_GPIO_WritePin(g_spi.busGPIOB , g_spi.pinCLK , GPIO_PIN_RESET);
+  85:USER/Src/spi_soft.c **** }
+  86:USER/Src/spi_soft.c **** 
+  87:USER/Src/spi_soft.c **** void SPI_DI_HIGH() 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 3
+
+
+  88:USER/Src/spi_soft.c **** {
+  89:USER/Src/spi_soft.c ****     if(g_spi.pinDI_flag==1) 
+  90:USER/Src/spi_soft.c ****     {
+  91:USER/Src/spi_soft.c ****         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14, GPIO_PIN_SET);
+  92:USER/Src/spi_soft.c ****     }
+  93:USER/Src/spi_soft.c ****     else{
+  94:USER/Src/spi_soft.c ****         HAL_GPIO_WritePin(g_spi.busGPIOB , g_spi.pinDI ,GPIO_PIN_SET);
+  95:USER/Src/spi_soft.c ****     }
+  96:USER/Src/spi_soft.c **** }
+  97:USER/Src/spi_soft.c **** 
+  98:USER/Src/spi_soft.c **** void SPI_DI_LOW()
+  99:USER/Src/spi_soft.c **** {
+ 100:USER/Src/spi_soft.c ****     if(g_spi.pinDI_flag==1) 
+ 101:USER/Src/spi_soft.c ****     {
+ 102:USER/Src/spi_soft.c ****         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14, GPIO_PIN_RESET);
+ 103:USER/Src/spi_soft.c ****     }
+ 104:USER/Src/spi_soft.c ****     else{
+ 105:USER/Src/spi_soft.c ****         HAL_GPIO_WritePin(g_spi.busGPIOB , g_spi.pinDI , GPIO_PIN_RESET);
+ 106:USER/Src/spi_soft.c ****     }
+ 107:USER/Src/spi_soft.c **** }
+ 108:USER/Src/spi_soft.c **** 
+ 109:USER/Src/spi_soft.c **** static void SPI_DO(uint8_t state)
+ 110:USER/Src/spi_soft.c **** {
+  29              		.loc 1 110 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 110 1 is_stmt 0 view .LVU1
+  34 0000 08B5     		push	{r3, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 3, -8
+  38              		.cfi_offset 14, -4
+ 111:USER/Src/spi_soft.c **** 
+ 112:USER/Src/spi_soft.c ****     if(state) 
+  39              		.loc 1 112 5 is_stmt 1 view .LVU2
+  40              		.loc 1 112 7 is_stmt 0 view .LVU3
+  41 0002 30B1     		cbz	r0, .L2
+ 113:USER/Src/spi_soft.c ****     {
+ 114:USER/Src/spi_soft.c ****         HAL_GPIO_WritePin(g_spi.busGPIOB, g_spi.pinDO, GPIO_PIN_SET); 
+  42              		.loc 1 114 9 is_stmt 1 view .LVU4
+  43 0004 064B     		ldr	r3, .L5
+  44 0006 0122     		movs	r2, #1
+  45 0008 5989     		ldrh	r1, [r3, #10]
+  46 000a 1868     		ldr	r0, [r3]
+  47              	.LVL1:
+  48              		.loc 1 114 9 is_stmt 0 view .LVU5
+  49 000c FFF7FEFF 		bl	HAL_GPIO_WritePin
+  50              	.LVL2:
+  51              	.L1:
+ 115:USER/Src/spi_soft.c ****     }else{
+ 116:USER/Src/spi_soft.c ****         HAL_GPIO_WritePin(g_spi.busGPIOB, g_spi.pinDO, GPIO_PIN_RESET);   
+ 117:USER/Src/spi_soft.c ****     }
+ 118:USER/Src/spi_soft.c **** 
+ 119:USER/Src/spi_soft.c **** }
+  52              		.loc 1 119 1 view .LVU6
+  53 0010 08BD     		pop	{r3, pc}
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 4
+
+
+  54              	.LVL3:
+  55              	.L2:
+ 116:USER/Src/spi_soft.c ****     }
+  56              		.loc 1 116 9 is_stmt 1 view .LVU7
+  57 0012 034B     		ldr	r3, .L5
+  58 0014 0022     		movs	r2, #0
+  59 0016 5989     		ldrh	r1, [r3, #10]
+  60 0018 1868     		ldr	r0, [r3]
+  61              	.LVL4:
+ 116:USER/Src/spi_soft.c ****     }
+  62              		.loc 1 116 9 is_stmt 0 view .LVU8
+  63 001a FFF7FEFF 		bl	HAL_GPIO_WritePin
+  64              	.LVL5:
+  65              		.loc 1 119 1 view .LVU9
+  66 001e F7E7     		b	.L1
+  67              	.L6:
+  68              		.align	2
+  69              	.L5:
+  70 0020 00000000 		.word	.LANCHOR0
+  71              		.cfi_endproc
+  72              	.LFE140:
+  74              		.section	.text.SPI_GPIO_Init,"ax",%progbits
+  75              		.align	1
+  76              		.global	SPI_GPIO_Init
+  77              		.syntax unified
+  78              		.thumb
+  79              		.thumb_func
+  81              	SPI_GPIO_Init:
+  82              	.LVL6:
+  83              	.LFB133:
+  16:USER/Src/spi_soft.c **** 
+  84              		.loc 1 16 1 is_stmt 1 view -0
+  85              		.cfi_startproc
+  86              		@ args = 0, pretend = 0, frame = 24
+  87              		@ frame_needed = 0, uses_anonymous_args = 0
+  16:USER/Src/spi_soft.c **** 
+  88              		.loc 1 16 1 is_stmt 0 view .LVU11
+  89 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+  90              	.LCFI1:
+  91              		.cfi_def_cfa_offset 24
+  92              		.cfi_offset 4, -24
+  93              		.cfi_offset 5, -20
+  94              		.cfi_offset 6, -16
+  95              		.cfi_offset 7, -12
+  96              		.cfi_offset 8, -8
+  97              		.cfi_offset 14, -4
+  98 0004 86B0     		sub	sp, sp, #24
+  99              	.LCFI2:
+ 100              		.cfi_def_cfa_offset 48
+ 101 0006 0646     		mov	r6, r0
+  18:USER/Src/spi_soft.c **** 
+ 102              		.loc 1 18 2 is_stmt 1 view .LVU12
+  18:USER/Src/spi_soft.c **** 
+ 103              		.loc 1 18 19 is_stmt 0 view .LVU13
+ 104 0008 0025     		movs	r5, #0
+ 105 000a 0195     		str	r5, [sp, #4]
+ 106 000c 0295     		str	r5, [sp, #8]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 5
+
+
+ 107 000e 0395     		str	r5, [sp, #12]
+ 108 0010 0495     		str	r5, [sp, #16]
+ 109 0012 0595     		str	r5, [sp, #20]
+  20:USER/Src/spi_soft.c ****     g_spi.pinCS     = SPI_CS_PIN  << pinCS;
+ 110              		.loc 1 20 5 is_stmt 1 view .LVU14
+  20:USER/Src/spi_soft.c ****     g_spi.pinCS     = SPI_CS_PIN  << pinCS;
+ 111              		.loc 1 20 21 is_stmt 0 view .LVU15
+ 112 0014 284C     		ldr	r4, .L12
+ 113 0016 2948     		ldr	r0, .L12+4
+ 114              	.LVL7:
+  20:USER/Src/spi_soft.c ****     g_spi.pinCS     = SPI_CS_PIN  << pinCS;
+ 115              		.loc 1 20 21 view .LVU16
+ 116 0018 2060     		str	r0, [r4]
+  21:USER/Src/spi_soft.c ****     g_spi.pinCLK    = SPI_CLK_PIN << Row_pin;
+ 117              		.loc 1 21 5 is_stmt 1 view .LVU17
+  21:USER/Src/spi_soft.c ****     g_spi.pinCLK    = SPI_CLK_PIN << Row_pin;
+ 118              		.loc 1 21 35 is_stmt 0 view .LVU18
+ 119 001a 0127     		movs	r7, #1
+ 120 001c 07FA01F1 		lsl	r1, r7, r1
+ 121              	.LVL8:
+  21:USER/Src/spi_soft.c ****     g_spi.pinCLK    = SPI_CLK_PIN << Row_pin;
+ 122              		.loc 1 21 21 view .LVU19
+ 123 0020 89B2     		uxth	r1, r1
+ 124 0022 A180     		strh	r1, [r4, #4]	@ movhi
+  22:USER/Src/spi_soft.c ****     g_spi.pinDO     = SPI_DO_PIN  << Row_pin;
+ 125              		.loc 1 22 5 is_stmt 1 view .LVU20
+  22:USER/Src/spi_soft.c ****     g_spi.pinDO     = SPI_DO_PIN  << Row_pin;
+ 126              		.loc 1 22 35 is_stmt 0 view .LVU21
+ 127 0024 4FF48073 		mov	r3, #256
+ 128 0028 B340     		lsls	r3, r3, r6
+  22:USER/Src/spi_soft.c ****     g_spi.pinDO     = SPI_DO_PIN  << Row_pin;
+ 129              		.loc 1 22 21 view .LVU22
+ 130 002a E380     		strh	r3, [r4, #6]	@ movhi
+  23:USER/Src/spi_soft.c ****     g_spi.pinDI_flag= 0;
+ 131              		.loc 1 23 5 is_stmt 1 view .LVU23
+  23:USER/Src/spi_soft.c ****     g_spi.pinDI_flag= 0;
+ 132              		.loc 1 23 35 is_stmt 0 view .LVU24
+ 133 002c 4FF40063 		mov	r3, #2048
+ 134 0030 B340     		lsls	r3, r3, r6
+  23:USER/Src/spi_soft.c ****     g_spi.pinDI_flag= 0;
+ 135              		.loc 1 23 21 view .LVU25
+ 136 0032 6381     		strh	r3, [r4, #10]	@ movhi
+  24:USER/Src/spi_soft.c **** 
+ 137              		.loc 1 24 5 is_stmt 1 view .LVU26
+  24:USER/Src/spi_soft.c **** 
+ 138              		.loc 1 24 21 is_stmt 0 view .LVU27
+ 139 0034 2573     		strb	r5, [r4, #12]
+  26:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 140              		.loc 1 26 2 is_stmt 1 view .LVU28
+  26:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 141              		.loc 1 26 22 is_stmt 0 view .LVU29
+ 142 0036 0191     		str	r1, [sp, #4]
+  27:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 143              		.loc 1 27 2 is_stmt 1 view .LVU30
+  27:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 144              		.loc 1 27 23 is_stmt 0 view .LVU31
+ 145 0038 0297     		str	r7, [sp, #8]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 6
+
+
+  28:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 146              		.loc 1 28 2 is_stmt 1 view .LVU32
+  29:USER/Src/spi_soft.c **** 	HAL_GPIO_Init(g_spi.busGPIOB, &GPIO_InitStruct);
+ 147              		.loc 1 29 2 view .LVU33
+  29:USER/Src/spi_soft.c **** 	HAL_GPIO_Init(g_spi.busGPIOB, &GPIO_InitStruct);
+ 148              		.loc 1 29 24 is_stmt 0 view .LVU34
+ 149 003a 4FF00208 		mov	r8, #2
+ 150 003e CDF81080 		str	r8, [sp, #16]
+  30:USER/Src/spi_soft.c **** 		
+ 151              		.loc 1 30 2 is_stmt 1 view .LVU35
+ 152 0042 01A9     		add	r1, sp, #4
+ 153 0044 FFF7FEFF 		bl	HAL_GPIO_Init
+ 154              	.LVL9:
+  32:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 155              		.loc 1 32 2 view .LVU36
+  32:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 156              		.loc 1 32 29 is_stmt 0 view .LVU37
+ 157 0048 E388     		ldrh	r3, [r4, #6]
+  32:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 158              		.loc 1 32 22 view .LVU38
+ 159 004a 0193     		str	r3, [sp, #4]
+  33:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 160              		.loc 1 33 2 is_stmt 1 view .LVU39
+  33:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 161              		.loc 1 33 23 is_stmt 0 view .LVU40
+ 162 004c 0297     		str	r7, [sp, #8]
+  34:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 163              		.loc 1 34 2 is_stmt 1 view .LVU41
+  34:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 164              		.loc 1 34 23 is_stmt 0 view .LVU42
+ 165 004e 0395     		str	r5, [sp, #12]
+  35:USER/Src/spi_soft.c **** 	HAL_GPIO_Init(g_spi.busGPIOB, &GPIO_InitStruct);
+ 166              		.loc 1 35 2 is_stmt 1 view .LVU43
+  35:USER/Src/spi_soft.c **** 	HAL_GPIO_Init(g_spi.busGPIOB, &GPIO_InitStruct);
+ 167              		.loc 1 35 24 is_stmt 0 view .LVU44
+ 168 0050 CDF81080 		str	r8, [sp, #16]
+  36:USER/Src/spi_soft.c **** 
+ 169              		.loc 1 36 2 is_stmt 1 view .LVU45
+ 170 0054 01A9     		add	r1, sp, #4
+ 171 0056 2068     		ldr	r0, [r4]
+ 172 0058 FFF7FEFF 		bl	HAL_GPIO_Init
+ 173              	.LVL10:
+  39:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 174              		.loc 1 39 2 view .LVU46
+  39:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 175              		.loc 1 39 29 is_stmt 0 view .LVU47
+ 176 005c 6389     		ldrh	r3, [r4, #10]
+  39:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 177              		.loc 1 39 22 view .LVU48
+ 178 005e 0193     		str	r3, [sp, #4]
+  40:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 179              		.loc 1 40 2 is_stmt 1 view .LVU49
+  40:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 180              		.loc 1 40 23 is_stmt 0 view .LVU50
+ 181 0060 0297     		str	r7, [sp, #8]
+  41:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 182              		.loc 1 41 2 is_stmt 1 view .LVU51
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 7
+
+
+  41:USER/Src/spi_soft.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 183              		.loc 1 41 23 is_stmt 0 view .LVU52
+ 184 0062 0395     		str	r5, [sp, #12]
+  42:USER/Src/spi_soft.c **** 	HAL_GPIO_Init(g_spi.busGPIOB, &GPIO_InitStruct);
+ 185              		.loc 1 42 2 is_stmt 1 view .LVU53
+  42:USER/Src/spi_soft.c **** 	HAL_GPIO_Init(g_spi.busGPIOB, &GPIO_InitStruct);
+ 186              		.loc 1 42 24 is_stmt 0 view .LVU54
+ 187 0064 CDF81080 		str	r8, [sp, #16]
+  43:USER/Src/spi_soft.c **** 		
+ 188              		.loc 1 43 2 is_stmt 1 view .LVU55
+ 189 0068 01A9     		add	r1, sp, #4
+ 190 006a 2068     		ldr	r0, [r4]
+ 191 006c FFF7FEFF 		bl	HAL_GPIO_Init
+ 192              	.LVL11:
+  45:USER/Src/spi_soft.c ****     {
+ 193              		.loc 1 45 5 view .LVU56
+  45:USER/Src/spi_soft.c ****     {
+ 194              		.loc 1 45 7 is_stmt 0 view .LVU57
+ 195 0070 4645     		cmp	r6, r8
+ 196 0072 14D0     		beq	.L11
+  55:USER/Src/spi_soft.c ****         g_spi.pinDI = SPI_DI_PIN  << Row_pin;
+ 197              		.loc 1 55 9 is_stmt 1 view .LVU58
+  55:USER/Src/spi_soft.c ****         g_spi.pinDI = SPI_DI_PIN  << Row_pin;
+ 198              		.loc 1 55 26 is_stmt 0 view .LVU59
+ 199 0074 104B     		ldr	r3, .L12
+ 200 0076 0022     		movs	r2, #0
+ 201 0078 1A73     		strb	r2, [r3, #12]
+  56:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pin = g_spi.pinDI ;
+ 202              		.loc 1 56 9 is_stmt 1 view .LVU60
+  56:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pin = g_spi.pinDI ;
+ 203              		.loc 1 56 35 is_stmt 0 view .LVU61
+ 204 007a 4FF48040 		mov	r0, #16384
+ 205 007e 00FA06F6 		lsl	r6, r0, r6
+  56:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pin = g_spi.pinDI ;
+ 206              		.loc 1 56 21 view .LVU62
+ 207 0082 B6B2     		uxth	r6, r6
+ 208 0084 1E81     		strh	r6, [r3, #8]	@ movhi
+  57:USER/Src/spi_soft.c ****         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 209              		.loc 1 57 9 is_stmt 1 view .LVU63
+  57:USER/Src/spi_soft.c ****         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 210              		.loc 1 57 29 is_stmt 0 view .LVU64
+ 211 0086 0196     		str	r6, [sp, #4]
+  58:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 212              		.loc 1 58 9 is_stmt 1 view .LVU65
+  58:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 213              		.loc 1 58 30 is_stmt 0 view .LVU66
+ 214 0088 0292     		str	r2, [sp, #8]
+  59:USER/Src/spi_soft.c ****         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 215              		.loc 1 59 9 is_stmt 1 view .LVU67
+  59:USER/Src/spi_soft.c ****         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 216              		.loc 1 59 30 is_stmt 0 view .LVU68
+ 217 008a 0392     		str	r2, [sp, #12]
+  60:USER/Src/spi_soft.c ****         HAL_GPIO_Init(g_spi.busGPIOB, &GPIO_InitStruct);
+ 218              		.loc 1 60 9 is_stmt 1 view .LVU69
+  60:USER/Src/spi_soft.c ****         HAL_GPIO_Init(g_spi.busGPIOB, &GPIO_InitStruct);
+ 219              		.loc 1 60 31 is_stmt 0 view .LVU70
+ 220 008c 0222     		movs	r2, #2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 8
+
+
+ 221 008e 0492     		str	r2, [sp, #16]
+  61:USER/Src/spi_soft.c **** 
+ 222              		.loc 1 61 9 is_stmt 1 view .LVU71
+ 223 0090 01A9     		add	r1, sp, #4
+ 224 0092 1868     		ldr	r0, [r3]
+ 225 0094 FFF7FEFF 		bl	HAL_GPIO_Init
+ 226              	.LVL12:
+ 227              	.L7:
+  65:USER/Src/spi_soft.c **** 
+ 228              		.loc 1 65 1 is_stmt 0 view .LVU72
+ 229 0098 06B0     		add	sp, sp, #24
+ 230              	.LCFI3:
+ 231              		.cfi_remember_state
+ 232              		.cfi_def_cfa_offset 24
+ 233              		@ sp needed
+ 234 009a BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 235              	.L11:
+ 236              	.LCFI4:
+ 237              		.cfi_restore_state
+  47:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pin = GPIO_PIN_14;
+ 238              		.loc 1 47 9 is_stmt 1 view .LVU73
+  47:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pin = GPIO_PIN_14;
+ 239              		.loc 1 47 25 is_stmt 0 view .LVU74
+ 240 009e 2773     		strb	r7, [r4, #12]
+  48:USER/Src/spi_soft.c ****         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 241              		.loc 1 48 9 is_stmt 1 view .LVU75
+  48:USER/Src/spi_soft.c ****         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 242              		.loc 1 48 29 is_stmt 0 view .LVU76
+ 243 00a0 4FF48043 		mov	r3, #16384
+ 244 00a4 0193     		str	r3, [sp, #4]
+  49:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 245              		.loc 1 49 9 is_stmt 1 view .LVU77
+  49:USER/Src/spi_soft.c ****         GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 246              		.loc 1 49 30 is_stmt 0 view .LVU78
+ 247 00a6 0295     		str	r5, [sp, #8]
+  50:USER/Src/spi_soft.c ****         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 248              		.loc 1 50 9 is_stmt 1 view .LVU79
+  50:USER/Src/spi_soft.c ****         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 249              		.loc 1 50 30 is_stmt 0 view .LVU80
+ 250 00a8 0395     		str	r5, [sp, #12]
+  51:USER/Src/spi_soft.c ****         HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+ 251              		.loc 1 51 9 is_stmt 1 view .LVU81
+  51:USER/Src/spi_soft.c ****         HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+ 252              		.loc 1 51 31 is_stmt 0 view .LVU82
+ 253 00aa CDF81080 		str	r8, [sp, #16]
+  52:USER/Src/spi_soft.c **** 
+ 254              		.loc 1 52 9 is_stmt 1 view .LVU83
+ 255 00ae 01A9     		add	r1, sp, #4
+ 256 00b0 0348     		ldr	r0, .L12+8
+ 257 00b2 FFF7FEFF 		bl	HAL_GPIO_Init
+ 258              	.LVL13:
+ 259 00b6 EFE7     		b	.L7
+ 260              	.L13:
+ 261              		.align	2
+ 262              	.L12:
+ 263 00b8 00000000 		.word	.LANCHOR0
+ 264 00bc 00040240 		.word	1073873920
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 9
+
+
+ 265 00c0 00080240 		.word	1073874944
+ 266              		.cfi_endproc
+ 267              	.LFE133:
+ 269              		.section	.text.SPI_CS_HIGH,"ax",%progbits
+ 270              		.align	1
+ 271              		.global	SPI_CS_HIGH
+ 272              		.syntax unified
+ 273              		.thumb
+ 274              		.thumb_func
+ 276              	SPI_CS_HIGH:
+ 277              	.LFB134:
+  68:USER/Src/spi_soft.c **** 	HAL_GPIO_WritePin(g_spi.busGPIOB , g_spi.pinCS, GPIO_PIN_SET);	
+ 278              		.loc 1 68 1 view -0
+ 279              		.cfi_startproc
+ 280              		@ args = 0, pretend = 0, frame = 0
+ 281              		@ frame_needed = 0, uses_anonymous_args = 0
+ 282 0000 08B5     		push	{r3, lr}
+ 283              	.LCFI5:
+ 284              		.cfi_def_cfa_offset 8
+ 285              		.cfi_offset 3, -8
+ 286              		.cfi_offset 14, -4
+  69:USER/Src/spi_soft.c **** }
+ 287              		.loc 1 69 2 view .LVU85
+ 288 0002 034B     		ldr	r3, .L16
+ 289 0004 0122     		movs	r2, #1
+ 290 0006 9988     		ldrh	r1, [r3, #4]
+ 291 0008 1868     		ldr	r0, [r3]
+ 292 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 293              	.LVL14:
+  70:USER/Src/spi_soft.c **** 
+ 294              		.loc 1 70 1 is_stmt 0 view .LVU86
+ 295 000e 08BD     		pop	{r3, pc}
+ 296              	.L17:
+ 297              		.align	2
+ 298              	.L16:
+ 299 0010 00000000 		.word	.LANCHOR0
+ 300              		.cfi_endproc
+ 301              	.LFE134:
+ 303              		.section	.text.SPI_CS_LOW,"ax",%progbits
+ 304              		.align	1
+ 305              		.global	SPI_CS_LOW
+ 306              		.syntax unified
+ 307              		.thumb
+ 308              		.thumb_func
+ 310              	SPI_CS_LOW:
+ 311              	.LFB135:
+  73:USER/Src/spi_soft.c **** 	HAL_GPIO_WritePin(g_spi.busGPIOB , g_spi.pinCS, GPIO_PIN_RESET);
+ 312              		.loc 1 73 1 is_stmt 1 view -0
+ 313              		.cfi_startproc
+ 314              		@ args = 0, pretend = 0, frame = 0
+ 315              		@ frame_needed = 0, uses_anonymous_args = 0
+ 316 0000 08B5     		push	{r3, lr}
+ 317              	.LCFI6:
+ 318              		.cfi_def_cfa_offset 8
+ 319              		.cfi_offset 3, -8
+ 320              		.cfi_offset 14, -4
+  74:USER/Src/spi_soft.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 10
+
+
+ 321              		.loc 1 74 2 view .LVU88
+ 322 0002 034B     		ldr	r3, .L20
+ 323 0004 0022     		movs	r2, #0
+ 324 0006 9988     		ldrh	r1, [r3, #4]
+ 325 0008 1868     		ldr	r0, [r3]
+ 326 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 327              	.LVL15:
+  75:USER/Src/spi_soft.c **** 
+ 328              		.loc 1 75 1 is_stmt 0 view .LVU89
+ 329 000e 08BD     		pop	{r3, pc}
+ 330              	.L21:
+ 331              		.align	2
+ 332              	.L20:
+ 333 0010 00000000 		.word	.LANCHOR0
+ 334              		.cfi_endproc
+ 335              	.LFE135:
+ 337              		.section	.text.SPI_CLK_HIGH,"ax",%progbits
+ 338              		.align	1
+ 339              		.global	SPI_CLK_HIGH
+ 340              		.syntax unified
+ 341              		.thumb
+ 342              		.thumb_func
+ 344              	SPI_CLK_HIGH:
+ 345              	.LFB136:
+  78:USER/Src/spi_soft.c **** 	HAL_GPIO_WritePin(g_spi.busGPIOB , g_spi.pinCLK ,GPIO_PIN_SET);
+ 346              		.loc 1 78 1 is_stmt 1 view -0
+ 347              		.cfi_startproc
+ 348              		@ args = 0, pretend = 0, frame = 0
+ 349              		@ frame_needed = 0, uses_anonymous_args = 0
+ 350 0000 08B5     		push	{r3, lr}
+ 351              	.LCFI7:
+ 352              		.cfi_def_cfa_offset 8
+ 353              		.cfi_offset 3, -8
+ 354              		.cfi_offset 14, -4
+  79:USER/Src/spi_soft.c **** }
+ 355              		.loc 1 79 2 view .LVU91
+ 356 0002 034B     		ldr	r3, .L24
+ 357 0004 0122     		movs	r2, #1
+ 358 0006 D988     		ldrh	r1, [r3, #6]
+ 359 0008 1868     		ldr	r0, [r3]
+ 360 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 361              	.LVL16:
+  80:USER/Src/spi_soft.c **** 
+ 362              		.loc 1 80 1 is_stmt 0 view .LVU92
+ 363 000e 08BD     		pop	{r3, pc}
+ 364              	.L25:
+ 365              		.align	2
+ 366              	.L24:
+ 367 0010 00000000 		.word	.LANCHOR0
+ 368              		.cfi_endproc
+ 369              	.LFE136:
+ 371              		.section	.text.SPI_CLK_LOW,"ax",%progbits
+ 372              		.align	1
+ 373              		.global	SPI_CLK_LOW
+ 374              		.syntax unified
+ 375              		.thumb
+ 376              		.thumb_func
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 11
+
+
+ 378              	SPI_CLK_LOW:
+ 379              	.LFB137:
+  83:USER/Src/spi_soft.c **** 	HAL_GPIO_WritePin(g_spi.busGPIOB , g_spi.pinCLK , GPIO_PIN_RESET);
+ 380              		.loc 1 83 1 is_stmt 1 view -0
+ 381              		.cfi_startproc
+ 382              		@ args = 0, pretend = 0, frame = 0
+ 383              		@ frame_needed = 0, uses_anonymous_args = 0
+ 384 0000 08B5     		push	{r3, lr}
+ 385              	.LCFI8:
+ 386              		.cfi_def_cfa_offset 8
+ 387              		.cfi_offset 3, -8
+ 388              		.cfi_offset 14, -4
+  84:USER/Src/spi_soft.c **** }
+ 389              		.loc 1 84 2 view .LVU94
+ 390 0002 034B     		ldr	r3, .L28
+ 391 0004 0022     		movs	r2, #0
+ 392 0006 D988     		ldrh	r1, [r3, #6]
+ 393 0008 1868     		ldr	r0, [r3]
+ 394 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 395              	.LVL17:
+  85:USER/Src/spi_soft.c **** 
+ 396              		.loc 1 85 1 is_stmt 0 view .LVU95
+ 397 000e 08BD     		pop	{r3, pc}
+ 398              	.L29:
+ 399              		.align	2
+ 400              	.L28:
+ 401 0010 00000000 		.word	.LANCHOR0
+ 402              		.cfi_endproc
+ 403              	.LFE137:
+ 405              		.section	.text.SPI_Send_one_byte,"ax",%progbits
+ 406              		.align	1
+ 407              		.syntax unified
+ 408              		.thumb
+ 409              		.thumb_func
+ 411              	SPI_Send_one_byte:
+ 412              	.LVL18:
+ 413              	.LFB143:
+ 120:USER/Src/spi_soft.c **** 
+ 121:USER/Src/spi_soft.c **** uint8_t SPI_Read_DI(void)
+ 122:USER/Src/spi_soft.c **** {
+ 123:USER/Src/spi_soft.c ****     if(g_spi.pinDI_flag==1) 
+ 124:USER/Src/spi_soft.c ****     {
+ 125:USER/Src/spi_soft.c ****         return HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_14);
+ 126:USER/Src/spi_soft.c ****     }else{
+ 127:USER/Src/spi_soft.c ****         return HAL_GPIO_ReadPin(g_spi.busGPIOB,g_spi.pinDI);
+ 128:USER/Src/spi_soft.c ****     }
+ 129:USER/Src/spi_soft.c ****     
+ 130:USER/Src/spi_soft.c **** }
+ 131:USER/Src/spi_soft.c **** 
+ 132:USER/Src/spi_soft.c **** static inline void SPI_Delay(int delay)
+ 133:USER/Src/spi_soft.c **** {
+ 134:USER/Src/spi_soft.c ****     while (delay--);
+ 135:USER/Src/spi_soft.c **** }
+ 136:USER/Src/spi_soft.c **** 
+ 137:USER/Src/spi_soft.c **** static void SPI_Send_one_byte(uint8_t data)
+ 138:USER/Src/spi_soft.c **** {
+ 414              		.loc 1 138 1 is_stmt 1 view -0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 12
+
+
+ 415              		.cfi_startproc
+ 416              		@ args = 0, pretend = 0, frame = 0
+ 417              		@ frame_needed = 0, uses_anonymous_args = 0
+ 418              		.loc 1 138 1 is_stmt 0 view .LVU97
+ 419 0000 38B5     		push	{r3, r4, r5, lr}
+ 420              	.LCFI9:
+ 421              		.cfi_def_cfa_offset 16
+ 422              		.cfi_offset 3, -16
+ 423              		.cfi_offset 4, -12
+ 424              		.cfi_offset 5, -8
+ 425              		.cfi_offset 14, -4
+ 426 0002 0446     		mov	r4, r0
+ 139:USER/Src/spi_soft.c ****     int i;
+ 427              		.loc 1 139 5 is_stmt 1 view .LVU98
+ 140:USER/Src/spi_soft.c ****     uint8_t dat=0x80;
+ 428              		.loc 1 140 5 view .LVU99
+ 429              	.LVL19:
+ 141:USER/Src/spi_soft.c ****     for(i=0;i<8;i++)
+ 430              		.loc 1 141 5 view .LVU100
+ 431              		.loc 1 141 10 is_stmt 0 view .LVU101
+ 432 0004 0025     		movs	r5, #0
+ 433              		.loc 1 141 5 view .LVU102
+ 434 0006 14E0     		b	.L31
+ 435              	.LVL20:
+ 436              	.L34:
+ 142:USER/Src/spi_soft.c ****     {
+ 143:USER/Src/spi_soft.c ****         SPI_CLK_LOW();
+ 437              		.loc 1 143 9 is_stmt 1 discriminator 3 view .LVU103
+ 438 0008 FFF7FEFF 		bl	SPI_CLK_LOW
+ 439              	.LVL21:
+ 144:USER/Src/spi_soft.c ****         SPI_Delay(SPI_delay);
+ 440              		.loc 1 144 9 discriminator 3 view .LVU104
+ 441              	.LBB14:
+ 442              	.LBI14:
+ 132:USER/Src/spi_soft.c **** {
+ 443              		.loc 1 132 20 discriminator 3 view .LVU105
+ 444              	.LBB15:
+ 134:USER/Src/spi_soft.c **** }
+ 445              		.loc 1 134 5 discriminator 3 view .LVU106
+ 134:USER/Src/spi_soft.c **** }
+ 446              		.loc 1 134 11 is_stmt 0 discriminator 3 view .LVU107
+ 447 000c FA23     		movs	r3, #250
+ 448              	.LVL22:
+ 449              	.L32:
+ 134:USER/Src/spi_soft.c **** }
+ 450              		.loc 1 134 20 is_stmt 1 view .LVU108
+ 134:USER/Src/spi_soft.c **** }
+ 451              		.loc 1 134 11 view .LVU109
+ 452 000e 1A46     		mov	r2, r3
+ 134:USER/Src/spi_soft.c **** }
+ 453              		.loc 1 134 17 is_stmt 0 view .LVU110
+ 454 0010 013B     		subs	r3, r3, #1
+ 455              	.LVL23:
+ 134:USER/Src/spi_soft.c **** }
+ 456              		.loc 1 134 11 view .LVU111
+ 457 0012 002A     		cmp	r2, #0
+ 458 0014 FBD1     		bne	.L32
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 13
+
+
+ 459              	.LVL24:
+ 134:USER/Src/spi_soft.c **** }
+ 460              		.loc 1 134 11 view .LVU112
+ 461              	.LBE15:
+ 462              	.LBE14:
+ 145:USER/Src/spi_soft.c **** 
+ 146:USER/Src/spi_soft.c ****         SPI_DO(data & dat);
+ 463              		.loc 1 146 9 is_stmt 1 discriminator 3 view .LVU113
+ 464 0016 04F08000 		and	r0, r4, #128
+ 465 001a FFF7FEFF 		bl	SPI_DO
+ 466              	.LVL25:
+ 147:USER/Src/spi_soft.c ****         data = data << 1;
+ 467              		.loc 1 147 9 discriminator 3 view .LVU114
+ 468              		.loc 1 147 14 is_stmt 0 discriminator 3 view .LVU115
+ 469 001e 6400     		lsls	r4, r4, #1
+ 470              	.LVL26:
+ 471              		.loc 1 147 14 discriminator 3 view .LVU116
+ 472 0020 E4B2     		uxtb	r4, r4
+ 473              	.LVL27:
+ 148:USER/Src/spi_soft.c **** 
+ 149:USER/Src/spi_soft.c ****         SPI_CLK_HIGH();
+ 474              		.loc 1 149 9 is_stmt 1 discriminator 3 view .LVU117
+ 475 0022 FFF7FEFF 		bl	SPI_CLK_HIGH
+ 476              	.LVL28:
+ 150:USER/Src/spi_soft.c ****         SPI_Delay(SPI_delay);
+ 477              		.loc 1 150 9 discriminator 3 view .LVU118
+ 478              	.LBB16:
+ 479              	.LBI16:
+ 132:USER/Src/spi_soft.c **** {
+ 480              		.loc 1 132 20 discriminator 3 view .LVU119
+ 481              	.LBE16:
+ 149:USER/Src/spi_soft.c ****         SPI_Delay(SPI_delay);
+ 482              		.loc 1 149 9 is_stmt 0 discriminator 3 view .LVU120
+ 483 0026 FA23     		movs	r3, #250
+ 484              	.LVL29:
+ 485              	.L33:
+ 486              	.LBB18:
+ 487              	.LBB17:
+ 134:USER/Src/spi_soft.c **** }
+ 488              		.loc 1 134 20 is_stmt 1 view .LVU121
+ 134:USER/Src/spi_soft.c **** }
+ 489              		.loc 1 134 11 view .LVU122
+ 490 0028 1A46     		mov	r2, r3
+ 134:USER/Src/spi_soft.c **** }
+ 491              		.loc 1 134 17 is_stmt 0 view .LVU123
+ 492 002a 013B     		subs	r3, r3, #1
+ 493              	.LVL30:
+ 134:USER/Src/spi_soft.c **** }
+ 494              		.loc 1 134 11 view .LVU124
+ 495 002c 002A     		cmp	r2, #0
+ 496 002e FBD1     		bne	.L33
+ 497              	.LVL31:
+ 134:USER/Src/spi_soft.c **** }
+ 498              		.loc 1 134 11 view .LVU125
+ 499              	.LBE17:
+ 500              	.LBE18:
+ 141:USER/Src/spi_soft.c ****     {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 14
+
+
+ 501              		.loc 1 141 17 is_stmt 1 discriminator 3 view .LVU126
+ 141:USER/Src/spi_soft.c ****     {
+ 502              		.loc 1 141 18 is_stmt 0 discriminator 3 view .LVU127
+ 503 0030 0135     		adds	r5, r5, #1
+ 504              	.LVL32:
+ 505              	.L31:
+ 141:USER/Src/spi_soft.c ****     {
+ 506              		.loc 1 141 13 is_stmt 1 discriminator 1 view .LVU128
+ 141:USER/Src/spi_soft.c ****     {
+ 507              		.loc 1 141 5 is_stmt 0 discriminator 1 view .LVU129
+ 508 0032 072D     		cmp	r5, #7
+ 509 0034 E8DD     		ble	.L34
+ 151:USER/Src/spi_soft.c ****         
+ 152:USER/Src/spi_soft.c ****     }
+ 153:USER/Src/spi_soft.c **** }
+ 510              		.loc 1 153 1 view .LVU130
+ 511 0036 38BD     		pop	{r3, r4, r5, pc}
+ 512              		.loc 1 153 1 view .LVU131
+ 513              		.cfi_endproc
+ 514              	.LFE143:
+ 516              		.section	.text.SPI_DI_HIGH,"ax",%progbits
+ 517              		.align	1
+ 518              		.global	SPI_DI_HIGH
+ 519              		.syntax unified
+ 520              		.thumb
+ 521              		.thumb_func
+ 523              	SPI_DI_HIGH:
+ 524              	.LFB138:
+  88:USER/Src/spi_soft.c ****     if(g_spi.pinDI_flag==1) 
+ 525              		.loc 1 88 1 is_stmt 1 view -0
+ 526              		.cfi_startproc
+ 527              		@ args = 0, pretend = 0, frame = 0
+ 528              		@ frame_needed = 0, uses_anonymous_args = 0
+ 529 0000 08B5     		push	{r3, lr}
+ 530              	.LCFI10:
+ 531              		.cfi_def_cfa_offset 8
+ 532              		.cfi_offset 3, -8
+ 533              		.cfi_offset 14, -4
+  89:USER/Src/spi_soft.c ****     {
+ 534              		.loc 1 89 5 view .LVU133
+  89:USER/Src/spi_soft.c ****     {
+ 535              		.loc 1 89 13 is_stmt 0 view .LVU134
+ 536 0002 094B     		ldr	r3, .L41
+ 537 0004 1B7B     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+  89:USER/Src/spi_soft.c ****     {
+ 538              		.loc 1 89 7 view .LVU135
+ 539 0006 012B     		cmp	r3, #1
+ 540 0008 06D0     		beq	.L40
+  94:USER/Src/spi_soft.c ****     }
+ 541              		.loc 1 94 9 is_stmt 1 view .LVU136
+ 542 000a 074B     		ldr	r3, .L41
+ 543 000c 0122     		movs	r2, #1
+ 544 000e 1989     		ldrh	r1, [r3, #8]
+ 545 0010 1868     		ldr	r0, [r3]
+ 546 0012 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 547              	.LVL33:
+ 548              	.L36:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 15
+
+
+  96:USER/Src/spi_soft.c **** 
+ 549              		.loc 1 96 1 is_stmt 0 view .LVU137
+ 550 0016 08BD     		pop	{r3, pc}
+ 551              	.L40:
+  91:USER/Src/spi_soft.c ****     }
+ 552              		.loc 1 91 9 is_stmt 1 view .LVU138
+ 553 0018 0122     		movs	r2, #1
+ 554 001a 4FF48041 		mov	r1, #16384
+ 555 001e 0348     		ldr	r0, .L41+4
+ 556 0020 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 557              	.LVL34:
+ 558 0024 F7E7     		b	.L36
+ 559              	.L42:
+ 560 0026 00BF     		.align	2
+ 561              	.L41:
+ 562 0028 00000000 		.word	.LANCHOR0
+ 563 002c 00080240 		.word	1073874944
+ 564              		.cfi_endproc
+ 565              	.LFE138:
+ 567              		.section	.text.SPI_DI_LOW,"ax",%progbits
+ 568              		.align	1
+ 569              		.global	SPI_DI_LOW
+ 570              		.syntax unified
+ 571              		.thumb
+ 572              		.thumb_func
+ 574              	SPI_DI_LOW:
+ 575              	.LFB139:
+  99:USER/Src/spi_soft.c ****     if(g_spi.pinDI_flag==1) 
+ 576              		.loc 1 99 1 view -0
+ 577              		.cfi_startproc
+ 578              		@ args = 0, pretend = 0, frame = 0
+ 579              		@ frame_needed = 0, uses_anonymous_args = 0
+ 580 0000 08B5     		push	{r3, lr}
+ 581              	.LCFI11:
+ 582              		.cfi_def_cfa_offset 8
+ 583              		.cfi_offset 3, -8
+ 584              		.cfi_offset 14, -4
+ 100:USER/Src/spi_soft.c ****     {
+ 585              		.loc 1 100 5 view .LVU140
+ 100:USER/Src/spi_soft.c ****     {
+ 586              		.loc 1 100 13 is_stmt 0 view .LVU141
+ 587 0002 094B     		ldr	r3, .L48
+ 588 0004 1B7B     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 100:USER/Src/spi_soft.c ****     {
+ 589              		.loc 1 100 7 view .LVU142
+ 590 0006 012B     		cmp	r3, #1
+ 591 0008 06D0     		beq	.L47
+ 105:USER/Src/spi_soft.c ****     }
+ 592              		.loc 1 105 9 is_stmt 1 view .LVU143
+ 593 000a 074B     		ldr	r3, .L48
+ 594 000c 0022     		movs	r2, #0
+ 595 000e 1989     		ldrh	r1, [r3, #8]
+ 596 0010 1868     		ldr	r0, [r3]
+ 597 0012 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 598              	.LVL35:
+ 599              	.L43:
+ 107:USER/Src/spi_soft.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 16
+
+
+ 600              		.loc 1 107 1 is_stmt 0 view .LVU144
+ 601 0016 08BD     		pop	{r3, pc}
+ 602              	.L47:
+ 102:USER/Src/spi_soft.c ****     }
+ 603              		.loc 1 102 9 is_stmt 1 view .LVU145
+ 604 0018 0022     		movs	r2, #0
+ 605 001a 4FF48041 		mov	r1, #16384
+ 606 001e 0348     		ldr	r0, .L48+4
+ 607 0020 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 608              	.LVL36:
+ 609 0024 F7E7     		b	.L43
+ 610              	.L49:
+ 611 0026 00BF     		.align	2
+ 612              	.L48:
+ 613 0028 00000000 		.word	.LANCHOR0
+ 614 002c 00080240 		.word	1073874944
+ 615              		.cfi_endproc
+ 616              	.LFE139:
+ 618              		.section	.text.SPI_Read_DI,"ax",%progbits
+ 619              		.align	1
+ 620              		.global	SPI_Read_DI
+ 621              		.syntax unified
+ 622              		.thumb
+ 623              		.thumb_func
+ 625              	SPI_Read_DI:
+ 626              	.LFB141:
+ 122:USER/Src/spi_soft.c ****     if(g_spi.pinDI_flag==1) 
+ 627              		.loc 1 122 1 view -0
+ 628              		.cfi_startproc
+ 629              		@ args = 0, pretend = 0, frame = 0
+ 630              		@ frame_needed = 0, uses_anonymous_args = 0
+ 631 0000 08B5     		push	{r3, lr}
+ 632              	.LCFI12:
+ 633              		.cfi_def_cfa_offset 8
+ 634              		.cfi_offset 3, -8
+ 635              		.cfi_offset 14, -4
+ 123:USER/Src/spi_soft.c ****     {
+ 636              		.loc 1 123 5 view .LVU147
+ 123:USER/Src/spi_soft.c ****     {
+ 637              		.loc 1 123 13 is_stmt 0 view .LVU148
+ 638 0002 084B     		ldr	r3, .L55
+ 639 0004 1B7B     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 123:USER/Src/spi_soft.c ****     {
+ 640              		.loc 1 123 7 view .LVU149
+ 641 0006 012B     		cmp	r3, #1
+ 642 0008 05D0     		beq	.L54
+ 127:USER/Src/spi_soft.c ****     }
+ 643              		.loc 1 127 9 is_stmt 1 view .LVU150
+ 127:USER/Src/spi_soft.c ****     }
+ 644              		.loc 1 127 16 is_stmt 0 view .LVU151
+ 645 000a 064B     		ldr	r3, .L55
+ 646 000c 1989     		ldrh	r1, [r3, #8]
+ 647 000e 1868     		ldr	r0, [r3]
+ 648 0010 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 649              	.LVL37:
+ 650              	.L52:
+ 130:USER/Src/spi_soft.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 17
+
+
+ 651              		.loc 1 130 1 view .LVU152
+ 652 0014 08BD     		pop	{r3, pc}
+ 653              	.L54:
+ 125:USER/Src/spi_soft.c ****     }else{
+ 654              		.loc 1 125 9 is_stmt 1 view .LVU153
+ 125:USER/Src/spi_soft.c ****     }else{
+ 655              		.loc 1 125 16 is_stmt 0 view .LVU154
+ 656 0016 4FF48041 		mov	r1, #16384
+ 657 001a 0348     		ldr	r0, .L55+4
+ 658 001c FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 659              	.LVL38:
+ 660 0020 F8E7     		b	.L52
+ 661              	.L56:
+ 662 0022 00BF     		.align	2
+ 663              	.L55:
+ 664 0024 00000000 		.word	.LANCHOR0
+ 665 0028 00080240 		.word	1073874944
+ 666              		.cfi_endproc
+ 667              	.LFE141:
+ 669              		.section	.text.SPI_Receive_one_byte,"ax",%progbits
+ 670              		.align	1
+ 671              		.syntax unified
+ 672              		.thumb
+ 673              		.thumb_func
+ 675              	SPI_Receive_one_byte:
+ 676              	.LVL39:
+ 677              	.LFB144:
+ 154:USER/Src/spi_soft.c **** 
+ 155:USER/Src/spi_soft.c **** static void SPI_Receive_one_byte(uint8_t *data)
+ 156:USER/Src/spi_soft.c **** {
+ 678              		.loc 1 156 1 is_stmt 1 view -0
+ 679              		.cfi_startproc
+ 680              		@ args = 0, pretend = 0, frame = 0
+ 681              		@ frame_needed = 0, uses_anonymous_args = 0
+ 682              		.loc 1 156 1 is_stmt 0 view .LVU156
+ 683 0000 70B5     		push	{r4, r5, r6, lr}
+ 684              	.LCFI13:
+ 685              		.cfi_def_cfa_offset 16
+ 686              		.cfi_offset 4, -16
+ 687              		.cfi_offset 5, -12
+ 688              		.cfi_offset 6, -8
+ 689              		.cfi_offset 14, -4
+ 690 0002 0646     		mov	r6, r0
+ 157:USER/Src/spi_soft.c ****     int i;
+ 691              		.loc 1 157 5 is_stmt 1 view .LVU157
+ 158:USER/Src/spi_soft.c ****     uint8_t dat=0x80;
+ 692              		.loc 1 158 5 view .LVU158
+ 693              	.LVL40:
+ 159:USER/Src/spi_soft.c ****     *data=0;
+ 694              		.loc 1 159 5 view .LVU159
+ 695              		.loc 1 159 10 is_stmt 0 view .LVU160
+ 696 0004 0024     		movs	r4, #0
+ 697 0006 0470     		strb	r4, [r0]
+ 160:USER/Src/spi_soft.c ****     for ( i = 0; i < 8; i++)
+ 698              		.loc 1 160 5 is_stmt 1 view .LVU161
+ 699              	.LVL41:
+ 158:USER/Src/spi_soft.c ****     uint8_t dat=0x80;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 18
+
+
+ 700              		.loc 1 158 13 is_stmt 0 view .LVU162
+ 701 0008 8025     		movs	r5, #128
+ 702              		.loc 1 160 5 view .LVU163
+ 703 000a 08E0     		b	.L58
+ 704              	.LVL42:
+ 705              	.L60:
+ 161:USER/Src/spi_soft.c ****     {
+ 162:USER/Src/spi_soft.c ****         SPI_CLK_LOW();
+ 163:USER/Src/spi_soft.c ****         SPI_Delay(SPI_delay);
+ 164:USER/Src/spi_soft.c **** 
+ 165:USER/Src/spi_soft.c ****         if(SPI_Read_DI())
+ 166:USER/Src/spi_soft.c ****         {
+ 167:USER/Src/spi_soft.c ****             *data |= dat;
+ 168:USER/Src/spi_soft.c ****         }  
+ 169:USER/Src/spi_soft.c ****         dat >>= 1 ;
+ 706              		.loc 1 169 9 is_stmt 1 discriminator 2 view .LVU164
+ 707              		.loc 1 169 13 is_stmt 0 discriminator 2 view .LVU165
+ 708 000c 6D08     		lsrs	r5, r5, #1
+ 709              	.LVL43:
+ 170:USER/Src/spi_soft.c **** 
+ 171:USER/Src/spi_soft.c ****         SPI_CLK_HIGH();
+ 710              		.loc 1 171 9 is_stmt 1 discriminator 2 view .LVU166
+ 711 000e FFF7FEFF 		bl	SPI_CLK_HIGH
+ 712              	.LVL44:
+ 172:USER/Src/spi_soft.c ****         SPI_Delay(SPI_delay);
+ 713              		.loc 1 172 9 discriminator 2 view .LVU167
+ 714              	.LBB19:
+ 715              	.LBI19:
+ 132:USER/Src/spi_soft.c **** {
+ 716              		.loc 1 132 20 discriminator 2 view .LVU168
+ 717              	.LBB20:
+ 134:USER/Src/spi_soft.c **** }
+ 718              		.loc 1 134 5 discriminator 2 view .LVU169
+ 134:USER/Src/spi_soft.c **** }
+ 719              		.loc 1 134 11 is_stmt 0 discriminator 2 view .LVU170
+ 720 0012 FA23     		movs	r3, #250
+ 721              	.LVL45:
+ 722              	.L61:
+ 134:USER/Src/spi_soft.c **** }
+ 723              		.loc 1 134 20 is_stmt 1 view .LVU171
+ 134:USER/Src/spi_soft.c **** }
+ 724              		.loc 1 134 11 view .LVU172
+ 725 0014 1A46     		mov	r2, r3
+ 134:USER/Src/spi_soft.c **** }
+ 726              		.loc 1 134 17 is_stmt 0 view .LVU173
+ 727 0016 013B     		subs	r3, r3, #1
+ 728              	.LVL46:
+ 134:USER/Src/spi_soft.c **** }
+ 729              		.loc 1 134 11 view .LVU174
+ 730 0018 002A     		cmp	r2, #0
+ 731 001a FBD1     		bne	.L61
+ 732              	.LVL47:
+ 134:USER/Src/spi_soft.c **** }
+ 733              		.loc 1 134 11 view .LVU175
+ 734              	.LBE20:
+ 735              	.LBE19:
+ 160:USER/Src/spi_soft.c ****     {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 19
+
+
+ 736              		.loc 1 160 25 is_stmt 1 discriminator 2 view .LVU176
+ 160:USER/Src/spi_soft.c ****     {
+ 737              		.loc 1 160 26 is_stmt 0 discriminator 2 view .LVU177
+ 738 001c 0134     		adds	r4, r4, #1
+ 739              	.LVL48:
+ 740              	.L58:
+ 160:USER/Src/spi_soft.c ****     {
+ 741              		.loc 1 160 18 is_stmt 1 discriminator 1 view .LVU178
+ 160:USER/Src/spi_soft.c ****     {
+ 742              		.loc 1 160 5 is_stmt 0 discriminator 1 view .LVU179
+ 743 001e 072C     		cmp	r4, #7
+ 744 0020 0EDC     		bgt	.L64
+ 162:USER/Src/spi_soft.c ****         SPI_Delay(SPI_delay);
+ 745              		.loc 1 162 9 is_stmt 1 view .LVU180
+ 746 0022 FFF7FEFF 		bl	SPI_CLK_LOW
+ 747              	.LVL49:
+ 163:USER/Src/spi_soft.c **** 
+ 748              		.loc 1 163 9 view .LVU181
+ 749              	.LBB21:
+ 750              	.LBI21:
+ 132:USER/Src/spi_soft.c **** {
+ 751              		.loc 1 132 20 view .LVU182
+ 752              	.LBB22:
+ 134:USER/Src/spi_soft.c **** }
+ 753              		.loc 1 134 5 view .LVU183
+ 134:USER/Src/spi_soft.c **** }
+ 754              		.loc 1 134 11 is_stmt 0 view .LVU184
+ 755 0026 FA23     		movs	r3, #250
+ 756              	.LVL50:
+ 757              	.L59:
+ 134:USER/Src/spi_soft.c **** }
+ 758              		.loc 1 134 20 is_stmt 1 view .LVU185
+ 134:USER/Src/spi_soft.c **** }
+ 759              		.loc 1 134 11 view .LVU186
+ 760 0028 1A46     		mov	r2, r3
+ 134:USER/Src/spi_soft.c **** }
+ 761              		.loc 1 134 17 is_stmt 0 view .LVU187
+ 762 002a 013B     		subs	r3, r3, #1
+ 763              	.LVL51:
+ 134:USER/Src/spi_soft.c **** }
+ 764              		.loc 1 134 11 view .LVU188
+ 765 002c 002A     		cmp	r2, #0
+ 766 002e FBD1     		bne	.L59
+ 767              	.LVL52:
+ 134:USER/Src/spi_soft.c **** }
+ 768              		.loc 1 134 11 view .LVU189
+ 769              	.LBE22:
+ 770              	.LBE21:
+ 165:USER/Src/spi_soft.c ****         {
+ 771              		.loc 1 165 9 is_stmt 1 view .LVU190
+ 165:USER/Src/spi_soft.c ****         {
+ 772              		.loc 1 165 12 is_stmt 0 view .LVU191
+ 773 0030 FFF7FEFF 		bl	SPI_Read_DI
+ 774              	.LVL53:
+ 165:USER/Src/spi_soft.c ****         {
+ 775              		.loc 1 165 11 view .LVU192
+ 776 0034 0028     		cmp	r0, #0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 20
+
+
+ 777 0036 E9D0     		beq	.L60
+ 167:USER/Src/spi_soft.c ****         }  
+ 778              		.loc 1 167 13 is_stmt 1 view .LVU193
+ 167:USER/Src/spi_soft.c ****         }  
+ 779              		.loc 1 167 19 is_stmt 0 view .LVU194
+ 780 0038 3378     		ldrb	r3, [r6]	@ zero_extendqisi2
+ 781 003a 2B43     		orrs	r3, r3, r5
+ 782 003c 3370     		strb	r3, [r6]
+ 783 003e E5E7     		b	.L60
+ 784              	.L64:
+ 173:USER/Src/spi_soft.c ****     }
+ 174:USER/Src/spi_soft.c **** 
+ 175:USER/Src/spi_soft.c **** }
+ 785              		.loc 1 175 1 view .LVU195
+ 786 0040 70BD     		pop	{r4, r5, r6, pc}
+ 787              		.loc 1 175 1 view .LVU196
+ 788              		.cfi_endproc
+ 789              	.LFE144:
+ 791              		.section	.text.SPI_Write_multi_byte,"ax",%progbits
+ 792              		.align	1
+ 793              		.global	SPI_Write_multi_byte
+ 794              		.syntax unified
+ 795              		.thumb
+ 796              		.thumb_func
+ 798              	SPI_Write_multi_byte:
+ 799              	.LVL54:
+ 800              	.LFB145:
+ 176:USER/Src/spi_soft.c **** 
+ 177:USER/Src/spi_soft.c **** void SPI_Write_multi_byte(uint8_t reg_add, uint8_t *data,uint8_t size)
+ 178:USER/Src/spi_soft.c **** {
+ 801              		.loc 1 178 1 is_stmt 1 view -0
+ 802              		.cfi_startproc
+ 803              		@ args = 0, pretend = 0, frame = 0
+ 804              		@ frame_needed = 0, uses_anonymous_args = 0
+ 805              		.loc 1 178 1 is_stmt 0 view .LVU198
+ 806 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 807              	.LCFI14:
+ 808              		.cfi_def_cfa_offset 24
+ 809              		.cfi_offset 3, -24
+ 810              		.cfi_offset 4, -20
+ 811              		.cfi_offset 5, -16
+ 812              		.cfi_offset 6, -12
+ 813              		.cfi_offset 7, -8
+ 814              		.cfi_offset 14, -4
+ 815 0002 0746     		mov	r7, r0
+ 816 0004 0E46     		mov	r6, r1
+ 817 0006 1546     		mov	r5, r2
+ 179:USER/Src/spi_soft.c ****     uint8_t i;
+ 818              		.loc 1 179 5 is_stmt 1 view .LVU199
+ 180:USER/Src/spi_soft.c **** 
+ 181:USER/Src/spi_soft.c ****     SPI_CLK_HIGH();
+ 819              		.loc 1 181 5 view .LVU200
+ 820 0008 FFF7FEFF 		bl	SPI_CLK_HIGH
+ 821              	.LVL55:
+ 182:USER/Src/spi_soft.c ****     SPI_CS_HIGH();
+ 822              		.loc 1 182 5 view .LVU201
+ 823 000c FFF7FEFF 		bl	SPI_CS_HIGH
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 21
+
+
+ 824              	.LVL56:
+ 183:USER/Src/spi_soft.c **** 
+ 184:USER/Src/spi_soft.c ****     SPI_Delay(SPI_delay);
+ 825              		.loc 1 184 5 view .LVU202
+ 826              	.LBB23:
+ 827              	.LBI23:
+ 132:USER/Src/spi_soft.c **** {
+ 828              		.loc 1 132 20 view .LVU203
+ 829              	.LBB24:
+ 134:USER/Src/spi_soft.c **** }
+ 830              		.loc 1 134 5 view .LVU204
+ 134:USER/Src/spi_soft.c **** }
+ 831              		.loc 1 134 11 is_stmt 0 view .LVU205
+ 832 0010 FA23     		movs	r3, #250
+ 833              	.LVL57:
+ 834              	.L66:
+ 134:USER/Src/spi_soft.c **** }
+ 835              		.loc 1 134 20 is_stmt 1 view .LVU206
+ 134:USER/Src/spi_soft.c **** }
+ 836              		.loc 1 134 11 view .LVU207
+ 837 0012 1C46     		mov	r4, r3
+ 134:USER/Src/spi_soft.c **** }
+ 838              		.loc 1 134 17 is_stmt 0 view .LVU208
+ 839 0014 013B     		subs	r3, r3, #1
+ 840              	.LVL58:
+ 134:USER/Src/spi_soft.c **** }
+ 841              		.loc 1 134 11 view .LVU209
+ 842 0016 002C     		cmp	r4, #0
+ 843 0018 FBD1     		bne	.L66
+ 844              	.LVL59:
+ 134:USER/Src/spi_soft.c **** }
+ 845              		.loc 1 134 11 view .LVU210
+ 846              	.LBE24:
+ 847              	.LBE23:
+ 185:USER/Src/spi_soft.c ****     reg_add &= 0x7f;
+ 848              		.loc 1 185 5 is_stmt 1 view .LVU211
+ 186:USER/Src/spi_soft.c **** 
+ 187:USER/Src/spi_soft.c ****     SPI_Send_one_byte(reg_add);
+ 849              		.loc 1 187 5 view .LVU212
+ 850 001a 07F07F00 		and	r0, r7, #127
+ 851 001e FFF7FEFF 		bl	SPI_Send_one_byte
+ 852              	.LVL60:
+ 188:USER/Src/spi_soft.c ****     for(i=0;i<size;i++)
+ 853              		.loc 1 188 5 view .LVU213
+ 854              		.loc 1 188 5 is_stmt 0 view .LVU214
+ 855 0022 04E0     		b	.L67
+ 856              	.LVL61:
+ 857              	.L68:
+ 189:USER/Src/spi_soft.c ****     {
+ 190:USER/Src/spi_soft.c ****         SPI_Send_one_byte(*(data+i));
+ 858              		.loc 1 190 9 is_stmt 1 discriminator 3 view .LVU215
+ 859 0024 305D     		ldrb	r0, [r6, r4]	@ zero_extendqisi2
+ 860 0026 FFF7FEFF 		bl	SPI_Send_one_byte
+ 861              	.LVL62:
+ 188:USER/Src/spi_soft.c ****     for(i=0;i<size;i++)
+ 862              		.loc 1 188 20 discriminator 3 view .LVU216
+ 188:USER/Src/spi_soft.c ****     for(i=0;i<size;i++)
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 22
+
+
+ 863              		.loc 1 188 21 is_stmt 0 discriminator 3 view .LVU217
+ 864 002a 0134     		adds	r4, r4, #1
+ 865              	.LVL63:
+ 188:USER/Src/spi_soft.c ****     for(i=0;i<size;i++)
+ 866              		.loc 1 188 21 discriminator 3 view .LVU218
+ 867 002c E4B2     		uxtb	r4, r4
+ 868              	.LVL64:
+ 869              	.L67:
+ 188:USER/Src/spi_soft.c ****     for(i=0;i<size;i++)
+ 870              		.loc 1 188 13 is_stmt 1 discriminator 1 view .LVU219
+ 188:USER/Src/spi_soft.c ****     for(i=0;i<size;i++)
+ 871              		.loc 1 188 5 is_stmt 0 discriminator 1 view .LVU220
+ 872 002e AC42     		cmp	r4, r5
+ 873 0030 F8D3     		bcc	.L68
+ 191:USER/Src/spi_soft.c ****         //SPI_Delay(SPI_delay); 
+ 192:USER/Src/spi_soft.c ****     }
+ 193:USER/Src/spi_soft.c **** 
+ 194:USER/Src/spi_soft.c ****     SPI_CLK_HIGH();
+ 874              		.loc 1 194 5 is_stmt 1 view .LVU221
+ 875 0032 FFF7FEFF 		bl	SPI_CLK_HIGH
+ 876              	.LVL65:
+ 195:USER/Src/spi_soft.c ****     SPI_CS_LOW();
+ 877              		.loc 1 195 5 view .LVU222
+ 878 0036 FFF7FEFF 		bl	SPI_CS_LOW
+ 879              	.LVL66:
+ 196:USER/Src/spi_soft.c **** 
+ 197:USER/Src/spi_soft.c **** }
+ 880              		.loc 1 197 1 is_stmt 0 view .LVU223
+ 881 003a F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 882              		.loc 1 197 1 view .LVU224
+ 883              		.cfi_endproc
+ 884              	.LFE145:
+ 886              		.section	.text.SPI_Read_multi_byte,"ax",%progbits
+ 887              		.align	1
+ 888              		.global	SPI_Read_multi_byte
+ 889              		.syntax unified
+ 890              		.thumb
+ 891              		.thumb_func
+ 893              	SPI_Read_multi_byte:
+ 894              	.LVL67:
+ 895              	.LFB146:
+ 198:USER/Src/spi_soft.c **** uint8_t SPI_Read_multi_byte(uint8_t reg_add, uint8_t *data,uint8_t size)
+ 199:USER/Src/spi_soft.c **** {
+ 896              		.loc 1 199 1 is_stmt 1 view -0
+ 897              		.cfi_startproc
+ 898              		@ args = 0, pretend = 0, frame = 8
+ 899              		@ frame_needed = 0, uses_anonymous_args = 0
+ 900              		.loc 1 199 1 is_stmt 0 view .LVU226
+ 901 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 902              	.LCFI15:
+ 903              		.cfi_def_cfa_offset 20
+ 904              		.cfi_offset 4, -20
+ 905              		.cfi_offset 5, -16
+ 906              		.cfi_offset 6, -12
+ 907              		.cfi_offset 7, -8
+ 908              		.cfi_offset 14, -4
+ 909 0002 83B0     		sub	sp, sp, #12
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 23
+
+
+ 910              	.LCFI16:
+ 911              		.cfi_def_cfa_offset 32
+ 912 0004 0746     		mov	r7, r0
+ 913 0006 0D46     		mov	r5, r1
+ 914 0008 1646     		mov	r6, r2
+ 200:USER/Src/spi_soft.c ****     uint8_t i,dat=0;
+ 915              		.loc 1 200 5 is_stmt 1 view .LVU227
+ 916              		.loc 1 200 15 is_stmt 0 view .LVU228
+ 917 000a 0023     		movs	r3, #0
+ 918 000c 8DF80730 		strb	r3, [sp, #7]
+ 201:USER/Src/spi_soft.c **** 
+ 202:USER/Src/spi_soft.c ****     SPI_CLK_HIGH();
+ 919              		.loc 1 202 5 is_stmt 1 view .LVU229
+ 920 0010 FFF7FEFF 		bl	SPI_CLK_HIGH
+ 921              	.LVL68:
+ 203:USER/Src/spi_soft.c ****     SPI_CS_HIGH();
+ 922              		.loc 1 203 5 view .LVU230
+ 923 0014 FFF7FEFF 		bl	SPI_CS_HIGH
+ 924              	.LVL69:
+ 204:USER/Src/spi_soft.c **** 
+ 205:USER/Src/spi_soft.c ****     SPI_Delay(SPI_delay);
+ 925              		.loc 1 205 5 view .LVU231
+ 926              	.LBB25:
+ 927              	.LBI25:
+ 132:USER/Src/spi_soft.c **** {
+ 928              		.loc 1 132 20 view .LVU232
+ 929              	.LBB26:
+ 134:USER/Src/spi_soft.c **** }
+ 930              		.loc 1 134 5 view .LVU233
+ 134:USER/Src/spi_soft.c **** }
+ 931              		.loc 1 134 11 is_stmt 0 view .LVU234
+ 932 0018 FA23     		movs	r3, #250
+ 933              	.LVL70:
+ 934              	.L71:
+ 134:USER/Src/spi_soft.c **** }
+ 935              		.loc 1 134 20 is_stmt 1 view .LVU235
+ 134:USER/Src/spi_soft.c **** }
+ 936              		.loc 1 134 11 view .LVU236
+ 937 001a 1C46     		mov	r4, r3
+ 134:USER/Src/spi_soft.c **** }
+ 938              		.loc 1 134 17 is_stmt 0 view .LVU237
+ 939 001c 013B     		subs	r3, r3, #1
+ 940              	.LVL71:
+ 134:USER/Src/spi_soft.c **** }
+ 941              		.loc 1 134 11 view .LVU238
+ 942 001e 002C     		cmp	r4, #0
+ 943 0020 FBD1     		bne	.L71
+ 944              	.LVL72:
+ 134:USER/Src/spi_soft.c **** }
+ 945              		.loc 1 134 11 view .LVU239
+ 946              	.LBE26:
+ 947              	.LBE25:
+ 206:USER/Src/spi_soft.c ****     reg_add |= 0x80;
+ 948              		.loc 1 206 5 is_stmt 1 view .LVU240
+ 207:USER/Src/spi_soft.c ****     SPI_Send_one_byte(reg_add);
+ 949              		.loc 1 207 5 view .LVU241
+ 950 0022 47F08000 		orr	r0, r7, #128
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 24
+
+
+ 951 0026 FFF7FEFF 		bl	SPI_Send_one_byte
+ 952              	.LVL73:
+ 208:USER/Src/spi_soft.c ****     for(i=0;i<size;i++)
+ 953              		.loc 1 208 5 view .LVU242
+ 954              		.loc 1 208 5 is_stmt 0 view .LVU243
+ 955 002a 08E0     		b	.L72
+ 956              	.LVL74:
+ 957              	.L73:
+ 209:USER/Src/spi_soft.c ****     {
+ 210:USER/Src/spi_soft.c ****         SPI_Receive_one_byte(&dat);
+ 958              		.loc 1 210 9 is_stmt 1 discriminator 3 view .LVU244
+ 959 002c 0DF10700 		add	r0, sp, #7
+ 960 0030 FFF7FEFF 		bl	SPI_Receive_one_byte
+ 961              	.LVL75:
+ 211:USER/Src/spi_soft.c ****         *(data+i)=dat;
+ 962              		.loc 1 211 9 discriminator 3 view .LVU245
+ 963              		.loc 1 211 18 is_stmt 0 discriminator 3 view .LVU246
+ 964 0034 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 965 0038 2B55     		strb	r3, [r5, r4]
+ 208:USER/Src/spi_soft.c ****     for(i=0;i<size;i++)
+ 966              		.loc 1 208 20 is_stmt 1 discriminator 3 view .LVU247
+ 208:USER/Src/spi_soft.c ****     for(i=0;i<size;i++)
+ 967              		.loc 1 208 21 is_stmt 0 discriminator 3 view .LVU248
+ 968 003a 0134     		adds	r4, r4, #1
+ 969              	.LVL76:
+ 208:USER/Src/spi_soft.c ****     for(i=0;i<size;i++)
+ 970              		.loc 1 208 21 discriminator 3 view .LVU249
+ 971 003c E4B2     		uxtb	r4, r4
+ 972              	.LVL77:
+ 973              	.L72:
+ 208:USER/Src/spi_soft.c ****     for(i=0;i<size;i++)
+ 974              		.loc 1 208 13 is_stmt 1 discriminator 1 view .LVU250
+ 208:USER/Src/spi_soft.c ****     for(i=0;i<size;i++)
+ 975              		.loc 1 208 5 is_stmt 0 discriminator 1 view .LVU251
+ 976 003e B442     		cmp	r4, r6
+ 977 0040 F4D3     		bcc	.L73
+ 212:USER/Src/spi_soft.c **** 
+ 213:USER/Src/spi_soft.c ****     }
+ 214:USER/Src/spi_soft.c ****     
+ 215:USER/Src/spi_soft.c ****     SPI_CLK_HIGH();
+ 978              		.loc 1 215 5 is_stmt 1 view .LVU252
+ 979 0042 FFF7FEFF 		bl	SPI_CLK_HIGH
+ 980              	.LVL78:
+ 216:USER/Src/spi_soft.c ****     SPI_CS_LOW();
+ 981              		.loc 1 216 5 view .LVU253
+ 982 0046 FFF7FEFF 		bl	SPI_CS_LOW
+ 983              	.LVL79:
+ 217:USER/Src/spi_soft.c **** 
+ 218:USER/Src/spi_soft.c ****     if(*data==0xFF)
+ 984              		.loc 1 218 5 view .LVU254
+ 985              		.loc 1 218 8 is_stmt 0 view .LVU255
+ 986 004a 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 987              		.loc 1 218 7 view .LVU256
+ 988 004c FF2B     		cmp	r3, #255
+ 989 004e 02D0     		beq	.L77
+ 219:USER/Src/spi_soft.c ****     {
+ 220:USER/Src/spi_soft.c ****         return 0;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 25
+
+
+ 221:USER/Src/spi_soft.c ****     }else{
+ 222:USER/Src/spi_soft.c ****         return 1;
+ 990              		.loc 1 222 16 view .LVU257
+ 991 0050 0120     		movs	r0, #1
+ 992              	.L74:
+ 223:USER/Src/spi_soft.c ****     }
+ 224:USER/Src/spi_soft.c ****     
+ 225:USER/Src/spi_soft.c **** }
+ 993              		.loc 1 225 1 view .LVU258
+ 994 0052 03B0     		add	sp, sp, #12
+ 995              	.LCFI17:
+ 996              		.cfi_remember_state
+ 997              		.cfi_def_cfa_offset 20
+ 998              		@ sp needed
+ 999 0054 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 1000              	.LVL80:
+ 1001              	.L77:
+ 1002              	.LCFI18:
+ 1003              		.cfi_restore_state
+ 220:USER/Src/spi_soft.c ****     }else{
+ 1004              		.loc 1 220 16 view .LVU259
+ 1005 0056 0020     		movs	r0, #0
+ 1006 0058 FBE7     		b	.L74
+ 1007              		.cfi_endproc
+ 1008              	.LFE146:
+ 1010              		.section	.rodata.SPI_Connect.str1.4,"aMS",%progbits,1
+ 1011              		.align	2
+ 1012              	.LC0:
+ 1013 0000 310900   		.ascii	"1\011\000"
+ 1014 0003 00       		.align	2
+ 1015              	.LC1:
+ 1016 0004 0A00     		.ascii	"\012\000"
+ 1017 0006 0000     		.align	2
+ 1018              	.LC2:
+ 1019 0008 300900   		.ascii	"0\011\000"
+ 1020              		.section	.text.SPI_Connect,"ax",%progbits
+ 1021              		.align	1
+ 1022              		.global	SPI_Connect
+ 1023              		.syntax unified
+ 1024              		.thumb
+ 1025              		.thumb_func
+ 1027              	SPI_Connect:
+ 1028              	.LVL81:
+ 1029              	.LFB147:
+ 226:USER/Src/spi_soft.c **** 
+ 227:USER/Src/spi_soft.c **** uint8_t SPI_Connect(uint8_t REG)
+ 228:USER/Src/spi_soft.c **** {
+ 1030              		.loc 1 228 1 is_stmt 1 view -0
+ 1031              		.cfi_startproc
+ 1032              		@ args = 0, pretend = 0, frame = 8
+ 1033              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1034              		.loc 1 228 1 is_stmt 0 view .LVU261
+ 1035 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 1036              	.LCFI19:
+ 1037              		.cfi_def_cfa_offset 24
+ 1038              		.cfi_offset 4, -24
+ 1039              		.cfi_offset 5, -20
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 26
+
+
+ 1040              		.cfi_offset 6, -16
+ 1041              		.cfi_offset 7, -12
+ 1042              		.cfi_offset 8, -8
+ 1043              		.cfi_offset 14, -4
+ 1044 0004 82B0     		sub	sp, sp, #8
+ 1045              	.LCFI20:
+ 1046              		.cfi_def_cfa_offset 32
+ 1047 0006 8046     		mov	r8, r0
+ 229:USER/Src/spi_soft.c **** 	uint8_t buf[8]={0},Count_OK=0,count=0;
+ 1048              		.loc 1 229 2 is_stmt 1 view .LVU262
+ 1049              		.loc 1 229 10 is_stmt 0 view .LVU263
+ 1050 0008 0027     		movs	r7, #0
+ 1051 000a 0097     		str	r7, [sp]
+ 1052 000c 0197     		str	r7, [sp, #4]
+ 1053              	.LVL82:
+ 230:USER/Src/spi_soft.c **** 	uint8_t CS_i=0,j=0;
+ 1054              		.loc 1 230 2 is_stmt 1 view .LVU264
+ 231:USER/Src/spi_soft.c **** 	
+ 232:USER/Src/spi_soft.c **** 	for( j = 0; j < 3; j++)  
+ 1055              		.loc 1 232 2 view .LVU265
+ 1056              		.loc 1 232 9 is_stmt 0 view .LVU266
+ 1057 000e 3E46     		mov	r6, r7
+ 229:USER/Src/spi_soft.c **** 	uint8_t CS_i=0,j=0;
+ 1058              		.loc 1 229 32 view .LVU267
+ 1059 0010 3D46     		mov	r5, r7
+ 1060              		.loc 1 232 2 view .LVU268
+ 1061 0012 2DE0     		b	.L79
+ 1062              	.LVL83:
+ 1063              	.L88:
+ 233:USER/Src/spi_soft.c **** 	{
+ 234:USER/Src/spi_soft.c **** 		for ( CS_i = 0; CS_i < 8; CS_i++) 
+ 235:USER/Src/spi_soft.c **** 		{
+ 236:USER/Src/spi_soft.c ****             SPI_GPIO_Init(j,CS_i);
+ 237:USER/Src/spi_soft.c **** 			HAL_Delay(10);	
+ 238:USER/Src/spi_soft.c **** 			if (SPI_Read_multi_byte( REG, buf, 7)== 1) 
+ 239:USER/Src/spi_soft.c **** 			{
+ 240:USER/Src/spi_soft.c **** 				UsbPrintf("1\t");
+ 1064              		.loc 1 240 5 is_stmt 1 view .LVU269
+ 1065 0014 1A48     		ldr	r0, .L90
+ 1066 0016 FFF7FEFF 		bl	UsbPrintf
+ 1067              	.LVL84:
+ 241:USER/Src/spi_soft.c **** 				count++;
+ 1068              		.loc 1 241 5 view .LVU270
+ 1069              		.loc 1 241 10 is_stmt 0 view .LVU271
+ 1070 001a 6B1C     		adds	r3, r5, #1
+ 1071 001c DDB2     		uxtb	r5, r3
+ 1072              	.LVL85:
+ 242:USER/Src/spi_soft.c **** 				Count_OK++;
+ 1073              		.loc 1 242 5 is_stmt 1 view .LVU272
+ 1074              		.loc 1 242 13 is_stmt 0 view .LVU273
+ 1075 001e 0137     		adds	r7, r7, #1
+ 1076              	.LVL86:
+ 1077              		.loc 1 242 13 view .LVU274
+ 1078 0020 FFB2     		uxtb	r7, r7
+ 1079              	.LVL87:
+ 243:USER/Src/spi_soft.c **** 				if (count % 8 == 0) 
+ 1080              		.loc 1 243 5 is_stmt 1 view .LVU275
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 27
+
+
+ 1081              		.loc 1 243 8 is_stmt 0 view .LVU276
+ 1082 0022 13F0070F 		tst	r3, #7
+ 1083 0026 1DD0     		beq	.L86
+ 1084              	.L81:
+ 234:USER/Src/spi_soft.c **** 		{
+ 1085              		.loc 1 234 29 is_stmt 1 discriminator 2 view .LVU277
+ 234:USER/Src/spi_soft.c **** 		{
+ 1086              		.loc 1 234 33 is_stmt 0 discriminator 2 view .LVU278
+ 1087 0028 0134     		adds	r4, r4, #1
+ 1088              	.LVL88:
+ 234:USER/Src/spi_soft.c **** 		{
+ 1089              		.loc 1 234 33 discriminator 2 view .LVU279
+ 1090 002a E4B2     		uxtb	r4, r4
+ 1091              	.LVL89:
+ 1092              	.L83:
+ 234:USER/Src/spi_soft.c **** 		{
+ 1093              		.loc 1 234 19 is_stmt 1 discriminator 1 view .LVU280
+ 234:USER/Src/spi_soft.c **** 		{
+ 1094              		.loc 1 234 3 is_stmt 0 discriminator 1 view .LVU281
+ 1095 002c 072C     		cmp	r4, #7
+ 1096 002e 1DD8     		bhi	.L87
+ 236:USER/Src/spi_soft.c **** 			HAL_Delay(10);	
+ 1097              		.loc 1 236 13 is_stmt 1 view .LVU282
+ 1098 0030 2146     		mov	r1, r4
+ 1099 0032 3046     		mov	r0, r6
+ 1100 0034 FFF7FEFF 		bl	SPI_GPIO_Init
+ 1101              	.LVL90:
+ 237:USER/Src/spi_soft.c **** 			if (SPI_Read_multi_byte( REG, buf, 7)== 1) 
+ 1102              		.loc 1 237 4 view .LVU283
+ 1103 0038 0A20     		movs	r0, #10
+ 1104 003a FFF7FEFF 		bl	HAL_Delay
+ 1105              	.LVL91:
+ 238:USER/Src/spi_soft.c **** 			{
+ 1106              		.loc 1 238 4 view .LVU284
+ 238:USER/Src/spi_soft.c **** 			{
+ 1107              		.loc 1 238 8 is_stmt 0 view .LVU285
+ 1108 003e 0722     		movs	r2, #7
+ 1109 0040 6946     		mov	r1, sp
+ 1110 0042 4046     		mov	r0, r8
+ 1111 0044 FFF7FEFF 		bl	SPI_Read_multi_byte
+ 1112              	.LVL92:
+ 238:USER/Src/spi_soft.c **** 			{
+ 1113              		.loc 1 238 7 view .LVU286
+ 1114 0048 0128     		cmp	r0, #1
+ 1115 004a E3D0     		beq	.L88
+ 244:USER/Src/spi_soft.c **** 				{ 
+ 245:USER/Src/spi_soft.c **** 					UsbPrintf("\n");
+ 246:USER/Src/spi_soft.c **** 				}
+ 247:USER/Src/spi_soft.c **** 			} else {
+ 248:USER/Src/spi_soft.c **** 				UsbPrintf("0\t");
+ 1116              		.loc 1 248 5 is_stmt 1 view .LVU287
+ 1117 004c 0D48     		ldr	r0, .L90+4
+ 1118 004e FFF7FEFF 		bl	UsbPrintf
+ 1119              	.LVL93:
+ 249:USER/Src/spi_soft.c **** 				count++;
+ 1120              		.loc 1 249 5 view .LVU288
+ 1121              		.loc 1 249 10 is_stmt 0 view .LVU289
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 28
+
+
+ 1122 0052 6B1C     		adds	r3, r5, #1
+ 1123 0054 DDB2     		uxtb	r5, r3
+ 1124              	.LVL94:
+ 250:USER/Src/spi_soft.c **** 				if (count % 8 == 0) 
+ 1125              		.loc 1 250 5 is_stmt 1 view .LVU290
+ 1126              		.loc 1 250 8 is_stmt 0 view .LVU291
+ 1127 0056 13F0070F 		tst	r3, #7
+ 1128 005a E5D1     		bne	.L81
+ 251:USER/Src/spi_soft.c **** 				{ 
+ 252:USER/Src/spi_soft.c **** 					UsbPrintf("\n");
+ 1129              		.loc 1 252 6 is_stmt 1 view .LVU292
+ 1130 005c 0A48     		ldr	r0, .L90+8
+ 1131 005e FFF7FEFF 		bl	UsbPrintf
+ 1132              	.LVL95:
+ 1133 0062 E1E7     		b	.L81
+ 1134              	.L86:
+ 245:USER/Src/spi_soft.c **** 				}
+ 1135              		.loc 1 245 6 view .LVU293
+ 1136 0064 0848     		ldr	r0, .L90+8
+ 1137 0066 FFF7FEFF 		bl	UsbPrintf
+ 1138              	.LVL96:
+ 1139 006a DDE7     		b	.L81
+ 1140              	.L87:
+ 253:USER/Src/spi_soft.c **** 				}
+ 254:USER/Src/spi_soft.c **** 			}
+ 255:USER/Src/spi_soft.c **** 		}
+ 256:USER/Src/spi_soft.c **** 		CS_i=0;
+ 1141              		.loc 1 256 3 discriminator 2 view .LVU294
+ 1142              	.LVL97:
+ 232:USER/Src/spi_soft.c **** 	{
+ 1143              		.loc 1 232 21 discriminator 2 view .LVU295
+ 232:USER/Src/spi_soft.c **** 	{
+ 1144              		.loc 1 232 22 is_stmt 0 discriminator 2 view .LVU296
+ 1145 006c 0136     		adds	r6, r6, #1
+ 1146              	.LVL98:
+ 232:USER/Src/spi_soft.c **** 	{
+ 1147              		.loc 1 232 22 discriminator 2 view .LVU297
+ 1148 006e F6B2     		uxtb	r6, r6
+ 1149              	.LVL99:
+ 1150              	.L79:
+ 232:USER/Src/spi_soft.c **** 	{
+ 1151              		.loc 1 232 14 is_stmt 1 discriminator 1 view .LVU298
+ 232:USER/Src/spi_soft.c **** 	{
+ 1152              		.loc 1 232 2 is_stmt 0 discriminator 1 view .LVU299
+ 1153 0070 022E     		cmp	r6, #2
+ 1154 0072 01D8     		bhi	.L89
+ 234:USER/Src/spi_soft.c **** 		{
+ 1155              		.loc 1 234 14 view .LVU300
+ 1156 0074 0024     		movs	r4, #0
+ 1157 0076 D9E7     		b	.L83
+ 1158              	.L89:
+ 257:USER/Src/spi_soft.c **** 	}	
+ 258:USER/Src/spi_soft.c **** 	return Count_OK;
+ 1159              		.loc 1 258 2 is_stmt 1 view .LVU301
+ 259:USER/Src/spi_soft.c **** }
+ 1160              		.loc 1 259 1 is_stmt 0 view .LVU302
+ 1161 0078 3846     		mov	r0, r7
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 29
+
+
+ 1162 007a 02B0     		add	sp, sp, #8
+ 1163              	.LCFI21:
+ 1164              		.cfi_def_cfa_offset 24
+ 1165              		@ sp needed
+ 1166 007c BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 1167              	.LVL100:
+ 1168              	.L91:
+ 1169              		.loc 1 259 1 view .LVU303
+ 1170              		.align	2
+ 1171              	.L90:
+ 1172 0080 00000000 		.word	.LC0
+ 1173 0084 08000000 		.word	.LC2
+ 1174 0088 04000000 		.word	.LC1
+ 1175              		.cfi_endproc
+ 1176              	.LFE147:
+ 1178              		.section	.rodata.SPI_ReadTime.str1.4,"aMS",%progbits,1
+ 1179              		.align	2
+ 1180              	.LC3:
+ 1181 0000 2D2D696E 		.ascii	"--input error !\015\012\000"
+ 1181      70757420 
+ 1181      6572726F 
+ 1181      7220210D 
+ 1181      0A00
+ 1182 0012 0000     		.align	2
+ 1183              	.LC4:
+ 1184 0014 32302530 		.ascii	"20%02X-%02X-%02X W:%02X %02X:%02X:%02X \015\012\000"
+ 1184      32582D25 
+ 1184      3032582D 
+ 1184      25303258 
+ 1184      20573A25 
+ 1185 003e 0000     		.align	2
+ 1186              	.LC5:
+ 1187 0040 2D2D4E6F 		.ascii	"--No Connect !\015\012\000"
+ 1187      20436F6E 
+ 1187      6E656374 
+ 1187      20210D0A 
+ 1187      00
+ 1188              		.section	.text.SPI_ReadTime,"ax",%progbits
+ 1189              		.align	1
+ 1190              		.global	SPI_ReadTime
+ 1191              		.syntax unified
+ 1192              		.thumb
+ 1193              		.thumb_func
+ 1195              	SPI_ReadTime:
+ 1196              	.LVL101:
+ 1197              	.LFB148:
+ 260:USER/Src/spi_soft.c **** 
+ 261:USER/Src/spi_soft.c **** 
+ 262:USER/Src/spi_soft.c **** uint8_t SPI_ReadTime(uint8_t i,uint8_t j)
+ 263:USER/Src/spi_soft.c **** {
+ 1198              		.loc 1 263 1 is_stmt 1 view -0
+ 1199              		.cfi_startproc
+ 1200              		@ args = 0, pretend = 0, frame = 8
+ 1201              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1202              		.loc 1 263 1 is_stmt 0 view .LVU305
+ 1203 0000 10B5     		push	{r4, lr}
+ 1204              	.LCFI22:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 30
+
+
+ 1205              		.cfi_def_cfa_offset 8
+ 1206              		.cfi_offset 4, -8
+ 1207              		.cfi_offset 14, -4
+ 1208 0002 86B0     		sub	sp, sp, #24
+ 1209              	.LCFI23:
+ 1210              		.cfi_def_cfa_offset 32
+ 264:USER/Src/spi_soft.c **** 	uint8_t buf[8]={0};
+ 1211              		.loc 1 264 2 is_stmt 1 view .LVU306
+ 1212              		.loc 1 264 10 is_stmt 0 view .LVU307
+ 1213 0004 0023     		movs	r3, #0
+ 1214 0006 0493     		str	r3, [sp, #16]
+ 1215 0008 0593     		str	r3, [sp, #20]
+ 265:USER/Src/spi_soft.c ****     if( i<=0 || i>3 || j<=0 || j>8)
+ 1216              		.loc 1 265 5 is_stmt 1 view .LVU308
+ 1217              		.loc 1 265 14 is_stmt 0 view .LVU309
+ 1218 000a 431E     		subs	r3, r0, #1
+ 1219 000c DBB2     		uxtb	r3, r3
+ 1220              		.loc 1 265 7 view .LVU310
+ 1221 000e 022B     		cmp	r3, #2
+ 1222 0010 02D8     		bhi	.L93
+ 1223              		.loc 1 265 21 discriminator 1 view .LVU311
+ 1224 0012 09B1     		cbz	r1, .L93
+ 1225              		.loc 1 265 29 discriminator 2 view .LVU312
+ 1226 0014 0829     		cmp	r1, #8
+ 1227 0016 06D9     		bls	.L94
+ 1228              	.L93:
+ 266:USER/Src/spi_soft.c ****     {
+ 267:USER/Src/spi_soft.c ****         UsbPrintf("--input error !\r\n");
+ 1229              		.loc 1 267 9 is_stmt 1 view .LVU313
+ 1230 0018 1748     		ldr	r0, .L98
+ 1231              	.LVL102:
+ 1232              		.loc 1 267 9 is_stmt 0 view .LVU314
+ 1233 001a FFF7FEFF 		bl	UsbPrintf
+ 1234              	.LVL103:
+ 268:USER/Src/spi_soft.c ****         return 0;
+ 1235              		.loc 1 268 9 is_stmt 1 view .LVU315
+ 1236              		.loc 1 268 16 is_stmt 0 view .LVU316
+ 1237 001e 0024     		movs	r4, #0
+ 1238              	.L95:
+ 269:USER/Src/spi_soft.c ****     }else{
+ 270:USER/Src/spi_soft.c ****         SPI_GPIO_Init( i-1, j-1);
+ 271:USER/Src/spi_soft.c ****         if (SPI_Read_multi_byte(0x00, buf, 7)== 1) 
+ 272:USER/Src/spi_soft.c ****         {
+ 273:USER/Src/spi_soft.c ****             UsbPrintf("20%02X-%02X-%02X W:%02X %02X:%02X:%02X \r\n",buf[6],buf[5],buf[4],buf[3],buf
+ 274:USER/Src/spi_soft.c ****         }else{
+ 275:USER/Src/spi_soft.c ****             UsbPrintf("--No Connect !\r\n");
+ 276:USER/Src/spi_soft.c ****             return 0;
+ 277:USER/Src/spi_soft.c ****         }
+ 278:USER/Src/spi_soft.c ****     }
+ 279:USER/Src/spi_soft.c **** 	return 1;
+ 280:USER/Src/spi_soft.c **** }
+ 1239              		.loc 1 280 1 view .LVU317
+ 1240 0020 2046     		mov	r0, r4
+ 1241 0022 06B0     		add	sp, sp, #24
+ 1242              	.LCFI24:
+ 1243              		.cfi_remember_state
+ 1244              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 31
+
+
+ 1245              		@ sp needed
+ 1246 0024 10BD     		pop	{r4, pc}
+ 1247              	.LVL104:
+ 1248              	.L94:
+ 1249              	.LCFI25:
+ 1250              		.cfi_restore_state
+ 270:USER/Src/spi_soft.c ****         if (SPI_Read_multi_byte(0x00, buf, 7)== 1) 
+ 1251              		.loc 1 270 9 is_stmt 1 view .LVU318
+ 1252 0026 0139     		subs	r1, r1, #1
+ 1253              	.LVL105:
+ 270:USER/Src/spi_soft.c ****         if (SPI_Read_multi_byte(0x00, buf, 7)== 1) 
+ 1254              		.loc 1 270 9 is_stmt 0 view .LVU319
+ 1255 0028 0138     		subs	r0, r0, #1
+ 1256              	.LVL106:
+ 270:USER/Src/spi_soft.c ****         if (SPI_Read_multi_byte(0x00, buf, 7)== 1) 
+ 1257              		.loc 1 270 9 view .LVU320
+ 1258 002a 89B2     		uxth	r1, r1
+ 1259 002c 80B2     		uxth	r0, r0
+ 1260 002e FFF7FEFF 		bl	SPI_GPIO_Init
+ 1261              	.LVL107:
+ 271:USER/Src/spi_soft.c ****         {
+ 1262              		.loc 1 271 9 is_stmt 1 view .LVU321
+ 271:USER/Src/spi_soft.c ****         {
+ 1263              		.loc 1 271 13 is_stmt 0 view .LVU322
+ 1264 0032 0722     		movs	r2, #7
+ 1265 0034 04A9     		add	r1, sp, #16
+ 1266 0036 0020     		movs	r0, #0
+ 1267 0038 FFF7FEFF 		bl	SPI_Read_multi_byte
+ 1268              	.LVL108:
+ 1269 003c 0446     		mov	r4, r0
+ 271:USER/Src/spi_soft.c ****         {
+ 1270              		.loc 1 271 12 view .LVU323
+ 1271 003e 0128     		cmp	r0, #1
+ 1272 0040 15D1     		bne	.L96
+ 273:USER/Src/spi_soft.c ****         }else{
+ 1273              		.loc 1 273 13 is_stmt 1 view .LVU324
+ 273:USER/Src/spi_soft.c ****         }else{
+ 1274              		.loc 1 273 93 is_stmt 0 view .LVU325
+ 1275 0042 9DF81330 		ldrb	r3, [sp, #19]	@ zero_extendqisi2
+ 273:USER/Src/spi_soft.c ****         }else{
+ 1276              		.loc 1 273 100 view .LVU326
+ 1277 0046 9DF81220 		ldrb	r2, [sp, #18]	@ zero_extendqisi2
+ 273:USER/Src/spi_soft.c ****         }else{
+ 1278              		.loc 1 273 107 view .LVU327
+ 1279 004a 9DF81110 		ldrb	r1, [sp, #17]	@ zero_extendqisi2
+ 273:USER/Src/spi_soft.c ****         }else{
+ 1280              		.loc 1 273 114 view .LVU328
+ 1281 004e 9DF81000 		ldrb	r0, [sp, #16]	@ zero_extendqisi2
+ 273:USER/Src/spi_soft.c ****         }else{
+ 1282              		.loc 1 273 13 view .LVU329
+ 1283 0052 0390     		str	r0, [sp, #12]
+ 1284 0054 0291     		str	r1, [sp, #8]
+ 1285 0056 0192     		str	r2, [sp, #4]
+ 1286 0058 0093     		str	r3, [sp]
+ 1287 005a 9DF81430 		ldrb	r3, [sp, #20]	@ zero_extendqisi2
+ 1288 005e 9DF81520 		ldrb	r2, [sp, #21]	@ zero_extendqisi2
+ 1289 0062 9DF81610 		ldrb	r1, [sp, #22]	@ zero_extendqisi2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 32
+
+
+ 1290 0066 0548     		ldr	r0, .L98+4
+ 1291 0068 FFF7FEFF 		bl	UsbPrintf
+ 1292              	.LVL109:
+ 279:USER/Src/spi_soft.c **** }
+ 1293              		.loc 1 279 2 is_stmt 1 view .LVU330
+ 279:USER/Src/spi_soft.c **** }
+ 1294              		.loc 1 279 9 is_stmt 0 view .LVU331
+ 1295 006c D8E7     		b	.L95
+ 1296              	.L96:
+ 275:USER/Src/spi_soft.c ****             return 0;
+ 1297              		.loc 1 275 13 is_stmt 1 view .LVU332
+ 1298 006e 0448     		ldr	r0, .L98+8
+ 1299 0070 FFF7FEFF 		bl	UsbPrintf
+ 1300              	.LVL110:
+ 276:USER/Src/spi_soft.c ****         }
+ 1301              		.loc 1 276 13 view .LVU333
+ 276:USER/Src/spi_soft.c ****         }
+ 1302              		.loc 1 276 20 is_stmt 0 view .LVU334
+ 1303 0074 0024     		movs	r4, #0
+ 1304 0076 D3E7     		b	.L95
+ 1305              	.L99:
+ 1306              		.align	2
+ 1307              	.L98:
+ 1308 0078 00000000 		.word	.LC3
+ 1309 007c 14000000 		.word	.LC4
+ 1310 0080 40000000 		.word	.LC5
+ 1311              		.cfi_endproc
+ 1312              	.LFE148:
+ 1314              		.section	.text.Close8840_FREQ,"ax",%progbits
+ 1315              		.align	1
+ 1316              		.global	Close8840_FREQ
+ 1317              		.syntax unified
+ 1318              		.thumb
+ 1319              		.thumb_func
+ 1321              	Close8840_FREQ:
+ 1322              	.LFB149:
+ 281:USER/Src/spi_soft.c **** 
+ 282:USER/Src/spi_soft.c **** void Close8840_FREQ(void)
+ 283:USER/Src/spi_soft.c **** {
+ 1323              		.loc 1 283 1 is_stmt 1 view -0
+ 1324              		.cfi_startproc
+ 1325              		@ args = 0, pretend = 0, frame = 8
+ 1326              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1327 0000 30B5     		push	{r4, r5, lr}
+ 1328              	.LCFI26:
+ 1329              		.cfi_def_cfa_offset 12
+ 1330              		.cfi_offset 4, -12
+ 1331              		.cfi_offset 5, -8
+ 1332              		.cfi_offset 14, -4
+ 1333 0002 83B0     		sub	sp, sp, #12
+ 1334              	.LCFI27:
+ 1335              		.cfi_def_cfa_offset 24
+ 284:USER/Src/spi_soft.c **** 	uint8_t i=0,j=0;
+ 1336              		.loc 1 284 2 view .LVU336
+ 1337              	.LVL111:
+ 285:USER/Src/spi_soft.c ****     uint8_t SD8840_Close_Freq=0X00;
+ 1338              		.loc 1 285 5 view .LVU337
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 33
+
+
+ 1339              		.loc 1 285 13 is_stmt 0 view .LVU338
+ 1340 0004 0025     		movs	r5, #0
+ 1341 0006 8DF80750 		strb	r5, [sp, #7]
+ 286:USER/Src/spi_soft.c ****     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET);
+ 1342              		.loc 1 286 5 is_stmt 1 view .LVU339
+ 1343 000a 0122     		movs	r2, #1
+ 1344 000c 1321     		movs	r1, #19
+ 1345 000e 1048     		ldr	r0, .L107
+ 1346 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1347              	.LVL112:
+ 287:USER/Src/spi_soft.c ****     for( j = 0; j < 3; j++ )  
+ 1348              		.loc 1 287 5 view .LVU340
+ 1349              		.loc 1 287 5 is_stmt 0 view .LVU341
+ 1350 0014 15E0     		b	.L101
+ 1351              	.LVL113:
+ 1352              	.L102:
+ 288:USER/Src/spi_soft.c **** 	{
+ 289:USER/Src/spi_soft.c **** 		for ( i = 0; i < 8; i++ ) 
+ 290:USER/Src/spi_soft.c **** 		{
+ 291:USER/Src/spi_soft.c ****             SPI_GPIO_Init( j,i );
+ 1353              		.loc 1 291 13 is_stmt 1 discriminator 3 view .LVU342
+ 1354 0016 2146     		mov	r1, r4
+ 1355 0018 2846     		mov	r0, r5
+ 1356 001a FFF7FEFF 		bl	SPI_GPIO_Init
+ 1357              	.LVL114:
+ 292:USER/Src/spi_soft.c ****             SPI_Write_multi_byte(0x0D,&SD8840_Close_Freq,1);
+ 1358              		.loc 1 292 13 discriminator 3 view .LVU343
+ 1359 001e 0122     		movs	r2, #1
+ 1360 0020 0DF10701 		add	r1, sp, #7
+ 1361 0024 0D20     		movs	r0, #13
+ 1362 0026 FFF7FEFF 		bl	SPI_Write_multi_byte
+ 1363              	.LVL115:
+ 293:USER/Src/spi_soft.c ****             SPI_Write_multi_byte(0x0F,&SD8840_Close_Freq,1);
+ 1364              		.loc 1 293 13 discriminator 3 view .LVU344
+ 1365 002a 0122     		movs	r2, #1
+ 1366 002c 0DF10701 		add	r1, sp, #7
+ 1367 0030 0F20     		movs	r0, #15
+ 1368 0032 FFF7FEFF 		bl	SPI_Write_multi_byte
+ 1369              	.LVL116:
+ 289:USER/Src/spi_soft.c **** 		{
+ 1370              		.loc 1 289 23 discriminator 3 view .LVU345
+ 289:USER/Src/spi_soft.c **** 		{
+ 1371              		.loc 1 289 24 is_stmt 0 discriminator 3 view .LVU346
+ 1372 0036 0134     		adds	r4, r4, #1
+ 1373              	.LVL117:
+ 289:USER/Src/spi_soft.c **** 		{
+ 1374              		.loc 1 289 24 discriminator 3 view .LVU347
+ 1375 0038 E4B2     		uxtb	r4, r4
+ 1376              	.LVL118:
+ 1377              	.L103:
+ 289:USER/Src/spi_soft.c **** 		{
+ 1378              		.loc 1 289 16 is_stmt 1 discriminator 1 view .LVU348
+ 289:USER/Src/spi_soft.c **** 		{
+ 1379              		.loc 1 289 3 is_stmt 0 discriminator 1 view .LVU349
+ 1380 003a 072C     		cmp	r4, #7
+ 1381 003c EBD9     		bls	.L102
+ 287:USER/Src/spi_soft.c **** 	{
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 34
+
+
+ 1382              		.loc 1 287 24 is_stmt 1 discriminator 2 view .LVU350
+ 287:USER/Src/spi_soft.c **** 	{
+ 1383              		.loc 1 287 25 is_stmt 0 discriminator 2 view .LVU351
+ 1384 003e 0135     		adds	r5, r5, #1
+ 1385              	.LVL119:
+ 287:USER/Src/spi_soft.c **** 	{
+ 1386              		.loc 1 287 25 discriminator 2 view .LVU352
+ 1387 0040 EDB2     		uxtb	r5, r5
+ 1388              	.LVL120:
+ 1389              	.L101:
+ 287:USER/Src/spi_soft.c **** 	{
+ 1390              		.loc 1 287 17 is_stmt 1 discriminator 1 view .LVU353
+ 287:USER/Src/spi_soft.c **** 	{
+ 1391              		.loc 1 287 5 is_stmt 0 discriminator 1 view .LVU354
+ 1392 0042 022D     		cmp	r5, #2
+ 1393 0044 01D8     		bhi	.L106
+ 289:USER/Src/spi_soft.c **** 		{
+ 1394              		.loc 1 289 11 view .LVU355
+ 1395 0046 0024     		movs	r4, #0
+ 1396 0048 F7E7     		b	.L103
+ 1397              	.L106:
+ 294:USER/Src/spi_soft.c ****         }
+ 295:USER/Src/spi_soft.c ****     }
+ 296:USER/Src/spi_soft.c **** }
+ 1398              		.loc 1 296 1 view .LVU356
+ 1399 004a 03B0     		add	sp, sp, #12
+ 1400              	.LCFI28:
+ 1401              		.cfi_def_cfa_offset 12
+ 1402              		@ sp needed
+ 1403 004c 30BD     		pop	{r4, r5, pc}
+ 1404              	.LVL121:
+ 1405              	.L108:
+ 1406              		.loc 1 296 1 view .LVU357
+ 1407 004e 00BF     		.align	2
+ 1408              	.L107:
+ 1409 0050 00000240 		.word	1073872896
+ 1410              		.cfi_endproc
+ 1411              	.LFE149:
+ 1413              		.global	__aeabi_f2d
+ 1414              		.section	.rodata.RTC_8840_TEMP.str1.4,"aMS",%progbits,1
+ 1415              		.align	2
+ 1416              	.LC6:
+ 1417 0000 2D2D2073 		.ascii	"-- sysTemp = %.1f C , rtcTemp = %d C \012\000"
+ 1417      79735465 
+ 1417      6D70203D 
+ 1417      20252E31 
+ 1417      66204320 
+ 1418              		.section	.text.RTC_8840_TEMP,"ax",%progbits
+ 1419              		.align	1
+ 1420              		.global	RTC_8840_TEMP
+ 1421              		.syntax unified
+ 1422              		.thumb
+ 1423              		.thumb_func
+ 1425              	RTC_8840_TEMP:
+ 1426              	.LVL122:
+ 1427              	.LFB150:
+ 297:USER/Src/spi_soft.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 35
+
+
+ 298:USER/Src/spi_soft.c **** 
+ 299:USER/Src/spi_soft.c **** void RTC_8840_TEMP(float* sysTemp,uint8_t* rtcTemp)
+ 300:USER/Src/spi_soft.c **** {
+ 1428              		.loc 1 300 1 is_stmt 1 view -0
+ 1429              		.cfi_startproc
+ 1430              		@ args = 0, pretend = 0, frame = 8
+ 1431              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1432              		.loc 1 300 1 is_stmt 0 view .LVU359
+ 1433 0000 30B5     		push	{r4, r5, lr}
+ 1434              	.LCFI29:
+ 1435              		.cfi_def_cfa_offset 12
+ 1436              		.cfi_offset 4, -12
+ 1437              		.cfi_offset 5, -8
+ 1438              		.cfi_offset 14, -4
+ 1439 0002 85B0     		sub	sp, sp, #20
+ 1440              	.LCFI30:
+ 1441              		.cfi_def_cfa_offset 32
+ 1442 0004 0546     		mov	r5, r0
+ 1443 0006 0C46     		mov	r4, r1
+ 301:USER/Src/spi_soft.c **** 	uint8_t CONT=0x10,T=0;
+ 1444              		.loc 1 301 2 is_stmt 1 view .LVU360
+ 1445              		.loc 1 301 10 is_stmt 0 view .LVU361
+ 1446 0008 1023     		movs	r3, #16
+ 1447 000a 8DF80F30 		strb	r3, [sp, #15]
+ 1448              		.loc 1 301 20 view .LVU362
+ 1449 000e 0023     		movs	r3, #0
+ 1450 0010 8DF80E30 		strb	r3, [sp, #14]
+ 302:USER/Src/spi_soft.c **** 	SPI_Write_multi_byte(0x57, &CONT, 1);
+ 1451              		.loc 1 302 2 is_stmt 1 view .LVU363
+ 1452 0014 0122     		movs	r2, #1
+ 1453 0016 0DF10F01 		add	r1, sp, #15
+ 1454              	.LVL123:
+ 1455              		.loc 1 302 2 is_stmt 0 view .LVU364
+ 1456 001a 5720     		movs	r0, #87
+ 1457              	.LVL124:
+ 1458              		.loc 1 302 2 view .LVU365
+ 1459 001c FFF7FEFF 		bl	SPI_Write_multi_byte
+ 1460              	.LVL125:
+ 303:USER/Src/spi_soft.c ****     HAL_Delay(3);
+ 1461              		.loc 1 303 5 is_stmt 1 view .LVU366
+ 1462 0020 0320     		movs	r0, #3
+ 1463 0022 FFF7FEFF 		bl	HAL_Delay
+ 1464              	.LVL126:
+ 304:USER/Src/spi_soft.c ****     if(SPI_Read_multi_byte(0x56, &T, 1)== 1) 
+ 1465              		.loc 1 304 5 view .LVU367
+ 1466              		.loc 1 304 8 is_stmt 0 view .LVU368
+ 1467 0026 0122     		movs	r2, #1
+ 1468 0028 0DF10E01 		add	r1, sp, #14
+ 1469 002c 5620     		movs	r0, #86
+ 1470 002e FFF7FEFF 		bl	SPI_Read_multi_byte
+ 1471              	.LVL127:
+ 1472              		.loc 1 304 7 view .LVU369
+ 1473 0032 0128     		cmp	r0, #1
+ 1474 0034 01D0     		beq	.L112
+ 1475              	.LVL128:
+ 1476              	.L109:
+ 305:USER/Src/spi_soft.c ****     {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 36
+
+
+ 306:USER/Src/spi_soft.c ****         *rtcTemp=T;
+ 307:USER/Src/spi_soft.c ****         *sysTemp = temp_read_value(1);
+ 308:USER/Src/spi_soft.c ****         UsbPrintf("-- sysTemp = %.1f C , rtcTemp = %d C \n", *sysTemp , *rtcTemp );
+ 309:USER/Src/spi_soft.c ****     }
+ 310:USER/Src/spi_soft.c **** }
+ 1477              		.loc 1 310 1 view .LVU370
+ 1478 0036 05B0     		add	sp, sp, #20
+ 1479              	.LCFI31:
+ 1480              		.cfi_remember_state
+ 1481              		.cfi_def_cfa_offset 12
+ 1482              		@ sp needed
+ 1483 0038 30BD     		pop	{r4, r5, pc}
+ 1484              	.LVL129:
+ 1485              	.L112:
+ 1486              	.LCFI32:
+ 1487              		.cfi_restore_state
+ 306:USER/Src/spi_soft.c ****         *sysTemp = temp_read_value(1);
+ 1488              		.loc 1 306 9 is_stmt 1 view .LVU371
+ 306:USER/Src/spi_soft.c ****         *sysTemp = temp_read_value(1);
+ 1489              		.loc 1 306 17 is_stmt 0 view .LVU372
+ 1490 003a 9DF80E30 		ldrb	r3, [sp, #14]	@ zero_extendqisi2
+ 1491 003e 2370     		strb	r3, [r4]
+ 307:USER/Src/spi_soft.c ****         UsbPrintf("-- sysTemp = %.1f C , rtcTemp = %d C \n", *sysTemp , *rtcTemp );
+ 1492              		.loc 1 307 9 is_stmt 1 view .LVU373
+ 307:USER/Src/spi_soft.c ****         UsbPrintf("-- sysTemp = %.1f C , rtcTemp = %d C \n", *sysTemp , *rtcTemp );
+ 1493              		.loc 1 307 20 is_stmt 0 view .LVU374
+ 1494 0040 FFF7FEFF 		bl	temp_read_value
+ 1495              	.LVL130:
+ 1496 0044 10EE100A 		vmov	r0, s0
+ 307:USER/Src/spi_soft.c ****         UsbPrintf("-- sysTemp = %.1f C , rtcTemp = %d C \n", *sysTemp , *rtcTemp );
+ 1497              		.loc 1 307 18 view .LVU375
+ 1498 0048 85ED000A 		vstr.32	s0, [r5]
+ 308:USER/Src/spi_soft.c ****     }
+ 1499              		.loc 1 308 9 is_stmt 1 view .LVU376
+ 308:USER/Src/spi_soft.c ****     }
+ 1500              		.loc 1 308 73 is_stmt 0 view .LVU377
+ 1501 004c 2478     		ldrb	r4, [r4]	@ zero_extendqisi2
+ 1502              	.LVL131:
+ 308:USER/Src/spi_soft.c ****     }
+ 1503              		.loc 1 308 9 view .LVU378
+ 1504 004e FFF7FEFF 		bl	__aeabi_f2d
+ 1505              	.LVL132:
+ 1506 0052 0246     		mov	r2, r0
+ 1507 0054 0B46     		mov	r3, r1
+ 1508 0056 0094     		str	r4, [sp]
+ 1509 0058 0148     		ldr	r0, .L113
+ 1510 005a FFF7FEFF 		bl	UsbPrintf
+ 1511              	.LVL133:
+ 1512              		.loc 1 310 1 view .LVU379
+ 1513 005e EAE7     		b	.L109
+ 1514              	.L114:
+ 1515              		.align	2
+ 1516              	.L113:
+ 1517 0060 00000000 		.word	.LC6
+ 1518              		.cfi_endproc
+ 1519              	.LFE150:
+ 1521              		.section	.bss.g_spi,"aw",%nobits
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 37
+
+
+ 1522              		.align	2
+ 1523              		.set	.LANCHOR0,. + 0
+ 1526              	g_spi:
+ 1527 0000 00000000 		.space	16
+ 1527      00000000 
+ 1527      00000000 
+ 1527      00000000 
+ 1528              		.text
+ 1529              	.Letext0:
+ 1530              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1531              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1532              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 1533              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 1534              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 1535              		.file 7 "USER/Inc/temp.h"
+ 1536              		.file 8 "Core/Inc/main.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 38
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 spi_soft.c
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:20     .text.SPI_DO:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:25     .text.SPI_DO:00000000 SPI_DO
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:70     .text.SPI_DO:00000020 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:75     .text.SPI_GPIO_Init:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:81     .text.SPI_GPIO_Init:00000000 SPI_GPIO_Init
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:263    .text.SPI_GPIO_Init:000000b8 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:270    .text.SPI_CS_HIGH:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:276    .text.SPI_CS_HIGH:00000000 SPI_CS_HIGH
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:299    .text.SPI_CS_HIGH:00000010 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:304    .text.SPI_CS_LOW:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:310    .text.SPI_CS_LOW:00000000 SPI_CS_LOW
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:333    .text.SPI_CS_LOW:00000010 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:338    .text.SPI_CLK_HIGH:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:344    .text.SPI_CLK_HIGH:00000000 SPI_CLK_HIGH
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:367    .text.SPI_CLK_HIGH:00000010 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:372    .text.SPI_CLK_LOW:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:378    .text.SPI_CLK_LOW:00000000 SPI_CLK_LOW
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:401    .text.SPI_CLK_LOW:00000010 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:406    .text.SPI_Send_one_byte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:411    .text.SPI_Send_one_byte:00000000 SPI_Send_one_byte
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:517    .text.SPI_DI_HIGH:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:523    .text.SPI_DI_HIGH:00000000 SPI_DI_HIGH
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:562    .text.SPI_DI_HIGH:00000028 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:568    .text.SPI_DI_LOW:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:574    .text.SPI_DI_LOW:00000000 SPI_DI_LOW
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:613    .text.SPI_DI_LOW:00000028 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:619    .text.SPI_Read_DI:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:625    .text.SPI_Read_DI:00000000 SPI_Read_DI
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:664    .text.SPI_Read_DI:00000024 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:670    .text.SPI_Receive_one_byte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:675    .text.SPI_Receive_one_byte:00000000 SPI_Receive_one_byte
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:792    .text.SPI_Write_multi_byte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:798    .text.SPI_Write_multi_byte:00000000 SPI_Write_multi_byte
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:887    .text.SPI_Read_multi_byte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:893    .text.SPI_Read_multi_byte:00000000 SPI_Read_multi_byte
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1011   .rodata.SPI_Connect.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1021   .text.SPI_Connect:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1027   .text.SPI_Connect:00000000 SPI_Connect
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1172   .text.SPI_Connect:00000080 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1179   .rodata.SPI_ReadTime.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1189   .text.SPI_ReadTime:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1195   .text.SPI_ReadTime:00000000 SPI_ReadTime
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1308   .text.SPI_ReadTime:00000078 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1315   .text.Close8840_FREQ:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1321   .text.Close8840_FREQ:00000000 Close8840_FREQ
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1409   .text.Close8840_FREQ:00000050 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1415   .rodata.RTC_8840_TEMP.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1419   .text.RTC_8840_TEMP:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1425   .text.RTC_8840_TEMP:00000000 RTC_8840_TEMP
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1517   .text.RTC_8840_TEMP:00000060 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1522   .bss.g_spi:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s:1526   .bss.g_spi:00000000 g_spi
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccAWXcW2.s 			page 39
+
+
+HAL_GPIO_Init
+HAL_GPIO_ReadPin
+UsbPrintf
+HAL_Delay
+__aeabi_f2d
+temp_read_value

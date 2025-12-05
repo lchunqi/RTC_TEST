@@ -1,0 +1,2754 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"temp.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.i2c_read_sda,"ax",%progbits
+  20              		.align	1
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	i2c_read_sda:
+  26              	.LFB138:
+  27              		.file 1 "USER/Src/temp.c"
+   1:USER/Src/temp.c **** #include "temp.h"
+   2:USER/Src/temp.c **** #include "usart.h"
+   3:USER/Src/temp.c **** #include "iic_soft.h"
+   4:USER/Src/temp.c **** 
+   5:USER/Src/temp.c **** 
+   6:USER/Src/temp.c **** void TEMP_GPIO_Init(void)
+   7:USER/Src/temp.c **** {
+   8:USER/Src/temp.c **** 	GPIO_InitTypeDef GPIO_InitStruct = {0};
+   9:USER/Src/temp.c **** 	//__HAL_RCC_GPIOA_CLK_ENABLE();
+  10:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+  11:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  12:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  13:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  14:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);	
+  15:USER/Src/temp.c **** 
+  16:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_12;
+  17:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  18:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  19:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  20:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  21:USER/Src/temp.c **** }
+  22:USER/Src/temp.c **** 
+  23:USER/Src/temp.c **** /*
+  24:USER/Src/temp.c ****  *  drivers  i2c
+  25:USER/Src/temp.c ****  * Copyright (C) 2022 shenzhen wave
+  26:USER/Src/temp.c ****  * version:v1.0.0--2023-2-12
+  27:USER/Src/temp.c ****  * This program is free software; you can redistribute it and/or modify
+  28:USER/Src/temp.c ****  */
+  29:USER/Src/temp.c **** 
+  30:USER/Src/temp.c **** 
+  31:USER/Src/temp.c **** uint16_t 	soft_i2c_delay = 200;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 2
+
+
+  32:USER/Src/temp.c **** /**
+  33:USER/Src/temp.c ****  * @brief set sda is high
+  34:USER/Src/temp.c ****  * 
+  35:USER/Src/temp.c ****  */
+  36:USER/Src/temp.c **** static inline void i2c_sda_h(void)
+  37:USER/Src/temp.c **** {
+  38:USER/Src/temp.c **** 	/*user code*/
+  39:USER/Src/temp.c **** 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, GPIO_PIN_SET);
+  40:USER/Src/temp.c **** }
+  41:USER/Src/temp.c **** 
+  42:USER/Src/temp.c **** /**
+  43:USER/Src/temp.c ****  * @brief set sda is low
+  44:USER/Src/temp.c ****  * 
+  45:USER/Src/temp.c ****  */
+  46:USER/Src/temp.c **** static inline void i2c_sda_l(void)
+  47:USER/Src/temp.c **** {
+  48:USER/Src/temp.c **** 	/*user code*/
+  49:USER/Src/temp.c ****     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, GPIO_PIN_RESET);
+  50:USER/Src/temp.c **** }
+  51:USER/Src/temp.c **** 
+  52:USER/Src/temp.c **** /**
+  53:USER/Src/temp.c ****  * @brief set scl is high
+  54:USER/Src/temp.c ****  * 
+  55:USER/Src/temp.c ****  */
+  56:USER/Src/temp.c **** static inline void i2c_scl_h(void)
+  57:USER/Src/temp.c **** {
+  58:USER/Src/temp.c **** 	/*user code*/
+  59:USER/Src/temp.c ****     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_SET);
+  60:USER/Src/temp.c **** }
+  61:USER/Src/temp.c **** 
+  62:USER/Src/temp.c **** /**
+  63:USER/Src/temp.c ****  * @brief set scl is low
+  64:USER/Src/temp.c ****  * 
+  65:USER/Src/temp.c ****  */
+  66:USER/Src/temp.c **** static inline void i2c_scl_l(void)
+  67:USER/Src/temp.c **** {
+  68:USER/Src/temp.c **** 	/*user code*/
+  69:USER/Src/temp.c ****     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
+  70:USER/Src/temp.c **** }
+  71:USER/Src/temp.c **** 
+  72:USER/Src/temp.c **** /**
+  73:USER/Src/temp.c ****  * @brief Read sda pin state
+  74:USER/Src/temp.c ****  * 
+  75:USER/Src/temp.c ****  */
+  76:USER/Src/temp.c **** static unsigned char i2c_read_sda(void)
+  77:USER/Src/temp.c **** {
+  28              		.loc 1 77 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+  78:USER/Src/temp.c **** 	/*user code*/
+  79:USER/Src/temp.c ****     if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == GPIO_PIN_SET) {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 3
+
+
+  37              		.loc 1 79 5 view .LVU1
+  38              		.loc 1 79 9 is_stmt 0 view .LVU2
+  39 0002 4FF40061 		mov	r1, #2048
+  40 0006 0348     		ldr	r0, .L5
+  41 0008 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+  42              	.LVL0:
+  43              		.loc 1 79 8 view .LVU3
+  44 000c 0128     		cmp	r0, #1
+  45 000e 00D0     		beq	.L2
+  80:USER/Src/temp.c ****         return 1;
+  81:USER/Src/temp.c ****     } else {
+  82:USER/Src/temp.c ****         return 0;
+  46              		.loc 1 82 16 view .LVU4
+  47 0010 0020     		movs	r0, #0
+  48              	.L2:
+  83:USER/Src/temp.c ****     }
+  84:USER/Src/temp.c **** }
+  49              		.loc 1 84 1 view .LVU5
+  50 0012 08BD     		pop	{r3, pc}
+  51              	.L6:
+  52              		.align	2
+  53              	.L5:
+  54 0014 00000240 		.word	1073872896
+  55              		.cfi_endproc
+  56              	.LFE138:
+  58              		.section	.text.TEMP_GPIO_Init,"ax",%progbits
+  59              		.align	1
+  60              		.global	TEMP_GPIO_Init
+  61              		.syntax unified
+  62              		.thumb
+  63              		.thumb_func
+  65              	TEMP_GPIO_Init:
+  66              	.LFB133:
+   7:USER/Src/temp.c **** 	GPIO_InitTypeDef GPIO_InitStruct = {0};
+  67              		.loc 1 7 1 is_stmt 1 view -0
+  68              		.cfi_startproc
+  69              		@ args = 0, pretend = 0, frame = 24
+  70              		@ frame_needed = 0, uses_anonymous_args = 0
+  71 0000 70B5     		push	{r4, r5, r6, lr}
+  72              	.LCFI1:
+  73              		.cfi_def_cfa_offset 16
+  74              		.cfi_offset 4, -16
+  75              		.cfi_offset 5, -12
+  76              		.cfi_offset 6, -8
+  77              		.cfi_offset 14, -4
+  78 0002 86B0     		sub	sp, sp, #24
+  79              	.LCFI2:
+  80              		.cfi_def_cfa_offset 40
+   8:USER/Src/temp.c **** 	//__HAL_RCC_GPIOA_CLK_ENABLE();
+  81              		.loc 1 8 2 view .LVU7
+   8:USER/Src/temp.c **** 	//__HAL_RCC_GPIOA_CLK_ENABLE();
+  82              		.loc 1 8 19 is_stmt 0 view .LVU8
+  83 0004 0024     		movs	r4, #0
+  84 0006 0194     		str	r4, [sp, #4]
+  85 0008 0294     		str	r4, [sp, #8]
+  86 000a 0394     		str	r4, [sp, #12]
+  87 000c 0494     		str	r4, [sp, #16]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 4
+
+
+  88 000e 0594     		str	r4, [sp, #20]
+  10:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  89              		.loc 1 10 2 is_stmt 1 view .LVU9
+  10:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  90              		.loc 1 10 22 is_stmt 0 view .LVU10
+  91 0010 4FF40063 		mov	r3, #2048
+  92 0014 0193     		str	r3, [sp, #4]
+  11:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  93              		.loc 1 11 2 is_stmt 1 view .LVU11
+  11:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  94              		.loc 1 11 23 is_stmt 0 view .LVU12
+  95 0016 1126     		movs	r6, #17
+  96 0018 0296     		str	r6, [sp, #8]
+  12:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  97              		.loc 1 12 2 is_stmt 1 view .LVU13
+  13:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);	
+  98              		.loc 1 13 2 view .LVU14
+  14:USER/Src/temp.c **** 
+  99              		.loc 1 14 2 view .LVU15
+ 100 001a 084D     		ldr	r5, .L9
+ 101 001c 01A9     		add	r1, sp, #4
+ 102 001e 2846     		mov	r0, r5
+ 103 0020 FFF7FEFF 		bl	HAL_GPIO_Init
+ 104              	.LVL1:
+  16:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 105              		.loc 1 16 2 view .LVU16
+  16:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 106              		.loc 1 16 22 is_stmt 0 view .LVU17
+ 107 0024 4FF48053 		mov	r3, #4096
+ 108 0028 0193     		str	r3, [sp, #4]
+  17:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 109              		.loc 1 17 2 is_stmt 1 view .LVU18
+  17:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 110              		.loc 1 17 23 is_stmt 0 view .LVU19
+ 111 002a 0296     		str	r6, [sp, #8]
+  18:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 112              		.loc 1 18 2 is_stmt 1 view .LVU20
+  18:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 113              		.loc 1 18 23 is_stmt 0 view .LVU21
+ 114 002c 0394     		str	r4, [sp, #12]
+  19:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 115              		.loc 1 19 2 is_stmt 1 view .LVU22
+  19:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 116              		.loc 1 19 24 is_stmt 0 view .LVU23
+ 117 002e 0494     		str	r4, [sp, #16]
+  20:USER/Src/temp.c **** }
+ 118              		.loc 1 20 2 is_stmt 1 view .LVU24
+ 119 0030 01A9     		add	r1, sp, #4
+ 120 0032 2846     		mov	r0, r5
+ 121 0034 FFF7FEFF 		bl	HAL_GPIO_Init
+ 122              	.LVL2:
+  21:USER/Src/temp.c **** 
+ 123              		.loc 1 21 1 is_stmt 0 view .LVU25
+ 124 0038 06B0     		add	sp, sp, #24
+ 125              	.LCFI3:
+ 126              		.cfi_def_cfa_offset 16
+ 127              		@ sp needed
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 5
+
+
+ 128 003a 70BD     		pop	{r4, r5, r6, pc}
+ 129              	.L10:
+ 130              		.align	2
+ 131              	.L9:
+ 132 003c 00000240 		.word	1073872896
+ 133              		.cfi_endproc
+ 134              	.LFE133:
+ 136              		.section	.text.i2c_start,"ax",%progbits
+ 137              		.align	1
+ 138              		.global	i2c_start
+ 139              		.syntax unified
+ 140              		.thumb
+ 141              		.thumb_func
+ 143              	i2c_start:
+ 144              	.LFB142:
+  85:USER/Src/temp.c **** 
+  86:USER/Src/temp.c **** /**
+  87:USER/Src/temp.c ****  * @brief When read data, need to set sda as in
+  88:USER/Src/temp.c ****  * 
+  89:USER/Src/temp.c ****  */
+  90:USER/Src/temp.c **** static inline void i2c_sda_in(void)
+  91:USER/Src/temp.c **** {
+  92:USER/Src/temp.c **** 	/*user code */
+  93:USER/Src/temp.c ****   	GPIO_InitTypeDef GPIO_InitStruct = {0};
+  94:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+  95:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  96:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  97:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  98:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  99:USER/Src/temp.c **** }
+ 100:USER/Src/temp.c **** 
+ 101:USER/Src/temp.c **** /**
+ 102:USER/Src/temp.c ****  * @brief When send data, need to set sda as out
+ 103:USER/Src/temp.c ****  * 
+ 104:USER/Src/temp.c ****  */
+ 105:USER/Src/temp.c **** static inline void i2c_sda_out(void)
+ 106:USER/Src/temp.c **** {
+ 107:USER/Src/temp.c **** 	/*user code */
+ 108:USER/Src/temp.c ****   	GPIO_InitTypeDef GPIO_InitStruct = {0};
+ 109:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 110:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 111:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 112:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 113:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 114:USER/Src/temp.c ****   
+ 115:USER/Src/temp.c **** }
+ 116:USER/Src/temp.c **** 
+ 117:USER/Src/temp.c **** /**
+ 118:USER/Src/temp.c ****  * @brief i2c wiat
+ 119:USER/Src/temp.c ****  * 
+ 120:USER/Src/temp.c ****  */
+ 121:USER/Src/temp.c **** static inline void i2c_Wait(void)
+ 122:USER/Src/temp.c **** {	
+ 123:USER/Src/temp.c **** 	int i = soft_i2c_delay;
+ 124:USER/Src/temp.c **** 	while (i--);
+ 125:USER/Src/temp.c **** }
+ 126:USER/Src/temp.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 6
+
+
+ 127:USER/Src/temp.c **** /**
+ 128:USER/Src/temp.c ****  * @brief Generate an i2c strat signal
+ 129:USER/Src/temp.c ****  * 
+ 130:USER/Src/temp.c ****  */
+ 131:USER/Src/temp.c **** i2c_exit_code_e i2c_start(void)
+ 132:USER/Src/temp.c **** {
+ 145              		.loc 1 132 1 is_stmt 1 view -0
+ 146              		.cfi_startproc
+ 147              		@ args = 0, pretend = 0, frame = 24
+ 148              		@ frame_needed = 0, uses_anonymous_args = 0
+ 149 0000 70B5     		push	{r4, r5, r6, lr}
+ 150              	.LCFI4:
+ 151              		.cfi_def_cfa_offset 16
+ 152              		.cfi_offset 4, -16
+ 153              		.cfi_offset 5, -12
+ 154              		.cfi_offset 6, -8
+ 155              		.cfi_offset 14, -4
+ 156 0002 86B0     		sub	sp, sp, #24
+ 157              	.LCFI5:
+ 158              		.cfi_def_cfa_offset 40
+ 133:USER/Src/temp.c **** 	i2c_sda_out();
+ 159              		.loc 1 133 2 view .LVU27
+ 160              	.LBB108:
+ 161              	.LBI108:
+ 105:USER/Src/temp.c **** {
+ 162              		.loc 1 105 20 view .LVU28
+ 163              	.LBB109:
+ 108:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 164              		.loc 1 108 4 view .LVU29
+ 108:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 165              		.loc 1 108 21 is_stmt 0 view .LVU30
+ 166 0004 0023     		movs	r3, #0
+ 167 0006 0193     		str	r3, [sp, #4]
+ 168 0008 0293     		str	r3, [sp, #8]
+ 169 000a 0393     		str	r3, [sp, #12]
+ 170 000c 0493     		str	r3, [sp, #16]
+ 171 000e 0593     		str	r3, [sp, #20]
+ 109:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 172              		.loc 1 109 2 is_stmt 1 view .LVU31
+ 109:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 173              		.loc 1 109 22 is_stmt 0 view .LVU32
+ 174 0010 4FF40066 		mov	r6, #2048
+ 175 0014 0196     		str	r6, [sp, #4]
+ 110:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 176              		.loc 1 110 2 is_stmt 1 view .LVU33
+ 110:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 177              		.loc 1 110 23 is_stmt 0 view .LVU34
+ 178 0016 1123     		movs	r3, #17
+ 179 0018 0293     		str	r3, [sp, #8]
+ 111:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 180              		.loc 1 111 2 is_stmt 1 view .LVU35
+ 111:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 181              		.loc 1 111 23 is_stmt 0 view .LVU36
+ 182 001a 0125     		movs	r5, #1
+ 183 001c 0395     		str	r5, [sp, #12]
+ 112:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 184              		.loc 1 112 2 is_stmt 1 view .LVU37
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 7
+
+
+ 113:USER/Src/temp.c ****   
+ 185              		.loc 1 113 2 view .LVU38
+ 186 001e 1A4C     		ldr	r4, .L19
+ 187 0020 01A9     		add	r1, sp, #4
+ 188 0022 2046     		mov	r0, r4
+ 189 0024 FFF7FEFF 		bl	HAL_GPIO_Init
+ 190              	.LVL3:
+ 191              	.LBE109:
+ 192              	.LBE108:
+ 134:USER/Src/temp.c **** 	i2c_scl_h();
+ 193              		.loc 1 134 2 view .LVU39
+ 194              	.LBB110:
+ 195              	.LBI110:
+  56:USER/Src/temp.c **** {
+ 196              		.loc 1 56 20 view .LVU40
+ 197              	.LBB111:
+  59:USER/Src/temp.c **** }
+ 198              		.loc 1 59 5 view .LVU41
+ 199 0028 2A46     		mov	r2, r5
+ 200 002a 4FF48051 		mov	r1, #4096
+ 201 002e 2046     		mov	r0, r4
+ 202 0030 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 203              	.LVL4:
+ 204              	.LBE111:
+ 205              	.LBE110:
+ 135:USER/Src/temp.c **** 	i2c_sda_h();
+ 206              		.loc 1 135 2 view .LVU42
+ 207              	.LBB112:
+ 208              	.LBI112:
+  36:USER/Src/temp.c **** {
+ 209              		.loc 1 36 20 view .LVU43
+ 210              	.LBB113:
+  39:USER/Src/temp.c **** }
+ 211              		.loc 1 39 2 view .LVU44
+ 212 0034 2A46     		mov	r2, r5
+ 213 0036 3146     		mov	r1, r6
+ 214 0038 2046     		mov	r0, r4
+ 215 003a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 216              	.LVL5:
+ 217              	.LBE113:
+ 218              	.LBE112:
+ 136:USER/Src/temp.c **** 	i2c_Wait();
+ 219              		.loc 1 136 2 view .LVU45
+ 220              	.LBB114:
+ 221              	.LBI114:
+ 121:USER/Src/temp.c **** {	
+ 222              		.loc 1 121 20 view .LVU46
+ 223              	.LBB115:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 224              		.loc 1 123 2 view .LVU47
+ 123:USER/Src/temp.c **** 	while (i--);
+ 225              		.loc 1 123 6 is_stmt 0 view .LVU48
+ 226 003e 134B     		ldr	r3, .L19+4
+ 227 0040 1B88     		ldrh	r3, [r3]
+ 228              	.LVL6:
+ 124:USER/Src/temp.c **** }
+ 229              		.loc 1 124 2 is_stmt 1 view .LVU49
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 8
+
+
+ 230              	.L12:
+ 124:USER/Src/temp.c **** }
+ 231              		.loc 1 124 13 view .LVU50
+ 124:USER/Src/temp.c **** }
+ 232              		.loc 1 124 8 view .LVU51
+ 233 0042 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 234              		.loc 1 124 10 is_stmt 0 view .LVU52
+ 235 0044 013B     		subs	r3, r3, #1
+ 236              	.LVL7:
+ 124:USER/Src/temp.c **** }
+ 237              		.loc 1 124 8 view .LVU53
+ 238 0046 002A     		cmp	r2, #0
+ 239 0048 FBD1     		bne	.L12
+ 240              	.LVL8:
+ 124:USER/Src/temp.c **** }
+ 241              		.loc 1 124 8 view .LVU54
+ 242              	.LBE115:
+ 243              	.LBE114:
+ 137:USER/Src/temp.c **** 
+ 138:USER/Src/temp.c **** 	if(!i2c_read_sda())
+ 244              		.loc 1 138 2 is_stmt 1 view .LVU55
+ 245              		.loc 1 138 6 is_stmt 0 view .LVU56
+ 246 004a FFF7FEFF 		bl	i2c_read_sda
+ 247              	.LVL9:
+ 248              		.loc 1 138 4 view .LVU57
+ 249 004e 10B9     		cbnz	r0, .L18
+ 139:USER/Src/temp.c **** 	{
+ 140:USER/Src/temp.c **** 		return _I2C_START_FAIL;
+ 250              		.loc 1 140 10 view .LVU58
+ 251 0050 0120     		movs	r0, #1
+ 252              	.L13:
+ 141:USER/Src/temp.c **** 	}
+ 142:USER/Src/temp.c **** 
+ 143:USER/Src/temp.c **** 	i2c_sda_l();
+ 144:USER/Src/temp.c **** 	i2c_Wait();
+ 145:USER/Src/temp.c **** 	i2c_scl_l();
+ 146:USER/Src/temp.c **** 	i2c_Wait();
+ 147:USER/Src/temp.c **** 	return _I2C_OK;
+ 148:USER/Src/temp.c **** }
+ 253              		.loc 1 148 1 view .LVU59
+ 254 0052 06B0     		add	sp, sp, #24
+ 255              	.LCFI6:
+ 256              		.cfi_remember_state
+ 257              		.cfi_def_cfa_offset 16
+ 258              		@ sp needed
+ 259 0054 70BD     		pop	{r4, r5, r6, pc}
+ 260              	.L18:
+ 261              	.LCFI7:
+ 262              		.cfi_restore_state
+ 143:USER/Src/temp.c **** 	i2c_Wait();
+ 263              		.loc 1 143 2 is_stmt 1 view .LVU60
+ 264              	.LBB116:
+ 265              	.LBI116:
+  46:USER/Src/temp.c **** {
+ 266              		.loc 1 46 20 view .LVU61
+ 267              	.LBB117:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 9
+
+
+  49:USER/Src/temp.c **** }
+ 268              		.loc 1 49 5 view .LVU62
+ 269 0056 0022     		movs	r2, #0
+ 270 0058 4FF40061 		mov	r1, #2048
+ 271 005c 0A48     		ldr	r0, .L19
+ 272 005e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 273              	.LVL10:
+ 274              	.LBE117:
+ 275              	.LBE116:
+ 144:USER/Src/temp.c **** 	i2c_scl_l();
+ 276              		.loc 1 144 2 view .LVU63
+ 277              	.LBB118:
+ 278              	.LBI118:
+ 121:USER/Src/temp.c **** {	
+ 279              		.loc 1 121 20 view .LVU64
+ 280              	.LBB119:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 281              		.loc 1 123 2 view .LVU65
+ 123:USER/Src/temp.c **** 	while (i--);
+ 282              		.loc 1 123 6 is_stmt 0 view .LVU66
+ 283 0062 0A4B     		ldr	r3, .L19+4
+ 284 0064 1B88     		ldrh	r3, [r3]
+ 285              	.LVL11:
+ 124:USER/Src/temp.c **** }
+ 286              		.loc 1 124 2 is_stmt 1 view .LVU67
+ 287              	.L14:
+ 124:USER/Src/temp.c **** }
+ 288              		.loc 1 124 13 view .LVU68
+ 124:USER/Src/temp.c **** }
+ 289              		.loc 1 124 8 view .LVU69
+ 290 0066 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 291              		.loc 1 124 10 is_stmt 0 view .LVU70
+ 292 0068 013B     		subs	r3, r3, #1
+ 293              	.LVL12:
+ 124:USER/Src/temp.c **** }
+ 294              		.loc 1 124 8 view .LVU71
+ 295 006a 002A     		cmp	r2, #0
+ 296 006c FBD1     		bne	.L14
+ 297              	.LVL13:
+ 124:USER/Src/temp.c **** }
+ 298              		.loc 1 124 8 view .LVU72
+ 299              	.LBE119:
+ 300              	.LBE118:
+ 145:USER/Src/temp.c **** 	i2c_Wait();
+ 301              		.loc 1 145 2 is_stmt 1 view .LVU73
+ 302              	.LBB120:
+ 303              	.LBI120:
+  66:USER/Src/temp.c **** {
+ 304              		.loc 1 66 20 view .LVU74
+ 305              	.LBB121:
+  69:USER/Src/temp.c **** }
+ 306              		.loc 1 69 5 view .LVU75
+ 307 006e 4FF48051 		mov	r1, #4096
+ 308 0072 0548     		ldr	r0, .L19
+ 309 0074 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 310              	.LVL14:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 10
+
+
+ 311              	.LBE121:
+ 312              	.LBE120:
+ 146:USER/Src/temp.c **** 	return _I2C_OK;
+ 313              		.loc 1 146 2 view .LVU76
+ 314              	.LBB122:
+ 315              	.LBI122:
+ 121:USER/Src/temp.c **** {	
+ 316              		.loc 1 121 20 view .LVU77
+ 317              	.LBB123:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 318              		.loc 1 123 2 view .LVU78
+ 123:USER/Src/temp.c **** 	while (i--);
+ 319              		.loc 1 123 6 is_stmt 0 view .LVU79
+ 320 0078 044B     		ldr	r3, .L19+4
+ 321 007a 1B88     		ldrh	r3, [r3]
+ 322              	.LVL15:
+ 124:USER/Src/temp.c **** }
+ 323              		.loc 1 124 2 is_stmt 1 view .LVU80
+ 324              	.L15:
+ 124:USER/Src/temp.c **** }
+ 325              		.loc 1 124 13 view .LVU81
+ 124:USER/Src/temp.c **** }
+ 326              		.loc 1 124 8 view .LVU82
+ 327 007c 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 328              		.loc 1 124 10 is_stmt 0 view .LVU83
+ 329 007e 013B     		subs	r3, r3, #1
+ 330              	.LVL16:
+ 124:USER/Src/temp.c **** }
+ 331              		.loc 1 124 8 view .LVU84
+ 332 0080 002A     		cmp	r2, #0
+ 333 0082 FBD1     		bne	.L15
+ 334              	.LBE123:
+ 335              	.LBE122:
+ 147:USER/Src/temp.c **** }
+ 336              		.loc 1 147 9 view .LVU85
+ 337 0084 0020     		movs	r0, #0
+ 338              	.LBB125:
+ 339              	.LBB124:
+ 340 0086 E4E7     		b	.L13
+ 341              	.L20:
+ 342              		.align	2
+ 343              	.L19:
+ 344 0088 00000240 		.word	1073872896
+ 345 008c 00000000 		.word	.LANCHOR0
+ 346              	.LBE124:
+ 347              	.LBE125:
+ 348              		.cfi_endproc
+ 349              	.LFE142:
+ 351              		.section	.text.i2c_stop,"ax",%progbits
+ 352              		.align	1
+ 353              		.global	i2c_stop
+ 354              		.syntax unified
+ 355              		.thumb
+ 356              		.thumb_func
+ 358              	i2c_stop:
+ 359              	.LFB143:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 11
+
+
+ 149:USER/Src/temp.c **** 
+ 150:USER/Src/temp.c **** /**
+ 151:USER/Src/temp.c ****  * @brief Generate an i2c stop signal
+ 152:USER/Src/temp.c ****  * 
+ 153:USER/Src/temp.c ****  */
+ 154:USER/Src/temp.c **** void i2c_stop(void)
+ 155:USER/Src/temp.c **** {
+ 360              		.loc 1 155 1 is_stmt 1 view -0
+ 361              		.cfi_startproc
+ 362              		@ args = 0, pretend = 0, frame = 24
+ 363              		@ frame_needed = 0, uses_anonymous_args = 0
+ 364 0000 70B5     		push	{r4, r5, r6, lr}
+ 365              	.LCFI8:
+ 366              		.cfi_def_cfa_offset 16
+ 367              		.cfi_offset 4, -16
+ 368              		.cfi_offset 5, -12
+ 369              		.cfi_offset 6, -8
+ 370              		.cfi_offset 14, -4
+ 371 0002 86B0     		sub	sp, sp, #24
+ 372              	.LCFI9:
+ 373              		.cfi_def_cfa_offset 40
+ 156:USER/Src/temp.c **** 	i2c_sda_out();
+ 374              		.loc 1 156 2 view .LVU87
+ 375              	.LBB140:
+ 376              	.LBI140:
+ 105:USER/Src/temp.c **** {
+ 377              		.loc 1 105 20 view .LVU88
+ 378              	.LBB141:
+ 108:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 379              		.loc 1 108 4 view .LVU89
+ 108:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 380              		.loc 1 108 21 is_stmt 0 view .LVU90
+ 381 0004 0024     		movs	r4, #0
+ 382 0006 0194     		str	r4, [sp, #4]
+ 383 0008 0294     		str	r4, [sp, #8]
+ 384 000a 0394     		str	r4, [sp, #12]
+ 385 000c 0494     		str	r4, [sp, #16]
+ 386 000e 0594     		str	r4, [sp, #20]
+ 109:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 387              		.loc 1 109 2 is_stmt 1 view .LVU91
+ 109:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 388              		.loc 1 109 22 is_stmt 0 view .LVU92
+ 389 0010 4FF40066 		mov	r6, #2048
+ 390 0014 0196     		str	r6, [sp, #4]
+ 110:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 391              		.loc 1 110 2 is_stmt 1 view .LVU93
+ 110:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 392              		.loc 1 110 23 is_stmt 0 view .LVU94
+ 393 0016 1123     		movs	r3, #17
+ 394 0018 0293     		str	r3, [sp, #8]
+ 111:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 395              		.loc 1 111 2 is_stmt 1 view .LVU95
+ 111:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 396              		.loc 1 111 23 is_stmt 0 view .LVU96
+ 397 001a 0123     		movs	r3, #1
+ 398 001c 0393     		str	r3, [sp, #12]
+ 112:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 12
+
+
+ 399              		.loc 1 112 2 is_stmt 1 view .LVU97
+ 113:USER/Src/temp.c ****   
+ 400              		.loc 1 113 2 view .LVU98
+ 401 001e 154D     		ldr	r5, .L25
+ 402 0020 01A9     		add	r1, sp, #4
+ 403 0022 2846     		mov	r0, r5
+ 404 0024 FFF7FEFF 		bl	HAL_GPIO_Init
+ 405              	.LVL17:
+ 406              	.LBE141:
+ 407              	.LBE140:
+ 157:USER/Src/temp.c **** 	i2c_scl_l();
+ 408              		.loc 1 157 2 view .LVU99
+ 409              	.LBB142:
+ 410              	.LBI142:
+  66:USER/Src/temp.c **** {
+ 411              		.loc 1 66 20 view .LVU100
+ 412              	.LBB143:
+  69:USER/Src/temp.c **** }
+ 413              		.loc 1 69 5 view .LVU101
+ 414 0028 2246     		mov	r2, r4
+ 415 002a 4FF48051 		mov	r1, #4096
+ 416 002e 2846     		mov	r0, r5
+ 417 0030 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 418              	.LVL18:
+ 419              	.LBE143:
+ 420              	.LBE142:
+ 158:USER/Src/temp.c **** 	i2c_sda_l();
+ 421              		.loc 1 158 2 view .LVU102
+ 422              	.LBB144:
+ 423              	.LBI144:
+  46:USER/Src/temp.c **** {
+ 424              		.loc 1 46 20 view .LVU103
+ 425              	.LBB145:
+  49:USER/Src/temp.c **** }
+ 426              		.loc 1 49 5 view .LVU104
+ 427 0034 2246     		mov	r2, r4
+ 428 0036 3146     		mov	r1, r6
+ 429 0038 2846     		mov	r0, r5
+ 430 003a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 431              	.LVL19:
+ 432              	.LBE145:
+ 433              	.LBE144:
+ 159:USER/Src/temp.c **** 	i2c_Wait();
+ 434              		.loc 1 159 2 view .LVU105
+ 435              	.LBB146:
+ 436              	.LBI146:
+ 121:USER/Src/temp.c **** {	
+ 437              		.loc 1 121 20 view .LVU106
+ 438              	.LBB147:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 439              		.loc 1 123 2 view .LVU107
+ 123:USER/Src/temp.c **** 	while (i--);
+ 440              		.loc 1 123 6 is_stmt 0 view .LVU108
+ 441 003e 0E4B     		ldr	r3, .L25+4
+ 442 0040 1B88     		ldrh	r3, [r3]
+ 443              	.LVL20:
+ 124:USER/Src/temp.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 13
+
+
+ 444              		.loc 1 124 2 is_stmt 1 view .LVU109
+ 445              	.L22:
+ 124:USER/Src/temp.c **** }
+ 446              		.loc 1 124 13 view .LVU110
+ 124:USER/Src/temp.c **** }
+ 447              		.loc 1 124 8 view .LVU111
+ 448 0042 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 449              		.loc 1 124 10 is_stmt 0 view .LVU112
+ 450 0044 013B     		subs	r3, r3, #1
+ 451              	.LVL21:
+ 124:USER/Src/temp.c **** }
+ 452              		.loc 1 124 8 view .LVU113
+ 453 0046 002A     		cmp	r2, #0
+ 454 0048 FBD1     		bne	.L22
+ 455              	.LVL22:
+ 124:USER/Src/temp.c **** }
+ 456              		.loc 1 124 8 view .LVU114
+ 457              	.LBE147:
+ 458              	.LBE146:
+ 160:USER/Src/temp.c **** 	i2c_scl_h();
+ 459              		.loc 1 160 2 is_stmt 1 view .LVU115
+ 460              	.LBB148:
+ 461              	.LBI148:
+  56:USER/Src/temp.c **** {
+ 462              		.loc 1 56 20 view .LVU116
+ 463              	.LBB149:
+  59:USER/Src/temp.c **** }
+ 464              		.loc 1 59 5 view .LVU117
+ 465 004a 0122     		movs	r2, #1
+ 466 004c 4FF48051 		mov	r1, #4096
+ 467 0050 0848     		ldr	r0, .L25
+ 468 0052 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 469              	.LVL23:
+ 470              	.LBE149:
+ 471              	.LBE148:
+ 161:USER/Src/temp.c **** 	i2c_Wait();
+ 472              		.loc 1 161 2 view .LVU118
+ 473              	.LBB150:
+ 474              	.LBI150:
+ 121:USER/Src/temp.c **** {	
+ 475              		.loc 1 121 20 view .LVU119
+ 476              	.LBB151:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 477              		.loc 1 123 2 view .LVU120
+ 123:USER/Src/temp.c **** 	while (i--);
+ 478              		.loc 1 123 6 is_stmt 0 view .LVU121
+ 479 0056 084B     		ldr	r3, .L25+4
+ 480 0058 1B88     		ldrh	r3, [r3]
+ 481              	.LVL24:
+ 124:USER/Src/temp.c **** }
+ 482              		.loc 1 124 2 is_stmt 1 view .LVU122
+ 483              	.L23:
+ 124:USER/Src/temp.c **** }
+ 484              		.loc 1 124 13 view .LVU123
+ 124:USER/Src/temp.c **** }
+ 485              		.loc 1 124 8 view .LVU124
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 14
+
+
+ 486 005a 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 487              		.loc 1 124 10 is_stmt 0 view .LVU125
+ 488 005c 013B     		subs	r3, r3, #1
+ 489              	.LVL25:
+ 124:USER/Src/temp.c **** }
+ 490              		.loc 1 124 8 view .LVU126
+ 491 005e 002A     		cmp	r2, #0
+ 492 0060 FBD1     		bne	.L23
+ 493              	.LVL26:
+ 124:USER/Src/temp.c **** }
+ 494              		.loc 1 124 8 view .LVU127
+ 495              	.LBE151:
+ 496              	.LBE150:
+ 162:USER/Src/temp.c **** 	i2c_sda_h();
+ 497              		.loc 1 162 2 is_stmt 1 view .LVU128
+ 498              	.LBB152:
+ 499              	.LBI152:
+  36:USER/Src/temp.c **** {
+ 500              		.loc 1 36 20 view .LVU129
+ 501              	.LBB153:
+  39:USER/Src/temp.c **** }
+ 502              		.loc 1 39 2 view .LVU130
+ 503 0062 0122     		movs	r2, #1
+ 504 0064 4FF40061 		mov	r1, #2048
+ 505 0068 0248     		ldr	r0, .L25
+ 506 006a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 507              	.LVL27:
+ 508              	.LBE153:
+ 509              	.LBE152:
+ 163:USER/Src/temp.c **** }
+ 510              		.loc 1 163 1 is_stmt 0 view .LVU131
+ 511 006e 06B0     		add	sp, sp, #24
+ 512              	.LCFI10:
+ 513              		.cfi_def_cfa_offset 16
+ 514              		@ sp needed
+ 515 0070 70BD     		pop	{r4, r5, r6, pc}
+ 516              	.L26:
+ 517 0072 00BF     		.align	2
+ 518              	.L25:
+ 519 0074 00000240 		.word	1073872896
+ 520 0078 00000000 		.word	.LANCHOR0
+ 521              		.cfi_endproc
+ 522              	.LFE143:
+ 524              		.section	.text.i2c_ack,"ax",%progbits
+ 525              		.align	1
+ 526              		.global	i2c_ack
+ 527              		.syntax unified
+ 528              		.thumb
+ 529              		.thumb_func
+ 531              	i2c_ack:
+ 532              	.LFB144:
+ 164:USER/Src/temp.c **** 
+ 165:USER/Src/temp.c **** /**
+ 166:USER/Src/temp.c ****  * @brief When data is read, the host responds a ack signal
+ 167:USER/Src/temp.c ****  * 
+ 168:USER/Src/temp.c ****  */
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 15
+
+
+ 169:USER/Src/temp.c **** void i2c_ack(void)
+ 170:USER/Src/temp.c **** {	
+ 533              		.loc 1 170 1 is_stmt 1 view -0
+ 534              		.cfi_startproc
+ 535              		@ args = 0, pretend = 0, frame = 0
+ 536              		@ frame_needed = 0, uses_anonymous_args = 0
+ 537 0000 10B5     		push	{r4, lr}
+ 538              	.LCFI11:
+ 539              		.cfi_def_cfa_offset 8
+ 540              		.cfi_offset 4, -8
+ 541              		.cfi_offset 14, -4
+ 171:USER/Src/temp.c **** 	i2c_scl_l();
+ 542              		.loc 1 171 2 view .LVU133
+ 543              	.LBB154:
+ 544              	.LBI154:
+  66:USER/Src/temp.c **** {
+ 545              		.loc 1 66 20 view .LVU134
+ 546              	.LBB155:
+  69:USER/Src/temp.c **** }
+ 547              		.loc 1 69 5 view .LVU135
+ 548 0002 124C     		ldr	r4, .L31
+ 549 0004 0022     		movs	r2, #0
+ 550 0006 4FF48051 		mov	r1, #4096
+ 551 000a 2046     		mov	r0, r4
+ 552 000c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 553              	.LVL28:
+ 554              	.LBE155:
+ 555              	.LBE154:
+ 172:USER/Src/temp.c **** 	i2c_sda_l();
+ 556              		.loc 1 172 2 view .LVU136
+ 557              	.LBB156:
+ 558              	.LBI156:
+  46:USER/Src/temp.c **** {
+ 559              		.loc 1 46 20 view .LVU137
+ 560              	.LBB157:
+  49:USER/Src/temp.c **** }
+ 561              		.loc 1 49 5 view .LVU138
+ 562 0010 0022     		movs	r2, #0
+ 563 0012 4FF40061 		mov	r1, #2048
+ 564 0016 2046     		mov	r0, r4
+ 565 0018 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 566              	.LVL29:
+ 567              	.LBE157:
+ 568              	.LBE156:
+ 173:USER/Src/temp.c **** 	i2c_Wait();
+ 569              		.loc 1 173 2 view .LVU139
+ 570              	.LBB158:
+ 571              	.LBI158:
+ 121:USER/Src/temp.c **** {	
+ 572              		.loc 1 121 20 view .LVU140
+ 573              	.LBB159:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 574              		.loc 1 123 2 view .LVU141
+ 123:USER/Src/temp.c **** 	while (i--);
+ 575              		.loc 1 123 6 is_stmt 0 view .LVU142
+ 576 001c 0C4B     		ldr	r3, .L31+4
+ 577 001e 1B88     		ldrh	r3, [r3]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 16
+
+
+ 578              	.LVL30:
+ 124:USER/Src/temp.c **** }
+ 579              		.loc 1 124 2 is_stmt 1 view .LVU143
+ 580              	.L28:
+ 124:USER/Src/temp.c **** }
+ 581              		.loc 1 124 13 view .LVU144
+ 124:USER/Src/temp.c **** }
+ 582              		.loc 1 124 8 view .LVU145
+ 583 0020 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 584              		.loc 1 124 10 is_stmt 0 view .LVU146
+ 585 0022 013B     		subs	r3, r3, #1
+ 586              	.LVL31:
+ 124:USER/Src/temp.c **** }
+ 587              		.loc 1 124 8 view .LVU147
+ 588 0024 002A     		cmp	r2, #0
+ 589 0026 FBD1     		bne	.L28
+ 590              	.LVL32:
+ 124:USER/Src/temp.c **** }
+ 591              		.loc 1 124 8 view .LVU148
+ 592              	.LBE159:
+ 593              	.LBE158:
+ 174:USER/Src/temp.c **** 	i2c_scl_h();
+ 594              		.loc 1 174 2 is_stmt 1 view .LVU149
+ 595              	.LBB160:
+ 596              	.LBI160:
+  56:USER/Src/temp.c **** {
+ 597              		.loc 1 56 20 view .LVU150
+ 598              	.LBB161:
+  59:USER/Src/temp.c **** }
+ 599              		.loc 1 59 5 view .LVU151
+ 600 0028 0122     		movs	r2, #1
+ 601 002a 4FF48051 		mov	r1, #4096
+ 602 002e 0748     		ldr	r0, .L31
+ 603 0030 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 604              	.LVL33:
+ 605              	.LBE161:
+ 606              	.LBE160:
+ 175:USER/Src/temp.c **** 	i2c_Wait();
+ 607              		.loc 1 175 2 view .LVU152
+ 608              	.LBB162:
+ 609              	.LBI162:
+ 121:USER/Src/temp.c **** {	
+ 610              		.loc 1 121 20 view .LVU153
+ 611              	.LBB163:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 612              		.loc 1 123 2 view .LVU154
+ 123:USER/Src/temp.c **** 	while (i--);
+ 613              		.loc 1 123 6 is_stmt 0 view .LVU155
+ 614 0034 064B     		ldr	r3, .L31+4
+ 615 0036 1B88     		ldrh	r3, [r3]
+ 616              	.LVL34:
+ 124:USER/Src/temp.c **** }
+ 617              		.loc 1 124 2 is_stmt 1 view .LVU156
+ 618              	.L29:
+ 124:USER/Src/temp.c **** }
+ 619              		.loc 1 124 13 view .LVU157
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 17
+
+
+ 124:USER/Src/temp.c **** }
+ 620              		.loc 1 124 8 view .LVU158
+ 621 0038 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 622              		.loc 1 124 10 is_stmt 0 view .LVU159
+ 623 003a 013B     		subs	r3, r3, #1
+ 624              	.LVL35:
+ 124:USER/Src/temp.c **** }
+ 625              		.loc 1 124 8 view .LVU160
+ 626 003c 002A     		cmp	r2, #0
+ 627 003e FBD1     		bne	.L29
+ 628              	.LVL36:
+ 124:USER/Src/temp.c **** }
+ 629              		.loc 1 124 8 view .LVU161
+ 630              	.LBE163:
+ 631              	.LBE162:
+ 176:USER/Src/temp.c **** 	i2c_scl_l();
+ 632              		.loc 1 176 2 is_stmt 1 view .LVU162
+ 633              	.LBB164:
+ 634              	.LBI164:
+  66:USER/Src/temp.c **** {
+ 635              		.loc 1 66 20 view .LVU163
+ 636              	.LBB165:
+  69:USER/Src/temp.c **** }
+ 637              		.loc 1 69 5 view .LVU164
+ 638 0040 4FF48051 		mov	r1, #4096
+ 639 0044 0148     		ldr	r0, .L31
+ 640 0046 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 641              	.LVL37:
+ 642              	.LBE165:
+ 643              	.LBE164:
+ 177:USER/Src/temp.c **** }
+ 644              		.loc 1 177 1 is_stmt 0 view .LVU165
+ 645 004a 10BD     		pop	{r4, pc}
+ 646              	.L32:
+ 647              		.align	2
+ 648              	.L31:
+ 649 004c 00000240 		.word	1073872896
+ 650 0050 00000000 		.word	.LANCHOR0
+ 651              		.cfi_endproc
+ 652              	.LFE144:
+ 654              		.section	.text.i2c_nack,"ax",%progbits
+ 655              		.align	1
+ 656              		.global	i2c_nack
+ 657              		.syntax unified
+ 658              		.thumb
+ 659              		.thumb_func
+ 661              	i2c_nack:
+ 662              	.LFB145:
+ 178:USER/Src/temp.c **** 
+ 179:USER/Src/temp.c **** /**
+ 180:USER/Src/temp.c ****  * @brief when data is read, the host responds a nack signal
+ 181:USER/Src/temp.c ****  * 
+ 182:USER/Src/temp.c ****  */
+ 183:USER/Src/temp.c **** void i2c_nack(void)
+ 184:USER/Src/temp.c **** {	
+ 663              		.loc 1 184 1 is_stmt 1 view -0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 18
+
+
+ 664              		.cfi_startproc
+ 665              		@ args = 0, pretend = 0, frame = 0
+ 666              		@ frame_needed = 0, uses_anonymous_args = 0
+ 667 0000 10B5     		push	{r4, lr}
+ 668              	.LCFI12:
+ 669              		.cfi_def_cfa_offset 8
+ 670              		.cfi_offset 4, -8
+ 671              		.cfi_offset 14, -4
+ 185:USER/Src/temp.c **** 	i2c_scl_l();
+ 672              		.loc 1 185 2 view .LVU167
+ 673              	.LBB166:
+ 674              	.LBI166:
+  66:USER/Src/temp.c **** {
+ 675              		.loc 1 66 20 view .LVU168
+ 676              	.LBB167:
+  69:USER/Src/temp.c **** }
+ 677              		.loc 1 69 5 view .LVU169
+ 678 0002 124C     		ldr	r4, .L37
+ 679 0004 0022     		movs	r2, #0
+ 680 0006 4FF48051 		mov	r1, #4096
+ 681 000a 2046     		mov	r0, r4
+ 682 000c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 683              	.LVL38:
+ 684              	.LBE167:
+ 685              	.LBE166:
+ 186:USER/Src/temp.c **** 	i2c_sda_h();
+ 686              		.loc 1 186 2 view .LVU170
+ 687              	.LBB168:
+ 688              	.LBI168:
+  36:USER/Src/temp.c **** {
+ 689              		.loc 1 36 20 view .LVU171
+ 690              	.LBB169:
+  39:USER/Src/temp.c **** }
+ 691              		.loc 1 39 2 view .LVU172
+ 692 0010 0122     		movs	r2, #1
+ 693 0012 4FF40061 		mov	r1, #2048
+ 694 0016 2046     		mov	r0, r4
+ 695 0018 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 696              	.LVL39:
+ 697              	.LBE169:
+ 698              	.LBE168:
+ 187:USER/Src/temp.c **** 	i2c_Wait();
+ 699              		.loc 1 187 2 view .LVU173
+ 700              	.LBB170:
+ 701              	.LBI170:
+ 121:USER/Src/temp.c **** {	
+ 702              		.loc 1 121 20 view .LVU174
+ 703              	.LBB171:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 704              		.loc 1 123 2 view .LVU175
+ 123:USER/Src/temp.c **** 	while (i--);
+ 705              		.loc 1 123 6 is_stmt 0 view .LVU176
+ 706 001c 0C4B     		ldr	r3, .L37+4
+ 707 001e 1B88     		ldrh	r3, [r3]
+ 708              	.LVL40:
+ 124:USER/Src/temp.c **** }
+ 709              		.loc 1 124 2 is_stmt 1 view .LVU177
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 19
+
+
+ 710              	.L34:
+ 124:USER/Src/temp.c **** }
+ 711              		.loc 1 124 13 view .LVU178
+ 124:USER/Src/temp.c **** }
+ 712              		.loc 1 124 8 view .LVU179
+ 713 0020 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 714              		.loc 1 124 10 is_stmt 0 view .LVU180
+ 715 0022 013B     		subs	r3, r3, #1
+ 716              	.LVL41:
+ 124:USER/Src/temp.c **** }
+ 717              		.loc 1 124 8 view .LVU181
+ 718 0024 002A     		cmp	r2, #0
+ 719 0026 FBD1     		bne	.L34
+ 720              	.LVL42:
+ 124:USER/Src/temp.c **** }
+ 721              		.loc 1 124 8 view .LVU182
+ 722              	.LBE171:
+ 723              	.LBE170:
+ 188:USER/Src/temp.c **** 	i2c_scl_h();
+ 724              		.loc 1 188 2 is_stmt 1 view .LVU183
+ 725              	.LBB172:
+ 726              	.LBI172:
+  56:USER/Src/temp.c **** {
+ 727              		.loc 1 56 20 view .LVU184
+ 728              	.LBB173:
+  59:USER/Src/temp.c **** }
+ 729              		.loc 1 59 5 view .LVU185
+ 730 0028 0122     		movs	r2, #1
+ 731 002a 4FF48051 		mov	r1, #4096
+ 732 002e 0748     		ldr	r0, .L37
+ 733 0030 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 734              	.LVL43:
+ 735              	.LBE173:
+ 736              	.LBE172:
+ 189:USER/Src/temp.c **** 	i2c_Wait();
+ 737              		.loc 1 189 2 view .LVU186
+ 738              	.LBB174:
+ 739              	.LBI174:
+ 121:USER/Src/temp.c **** {	
+ 740              		.loc 1 121 20 view .LVU187
+ 741              	.LBB175:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 742              		.loc 1 123 2 view .LVU188
+ 123:USER/Src/temp.c **** 	while (i--);
+ 743              		.loc 1 123 6 is_stmt 0 view .LVU189
+ 744 0034 064B     		ldr	r3, .L37+4
+ 745 0036 1B88     		ldrh	r3, [r3]
+ 746              	.LVL44:
+ 124:USER/Src/temp.c **** }
+ 747              		.loc 1 124 2 is_stmt 1 view .LVU190
+ 748              	.L35:
+ 124:USER/Src/temp.c **** }
+ 749              		.loc 1 124 13 view .LVU191
+ 124:USER/Src/temp.c **** }
+ 750              		.loc 1 124 8 view .LVU192
+ 751 0038 1A46     		mov	r2, r3
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 20
+
+
+ 124:USER/Src/temp.c **** }
+ 752              		.loc 1 124 10 is_stmt 0 view .LVU193
+ 753 003a 013B     		subs	r3, r3, #1
+ 754              	.LVL45:
+ 124:USER/Src/temp.c **** }
+ 755              		.loc 1 124 8 view .LVU194
+ 756 003c 002A     		cmp	r2, #0
+ 757 003e FBD1     		bne	.L35
+ 758              	.LVL46:
+ 124:USER/Src/temp.c **** }
+ 759              		.loc 1 124 8 view .LVU195
+ 760              	.LBE175:
+ 761              	.LBE174:
+ 190:USER/Src/temp.c **** 	i2c_scl_l();
+ 762              		.loc 1 190 2 is_stmt 1 view .LVU196
+ 763              	.LBB176:
+ 764              	.LBI176:
+  66:USER/Src/temp.c **** {
+ 765              		.loc 1 66 20 view .LVU197
+ 766              	.LBB177:
+  69:USER/Src/temp.c **** }
+ 767              		.loc 1 69 5 view .LVU198
+ 768 0040 4FF48051 		mov	r1, #4096
+ 769 0044 0148     		ldr	r0, .L37
+ 770 0046 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 771              	.LVL47:
+ 772              	.LBE177:
+ 773              	.LBE176:
+ 191:USER/Src/temp.c **** }
+ 774              		.loc 1 191 1 is_stmt 0 view .LVU199
+ 775 004a 10BD     		pop	{r4, pc}
+ 776              	.L38:
+ 777              		.align	2
+ 778              	.L37:
+ 779 004c 00000240 		.word	1073872896
+ 780 0050 00000000 		.word	.LANCHOR0
+ 781              		.cfi_endproc
+ 782              	.LFE145:
+ 784              		.section	.text.i2c_wait_ack,"ax",%progbits
+ 785              		.align	1
+ 786              		.global	i2c_wait_ack
+ 787              		.syntax unified
+ 788              		.thumb
+ 789              		.thumb_func
+ 791              	i2c_wait_ack:
+ 792              	.LFB146:
+ 192:USER/Src/temp.c **** 
+ 193:USER/Src/temp.c **** /**
+ 194:USER/Src/temp.c ****  * @brief When data is written, the slave responds  a ack signal
+ 195:USER/Src/temp.c ****  * 
+ 196:USER/Src/temp.c ****  */
+ 197:USER/Src/temp.c **** i2c_exit_code_e i2c_wait_ack(void)
+ 198:USER/Src/temp.c **** {
+ 793              		.loc 1 198 1 is_stmt 1 view -0
+ 794              		.cfi_startproc
+ 795              		@ args = 0, pretend = 0, frame = 24
+ 796              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 21
+
+
+ 797 0000 30B5     		push	{r4, r5, lr}
+ 798              	.LCFI13:
+ 799              		.cfi_def_cfa_offset 12
+ 800              		.cfi_offset 4, -12
+ 801              		.cfi_offset 5, -8
+ 802              		.cfi_offset 14, -4
+ 803 0002 87B0     		sub	sp, sp, #28
+ 804              	.LCFI14:
+ 805              		.cfi_def_cfa_offset 40
+ 199:USER/Src/temp.c **** 	i2c_sda_in();
+ 806              		.loc 1 199 2 view .LVU201
+ 807              	.LBB194:
+ 808              	.LBI194:
+  90:USER/Src/temp.c **** {
+ 809              		.loc 1 90 20 view .LVU202
+ 810              	.LBB195:
+  93:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 811              		.loc 1 93 4 view .LVU203
+  93:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 812              		.loc 1 93 21 is_stmt 0 view .LVU204
+ 813 0004 0023     		movs	r3, #0
+ 814 0006 0193     		str	r3, [sp, #4]
+ 815 0008 0293     		str	r3, [sp, #8]
+ 816 000a 0393     		str	r3, [sp, #12]
+ 817 000c 0493     		str	r3, [sp, #16]
+ 818 000e 0593     		str	r3, [sp, #20]
+  94:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 819              		.loc 1 94 2 is_stmt 1 view .LVU205
+  94:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 820              		.loc 1 94 22 is_stmt 0 view .LVU206
+ 821 0010 4FF40063 		mov	r3, #2048
+ 822 0014 0193     		str	r3, [sp, #4]
+  95:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 823              		.loc 1 95 2 is_stmt 1 view .LVU207
+  96:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 824              		.loc 1 96 2 view .LVU208
+  97:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 825              		.loc 1 97 2 view .LVU209
+  98:USER/Src/temp.c **** }
+ 826              		.loc 1 98 2 view .LVU210
+ 827 0016 224C     		ldr	r4, .L46
+ 828 0018 01A9     		add	r1, sp, #4
+ 829 001a 2046     		mov	r0, r4
+ 830 001c FFF7FEFF 		bl	HAL_GPIO_Init
+ 831              	.LVL48:
+ 832              	.LBE195:
+ 833              	.LBE194:
+ 200:USER/Src/temp.c **** 	i2c_scl_h();
+ 834              		.loc 1 200 2 view .LVU211
+ 835              	.LBB196:
+ 836              	.LBI196:
+  56:USER/Src/temp.c **** {
+ 837              		.loc 1 56 20 view .LVU212
+ 838              	.LBB197:
+  59:USER/Src/temp.c **** }
+ 839              		.loc 1 59 5 view .LVU213
+ 840 0020 0122     		movs	r2, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 22
+
+
+ 841 0022 4FF48051 		mov	r1, #4096
+ 842 0026 2046     		mov	r0, r4
+ 843 0028 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 844              	.LVL49:
+ 845              	.LBE197:
+ 846              	.LBE196:
+ 201:USER/Src/temp.c **** 	i2c_Wait();
+ 847              		.loc 1 201 2 view .LVU214
+ 848              	.LBB198:
+ 849              	.LBI198:
+ 121:USER/Src/temp.c **** {	
+ 850              		.loc 1 121 20 view .LVU215
+ 851              	.LBB199:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 852              		.loc 1 123 2 view .LVU216
+ 123:USER/Src/temp.c **** 	while (i--);
+ 853              		.loc 1 123 6 is_stmt 0 view .LVU217
+ 854 002c 1D4B     		ldr	r3, .L46+4
+ 855 002e 1B88     		ldrh	r3, [r3]
+ 856              	.LVL50:
+ 124:USER/Src/temp.c **** }
+ 857              		.loc 1 124 2 is_stmt 1 view .LVU218
+ 858              	.L40:
+ 124:USER/Src/temp.c **** }
+ 859              		.loc 1 124 13 view .LVU219
+ 124:USER/Src/temp.c **** }
+ 860              		.loc 1 124 8 view .LVU220
+ 861 0030 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 862              		.loc 1 124 10 is_stmt 0 view .LVU221
+ 863 0032 013B     		subs	r3, r3, #1
+ 864              	.LVL51:
+ 124:USER/Src/temp.c **** }
+ 865              		.loc 1 124 8 view .LVU222
+ 866 0034 002A     		cmp	r2, #0
+ 867 0036 FBD1     		bne	.L40
+ 868              	.LVL52:
+ 124:USER/Src/temp.c **** }
+ 869              		.loc 1 124 8 view .LVU223
+ 870              	.LBE199:
+ 871              	.LBE198:
+ 202:USER/Src/temp.c **** 
+ 203:USER/Src/temp.c **** 	if (i2c_read_sda())
+ 872              		.loc 1 203 2 is_stmt 1 view .LVU224
+ 873              		.loc 1 203 6 is_stmt 0 view .LVU225
+ 874 0038 FFF7FEFF 		bl	i2c_read_sda
+ 875              	.LVL53:
+ 876              		.loc 1 203 5 view .LVU226
+ 877 003c 0546     		mov	r5, r0
+ 878 003e 30BB     		cbnz	r0, .L45
+ 204:USER/Src/temp.c **** 	{
+ 205:USER/Src/temp.c **** 		i2c_scl_l();
+ 206:USER/Src/temp.c **** 		return _I2C_NO_ACK;
+ 207:USER/Src/temp.c **** 	}
+ 208:USER/Src/temp.c **** 	i2c_scl_l();
+ 879              		.loc 1 208 2 is_stmt 1 view .LVU227
+ 880              	.LBB200:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 23
+
+
+ 881              	.LBI200:
+  66:USER/Src/temp.c **** {
+ 882              		.loc 1 66 20 view .LVU228
+ 883              	.LBB201:
+  69:USER/Src/temp.c **** }
+ 884              		.loc 1 69 5 view .LVU229
+ 885 0040 0022     		movs	r2, #0
+ 886 0042 4FF48051 		mov	r1, #4096
+ 887 0046 1648     		ldr	r0, .L46
+ 888 0048 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 889              	.LVL54:
+ 890              	.LBE201:
+ 891              	.LBE200:
+ 209:USER/Src/temp.c **** 	i2c_Wait();
+ 892              		.loc 1 209 2 view .LVU230
+ 893              	.LBB202:
+ 894              	.LBI202:
+ 121:USER/Src/temp.c **** {	
+ 895              		.loc 1 121 20 view .LVU231
+ 896              	.LBB203:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 897              		.loc 1 123 2 view .LVU232
+ 123:USER/Src/temp.c **** 	while (i--);
+ 898              		.loc 1 123 6 is_stmt 0 view .LVU233
+ 899 004c 154B     		ldr	r3, .L46+4
+ 900 004e 1B88     		ldrh	r3, [r3]
+ 901              	.LVL55:
+ 124:USER/Src/temp.c **** }
+ 902              		.loc 1 124 2 is_stmt 1 view .LVU234
+ 903              	.L43:
+ 124:USER/Src/temp.c **** }
+ 904              		.loc 1 124 13 view .LVU235
+ 124:USER/Src/temp.c **** }
+ 905              		.loc 1 124 8 view .LVU236
+ 906 0050 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 907              		.loc 1 124 10 is_stmt 0 view .LVU237
+ 908 0052 013B     		subs	r3, r3, #1
+ 909              	.LVL56:
+ 124:USER/Src/temp.c **** }
+ 910              		.loc 1 124 8 view .LVU238
+ 911 0054 002A     		cmp	r2, #0
+ 912 0056 FBD1     		bne	.L43
+ 913              	.LVL57:
+ 124:USER/Src/temp.c **** }
+ 914              		.loc 1 124 8 view .LVU239
+ 915              	.LBE203:
+ 916              	.LBE202:
+ 210:USER/Src/temp.c **** 	i2c_sda_h();
+ 917              		.loc 1 210 2 is_stmt 1 view .LVU240
+ 918              	.LBB204:
+ 919              	.LBI204:
+  36:USER/Src/temp.c **** {
+ 920              		.loc 1 36 20 view .LVU241
+ 921              	.LBB205:
+  39:USER/Src/temp.c **** }
+ 922              		.loc 1 39 2 view .LVU242
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 24
+
+
+ 923 0058 114C     		ldr	r4, .L46
+ 924 005a 0122     		movs	r2, #1
+ 925 005c 4FF40061 		mov	r1, #2048
+ 926 0060 2046     		mov	r0, r4
+ 927 0062 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 928              	.LVL58:
+ 929              	.LBE205:
+ 930              	.LBE204:
+ 211:USER/Src/temp.c **** 	i2c_sda_out();
+ 931              		.loc 1 211 2 view .LVU243
+ 932              	.LBB206:
+ 933              	.LBI206:
+ 105:USER/Src/temp.c **** {
+ 934              		.loc 1 105 20 view .LVU244
+ 935              	.LBB207:
+ 108:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 936              		.loc 1 108 4 view .LVU245
+ 108:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 937              		.loc 1 108 21 is_stmt 0 view .LVU246
+ 938 0066 0023     		movs	r3, #0
+ 939 0068 0193     		str	r3, [sp, #4]
+ 940 006a 0293     		str	r3, [sp, #8]
+ 941 006c 0393     		str	r3, [sp, #12]
+ 942 006e 0493     		str	r3, [sp, #16]
+ 943 0070 0593     		str	r3, [sp, #20]
+ 109:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 944              		.loc 1 109 2 is_stmt 1 view .LVU247
+ 109:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 945              		.loc 1 109 22 is_stmt 0 view .LVU248
+ 946 0072 4FF40063 		mov	r3, #2048
+ 947 0076 0193     		str	r3, [sp, #4]
+ 110:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 948              		.loc 1 110 2 is_stmt 1 view .LVU249
+ 110:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 949              		.loc 1 110 23 is_stmt 0 view .LVU250
+ 950 0078 1123     		movs	r3, #17
+ 951 007a 0293     		str	r3, [sp, #8]
+ 111:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 952              		.loc 1 111 2 is_stmt 1 view .LVU251
+ 111:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 953              		.loc 1 111 23 is_stmt 0 view .LVU252
+ 954 007c 0123     		movs	r3, #1
+ 955 007e 0393     		str	r3, [sp, #12]
+ 112:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 956              		.loc 1 112 2 is_stmt 1 view .LVU253
+ 113:USER/Src/temp.c ****   
+ 957              		.loc 1 113 2 view .LVU254
+ 958 0080 01A9     		add	r1, sp, #4
+ 959 0082 2046     		mov	r0, r4
+ 960 0084 FFF7FEFF 		bl	HAL_GPIO_Init
+ 961              	.LVL59:
+ 962              	.L42:
+ 963              	.LBE207:
+ 964              	.LBE206:
+ 212:USER/Src/temp.c **** 	return _I2C_OK;
+ 213:USER/Src/temp.c **** }
+ 965              		.loc 1 213 1 is_stmt 0 view .LVU255
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 25
+
+
+ 966 0088 2846     		mov	r0, r5
+ 967 008a 07B0     		add	sp, sp, #28
+ 968              	.LCFI15:
+ 969              		.cfi_remember_state
+ 970              		.cfi_def_cfa_offset 12
+ 971              		@ sp needed
+ 972 008c 30BD     		pop	{r4, r5, pc}
+ 973              	.L45:
+ 974              	.LCFI16:
+ 975              		.cfi_restore_state
+ 205:USER/Src/temp.c **** 		return _I2C_NO_ACK;
+ 976              		.loc 1 205 3 is_stmt 1 view .LVU256
+ 977              	.LBB208:
+ 978              	.LBI208:
+  66:USER/Src/temp.c **** {
+ 979              		.loc 1 66 20 view .LVU257
+ 980              	.LBB209:
+  69:USER/Src/temp.c **** }
+ 981              		.loc 1 69 5 view .LVU258
+ 982 008e 0022     		movs	r2, #0
+ 983 0090 4FF48051 		mov	r1, #4096
+ 984 0094 0248     		ldr	r0, .L46
+ 985 0096 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 986              	.LVL60:
+ 987              	.LBE209:
+ 988              	.LBE208:
+ 206:USER/Src/temp.c **** 	}
+ 989              		.loc 1 206 3 view .LVU259
+ 206:USER/Src/temp.c **** 	}
+ 990              		.loc 1 206 10 is_stmt 0 view .LVU260
+ 991 009a 0225     		movs	r5, #2
+ 992 009c F4E7     		b	.L42
+ 993              	.L47:
+ 994 009e 00BF     		.align	2
+ 995              	.L46:
+ 996 00a0 00000240 		.word	1073872896
+ 997 00a4 00000000 		.word	.LANCHOR0
+ 998              		.cfi_endproc
+ 999              	.LFE146:
+ 1001              		.section	.text.i2c_send_byte,"ax",%progbits
+ 1002              		.align	1
+ 1003              		.global	i2c_send_byte
+ 1004              		.syntax unified
+ 1005              		.thumb
+ 1006              		.thumb_func
+ 1008              	i2c_send_byte:
+ 1009              	.LVL61:
+ 1010              	.LFB147:
+ 214:USER/Src/temp.c **** 
+ 215:USER/Src/temp.c **** /**
+ 216:USER/Src/temp.c ****  * @brief Send a byte to slave
+ 217:USER/Src/temp.c ****  * 
+ 218:USER/Src/temp.c ****  */
+ 219:USER/Src/temp.c **** void i2c_send_byte(unsigned char value)
+ 220:USER/Src/temp.c **** {
+ 1011              		.loc 1 220 1 is_stmt 1 view -0
+ 1012              		.cfi_startproc
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 26
+
+
+ 1013              		@ args = 0, pretend = 0, frame = 0
+ 1014              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1015              		.loc 1 220 1 is_stmt 0 view .LVU262
+ 1016 0000 38B5     		push	{r3, r4, r5, lr}
+ 1017              	.LCFI17:
+ 1018              		.cfi_def_cfa_offset 16
+ 1019              		.cfi_offset 3, -16
+ 1020              		.cfi_offset 4, -12
+ 1021              		.cfi_offset 5, -8
+ 1022              		.cfi_offset 14, -4
+ 1023 0002 0446     		mov	r4, r0
+ 221:USER/Src/temp.c **** 	unsigned char i;
+ 1024              		.loc 1 221 2 is_stmt 1 view .LVU263
+ 222:USER/Src/temp.c **** 
+ 223:USER/Src/temp.c **** 	i2c_scl_l();
+ 1025              		.loc 1 223 2 view .LVU264
+ 1026              	.LBB210:
+ 1027              	.LBI210:
+  66:USER/Src/temp.c **** {
+ 1028              		.loc 1 66 20 view .LVU265
+ 1029              	.LBB211:
+  69:USER/Src/temp.c **** }
+ 1030              		.loc 1 69 5 view .LVU266
+ 1031 0004 0022     		movs	r2, #0
+ 1032 0006 4FF48051 		mov	r1, #4096
+ 1033 000a 1948     		ldr	r0, .L58
+ 1034              	.LVL62:
+  69:USER/Src/temp.c **** }
+ 1035              		.loc 1 69 5 is_stmt 0 view .LVU267
+ 1036 000c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1037              	.LVL63:
+ 1038              	.LBE211:
+ 1039              	.LBE210:
+ 224:USER/Src/temp.c **** 	for (i = 0; i < 8; i ++)
+ 1040              		.loc 1 224 2 is_stmt 1 view .LVU268
+ 1041              		.loc 1 224 9 is_stmt 0 view .LVU269
+ 1042 0010 0025     		movs	r5, #0
+ 1043              		.loc 1 224 2 view .LVU270
+ 1044 0012 20E0     		b	.L49
+ 1045              	.LVL64:
+ 1046              	.L57:
+ 225:USER/Src/temp.c **** 	{
+ 226:USER/Src/temp.c **** 		if(value & 0x80)
+ 227:USER/Src/temp.c **** 			i2c_sda_h();
+ 1047              		.loc 1 227 4 is_stmt 1 view .LVU271
+ 1048              	.LBB212:
+ 1049              	.LBI212:
+  36:USER/Src/temp.c **** {
+ 1050              		.loc 1 36 20 view .LVU272
+ 1051              	.LBB213:
+  39:USER/Src/temp.c **** }
+ 1052              		.loc 1 39 2 view .LVU273
+ 1053 0014 0122     		movs	r2, #1
+ 1054 0016 4FF40061 		mov	r1, #2048
+ 1055 001a 1548     		ldr	r0, .L58
+ 1056 001c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1057              	.LVL65:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 27
+
+
+ 1058              	.L51:
+ 1059              	.LBE213:
+ 1060              	.LBE212:
+ 228:USER/Src/temp.c **** 		else 
+ 229:USER/Src/temp.c **** 			i2c_sda_l();
+ 230:USER/Src/temp.c **** 		i2c_Wait();
+ 1061              		.loc 1 230 3 discriminator 2 view .LVU274
+ 1062              	.LBB214:
+ 1063              	.LBI214:
+ 121:USER/Src/temp.c **** {	
+ 1064              		.loc 1 121 20 discriminator 2 view .LVU275
+ 1065              	.LBB215:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 1066              		.loc 1 123 2 discriminator 2 view .LVU276
+ 123:USER/Src/temp.c **** 	while (i--);
+ 1067              		.loc 1 123 6 is_stmt 0 discriminator 2 view .LVU277
+ 1068 0020 144B     		ldr	r3, .L58+4
+ 1069 0022 1B88     		ldrh	r3, [r3]
+ 1070              	.LVL66:
+ 124:USER/Src/temp.c **** }
+ 1071              		.loc 1 124 2 is_stmt 1 discriminator 2 view .LVU278
+ 1072              	.L52:
+ 124:USER/Src/temp.c **** }
+ 1073              		.loc 1 124 13 view .LVU279
+ 124:USER/Src/temp.c **** }
+ 1074              		.loc 1 124 8 view .LVU280
+ 1075 0024 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 1076              		.loc 1 124 10 is_stmt 0 view .LVU281
+ 1077 0026 013B     		subs	r3, r3, #1
+ 1078              	.LVL67:
+ 124:USER/Src/temp.c **** }
+ 1079              		.loc 1 124 8 view .LVU282
+ 1080 0028 002A     		cmp	r2, #0
+ 1081 002a FBD1     		bne	.L52
+ 1082              	.LVL68:
+ 124:USER/Src/temp.c **** }
+ 1083              		.loc 1 124 8 view .LVU283
+ 1084              	.LBE215:
+ 1085              	.LBE214:
+ 231:USER/Src/temp.c **** 		value <<= 1;
+ 1086              		.loc 1 231 3 is_stmt 1 discriminator 2 view .LVU284
+ 1087              		.loc 1 231 9 is_stmt 0 discriminator 2 view .LVU285
+ 1088 002c 6400     		lsls	r4, r4, #1
+ 1089              	.LVL69:
+ 1090              		.loc 1 231 9 discriminator 2 view .LVU286
+ 1091 002e E4B2     		uxtb	r4, r4
+ 1092              	.LVL70:
+ 232:USER/Src/temp.c **** 		i2c_scl_h();
+ 1093              		.loc 1 232 3 is_stmt 1 discriminator 2 view .LVU287
+ 1094              	.LBB216:
+ 1095              	.LBI216:
+  56:USER/Src/temp.c **** {
+ 1096              		.loc 1 56 20 discriminator 2 view .LVU288
+ 1097              	.LBB217:
+  59:USER/Src/temp.c **** }
+ 1098              		.loc 1 59 5 discriminator 2 view .LVU289
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 28
+
+
+ 1099 0030 0122     		movs	r2, #1
+ 1100 0032 4FF48051 		mov	r1, #4096
+ 1101 0036 0E48     		ldr	r0, .L58
+ 1102 0038 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1103              	.LVL71:
+ 1104              	.LBE217:
+ 1105              	.LBE216:
+ 233:USER/Src/temp.c **** 		i2c_Wait();
+ 1106              		.loc 1 233 3 discriminator 2 view .LVU290
+ 1107              	.LBB218:
+ 1108              	.LBI218:
+ 121:USER/Src/temp.c **** {	
+ 1109              		.loc 1 121 20 discriminator 2 view .LVU291
+ 1110              	.LBB219:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 1111              		.loc 1 123 2 discriminator 2 view .LVU292
+ 123:USER/Src/temp.c **** 	while (i--);
+ 1112              		.loc 1 123 6 is_stmt 0 discriminator 2 view .LVU293
+ 1113 003c 0D4B     		ldr	r3, .L58+4
+ 1114 003e 1B88     		ldrh	r3, [r3]
+ 1115              	.LVL72:
+ 124:USER/Src/temp.c **** }
+ 1116              		.loc 1 124 2 is_stmt 1 discriminator 2 view .LVU294
+ 1117              	.L53:
+ 124:USER/Src/temp.c **** }
+ 1118              		.loc 1 124 13 view .LVU295
+ 124:USER/Src/temp.c **** }
+ 1119              		.loc 1 124 8 view .LVU296
+ 1120 0040 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 1121              		.loc 1 124 10 is_stmt 0 view .LVU297
+ 1122 0042 013B     		subs	r3, r3, #1
+ 1123              	.LVL73:
+ 124:USER/Src/temp.c **** }
+ 1124              		.loc 1 124 8 view .LVU298
+ 1125 0044 002A     		cmp	r2, #0
+ 1126 0046 FBD1     		bne	.L53
+ 1127              	.LVL74:
+ 124:USER/Src/temp.c **** }
+ 1128              		.loc 1 124 8 view .LVU299
+ 1129              	.LBE219:
+ 1130              	.LBE218:
+ 234:USER/Src/temp.c **** 		i2c_scl_l();
+ 1131              		.loc 1 234 3 is_stmt 1 view .LVU300
+ 1132              	.LBB220:
+ 1133              	.LBI220:
+  66:USER/Src/temp.c **** {
+ 1134              		.loc 1 66 20 view .LVU301
+ 1135              	.LBB221:
+  69:USER/Src/temp.c **** }
+ 1136              		.loc 1 69 5 view .LVU302
+ 1137 0048 4FF48051 		mov	r1, #4096
+ 1138 004c 0848     		ldr	r0, .L58
+ 1139 004e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1140              	.LVL75:
+ 1141              	.LBE221:
+ 1142              	.LBE220:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 29
+
+
+ 224:USER/Src/temp.c **** 	{
+ 1143              		.loc 1 224 21 view .LVU303
+ 224:USER/Src/temp.c **** 	{
+ 1144              		.loc 1 224 23 is_stmt 0 view .LVU304
+ 1145 0052 0135     		adds	r5, r5, #1
+ 1146              	.LVL76:
+ 224:USER/Src/temp.c **** 	{
+ 1147              		.loc 1 224 23 view .LVU305
+ 1148 0054 EDB2     		uxtb	r5, r5
+ 1149              	.LVL77:
+ 1150              	.L49:
+ 224:USER/Src/temp.c **** 	{
+ 1151              		.loc 1 224 14 is_stmt 1 discriminator 1 view .LVU306
+ 224:USER/Src/temp.c **** 	{
+ 1152              		.loc 1 224 2 is_stmt 0 discriminator 1 view .LVU307
+ 1153 0056 072D     		cmp	r5, #7
+ 1154 0058 09D8     		bhi	.L56
+ 226:USER/Src/temp.c **** 			i2c_sda_h();
+ 1155              		.loc 1 226 3 is_stmt 1 view .LVU308
+ 226:USER/Src/temp.c **** 			i2c_sda_h();
+ 1156              		.loc 1 226 5 is_stmt 0 view .LVU309
+ 1157 005a 14F0800F 		tst	r4, #128
+ 1158 005e D9D1     		bne	.L57
+ 229:USER/Src/temp.c **** 		i2c_Wait();
+ 1159              		.loc 1 229 4 is_stmt 1 view .LVU310
+ 1160              	.LBB222:
+ 1161              	.LBI222:
+  46:USER/Src/temp.c **** {
+ 1162              		.loc 1 46 20 view .LVU311
+ 1163              	.LBB223:
+  49:USER/Src/temp.c **** }
+ 1164              		.loc 1 49 5 view .LVU312
+ 1165 0060 0022     		movs	r2, #0
+ 1166 0062 4FF40061 		mov	r1, #2048
+ 1167 0066 0248     		ldr	r0, .L58
+ 1168 0068 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1169              	.LVL78:
+  50:USER/Src/temp.c **** 
+ 1170              		.loc 1 50 1 is_stmt 0 view .LVU313
+ 1171 006c D8E7     		b	.L51
+ 1172              	.L56:
+ 1173              	.LBE223:
+ 1174              	.LBE222:
+ 235:USER/Src/temp.c **** 	}
+ 236:USER/Src/temp.c **** }
+ 1175              		.loc 1 236 1 view .LVU314
+ 1176 006e 38BD     		pop	{r3, r4, r5, pc}
+ 1177              	.LVL79:
+ 1178              	.L59:
+ 1179              		.loc 1 236 1 view .LVU315
+ 1180              		.align	2
+ 1181              	.L58:
+ 1182 0070 00000240 		.word	1073872896
+ 1183 0074 00000000 		.word	.LANCHOR0
+ 1184              		.cfi_endproc
+ 1185              	.LFE147:
+ 1187              		.section	.text.i2c_receive_byte,"ax",%progbits
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 30
+
+
+ 1188              		.align	1
+ 1189              		.global	i2c_receive_byte
+ 1190              		.syntax unified
+ 1191              		.thumb
+ 1192              		.thumb_func
+ 1194              	i2c_receive_byte:
+ 1195              	.LFB148:
+ 237:USER/Src/temp.c **** 
+ 238:USER/Src/temp.c **** /**
+ 239:USER/Src/temp.c ****  * @brief Receive a byte timing
+ 240:USER/Src/temp.c ****  * 
+ 241:USER/Src/temp.c ****  */
+ 242:USER/Src/temp.c **** unsigned char i2c_receive_byte(void)
+ 243:USER/Src/temp.c **** {
+ 1196              		.loc 1 243 1 is_stmt 1 view -0
+ 1197              		.cfi_startproc
+ 1198              		@ args = 0, pretend = 0, frame = 24
+ 1199              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1200 0000 70B5     		push	{r4, r5, r6, lr}
+ 1201              	.LCFI18:
+ 1202              		.cfi_def_cfa_offset 16
+ 1203              		.cfi_offset 4, -16
+ 1204              		.cfi_offset 5, -12
+ 1205              		.cfi_offset 6, -8
+ 1206              		.cfi_offset 14, -4
+ 1207 0002 86B0     		sub	sp, sp, #24
+ 1208              	.LCFI19:
+ 1209              		.cfi_def_cfa_offset 40
+ 244:USER/Src/temp.c **** 	unsigned char i;
+ 1210              		.loc 1 244 2 view .LVU317
+ 245:USER/Src/temp.c **** 	unsigned char data = 0;
+ 1211              		.loc 1 245 2 view .LVU318
+ 1212              	.LVL80:
+ 246:USER/Src/temp.c **** 
+ 247:USER/Src/temp.c ****     i2c_sda_in();
+ 1213              		.loc 1 247 5 view .LVU319
+ 1214              	.LBB242:
+ 1215              	.LBI242:
+  90:USER/Src/temp.c **** {
+ 1216              		.loc 1 90 20 view .LVU320
+ 1217              	.LBB243:
+  93:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 1218              		.loc 1 93 4 view .LVU321
+  93:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 1219              		.loc 1 93 21 is_stmt 0 view .LVU322
+ 1220 0004 0024     		movs	r4, #0
+ 1221 0006 0194     		str	r4, [sp, #4]
+ 1222 0008 0294     		str	r4, [sp, #8]
+ 1223 000a 0394     		str	r4, [sp, #12]
+ 1224 000c 0494     		str	r4, [sp, #16]
+ 1225 000e 0594     		str	r4, [sp, #20]
+  94:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 1226              		.loc 1 94 2 is_stmt 1 view .LVU323
+  94:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 1227              		.loc 1 94 22 is_stmt 0 view .LVU324
+ 1228 0010 4FF40066 		mov	r6, #2048
+ 1229 0014 0196     		str	r6, [sp, #4]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 31
+
+
+  95:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 1230              		.loc 1 95 2 is_stmt 1 view .LVU325
+  96:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 1231              		.loc 1 96 2 view .LVU326
+  97:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 1232              		.loc 1 97 2 view .LVU327
+  98:USER/Src/temp.c **** }
+ 1233              		.loc 1 98 2 view .LVU328
+ 1234 0016 284D     		ldr	r5, .L69
+ 1235 0018 01A9     		add	r1, sp, #4
+ 1236 001a 2846     		mov	r0, r5
+ 1237 001c FFF7FEFF 		bl	HAL_GPIO_Init
+ 1238              	.LVL81:
+ 1239              	.LBE243:
+ 1240              	.LBE242:
+ 248:USER/Src/temp.c **** 	i2c_sda_h();
+ 1241              		.loc 1 248 2 view .LVU329
+ 1242              	.LBB244:
+ 1243              	.LBI244:
+  36:USER/Src/temp.c **** {
+ 1244              		.loc 1 36 20 view .LVU330
+ 1245              	.LBB245:
+  39:USER/Src/temp.c **** }
+ 1246              		.loc 1 39 2 view .LVU331
+ 1247 0020 0122     		movs	r2, #1
+ 1248 0022 3146     		mov	r1, r6
+ 1249 0024 2846     		mov	r0, r5
+ 1250 0026 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1251              	.LVL82:
+ 1252              	.LBE245:
+ 1253              	.LBE244:
+ 249:USER/Src/temp.c **** 	for (i = 0; i < 8; i++)
+ 1254              		.loc 1 249 2 view .LVU332
+ 245:USER/Src/temp.c **** 
+ 1255              		.loc 1 245 16 is_stmt 0 view .LVU333
+ 1256 002a 2546     		mov	r5, r4
+ 1257              		.loc 1 249 2 view .LVU334
+ 1258 002c 01E0     		b	.L61
+ 1259              	.LVL83:
+ 1260              	.L64:
+ 1261              		.loc 1 249 21 is_stmt 1 discriminator 2 view .LVU335
+ 1262              		.loc 1 249 22 is_stmt 0 discriminator 2 view .LVU336
+ 1263 002e 0134     		adds	r4, r4, #1
+ 1264              	.LVL84:
+ 1265              		.loc 1 249 22 discriminator 2 view .LVU337
+ 1266 0030 E4B2     		uxtb	r4, r4
+ 1267              	.LVL85:
+ 1268              	.L61:
+ 1269              		.loc 1 249 14 is_stmt 1 discriminator 1 view .LVU338
+ 1270              		.loc 1 249 2 is_stmt 0 discriminator 1 view .LVU339
+ 1271 0032 072C     		cmp	r4, #7
+ 1272 0034 20D8     		bhi	.L68
+ 250:USER/Src/temp.c **** 	{
+ 251:USER/Src/temp.c **** 		i2c_scl_l();
+ 1273              		.loc 1 251 3 is_stmt 1 view .LVU340
+ 1274              	.LBB246:
+ 1275              	.LBI246:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 32
+
+
+  66:USER/Src/temp.c **** {
+ 1276              		.loc 1 66 20 view .LVU341
+ 1277              	.LBB247:
+  69:USER/Src/temp.c **** }
+ 1278              		.loc 1 69 5 view .LVU342
+ 1279 0036 0022     		movs	r2, #0
+ 1280 0038 4FF48051 		mov	r1, #4096
+ 1281 003c 1E48     		ldr	r0, .L69
+ 1282 003e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1283              	.LVL86:
+ 1284              	.LBE247:
+ 1285              	.LBE246:
+ 252:USER/Src/temp.c **** 		data <<= 1;
+ 1286              		.loc 1 252 3 view .LVU343
+ 1287              		.loc 1 252 8 is_stmt 0 view .LVU344
+ 1288 0042 6D00     		lsls	r5, r5, #1
+ 1289              	.LVL87:
+ 1290              		.loc 1 252 8 view .LVU345
+ 1291 0044 EDB2     		uxtb	r5, r5
+ 1292              	.LVL88:
+ 253:USER/Src/temp.c **** 		i2c_Wait();
+ 1293              		.loc 1 253 3 is_stmt 1 view .LVU346
+ 1294              	.LBB248:
+ 1295              	.LBI248:
+ 121:USER/Src/temp.c **** {	
+ 1296              		.loc 1 121 20 view .LVU347
+ 1297              	.LBB249:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 1298              		.loc 1 123 2 view .LVU348
+ 123:USER/Src/temp.c **** 	while (i--);
+ 1299              		.loc 1 123 6 is_stmt 0 view .LVU349
+ 1300 0046 1D4B     		ldr	r3, .L69+4
+ 1301 0048 1B88     		ldrh	r3, [r3]
+ 1302              	.LVL89:
+ 124:USER/Src/temp.c **** }
+ 1303              		.loc 1 124 2 is_stmt 1 view .LVU350
+ 1304              	.L62:
+ 124:USER/Src/temp.c **** }
+ 1305              		.loc 1 124 13 view .LVU351
+ 124:USER/Src/temp.c **** }
+ 1306              		.loc 1 124 8 view .LVU352
+ 1307 004a 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 1308              		.loc 1 124 10 is_stmt 0 view .LVU353
+ 1309 004c 013B     		subs	r3, r3, #1
+ 1310              	.LVL90:
+ 124:USER/Src/temp.c **** }
+ 1311              		.loc 1 124 8 view .LVU354
+ 1312 004e 002A     		cmp	r2, #0
+ 1313 0050 FBD1     		bne	.L62
+ 1314              	.LVL91:
+ 124:USER/Src/temp.c **** }
+ 1315              		.loc 1 124 8 view .LVU355
+ 1316              	.LBE249:
+ 1317              	.LBE248:
+ 254:USER/Src/temp.c **** 		i2c_scl_h();
+ 1318              		.loc 1 254 3 is_stmt 1 view .LVU356
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 33
+
+
+ 1319              	.LBB250:
+ 1320              	.LBI250:
+  56:USER/Src/temp.c **** {
+ 1321              		.loc 1 56 20 view .LVU357
+ 1322              	.LBB251:
+  59:USER/Src/temp.c **** }
+ 1323              		.loc 1 59 5 view .LVU358
+ 1324 0052 0122     		movs	r2, #1
+ 1325 0054 4FF48051 		mov	r1, #4096
+ 1326 0058 1748     		ldr	r0, .L69
+ 1327 005a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1328              	.LVL92:
+ 1329              	.LBE251:
+ 1330              	.LBE250:
+ 255:USER/Src/temp.c **** 		i2c_Wait();
+ 1331              		.loc 1 255 3 view .LVU359
+ 1332              	.LBB252:
+ 1333              	.LBI252:
+ 121:USER/Src/temp.c **** {	
+ 1334              		.loc 1 121 20 view .LVU360
+ 1335              	.LBB253:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 1336              		.loc 1 123 2 view .LVU361
+ 123:USER/Src/temp.c **** 	while (i--);
+ 1337              		.loc 1 123 6 is_stmt 0 view .LVU362
+ 1338 005e 174B     		ldr	r3, .L69+4
+ 1339 0060 1B88     		ldrh	r3, [r3]
+ 1340              	.LVL93:
+ 124:USER/Src/temp.c **** }
+ 1341              		.loc 1 124 2 is_stmt 1 view .LVU363
+ 1342              	.L63:
+ 124:USER/Src/temp.c **** }
+ 1343              		.loc 1 124 13 view .LVU364
+ 124:USER/Src/temp.c **** }
+ 1344              		.loc 1 124 8 view .LVU365
+ 1345 0062 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 1346              		.loc 1 124 10 is_stmt 0 view .LVU366
+ 1347 0064 013B     		subs	r3, r3, #1
+ 1348              	.LVL94:
+ 124:USER/Src/temp.c **** }
+ 1349              		.loc 1 124 8 view .LVU367
+ 1350 0066 002A     		cmp	r2, #0
+ 1351 0068 FBD1     		bne	.L63
+ 1352              	.LVL95:
+ 124:USER/Src/temp.c **** }
+ 1353              		.loc 1 124 8 view .LVU368
+ 1354              	.LBE253:
+ 1355              	.LBE252:
+ 256:USER/Src/temp.c **** 		if(i2c_read_sda())
+ 1356              		.loc 1 256 3 is_stmt 1 view .LVU369
+ 1357              		.loc 1 256 6 is_stmt 0 view .LVU370
+ 1358 006a FFF7FEFF 		bl	i2c_read_sda
+ 1359              	.LVL96:
+ 1360              		.loc 1 256 5 view .LVU371
+ 1361 006e 0028     		cmp	r0, #0
+ 1362 0070 DDD0     		beq	.L64
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 34
+
+
+ 257:USER/Src/temp.c **** 		{
+ 258:USER/Src/temp.c **** 			data |= 0x01;
+ 1363              		.loc 1 258 4 is_stmt 1 view .LVU372
+ 1364              		.loc 1 258 9 is_stmt 0 view .LVU373
+ 1365 0072 45F00105 		orr	r5, r5, #1
+ 1366              	.LVL97:
+ 1367              		.loc 1 258 9 view .LVU374
+ 1368 0076 DAE7     		b	.L64
+ 1369              	.L68:
+ 259:USER/Src/temp.c **** 		}
+ 260:USER/Src/temp.c **** 	}
+ 261:USER/Src/temp.c **** 	i2c_scl_l();
+ 1370              		.loc 1 261 2 is_stmt 1 view .LVU375
+ 1371              	.LBB254:
+ 1372              	.LBI254:
+  66:USER/Src/temp.c **** {
+ 1373              		.loc 1 66 20 view .LVU376
+ 1374              	.LBB255:
+  69:USER/Src/temp.c **** }
+ 1375              		.loc 1 69 5 view .LVU377
+ 1376 0078 0022     		movs	r2, #0
+ 1377 007a 4FF48051 		mov	r1, #4096
+ 1378 007e 0E48     		ldr	r0, .L69
+ 1379 0080 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1380              	.LVL98:
+ 1381              	.LBE255:
+ 1382              	.LBE254:
+ 262:USER/Src/temp.c **** 	i2c_Wait();
+ 1383              		.loc 1 262 2 view .LVU378
+ 1384              	.LBB256:
+ 1385              	.LBI256:
+ 121:USER/Src/temp.c **** {	
+ 1386              		.loc 1 121 20 view .LVU379
+ 1387              	.LBB257:
+ 123:USER/Src/temp.c **** 	while (i--);
+ 1388              		.loc 1 123 2 view .LVU380
+ 123:USER/Src/temp.c **** 	while (i--);
+ 1389              		.loc 1 123 6 is_stmt 0 view .LVU381
+ 1390 0084 0D4B     		ldr	r3, .L69+4
+ 1391 0086 1B88     		ldrh	r3, [r3]
+ 1392              	.LVL99:
+ 124:USER/Src/temp.c **** }
+ 1393              		.loc 1 124 2 is_stmt 1 view .LVU382
+ 1394              	.L66:
+ 124:USER/Src/temp.c **** }
+ 1395              		.loc 1 124 13 view .LVU383
+ 124:USER/Src/temp.c **** }
+ 1396              		.loc 1 124 8 view .LVU384
+ 1397 0088 1A46     		mov	r2, r3
+ 124:USER/Src/temp.c **** }
+ 1398              		.loc 1 124 10 is_stmt 0 view .LVU385
+ 1399 008a 013B     		subs	r3, r3, #1
+ 1400              	.LVL100:
+ 124:USER/Src/temp.c **** }
+ 1401              		.loc 1 124 8 view .LVU386
+ 1402 008c 002A     		cmp	r2, #0
+ 1403 008e FBD1     		bne	.L66
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 35
+
+
+ 1404              	.LVL101:
+ 124:USER/Src/temp.c **** }
+ 1405              		.loc 1 124 8 view .LVU387
+ 1406              	.LBE257:
+ 1407              	.LBE256:
+ 263:USER/Src/temp.c ****     i2c_sda_out();
+ 1408              		.loc 1 263 5 is_stmt 1 view .LVU388
+ 1409              	.LBB258:
+ 1410              	.LBI258:
+ 105:USER/Src/temp.c **** {
+ 1411              		.loc 1 105 20 view .LVU389
+ 1412              	.LBB259:
+ 108:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 1413              		.loc 1 108 4 view .LVU390
+ 108:USER/Src/temp.c **** 	GPIO_InitStruct.Pin = GPIO_PIN_11;
+ 1414              		.loc 1 108 21 is_stmt 0 view .LVU391
+ 1415 0090 0023     		movs	r3, #0
+ 1416 0092 0193     		str	r3, [sp, #4]
+ 1417 0094 0293     		str	r3, [sp, #8]
+ 1418 0096 0393     		str	r3, [sp, #12]
+ 1419 0098 0493     		str	r3, [sp, #16]
+ 1420 009a 0593     		str	r3, [sp, #20]
+ 109:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 1421              		.loc 1 109 2 is_stmt 1 view .LVU392
+ 109:USER/Src/temp.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+ 1422              		.loc 1 109 22 is_stmt 0 view .LVU393
+ 1423 009c 4FF40063 		mov	r3, #2048
+ 1424 00a0 0193     		str	r3, [sp, #4]
+ 110:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 1425              		.loc 1 110 2 is_stmt 1 view .LVU394
+ 110:USER/Src/temp.c **** 	GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 1426              		.loc 1 110 23 is_stmt 0 view .LVU395
+ 1427 00a2 1123     		movs	r3, #17
+ 1428 00a4 0293     		str	r3, [sp, #8]
+ 111:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 1429              		.loc 1 111 2 is_stmt 1 view .LVU396
+ 111:USER/Src/temp.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 1430              		.loc 1 111 23 is_stmt 0 view .LVU397
+ 1431 00a6 0123     		movs	r3, #1
+ 1432 00a8 0393     		str	r3, [sp, #12]
+ 112:USER/Src/temp.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 1433              		.loc 1 112 2 is_stmt 1 view .LVU398
+ 113:USER/Src/temp.c ****   
+ 1434              		.loc 1 113 2 view .LVU399
+ 1435 00aa 01A9     		add	r1, sp, #4
+ 1436 00ac 0248     		ldr	r0, .L69
+ 1437 00ae FFF7FEFF 		bl	HAL_GPIO_Init
+ 1438              	.LVL102:
+ 1439              	.LBE259:
+ 1440              	.LBE258:
+ 264:USER/Src/temp.c **** 	return data;
+ 1441              		.loc 1 264 2 view .LVU400
+ 265:USER/Src/temp.c **** }
+ 1442              		.loc 1 265 1 is_stmt 0 view .LVU401
+ 1443 00b2 2846     		mov	r0, r5
+ 1444 00b4 06B0     		add	sp, sp, #24
+ 1445              	.LCFI20:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 36
+
+
+ 1446              		.cfi_def_cfa_offset 16
+ 1447              		@ sp needed
+ 1448 00b6 70BD     		pop	{r4, r5, r6, pc}
+ 1449              	.LVL103:
+ 1450              	.L70:
+ 1451              		.loc 1 265 1 view .LVU402
+ 1452              		.align	2
+ 1453              	.L69:
+ 1454 00b8 00000240 		.word	1073872896
+ 1455 00bc 00000000 		.word	.LANCHOR0
+ 1456              		.cfi_endproc
+ 1457              	.LFE148:
+ 1459              		.section	.text.i2c_write_multi_bytes,"ax",%progbits
+ 1460              		.align	1
+ 1461              		.global	i2c_write_multi_bytes
+ 1462              		.syntax unified
+ 1463              		.thumb
+ 1464              		.thumb_func
+ 1466              	i2c_write_multi_bytes:
+ 1467              	.LVL104:
+ 1468              	.LFB149:
+ 266:USER/Src/temp.c **** 
+ 267:USER/Src/temp.c **** /**
+ 268:USER/Src/temp.c ****  * @brief Write multiple bytes to slave 
+ 269:USER/Src/temp.c ****  * 
+ 270:USER/Src/temp.c ****  */
+ 271:USER/Src/temp.c **** i2c_exit_code_e i2c_write_multi_bytes(unsigned char dev_addr, unsigned char reg_addr, const unsigne
+ 272:USER/Src/temp.c **** {
+ 1469              		.loc 1 272 1 is_stmt 1 view -0
+ 1470              		.cfi_startproc
+ 1471              		@ args = 0, pretend = 0, frame = 0
+ 1472              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1473              		.loc 1 272 1 is_stmt 0 view .LVU404
+ 1474 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 1475              	.LCFI21:
+ 1476              		.cfi_def_cfa_offset 24
+ 1477              		.cfi_offset 3, -24
+ 1478              		.cfi_offset 4, -20
+ 1479              		.cfi_offset 5, -16
+ 1480              		.cfi_offset 6, -12
+ 1481              		.cfi_offset 7, -8
+ 1482              		.cfi_offset 14, -4
+ 1483 0002 0446     		mov	r4, r0
+ 1484 0004 0F46     		mov	r7, r1
+ 1485 0006 1646     		mov	r6, r2
+ 1486 0008 1D46     		mov	r5, r3
+ 273:USER/Src/temp.c ****     unsigned short i;
+ 1487              		.loc 1 273 5 is_stmt 1 view .LVU405
+ 274:USER/Src/temp.c **** 
+ 275:USER/Src/temp.c ****     if (i2c_start() != _I2C_OK)
+ 1488              		.loc 1 275 5 view .LVU406
+ 1489              		.loc 1 275 9 is_stmt 0 view .LVU407
+ 1490 000a FFF7FEFF 		bl	i2c_start
+ 1491              	.LVL105:
+ 1492              		.loc 1 275 8 view .LVU408
+ 1493 000e 10B1     		cbz	r0, .L79
+ 276:USER/Src/temp.c **** 		return _I2C_START_FAIL;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 37
+
+
+ 1494              		.loc 1 276 10 view .LVU409
+ 1495 0010 0127     		movs	r7, #1
+ 1496              	.L72:
+ 277:USER/Src/temp.c **** 
+ 278:USER/Src/temp.c ****     i2c_send_byte(dev_addr);
+ 279:USER/Src/temp.c **** 	if (i2c_wait_ack() != _I2C_OK)
+ 280:USER/Src/temp.c **** 	{
+ 281:USER/Src/temp.c **** 		i2c_stop(); 
+ 282:USER/Src/temp.c **** 		return _I2C_NO_ACK;
+ 283:USER/Src/temp.c **** 	}
+ 284:USER/Src/temp.c **** 	i2c_send_byte(reg_addr);
+ 285:USER/Src/temp.c **** 	if (i2c_wait_ack() != _I2C_OK)
+ 286:USER/Src/temp.c **** 	{
+ 287:USER/Src/temp.c **** 		i2c_stop(); 
+ 288:USER/Src/temp.c **** 		return _I2C_NO_ACK;
+ 289:USER/Src/temp.c **** 	}
+ 290:USER/Src/temp.c ****     for (i = 0; i < size; i++)
+ 291:USER/Src/temp.c ****     {
+ 292:USER/Src/temp.c ****     	i2c_send_byte(*(buf + i));
+ 293:USER/Src/temp.c ****     	i2c_wait_ack();
+ 294:USER/Src/temp.c ****     }
+ 295:USER/Src/temp.c ****     i2c_stop();
+ 296:USER/Src/temp.c **** 
+ 297:USER/Src/temp.c **** 	return	_I2C_OK;
+ 298:USER/Src/temp.c **** }
+ 1497              		.loc 1 298 1 view .LVU410
+ 1498 0012 3846     		mov	r0, r7
+ 1499 0014 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 1500              	.LVL106:
+ 1501              	.L79:
+ 278:USER/Src/temp.c **** 	if (i2c_wait_ack() != _I2C_OK)
+ 1502              		.loc 1 278 5 is_stmt 1 view .LVU411
+ 1503 0016 2046     		mov	r0, r4
+ 1504 0018 FFF7FEFF 		bl	i2c_send_byte
+ 1505              	.LVL107:
+ 279:USER/Src/temp.c **** 	{
+ 1506              		.loc 1 279 2 view .LVU412
+ 279:USER/Src/temp.c **** 	{
+ 1507              		.loc 1 279 6 is_stmt 0 view .LVU413
+ 1508 001c FFF7FEFF 		bl	i2c_wait_ack
+ 1509              	.LVL108:
+ 279:USER/Src/temp.c **** 	{
+ 1510              		.loc 1 279 5 view .LVU414
+ 1511 0020 40B9     		cbnz	r0, .L80
+ 284:USER/Src/temp.c **** 	if (i2c_wait_ack() != _I2C_OK)
+ 1512              		.loc 1 284 2 is_stmt 1 view .LVU415
+ 1513 0022 3846     		mov	r0, r7
+ 1514 0024 FFF7FEFF 		bl	i2c_send_byte
+ 1515              	.LVL109:
+ 285:USER/Src/temp.c **** 	{
+ 1516              		.loc 1 285 2 view .LVU416
+ 285:USER/Src/temp.c **** 	{
+ 1517              		.loc 1 285 6 is_stmt 0 view .LVU417
+ 1518 0028 FFF7FEFF 		bl	i2c_wait_ack
+ 1519              	.LVL110:
+ 285:USER/Src/temp.c **** 	{
+ 1520              		.loc 1 285 5 view .LVU418
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 38
+
+
+ 1521 002c 0746     		mov	r7, r0
+ 1522 002e 28B9     		cbnz	r0, .L81
+ 290:USER/Src/temp.c ****     {
+ 1523              		.loc 1 290 12 view .LVU419
+ 1524 0030 0024     		movs	r4, #0
+ 1525 0032 0EE0     		b	.L74
+ 1526              	.L80:
+ 281:USER/Src/temp.c **** 		return _I2C_NO_ACK;
+ 1527              		.loc 1 281 3 is_stmt 1 view .LVU420
+ 1528 0034 FFF7FEFF 		bl	i2c_stop
+ 1529              	.LVL111:
+ 282:USER/Src/temp.c **** 	}
+ 1530              		.loc 1 282 3 view .LVU421
+ 282:USER/Src/temp.c **** 	}
+ 1531              		.loc 1 282 10 is_stmt 0 view .LVU422
+ 1532 0038 0227     		movs	r7, #2
+ 1533 003a EAE7     		b	.L72
+ 1534              	.L81:
+ 287:USER/Src/temp.c **** 		return _I2C_NO_ACK;
+ 1535              		.loc 1 287 3 is_stmt 1 view .LVU423
+ 1536 003c FFF7FEFF 		bl	i2c_stop
+ 1537              	.LVL112:
+ 288:USER/Src/temp.c **** 	}
+ 1538              		.loc 1 288 3 view .LVU424
+ 288:USER/Src/temp.c **** 	}
+ 1539              		.loc 1 288 10 is_stmt 0 view .LVU425
+ 1540 0040 0227     		movs	r7, #2
+ 1541 0042 E6E7     		b	.L72
+ 1542              	.LVL113:
+ 1543              	.L75:
+ 292:USER/Src/temp.c ****     	i2c_wait_ack();
+ 1544              		.loc 1 292 6 is_stmt 1 discriminator 3 view .LVU426
+ 1545 0044 305D     		ldrb	r0, [r6, r4]	@ zero_extendqisi2
+ 1546 0046 FFF7FEFF 		bl	i2c_send_byte
+ 1547              	.LVL114:
+ 293:USER/Src/temp.c ****     }
+ 1548              		.loc 1 293 6 discriminator 3 view .LVU427
+ 1549 004a FFF7FEFF 		bl	i2c_wait_ack
+ 1550              	.LVL115:
+ 290:USER/Src/temp.c ****     {
+ 1551              		.loc 1 290 27 discriminator 3 view .LVU428
+ 290:USER/Src/temp.c ****     {
+ 1552              		.loc 1 290 28 is_stmt 0 discriminator 3 view .LVU429
+ 1553 004e 0134     		adds	r4, r4, #1
+ 1554              	.LVL116:
+ 290:USER/Src/temp.c ****     {
+ 1555              		.loc 1 290 28 discriminator 3 view .LVU430
+ 1556 0050 A4B2     		uxth	r4, r4
+ 1557              	.LVL117:
+ 1558              	.L74:
+ 290:USER/Src/temp.c ****     {
+ 1559              		.loc 1 290 17 is_stmt 1 discriminator 1 view .LVU431
+ 290:USER/Src/temp.c ****     {
+ 1560              		.loc 1 290 5 is_stmt 0 discriminator 1 view .LVU432
+ 1561 0052 AC42     		cmp	r4, r5
+ 1562 0054 F6D3     		bcc	.L75
+ 295:USER/Src/temp.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 39
+
+
+ 1563              		.loc 1 295 5 is_stmt 1 view .LVU433
+ 1564 0056 FFF7FEFF 		bl	i2c_stop
+ 1565              	.LVL118:
+ 297:USER/Src/temp.c **** }
+ 1566              		.loc 1 297 2 view .LVU434
+ 297:USER/Src/temp.c **** }
+ 1567              		.loc 1 297 9 is_stmt 0 view .LVU435
+ 1568 005a DAE7     		b	.L72
+ 1569              		.cfi_endproc
+ 1570              	.LFE149:
+ 1572              		.section	.text.i2c_read_multi_bytes,"ax",%progbits
+ 1573              		.align	1
+ 1574              		.global	i2c_read_multi_bytes
+ 1575              		.syntax unified
+ 1576              		.thumb
+ 1577              		.thumb_func
+ 1579              	i2c_read_multi_bytes:
+ 1580              	.LVL119:
+ 1581              	.LFB150:
+ 299:USER/Src/temp.c **** 
+ 300:USER/Src/temp.c **** /**
+ 301:USER/Src/temp.c ****  * @brief Read multiple bytes from slave 
+ 302:USER/Src/temp.c ****  * 
+ 303:USER/Src/temp.c ****  */
+ 304:USER/Src/temp.c **** i2c_exit_code_e i2c_read_multi_bytes(unsigned char dev_addr,unsigned char reg_addr, unsigned char *
+ 305:USER/Src/temp.c **** {
+ 1582              		.loc 1 305 1 is_stmt 1 view -0
+ 1583              		.cfi_startproc
+ 1584              		@ args = 0, pretend = 0, frame = 0
+ 1585              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1586              		.loc 1 305 1 is_stmt 0 view .LVU437
+ 1587 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 1588              	.LCFI22:
+ 1589              		.cfi_def_cfa_offset 24
+ 1590              		.cfi_offset 3, -24
+ 1591              		.cfi_offset 4, -20
+ 1592              		.cfi_offset 5, -16
+ 1593              		.cfi_offset 6, -12
+ 1594              		.cfi_offset 7, -8
+ 1595              		.cfi_offset 14, -4
+ 1596 0002 0446     		mov	r4, r0
+ 1597 0004 0F46     		mov	r7, r1
+ 1598 0006 1646     		mov	r6, r2
+ 1599 0008 1D46     		mov	r5, r3
+ 306:USER/Src/temp.c **** 	unsigned short i;
+ 1600              		.loc 1 306 2 is_stmt 1 view .LVU438
+ 307:USER/Src/temp.c **** 
+ 308:USER/Src/temp.c **** 	if(i2c_start() != _I2C_OK)
+ 1601              		.loc 1 308 2 view .LVU439
+ 1602              		.loc 1 308 5 is_stmt 0 view .LVU440
+ 1603 000a FFF7FEFF 		bl	i2c_start
+ 1604              	.LVL120:
+ 1605              		.loc 1 308 4 view .LVU441
+ 1606 000e 10B1     		cbz	r0, .L91
+ 309:USER/Src/temp.c **** 		return _I2C_START_FAIL;
+ 1607              		.loc 1 309 10 view .LVU442
+ 1608 0010 0127     		movs	r7, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 40
+
+
+ 1609              	.L83:
+ 310:USER/Src/temp.c **** 	/*send device address*/
+ 311:USER/Src/temp.c **** 	i2c_send_byte(dev_addr);
+ 312:USER/Src/temp.c **** 	if(i2c_wait_ack() != _I2C_OK)
+ 313:USER/Src/temp.c **** 	{
+ 314:USER/Src/temp.c **** 		i2c_stop(); 
+ 315:USER/Src/temp.c **** 		return _I2C_Slave_FAIL;
+ 316:USER/Src/temp.c **** 	}
+ 317:USER/Src/temp.c **** 	/*send register address*/
+ 318:USER/Src/temp.c **** 	i2c_send_byte(reg_addr);
+ 319:USER/Src/temp.c **** 	if (i2c_wait_ack() != _I2C_OK)
+ 320:USER/Src/temp.c **** 	{
+ 321:USER/Src/temp.c **** 		i2c_stop(); 
+ 322:USER/Src/temp.c **** 		return _I2C_NO_ACK;
+ 323:USER/Src/temp.c **** 	}
+ 324:USER/Src/temp.c **** 	/*restart and send read device address*/
+ 325:USER/Src/temp.c **** 	i2c_start();
+ 326:USER/Src/temp.c **** 	i2c_send_byte(dev_addr | 0x01);
+ 327:USER/Src/temp.c **** 	i2c_wait_ack();
+ 328:USER/Src/temp.c **** 	for (i = 0; i < size; i++)
+ 329:USER/Src/temp.c **** 	{
+ 330:USER/Src/temp.c **** 		*(buf+i) = i2c_receive_byte();
+ 331:USER/Src/temp.c **** 
+ 332:USER/Src/temp.c **** 		if (i != size-1) { i2c_ack(); }			
+ 333:USER/Src/temp.c **** 	}
+ 334:USER/Src/temp.c **** 	i2c_nack();
+ 335:USER/Src/temp.c **** 	i2c_stop();
+ 336:USER/Src/temp.c **** 
+ 337:USER/Src/temp.c **** 	return  _I2C_OK;
+ 338:USER/Src/temp.c **** }
+ 1610              		.loc 1 338 1 view .LVU443
+ 1611 0012 3846     		mov	r0, r7
+ 1612 0014 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 1613              	.LVL121:
+ 1614              	.L91:
+ 311:USER/Src/temp.c **** 	if(i2c_wait_ack() != _I2C_OK)
+ 1615              		.loc 1 311 2 is_stmt 1 view .LVU444
+ 1616 0016 2046     		mov	r0, r4
+ 1617 0018 FFF7FEFF 		bl	i2c_send_byte
+ 1618              	.LVL122:
+ 312:USER/Src/temp.c **** 	{
+ 1619              		.loc 1 312 2 view .LVU445
+ 312:USER/Src/temp.c **** 	{
+ 1620              		.loc 1 312 5 is_stmt 0 view .LVU446
+ 1621 001c FFF7FEFF 		bl	i2c_wait_ack
+ 1622              	.LVL123:
+ 312:USER/Src/temp.c **** 	{
+ 1623              		.loc 1 312 4 view .LVU447
+ 1624 0020 80B9     		cbnz	r0, .L92
+ 318:USER/Src/temp.c **** 	if (i2c_wait_ack() != _I2C_OK)
+ 1625              		.loc 1 318 2 is_stmt 1 view .LVU448
+ 1626 0022 3846     		mov	r0, r7
+ 1627 0024 FFF7FEFF 		bl	i2c_send_byte
+ 1628              	.LVL124:
+ 319:USER/Src/temp.c **** 	{
+ 1629              		.loc 1 319 2 view .LVU449
+ 319:USER/Src/temp.c **** 	{
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 41
+
+
+ 1630              		.loc 1 319 6 is_stmt 0 view .LVU450
+ 1631 0028 FFF7FEFF 		bl	i2c_wait_ack
+ 1632              	.LVL125:
+ 319:USER/Src/temp.c **** 	{
+ 1633              		.loc 1 319 5 view .LVU451
+ 1634 002c 0746     		mov	r7, r0
+ 1635 002e 68B9     		cbnz	r0, .L93
+ 325:USER/Src/temp.c **** 	i2c_send_byte(dev_addr | 0x01);
+ 1636              		.loc 1 325 2 is_stmt 1 view .LVU452
+ 1637 0030 FFF7FEFF 		bl	i2c_start
+ 1638              	.LVL126:
+ 326:USER/Src/temp.c **** 	i2c_wait_ack();
+ 1639              		.loc 1 326 2 view .LVU453
+ 1640 0034 44F00100 		orr	r0, r4, #1
+ 1641 0038 FFF7FEFF 		bl	i2c_send_byte
+ 1642              	.LVL127:
+ 327:USER/Src/temp.c **** 	for (i = 0; i < size; i++)
+ 1643              		.loc 1 327 2 view .LVU454
+ 1644 003c FFF7FEFF 		bl	i2c_wait_ack
+ 1645              	.LVL128:
+ 328:USER/Src/temp.c **** 	{
+ 1646              		.loc 1 328 2 view .LVU455
+ 328:USER/Src/temp.c **** 	{
+ 1647              		.loc 1 328 9 is_stmt 0 view .LVU456
+ 1648 0040 0024     		movs	r4, #0
+ 328:USER/Src/temp.c **** 	{
+ 1649              		.loc 1 328 2 view .LVU457
+ 1650 0042 09E0     		b	.L86
+ 1651              	.LVL129:
+ 1652              	.L92:
+ 314:USER/Src/temp.c **** 		return _I2C_Slave_FAIL;
+ 1653              		.loc 1 314 3 is_stmt 1 view .LVU458
+ 1654 0044 FFF7FEFF 		bl	i2c_stop
+ 1655              	.LVL130:
+ 315:USER/Src/temp.c **** 	}
+ 1656              		.loc 1 315 3 view .LVU459
+ 315:USER/Src/temp.c **** 	}
+ 1657              		.loc 1 315 10 is_stmt 0 view .LVU460
+ 1658 0048 0327     		movs	r7, #3
+ 1659 004a E2E7     		b	.L83
+ 1660              	.L93:
+ 321:USER/Src/temp.c **** 		return _I2C_NO_ACK;
+ 1661              		.loc 1 321 3 is_stmt 1 view .LVU461
+ 1662 004c FFF7FEFF 		bl	i2c_stop
+ 1663              	.LVL131:
+ 322:USER/Src/temp.c **** 	}
+ 1664              		.loc 1 322 3 view .LVU462
+ 322:USER/Src/temp.c **** 	}
+ 1665              		.loc 1 322 10 is_stmt 0 view .LVU463
+ 1666 0050 0227     		movs	r7, #2
+ 1667 0052 DEE7     		b	.L83
+ 1668              	.LVL132:
+ 1669              	.L87:
+ 328:USER/Src/temp.c **** 	{
+ 1670              		.loc 1 328 24 is_stmt 1 discriminator 2 view .LVU464
+ 328:USER/Src/temp.c **** 	{
+ 1671              		.loc 1 328 25 is_stmt 0 discriminator 2 view .LVU465
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 42
+
+
+ 1672 0054 0134     		adds	r4, r4, #1
+ 1673              	.LVL133:
+ 328:USER/Src/temp.c **** 	{
+ 1674              		.loc 1 328 25 discriminator 2 view .LVU466
+ 1675 0056 A4B2     		uxth	r4, r4
+ 1676              	.LVL134:
+ 1677              	.L86:
+ 328:USER/Src/temp.c **** 	{
+ 1678              		.loc 1 328 14 is_stmt 1 discriminator 1 view .LVU467
+ 328:USER/Src/temp.c **** 	{
+ 1679              		.loc 1 328 2 is_stmt 0 discriminator 1 view .LVU468
+ 1680 0058 AC42     		cmp	r4, r5
+ 1681 005a 08D2     		bcs	.L94
+ 330:USER/Src/temp.c **** 
+ 1682              		.loc 1 330 3 is_stmt 1 view .LVU469
+ 330:USER/Src/temp.c **** 
+ 1683              		.loc 1 330 14 is_stmt 0 view .LVU470
+ 1684 005c FFF7FEFF 		bl	i2c_receive_byte
+ 1685              	.LVL135:
+ 330:USER/Src/temp.c **** 
+ 1686              		.loc 1 330 12 view .LVU471
+ 1687 0060 3055     		strb	r0, [r6, r4]
+ 332:USER/Src/temp.c **** 	}
+ 1688              		.loc 1 332 3 is_stmt 1 view .LVU472
+ 332:USER/Src/temp.c **** 	}
+ 1689              		.loc 1 332 16 is_stmt 0 view .LVU473
+ 1690 0062 6B1E     		subs	r3, r5, #1
+ 332:USER/Src/temp.c **** 	}
+ 1691              		.loc 1 332 6 view .LVU474
+ 1692 0064 9C42     		cmp	r4, r3
+ 1693 0066 F5D0     		beq	.L87
+ 332:USER/Src/temp.c **** 	}
+ 1694              		.loc 1 332 22 is_stmt 1 discriminator 1 view .LVU475
+ 1695 0068 FFF7FEFF 		bl	i2c_ack
+ 1696              	.LVL136:
+ 1697 006c F2E7     		b	.L87
+ 1698              	.L94:
+ 334:USER/Src/temp.c **** 	i2c_stop();
+ 1699              		.loc 1 334 2 view .LVU476
+ 1700 006e FFF7FEFF 		bl	i2c_nack
+ 1701              	.LVL137:
+ 335:USER/Src/temp.c **** 
+ 1702              		.loc 1 335 2 view .LVU477
+ 1703 0072 FFF7FEFF 		bl	i2c_stop
+ 1704              	.LVL138:
+ 337:USER/Src/temp.c **** }
+ 1705              		.loc 1 337 2 view .LVU478
+ 337:USER/Src/temp.c **** }
+ 1706              		.loc 1 337 10 is_stmt 0 view .LVU479
+ 1707 0076 CCE7     		b	.L83
+ 1708              		.cfi_endproc
+ 1709              	.LFE150:
+ 1711              		.section	.text.temp_read_value,"ax",%progbits
+ 1712              		.align	1
+ 1713              		.global	temp_read_value
+ 1714              		.syntax unified
+ 1715              		.thumb
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 43
+
+
+ 1716              		.thumb_func
+ 1718              	temp_read_value:
+ 1719              	.LVL139:
+ 1720              	.LFB151:
+ 339:USER/Src/temp.c **** 
+ 340:USER/Src/temp.c **** 
+ 341:USER/Src/temp.c **** 
+ 342:USER/Src/temp.c **** float temp_read_value(unsigned char channel)
+ 343:USER/Src/temp.c **** {
+ 1721              		.loc 1 343 1 is_stmt 1 view -0
+ 1722              		.cfi_startproc
+ 1723              		@ args = 0, pretend = 0, frame = 8
+ 1724              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1725              		.loc 1 343 1 is_stmt 0 view .LVU481
+ 1726 0000 00B5     		push	{lr}
+ 1727              	.LCFI23:
+ 1728              		.cfi_def_cfa_offset 4
+ 1729              		.cfi_offset 14, -4
+ 1730 0002 83B0     		sub	sp, sp, #12
+ 1731              	.LCFI24:
+ 1732              		.cfi_def_cfa_offset 16
+ 344:USER/Src/temp.c ****     uint16_t value = 0;
+ 1733              		.loc 1 344 5 is_stmt 1 view .LVU482
+ 1734              	.LVL140:
+ 345:USER/Src/temp.c ****     float temp=0;
+ 1735              		.loc 1 345 5 view .LVU483
+ 346:USER/Src/temp.c ****     unsigned char buff[2] = {0,0};
+ 1736              		.loc 1 346 5 view .LVU484
+ 1737              		.loc 1 346 19 is_stmt 0 view .LVU485
+ 1738 0004 0023     		movs	r3, #0
+ 1739 0006 ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 347:USER/Src/temp.c ****     
+ 348:USER/Src/temp.c ****     if (channel == 1) {
+ 1740              		.loc 1 348 5 is_stmt 1 view .LVU486
+ 1741              		.loc 1 348 8 is_stmt 0 view .LVU487
+ 1742 000a 0128     		cmp	r0, #1
+ 1743 000c 06D0     		beq	.L103
+ 349:USER/Src/temp.c ****         i2c_read_multi_bytes(TEMP_1_ADDRESS, 0, buff, 2);
+ 350:USER/Src/temp.c ****     } else if (channel == 2) {
+ 1744              		.loc 1 350 12 is_stmt 1 view .LVU488
+ 1745              		.loc 1 350 15 is_stmt 0 view .LVU489
+ 1746 000e 0228     		cmp	r0, #2
+ 1747 0010 0BD0     		beq	.L104
+ 351:USER/Src/temp.c ****     	i2c_read_multi_bytes(TEMP_2_ADDRESS, 0, buff, 2);
+ 352:USER/Src/temp.c ****     } else {
+ 353:USER/Src/temp.c ****         return 255;
+ 1748              		.loc 1 353 16 view .LVU490
+ 1749 0012 9FED190A 		vldr.32	s0, .L106
+ 1750              	.LVL141:
+ 1751              	.L95:
+ 354:USER/Src/temp.c ****     }
+ 355:USER/Src/temp.c ****     value = buff[0];
+ 356:USER/Src/temp.c ****     value = (value * 256 + buff[1]) / 16;
+ 357:USER/Src/temp.c ****     if (buff[0] & 0x80) {
+ 358:USER/Src/temp.c ****         temp = ((float)value - 4096) / 16;
+ 359:USER/Src/temp.c ****     } else {
+ 360:USER/Src/temp.c ****         temp = (float)value / 16; 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 44
+
+
+ 361:USER/Src/temp.c ****     }
+ 362:USER/Src/temp.c ****     return temp;
+ 363:USER/Src/temp.c **** }
+ 1752              		.loc 1 363 1 view .LVU491
+ 1753 0016 03B0     		add	sp, sp, #12
+ 1754              	.LCFI25:
+ 1755              		.cfi_remember_state
+ 1756              		.cfi_def_cfa_offset 4
+ 1757              		@ sp needed
+ 1758 0018 5DF804FB 		ldr	pc, [sp], #4
+ 1759              	.LVL142:
+ 1760              	.L103:
+ 1761              	.LCFI26:
+ 1762              		.cfi_restore_state
+ 349:USER/Src/temp.c ****     } else if (channel == 2) {
+ 1763              		.loc 1 349 9 is_stmt 1 view .LVU492
+ 1764 001c 0223     		movs	r3, #2
+ 1765 001e 01AA     		add	r2, sp, #4
+ 1766 0020 0021     		movs	r1, #0
+ 1767 0022 9020     		movs	r0, #144
+ 1768              	.LVL143:
+ 349:USER/Src/temp.c ****     } else if (channel == 2) {
+ 1769              		.loc 1 349 9 is_stmt 0 view .LVU493
+ 1770 0024 FFF7FEFF 		bl	i2c_read_multi_bytes
+ 1771              	.LVL144:
+ 1772 0028 05E0     		b	.L97
+ 1773              	.LVL145:
+ 1774              	.L104:
+ 351:USER/Src/temp.c ****     	i2c_read_multi_bytes(TEMP_2_ADDRESS, 0, buff, 2);
+ 1775              		.loc 1 351 6 is_stmt 1 view .LVU494
+ 1776 002a 0223     		movs	r3, #2
+ 1777 002c 01AA     		add	r2, sp, #4
+ 1778 002e 0021     		movs	r1, #0
+ 1779 0030 9220     		movs	r0, #146
+ 1780              	.LVL146:
+ 351:USER/Src/temp.c ****     	i2c_read_multi_bytes(TEMP_2_ADDRESS, 0, buff, 2);
+ 1781              		.loc 1 351 6 is_stmt 0 view .LVU495
+ 1782 0032 FFF7FEFF 		bl	i2c_read_multi_bytes
+ 1783              	.LVL147:
+ 1784              	.L97:
+ 355:USER/Src/temp.c ****     value = (value * 256 + buff[1]) / 16;
+ 1785              		.loc 1 355 5 is_stmt 1 view .LVU496
+ 355:USER/Src/temp.c ****     value = (value * 256 + buff[1]) / 16;
+ 1786              		.loc 1 355 17 is_stmt 0 view .LVU497
+ 1787 0036 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+ 1788              	.LVL148:
+ 356:USER/Src/temp.c ****     if (buff[0] & 0x80) {
+ 1789              		.loc 1 356 5 is_stmt 1 view .LVU498
+ 356:USER/Src/temp.c ****     if (buff[0] & 0x80) {
+ 1790              		.loc 1 356 32 is_stmt 0 view .LVU499
+ 1791 003a 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 356:USER/Src/temp.c ****     if (buff[0] & 0x80) {
+ 1792              		.loc 1 356 37 view .LVU500
+ 1793 003e 03EB0223 		add	r3, r3, r2, lsl #8
+ 356:USER/Src/temp.c ****     if (buff[0] & 0x80) {
+ 1794              		.loc 1 356 11 view .LVU501
+ 1795 0042 1B09     		lsrs	r3, r3, #4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 45
+
+
+ 1796              	.LVL149:
+ 357:USER/Src/temp.c ****         temp = ((float)value - 4096) / 16;
+ 1797              		.loc 1 357 5 is_stmt 1 view .LVU502
+ 357:USER/Src/temp.c ****         temp = ((float)value - 4096) / 16;
+ 1798              		.loc 1 357 8 is_stmt 0 view .LVU503
+ 1799 0044 12F0800F 		tst	r2, #128
+ 1800 0048 08D1     		bne	.L105
+ 360:USER/Src/temp.c ****     }
+ 1801              		.loc 1 360 9 is_stmt 1 view .LVU504
+ 360:USER/Src/temp.c ****     }
+ 1802              		.loc 1 360 16 is_stmt 0 view .LVU505
+ 1803 004a 07EE903A 		vmov	s15, r3	@ int
+ 1804 004e B8EE670A 		vcvt.f32.u32	s0, s15
+ 360:USER/Src/temp.c ****     }
+ 1805              		.loc 1 360 14 view .LVU506
+ 1806 0052 DFED0A7A 		vldr.32	s15, .L106+4
+ 1807 0056 20EE270A 		vmul.f32	s0, s0, s15
+ 1808              	.LVL150:
+ 360:USER/Src/temp.c ****     }
+ 1809              		.loc 1 360 14 view .LVU507
+ 1810 005a DCE7     		b	.L95
+ 1811              	.LVL151:
+ 1812              	.L105:
+ 358:USER/Src/temp.c ****     } else {
+ 1813              		.loc 1 358 9 is_stmt 1 view .LVU508
+ 358:USER/Src/temp.c ****     } else {
+ 1814              		.loc 1 358 17 is_stmt 0 view .LVU509
+ 1815 005c 07EE903A 		vmov	s15, r3	@ int
+ 1816 0060 B8EE670A 		vcvt.f32.u32	s0, s15
+ 358:USER/Src/temp.c ****     } else {
+ 1817              		.loc 1 358 30 view .LVU510
+ 1818 0064 DFED067A 		vldr.32	s15, .L106+8
+ 1819 0068 30EE670A 		vsub.f32	s0, s0, s15
+ 358:USER/Src/temp.c ****     } else {
+ 1820              		.loc 1 358 14 view .LVU511
+ 1821 006c DFED037A 		vldr.32	s15, .L106+4
+ 1822 0070 20EE270A 		vmul.f32	s0, s0, s15
+ 1823              	.LVL152:
+ 358:USER/Src/temp.c ****     } else {
+ 1824              		.loc 1 358 14 view .LVU512
+ 1825 0074 CFE7     		b	.L95
+ 1826              	.L107:
+ 1827 0076 00BF     		.align	2
+ 1828              	.L106:
+ 1829 0078 00007F43 		.word	1132396544
+ 1830 007c 0000803D 		.word	1031798784
+ 1831 0080 00008045 		.word	1166016512
+ 1832              		.cfi_endproc
+ 1833              	.LFE151:
+ 1835              		.global	soft_i2c_delay
+ 1836              		.section	.data.soft_i2c_delay,"aw"
+ 1837              		.align	1
+ 1838              		.set	.LANCHOR0,. + 0
+ 1841              	soft_i2c_delay:
+ 1842 0000 C800     		.short	200
+ 1843              		.text
+ 1844              	.Letext0:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 46
+
+
+ 1845              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1846              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1847              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 1848              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 1849              		.file 6 "USER/Inc/temp.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s 			page 47
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 temp.c
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:20     .text.i2c_read_sda:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:25     .text.i2c_read_sda:00000000 i2c_read_sda
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:54     .text.i2c_read_sda:00000014 $d
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:59     .text.TEMP_GPIO_Init:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:65     .text.TEMP_GPIO_Init:00000000 TEMP_GPIO_Init
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:132    .text.TEMP_GPIO_Init:0000003c $d
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:137    .text.i2c_start:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:143    .text.i2c_start:00000000 i2c_start
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:344    .text.i2c_start:00000088 $d
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:352    .text.i2c_stop:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:358    .text.i2c_stop:00000000 i2c_stop
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:519    .text.i2c_stop:00000074 $d
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:525    .text.i2c_ack:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:531    .text.i2c_ack:00000000 i2c_ack
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:649    .text.i2c_ack:0000004c $d
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:655    .text.i2c_nack:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:661    .text.i2c_nack:00000000 i2c_nack
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:779    .text.i2c_nack:0000004c $d
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:785    .text.i2c_wait_ack:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:791    .text.i2c_wait_ack:00000000 i2c_wait_ack
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:996    .text.i2c_wait_ack:000000a0 $d
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1002   .text.i2c_send_byte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1008   .text.i2c_send_byte:00000000 i2c_send_byte
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1182   .text.i2c_send_byte:00000070 $d
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1188   .text.i2c_receive_byte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1194   .text.i2c_receive_byte:00000000 i2c_receive_byte
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1454   .text.i2c_receive_byte:000000b8 $d
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1460   .text.i2c_write_multi_bytes:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1466   .text.i2c_write_multi_bytes:00000000 i2c_write_multi_bytes
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1573   .text.i2c_read_multi_bytes:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1579   .text.i2c_read_multi_bytes:00000000 i2c_read_multi_bytes
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1712   .text.temp_read_value:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1718   .text.temp_read_value:00000000 temp_read_value
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1829   .text.temp_read_value:00000078 $d
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1841   .data.soft_i2c_delay:00000000 soft_i2c_delay
+C:\Users\84759\AppData\Local\Temp\ccE6EaLc.s:1837   .data.soft_i2c_delay:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_ReadPin
+HAL_GPIO_Init
+HAL_GPIO_WritePin

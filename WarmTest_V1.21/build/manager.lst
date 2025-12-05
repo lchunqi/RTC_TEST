@@ -1,0 +1,1484 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"manager.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.Manager_Init,"ax",%progbits
+  20              		.align	1
+  21              		.global	Manager_Init
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	Manager_Init:
+  27              	.LFB133:
+  28              		.file 1 "USER/Src/manager.c"
+   1:USER/Src/manager.c **** #include "manager.h"
+   2:USER/Src/manager.c **** #include "temp.h"
+   3:USER/Src/manager.c **** #include "iic_soft.h"
+   4:USER/Src/manager.c **** #include "usart.h"
+   5:USER/Src/manager.c **** 
+   6:USER/Src/manager.c **** void Manager_Init(void)//模拟开关
+   7:USER/Src/manager.c **** {
+  29              		.loc 1 7 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 24
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 20
+  36              		.cfi_offset 4, -20
+  37              		.cfi_offset 5, -16
+  38              		.cfi_offset 6, -12
+  39              		.cfi_offset 7, -8
+  40              		.cfi_offset 14, -4
+  41 0002 87B0     		sub	sp, sp, #28
+  42              	.LCFI1:
+  43              		.cfi_def_cfa_offset 48
+   8:USER/Src/manager.c **** 	GPIO_InitTypeDef GPIO_InitStruct = {0};
+  44              		.loc 1 8 2 view .LVU1
+  45              		.loc 1 8 19 is_stmt 0 view .LVU2
+  46 0004 0024     		movs	r4, #0
+  47 0006 0194     		str	r4, [sp, #4]
+  48 0008 0294     		str	r4, [sp, #8]
+  49 000a 0394     		str	r4, [sp, #12]
+  50 000c 0494     		str	r4, [sp, #16]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 2
+
+
+  51 000e 0594     		str	r4, [sp, #20]
+   9:USER/Src/manager.c **** 
+  10:USER/Src/manager.c ****     GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4;
+  52              		.loc 1 10 5 is_stmt 1 view .LVU3
+  53              		.loc 1 10 25 is_stmt 0 view .LVU4
+  54 0010 1326     		movs	r6, #19
+  55 0012 0196     		str	r6, [sp, #4]
+  11:USER/Src/manager.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  56              		.loc 1 11 2 is_stmt 1 view .LVU5
+  57              		.loc 1 11 23 is_stmt 0 view .LVU6
+  58 0014 1127     		movs	r7, #17
+  59 0016 0297     		str	r7, [sp, #8]
+  12:USER/Src/manager.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  60              		.loc 1 12 2 is_stmt 1 view .LVU7
+  13:USER/Src/manager.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  61              		.loc 1 13 2 view .LVU8
+  14:USER/Src/manager.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  62              		.loc 1 14 2 view .LVU9
+  63 0018 0A4D     		ldr	r5, .L3
+  64 001a 01A9     		add	r1, sp, #4
+  65 001c 2846     		mov	r0, r5
+  66 001e FFF7FEFF 		bl	HAL_GPIO_Init
+  67              	.LVL0:
+  15:USER/Src/manager.c **** 
+  16:USER/Src/manager.c ****     GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
+  68              		.loc 1 16 5 view .LVU10
+  69              		.loc 1 16 25 is_stmt 0 view .LVU11
+  70 0022 E023     		movs	r3, #224
+  71 0024 0193     		str	r3, [sp, #4]
+  17:USER/Src/manager.c **** 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  72              		.loc 1 17 2 is_stmt 1 view .LVU12
+  73              		.loc 1 17 23 is_stmt 0 view .LVU13
+  74 0026 0297     		str	r7, [sp, #8]
+  18:USER/Src/manager.c **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  75              		.loc 1 18 2 is_stmt 1 view .LVU14
+  76              		.loc 1 18 23 is_stmt 0 view .LVU15
+  77 0028 0394     		str	r4, [sp, #12]
+  19:USER/Src/manager.c **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  78              		.loc 1 19 2 is_stmt 1 view .LVU16
+  79              		.loc 1 19 24 is_stmt 0 view .LVU17
+  80 002a 0494     		str	r4, [sp, #16]
+  20:USER/Src/manager.c **** 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  81              		.loc 1 20 2 is_stmt 1 view .LVU18
+  82 002c 01A9     		add	r1, sp, #4
+  83 002e 2846     		mov	r0, r5
+  84 0030 FFF7FEFF 		bl	HAL_GPIO_Init
+  85              	.LVL1:
+  21:USER/Src/manager.c **** 
+  22:USER/Src/manager.c ****     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET);
+  86              		.loc 1 22 5 view .LVU19
+  87 0034 0122     		movs	r2, #1
+  88 0036 3146     		mov	r1, r6
+  89 0038 2846     		mov	r0, r5
+  90 003a FFF7FEFF 		bl	HAL_GPIO_WritePin
+  91              	.LVL2:
+  23:USER/Src/manager.c ****   
+  24:USER/Src/manager.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 3
+
+
+  92              		.loc 1 24 1 is_stmt 0 view .LVU20
+  93 003e 07B0     		add	sp, sp, #28
+  94              	.LCFI2:
+  95              		.cfi_def_cfa_offset 20
+  96              		@ sp needed
+  97 0040 F0BD     		pop	{r4, r5, r6, r7, pc}
+  98              	.L4:
+  99 0042 00BF     		.align	2
+ 100              	.L3:
+ 101 0044 00000240 		.word	1073872896
+ 102              		.cfi_endproc
+ 103              	.LFE133:
+ 105              		.section	.text.Set_Port_Number,"ax",%progbits
+ 106              		.align	1
+ 107              		.global	Set_Port_Number
+ 108              		.syntax unified
+ 109              		.thumb
+ 110              		.thumb_func
+ 112              	Set_Port_Number:
+ 113              	.LVL3:
+ 114              	.LFB134:
+  25:USER/Src/manager.c **** 
+  26:USER/Src/manager.c **** void Set_Port_Number(uint8_t port)//选择对应的端口号
+  27:USER/Src/manager.c **** {
+ 115              		.loc 1 27 1 is_stmt 1 view -0
+ 116              		.cfi_startproc
+ 117              		@ args = 0, pretend = 0, frame = 0
+ 118              		@ frame_needed = 0, uses_anonymous_args = 0
+ 119              		.loc 1 27 1 is_stmt 0 view .LVU22
+ 120 0000 10B5     		push	{r4, lr}
+ 121              	.LCFI3:
+ 122              		.cfi_def_cfa_offset 8
+ 123              		.cfi_offset 4, -8
+ 124              		.cfi_offset 14, -4
+  28:USER/Src/manager.c ****     switch(port)
+ 125              		.loc 1 28 5 is_stmt 1 view .LVU23
+ 126 0002 0728     		cmp	r0, #7
+ 127 0004 15D8     		bhi	.L5
+ 128 0006 DFE800F0 		tbb	[pc, r0]
+ 129              	.L8:
+ 130 000a 04       		.byte	(.L15-.L8)/2
+ 131 000b 15       		.byte	(.L14-.L8)/2
+ 132 000c 26       		.byte	(.L13-.L8)/2
+ 133 000d 37       		.byte	(.L12-.L8)/2
+ 134 000e 48       		.byte	(.L11-.L8)/2
+ 135 000f 59       		.byte	(.L10-.L8)/2
+ 136 0010 6A       		.byte	(.L9-.L8)/2
+ 137 0011 7B       		.byte	(.L7-.L8)/2
+ 138              		.p2align 1
+ 139              	.L15:
+  29:USER/Src/manager.c ****     {
+  30:USER/Src/manager.c ****         case 0:
+  31:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET); 
+ 140              		.loc 1 31 13 view .LVU24
+ 141 0012 444C     		ldr	r4, .L17
+ 142 0014 0022     		movs	r2, #0
+ 143 0016 2021     		movs	r1, #32
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 4
+
+
+ 144 0018 2046     		mov	r0, r4
+ 145              	.LVL4:
+ 146              		.loc 1 31 13 is_stmt 0 view .LVU25
+ 147 001a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 148              	.LVL5:
+  32:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+ 149              		.loc 1 32 13 is_stmt 1 view .LVU26
+ 150 001e 0022     		movs	r2, #0
+ 151 0020 4021     		movs	r1, #64
+ 152 0022 2046     		mov	r0, r4
+ 153 0024 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 154              	.LVL6:
+  33:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);            
+ 155              		.loc 1 33 13 view .LVU27
+ 156 0028 0022     		movs	r2, #0
+ 157 002a 8021     		movs	r1, #128
+ 158 002c 2046     		mov	r0, r4
+ 159 002e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 160              	.LVL7:
+  34:USER/Src/manager.c ****             break;
+ 161              		.loc 1 34 13 view .LVU28
+ 162              	.L5:
+  35:USER/Src/manager.c ****         case 1:
+  36:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);  
+  37:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET); 
+  38:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);  
+  39:USER/Src/manager.c ****             break;
+  40:USER/Src/manager.c ****         case 2:
+  41:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET); 
+  42:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+  43:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
+  44:USER/Src/manager.c ****             break;
+  45:USER/Src/manager.c ****         case 3:
+  46:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET); 
+  47:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+  48:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
+  49:USER/Src/manager.c ****             break;
+  50:USER/Src/manager.c ****         case 4:
+  51:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET); 
+  52:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+  53:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+  54:USER/Src/manager.c ****             break;
+  55:USER/Src/manager.c ****         case 5:
+  56:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET); 
+  57:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+  58:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+  59:USER/Src/manager.c ****             break;
+  60:USER/Src/manager.c ****         case 6:
+  61:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET); 
+  62:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+  63:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+  64:USER/Src/manager.c ****             break;
+  65:USER/Src/manager.c ****         case 7:
+  66:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET); 
+  67:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+  68:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+  69:USER/Src/manager.c ****             break;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 5
+
+
+  70:USER/Src/manager.c ****     default:
+  71:USER/Src/manager.c ****             break;
+  72:USER/Src/manager.c ****     }
+  73:USER/Src/manager.c **** }
+ 163              		.loc 1 73 1 is_stmt 0 view .LVU29
+ 164 0032 10BD     		pop	{r4, pc}
+ 165              	.LVL8:
+ 166              	.L14:
+  36:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET); 
+ 167              		.loc 1 36 13 is_stmt 1 view .LVU30
+ 168 0034 3B4C     		ldr	r4, .L17
+ 169 0036 0122     		movs	r2, #1
+ 170 0038 2021     		movs	r1, #32
+ 171 003a 2046     		mov	r0, r4
+ 172              	.LVL9:
+  36:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET); 
+ 173              		.loc 1 36 13 is_stmt 0 view .LVU31
+ 174 003c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 175              	.LVL10:
+  37:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);  
+ 176              		.loc 1 37 13 is_stmt 1 view .LVU32
+ 177 0040 0022     		movs	r2, #0
+ 178 0042 4021     		movs	r1, #64
+ 179 0044 2046     		mov	r0, r4
+ 180 0046 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 181              	.LVL11:
+  38:USER/Src/manager.c ****             break;
+ 182              		.loc 1 38 13 view .LVU33
+ 183 004a 0022     		movs	r2, #0
+ 184 004c 8021     		movs	r1, #128
+ 185 004e 2046     		mov	r0, r4
+ 186 0050 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 187              	.LVL12:
+  39:USER/Src/manager.c ****         case 2:
+ 188              		.loc 1 39 13 view .LVU34
+ 189 0054 EDE7     		b	.L5
+ 190              	.LVL13:
+ 191              	.L13:
+  41:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+ 192              		.loc 1 41 13 view .LVU35
+ 193 0056 334C     		ldr	r4, .L17
+ 194 0058 0022     		movs	r2, #0
+ 195 005a 2021     		movs	r1, #32
+ 196 005c 2046     		mov	r0, r4
+ 197              	.LVL14:
+  41:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+ 198              		.loc 1 41 13 is_stmt 0 view .LVU36
+ 199 005e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 200              	.LVL15:
+  42:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
+ 201              		.loc 1 42 13 is_stmt 1 view .LVU37
+ 202 0062 0122     		movs	r2, #1
+ 203 0064 4021     		movs	r1, #64
+ 204 0066 2046     		mov	r0, r4
+ 205 0068 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 206              	.LVL16:
+  43:USER/Src/manager.c ****             break;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 6
+
+
+ 207              		.loc 1 43 13 view .LVU38
+ 208 006c 0022     		movs	r2, #0
+ 209 006e 8021     		movs	r1, #128
+ 210 0070 2046     		mov	r0, r4
+ 211 0072 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 212              	.LVL17:
+  44:USER/Src/manager.c ****         case 3:
+ 213              		.loc 1 44 13 view .LVU39
+ 214 0076 DCE7     		b	.L5
+ 215              	.LVL18:
+ 216              	.L12:
+  46:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+ 217              		.loc 1 46 13 view .LVU40
+ 218 0078 2A4C     		ldr	r4, .L17
+ 219 007a 0122     		movs	r2, #1
+ 220 007c 2021     		movs	r1, #32
+ 221 007e 2046     		mov	r0, r4
+ 222              	.LVL19:
+  46:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+ 223              		.loc 1 46 13 is_stmt 0 view .LVU41
+ 224 0080 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 225              	.LVL20:
+  47:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
+ 226              		.loc 1 47 13 is_stmt 1 view .LVU42
+ 227 0084 0122     		movs	r2, #1
+ 228 0086 4021     		movs	r1, #64
+ 229 0088 2046     		mov	r0, r4
+ 230 008a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 231              	.LVL21:
+  48:USER/Src/manager.c ****             break;
+ 232              		.loc 1 48 13 view .LVU43
+ 233 008e 0022     		movs	r2, #0
+ 234 0090 8021     		movs	r1, #128
+ 235 0092 2046     		mov	r0, r4
+ 236 0094 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 237              	.LVL22:
+  49:USER/Src/manager.c ****         case 4:
+ 238              		.loc 1 49 13 view .LVU44
+ 239 0098 CBE7     		b	.L5
+ 240              	.LVL23:
+ 241              	.L11:
+  51:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+ 242              		.loc 1 51 13 view .LVU45
+ 243 009a 224C     		ldr	r4, .L17
+ 244 009c 0022     		movs	r2, #0
+ 245 009e 2021     		movs	r1, #32
+ 246 00a0 2046     		mov	r0, r4
+ 247              	.LVL24:
+  51:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+ 248              		.loc 1 51 13 is_stmt 0 view .LVU46
+ 249 00a2 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 250              	.LVL25:
+  52:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+ 251              		.loc 1 52 13 is_stmt 1 view .LVU47
+ 252 00a6 0022     		movs	r2, #0
+ 253 00a8 4021     		movs	r1, #64
+ 254 00aa 2046     		mov	r0, r4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 7
+
+
+ 255 00ac FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 256              	.LVL26:
+  53:USER/Src/manager.c ****             break;
+ 257              		.loc 1 53 13 view .LVU48
+ 258 00b0 0122     		movs	r2, #1
+ 259 00b2 8021     		movs	r1, #128
+ 260 00b4 2046     		mov	r0, r4
+ 261 00b6 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 262              	.LVL27:
+  54:USER/Src/manager.c ****         case 5:
+ 263              		.loc 1 54 13 view .LVU49
+ 264 00ba BAE7     		b	.L5
+ 265              	.LVL28:
+ 266              	.L10:
+  56:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+ 267              		.loc 1 56 13 view .LVU50
+ 268 00bc 194C     		ldr	r4, .L17
+ 269 00be 0122     		movs	r2, #1
+ 270 00c0 2021     		movs	r1, #32
+ 271 00c2 2046     		mov	r0, r4
+ 272              	.LVL29:
+  56:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+ 273              		.loc 1 56 13 is_stmt 0 view .LVU51
+ 274 00c4 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 275              	.LVL30:
+  57:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+ 276              		.loc 1 57 13 is_stmt 1 view .LVU52
+ 277 00c8 0022     		movs	r2, #0
+ 278 00ca 4021     		movs	r1, #64
+ 279 00cc 2046     		mov	r0, r4
+ 280 00ce FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 281              	.LVL31:
+  58:USER/Src/manager.c ****             break;
+ 282              		.loc 1 58 13 view .LVU53
+ 283 00d2 0122     		movs	r2, #1
+ 284 00d4 8021     		movs	r1, #128
+ 285 00d6 2046     		mov	r0, r4
+ 286 00d8 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 287              	.LVL32:
+  59:USER/Src/manager.c ****         case 6:
+ 288              		.loc 1 59 13 view .LVU54
+ 289 00dc A9E7     		b	.L5
+ 290              	.LVL33:
+ 291              	.L9:
+  61:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+ 292              		.loc 1 61 13 view .LVU55
+ 293 00de 114C     		ldr	r4, .L17
+ 294 00e0 0022     		movs	r2, #0
+ 295 00e2 2021     		movs	r1, #32
+ 296 00e4 2046     		mov	r0, r4
+ 297              	.LVL34:
+  61:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+ 298              		.loc 1 61 13 is_stmt 0 view .LVU56
+ 299 00e6 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 300              	.LVL35:
+  62:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+ 301              		.loc 1 62 13 is_stmt 1 view .LVU57
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 8
+
+
+ 302 00ea 0122     		movs	r2, #1
+ 303 00ec 4021     		movs	r1, #64
+ 304 00ee 2046     		mov	r0, r4
+ 305 00f0 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 306              	.LVL36:
+  63:USER/Src/manager.c ****             break;
+ 307              		.loc 1 63 13 view .LVU58
+ 308 00f4 0122     		movs	r2, #1
+ 309 00f6 8021     		movs	r1, #128
+ 310 00f8 2046     		mov	r0, r4
+ 311 00fa FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 312              	.LVL37:
+  64:USER/Src/manager.c ****         case 7:
+ 313              		.loc 1 64 13 view .LVU59
+ 314 00fe 98E7     		b	.L5
+ 315              	.LVL38:
+ 316              	.L7:
+  66:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+ 317              		.loc 1 66 13 view .LVU60
+ 318 0100 084C     		ldr	r4, .L17
+ 319 0102 0122     		movs	r2, #1
+ 320 0104 2021     		movs	r1, #32
+ 321 0106 2046     		mov	r0, r4
+ 322              	.LVL39:
+  66:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+ 323              		.loc 1 66 13 is_stmt 0 view .LVU61
+ 324 0108 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 325              	.LVL40:
+  67:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+ 326              		.loc 1 67 13 is_stmt 1 view .LVU62
+ 327 010c 0122     		movs	r2, #1
+ 328 010e 4021     		movs	r1, #64
+ 329 0110 2046     		mov	r0, r4
+ 330 0112 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 331              	.LVL41:
+  68:USER/Src/manager.c ****             break;
+ 332              		.loc 1 68 13 view .LVU63
+ 333 0116 0122     		movs	r2, #1
+ 334 0118 8021     		movs	r1, #128
+ 335 011a 2046     		mov	r0, r4
+ 336 011c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 337              	.LVL42:
+  69:USER/Src/manager.c ****     default:
+ 338              		.loc 1 69 13 view .LVU64
+ 339              		.loc 1 73 1 is_stmt 0 view .LVU65
+ 340 0120 87E7     		b	.L5
+ 341              	.L18:
+ 342 0122 00BF     		.align	2
+ 343              	.L17:
+ 344 0124 00000240 		.word	1073872896
+ 345              		.cfi_endproc
+ 346              	.LFE134:
+ 348              		.section	.rodata.Enable_IIC4051.str1.4,"aMS",%progbits,1
+ 349              		.align	2
+ 350              	.LC0:
+ 351 0000 2D2D494E 		.ascii	"--INT 1 OUT !\015\012\000"
+ 351      54203120 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 9
+
+
+ 351      4F555420 
+ 351      210D0A00 
+ 352              		.align	2
+ 353              	.LC1:
+ 354 0010 2D2D456E 		.ascii	"--Enable 1 or 4 Error !\015\012\000"
+ 354      61626C65 
+ 354      2031206F 
+ 354      72203420 
+ 354      4572726F 
+ 355 002a 0000     		.align	2
+ 356              	.LC2:
+ 357 002c 2D2D494E 		.ascii	"--INT 2 OUT !\015\012\000"
+ 357      54203220 
+ 357      4F555420 
+ 357      210D0A00 
+ 358              		.align	2
+ 359              	.LC3:
+ 360 003c 2D2D456E 		.ascii	"--Enable 2 or 5 Error !\015\012\000"
+ 360      61626C65 
+ 360      2032206F 
+ 360      72203520 
+ 360      4572726F 
+ 361 0056 0000     		.align	2
+ 362              	.LC4:
+ 363 0058 2D2D494E 		.ascii	"--INT 3 OUT !\015\012\000"
+ 363      54203320 
+ 363      4F555420 
+ 363      210D0A00 
+ 364              		.align	2
+ 365              	.LC5:
+ 366 0068 2D2D456E 		.ascii	"--Enable 3 or 6 Error !\015\012\000"
+ 366      61626C65 
+ 366      2033206F 
+ 366      72203620 
+ 366      4572726F 
+ 367 0082 0000     		.align	2
+ 368              	.LC6:
+ 369 0084 2D2D456E 		.ascii	"--Enable Error !\015\012\000"
+ 369      61626C65 
+ 369      20457272 
+ 369      6F722021 
+ 369      0D0A00
+ 370              		.section	.text.Enable_IIC4051,"ax",%progbits
+ 371              		.align	1
+ 372              		.global	Enable_IIC4051
+ 373              		.syntax unified
+ 374              		.thumb
+ 375              		.thumb_func
+ 377              	Enable_IIC4051:
+ 378              	.LVL43:
+ 379              	.LFB135:
+  74:USER/Src/manager.c **** 
+  75:USER/Src/manager.c **** void Enable_IIC4051(uint8_t i ,uint8_t j)
+  76:USER/Src/manager.c **** {
+ 380              		.loc 1 76 1 is_stmt 1 view -0
+ 381              		.cfi_startproc
+ 382              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 10
+
+
+ 383              		@ frame_needed = 0, uses_anonymous_args = 0
+ 384              		.loc 1 76 1 is_stmt 0 view .LVU67
+ 385 0000 38B5     		push	{r3, r4, r5, lr}
+ 386              	.LCFI4:
+ 387              		.cfi_def_cfa_offset 16
+ 388              		.cfi_offset 3, -16
+ 389              		.cfi_offset 4, -12
+ 390              		.cfi_offset 5, -8
+ 391              		.cfi_offset 14, -4
+ 392 0002 0446     		mov	r4, r0
+  77:USER/Src/manager.c ****     switch (j)//使能模拟开关
+ 393              		.loc 1 77 5 is_stmt 1 view .LVU68
+ 394 0004 0139     		subs	r1, r1, #1
+ 395              	.LVL44:
+ 396              		.loc 1 77 5 is_stmt 0 view .LVU69
+ 397 0006 0529     		cmp	r1, #5
+ 398 0008 58D8     		bhi	.L20
+ 399 000a DFE801F0 		tbb	[pc, r1]
+ 400              	.L22:
+ 401 000e 03       		.byte	(.L24-.L22)/2
+ 402 000f 1F       		.byte	(.L23-.L22)/2
+ 403 0010 3B       		.byte	(.L21-.L22)/2
+ 404 0011 03       		.byte	(.L24-.L22)/2
+ 405 0012 1F       		.byte	(.L23-.L22)/2
+ 406 0013 3B       		.byte	(.L21-.L22)/2
+ 407              		.p2align 1
+ 408              	.L24:
+  78:USER/Src/manager.c **** 		{
+  79:USER/Src/manager.c **** 			case 1:
+  80:USER/Src/manager.c **** 			case 4:
+  81:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET); 
+ 409              		.loc 1 81 5 is_stmt 1 view .LVU70
+ 410 0014 2B4D     		ldr	r5, .L30
+ 411 0016 0022     		movs	r2, #0
+ 412 0018 0121     		movs	r1, #1
+ 413 001a 2846     		mov	r0, r5
+ 414              	.LVL45:
+ 415              		.loc 1 81 5 is_stmt 0 view .LVU71
+ 416 001c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 417              	.LVL46:
+  82:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET); 
+ 418              		.loc 1 82 5 is_stmt 1 view .LVU72
+ 419 0020 0122     		movs	r2, #1
+ 420 0022 1221     		movs	r1, #18
+ 421 0024 2846     		mov	r0, r5
+ 422 0026 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 423              	.LVL47:
+  83:USER/Src/manager.c ****                 if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)==GPIO_PIN_RESET)
+ 424              		.loc 1 83 17 view .LVU73
+ 425              		.loc 1 83 20 is_stmt 0 view .LVU74
+ 426 002a 0121     		movs	r1, #1
+ 427 002c 2846     		mov	r0, r5
+ 428 002e FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 429              	.LVL48:
+ 430              		.loc 1 83 19 view .LVU75
+ 431 0032 38B9     		cbnz	r0, .L25
+  84:USER/Src/manager.c ****                 {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 11
+
+
+  85:USER/Src/manager.c ****                     Set_Port_Number(i-1);
+ 432              		.loc 1 85 21 is_stmt 1 view .LVU76
+ 433 0034 601E     		subs	r0, r4, #1
+ 434 0036 C0B2     		uxtb	r0, r0
+ 435 0038 FFF7FEFF 		bl	Set_Port_Number
+ 436              	.LVL49:
+  86:USER/Src/manager.c ****                     UsbPrintf("--INT 1 OUT !\r\n");  
+ 437              		.loc 1 86 21 view .LVU77
+ 438 003c 2248     		ldr	r0, .L30+4
+ 439 003e FFF7FEFF 		bl	UsbPrintf
+ 440              	.LVL50:
+ 441              	.L19:
+  87:USER/Src/manager.c ****                 }else{
+  88:USER/Src/manager.c ****                     UsbPrintf("--Enable 1 or 4 Error !\r\n");
+  89:USER/Src/manager.c ****                 }
+  90:USER/Src/manager.c **** 				break;
+  91:USER/Src/manager.c **** 			case 2:
+  92:USER/Src/manager.c **** 			case 5:
+  93:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); 
+  94:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_4, GPIO_PIN_SET); 
+  95:USER/Src/manager.c ****                 if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1)==GPIO_PIN_RESET)
+  96:USER/Src/manager.c ****                 {
+  97:USER/Src/manager.c ****                     Set_Port_Number(i-1);
+  98:USER/Src/manager.c ****                     UsbPrintf("--INT 2 OUT !\r\n");        
+  99:USER/Src/manager.c ****                 }else{
+ 100:USER/Src/manager.c ****                    UsbPrintf("--Enable 2 or 5 Error !\r\n");
+ 101:USER/Src/manager.c ****                 }
+ 102:USER/Src/manager.c **** 				break;
+ 103:USER/Src/manager.c **** 			case 3:
+ 104:USER/Src/manager.c **** 			case 6:
+ 105:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET); 
+ 106:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_0, GPIO_PIN_SET); 
+ 107:USER/Src/manager.c ****                 if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)==GPIO_PIN_RESET)
+ 108:USER/Src/manager.c ****                 {
+ 109:USER/Src/manager.c ****                     Set_Port_Number(i-1);
+ 110:USER/Src/manager.c ****                     UsbPrintf("--INT 3 OUT !\r\n");        
+ 111:USER/Src/manager.c ****                 }else{
+ 112:USER/Src/manager.c ****                    UsbPrintf("--Enable 3 or 6 Error !\r\n");
+ 113:USER/Src/manager.c ****                 }
+ 114:USER/Src/manager.c **** 			break;
+ 115:USER/Src/manager.c **** 			default:
+ 116:USER/Src/manager.c ****                 UsbPrintf("--Enable Error !\r\n"); 
+ 117:USER/Src/manager.c **** 				break;
+ 118:USER/Src/manager.c **** 		}
+ 119:USER/Src/manager.c **** }
+ 442              		.loc 1 119 1 is_stmt 0 view .LVU78
+ 443 0042 38BD     		pop	{r3, r4, r5, pc}
+ 444              	.L25:
+  88:USER/Src/manager.c ****                 }
+ 445              		.loc 1 88 21 is_stmt 1 view .LVU79
+ 446 0044 2148     		ldr	r0, .L30+8
+ 447 0046 FFF7FEFF 		bl	UsbPrintf
+ 448              	.LVL51:
+ 449 004a FAE7     		b	.L19
+ 450              	.LVL52:
+ 451              	.L23:
+  93:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_4, GPIO_PIN_SET); 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 12
+
+
+ 452              		.loc 1 93 5 view .LVU80
+ 453 004c 1D4D     		ldr	r5, .L30
+ 454 004e 0022     		movs	r2, #0
+ 455 0050 0221     		movs	r1, #2
+ 456 0052 2846     		mov	r0, r5
+ 457              	.LVL53:
+  93:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_4, GPIO_PIN_SET); 
+ 458              		.loc 1 93 5 is_stmt 0 view .LVU81
+ 459 0054 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 460              	.LVL54:
+  94:USER/Src/manager.c ****                 if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1)==GPIO_PIN_RESET)
+ 461              		.loc 1 94 5 is_stmt 1 view .LVU82
+ 462 0058 0122     		movs	r2, #1
+ 463 005a 1121     		movs	r1, #17
+ 464 005c 2846     		mov	r0, r5
+ 465 005e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 466              	.LVL55:
+  95:USER/Src/manager.c ****                 {
+ 467              		.loc 1 95 17 view .LVU83
+  95:USER/Src/manager.c ****                 {
+ 468              		.loc 1 95 20 is_stmt 0 view .LVU84
+ 469 0062 0221     		movs	r1, #2
+ 470 0064 2846     		mov	r0, r5
+ 471 0066 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 472              	.LVL56:
+  95:USER/Src/manager.c ****                 {
+ 473              		.loc 1 95 19 view .LVU85
+ 474 006a 38B9     		cbnz	r0, .L27
+  97:USER/Src/manager.c ****                     UsbPrintf("--INT 2 OUT !\r\n");        
+ 475              		.loc 1 97 21 is_stmt 1 view .LVU86
+ 476 006c 601E     		subs	r0, r4, #1
+ 477 006e C0B2     		uxtb	r0, r0
+ 478 0070 FFF7FEFF 		bl	Set_Port_Number
+ 479              	.LVL57:
+  98:USER/Src/manager.c ****                 }else{
+ 480              		.loc 1 98 21 view .LVU87
+ 481 0074 1648     		ldr	r0, .L30+12
+ 482 0076 FFF7FEFF 		bl	UsbPrintf
+ 483              	.LVL58:
+ 484 007a E2E7     		b	.L19
+ 485              	.L27:
+ 100:USER/Src/manager.c ****                 }
+ 486              		.loc 1 100 20 view .LVU88
+ 487 007c 1548     		ldr	r0, .L30+16
+ 488 007e FFF7FEFF 		bl	UsbPrintf
+ 489              	.LVL59:
+ 490 0082 DEE7     		b	.L19
+ 491              	.LVL60:
+ 492              	.L21:
+ 105:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_0, GPIO_PIN_SET); 
+ 493              		.loc 1 105 5 view .LVU89
+ 494 0084 0F4D     		ldr	r5, .L30
+ 495 0086 0022     		movs	r2, #0
+ 496 0088 1021     		movs	r1, #16
+ 497 008a 2846     		mov	r0, r5
+ 498              	.LVL61:
+ 105:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_0, GPIO_PIN_SET); 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 13
+
+
+ 499              		.loc 1 105 5 is_stmt 0 view .LVU90
+ 500 008c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 501              	.LVL62:
+ 106:USER/Src/manager.c ****                 if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)==GPIO_PIN_RESET)
+ 502              		.loc 1 106 5 is_stmt 1 view .LVU91
+ 503 0090 0122     		movs	r2, #1
+ 504 0092 0321     		movs	r1, #3
+ 505 0094 2846     		mov	r0, r5
+ 506 0096 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 507              	.LVL63:
+ 107:USER/Src/manager.c ****                 {
+ 508              		.loc 1 107 17 view .LVU92
+ 107:USER/Src/manager.c ****                 {
+ 509              		.loc 1 107 20 is_stmt 0 view .LVU93
+ 510 009a 1021     		movs	r1, #16
+ 511 009c 2846     		mov	r0, r5
+ 512 009e FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 513              	.LVL64:
+ 107:USER/Src/manager.c ****                 {
+ 514              		.loc 1 107 19 view .LVU94
+ 515 00a2 38B9     		cbnz	r0, .L28
+ 109:USER/Src/manager.c ****                     UsbPrintf("--INT 3 OUT !\r\n");        
+ 516              		.loc 1 109 21 is_stmt 1 view .LVU95
+ 517 00a4 601E     		subs	r0, r4, #1
+ 518 00a6 C0B2     		uxtb	r0, r0
+ 519 00a8 FFF7FEFF 		bl	Set_Port_Number
+ 520              	.LVL65:
+ 110:USER/Src/manager.c ****                 }else{
+ 521              		.loc 1 110 21 view .LVU96
+ 522 00ac 0A48     		ldr	r0, .L30+20
+ 523 00ae FFF7FEFF 		bl	UsbPrintf
+ 524              	.LVL66:
+ 525 00b2 C6E7     		b	.L19
+ 526              	.L28:
+ 112:USER/Src/manager.c ****                 }
+ 527              		.loc 1 112 20 view .LVU97
+ 528 00b4 0948     		ldr	r0, .L30+24
+ 529 00b6 FFF7FEFF 		bl	UsbPrintf
+ 530              	.LVL67:
+ 531 00ba C2E7     		b	.L19
+ 532              	.LVL68:
+ 533              	.L20:
+ 116:USER/Src/manager.c **** 				break;
+ 534              		.loc 1 116 17 view .LVU98
+ 535 00bc 0848     		ldr	r0, .L30+28
+ 536              	.LVL69:
+ 116:USER/Src/manager.c **** 				break;
+ 537              		.loc 1 116 17 is_stmt 0 view .LVU99
+ 538 00be FFF7FEFF 		bl	UsbPrintf
+ 539              	.LVL70:
+ 117:USER/Src/manager.c **** 		}
+ 540              		.loc 1 117 5 is_stmt 1 view .LVU100
+ 541              		.loc 1 119 1 is_stmt 0 view .LVU101
+ 542 00c2 BEE7     		b	.L19
+ 543              	.L31:
+ 544              		.align	2
+ 545              	.L30:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 14
+
+
+ 546 00c4 00000240 		.word	1073872896
+ 547 00c8 00000000 		.word	.LC0
+ 548 00cc 10000000 		.word	.LC1
+ 549 00d0 2C000000 		.word	.LC2
+ 550 00d4 3C000000 		.word	.LC3
+ 551 00d8 58000000 		.word	.LC4
+ 552 00dc 68000000 		.word	.LC5
+ 553 00e0 84000000 		.word	.LC6
+ 554              		.cfi_endproc
+ 555              	.LFE135:
+ 557              		.section	.rodata.Enable_SPI4051.str1.4,"aMS",%progbits,1
+ 558              		.align	2
+ 559              	.LC7:
+ 560 0000 2D2D494E 		.ascii	"--INT OUT 1!\015\012\000"
+ 560      54204F55 
+ 560      54203121 
+ 560      0D0A00
+ 561 000f 00       		.align	2
+ 562              	.LC8:
+ 563 0010 2D2D456E 		.ascii	"--Enable 1 Error !\015\012\000"
+ 563      61626C65 
+ 563      20312045 
+ 563      72726F72 
+ 563      20210D0A 
+ 564 0025 000000   		.align	2
+ 565              	.LC9:
+ 566 0028 2D2D494E 		.ascii	"--INT OUT 2!\015\012\000"
+ 566      54204F55 
+ 566      54203221 
+ 566      0D0A00
+ 567 0037 00       		.align	2
+ 568              	.LC10:
+ 569 0038 2D2D456E 		.ascii	"--Enable 2 Error !\015\012\000"
+ 569      61626C65 
+ 569      20322045 
+ 569      72726F72 
+ 569      20210D0A 
+ 570 004d 000000   		.align	2
+ 571              	.LC11:
+ 572 0050 2D2D494E 		.ascii	"--INT OUT 3!\015\012\000"
+ 572      54204F55 
+ 572      54203321 
+ 572      0D0A00
+ 573 005f 00       		.align	2
+ 574              	.LC12:
+ 575 0060 2D2D456E 		.ascii	"--Enable 3 Error !\015\012\000"
+ 575      61626C65 
+ 575      20332045 
+ 575      72726F72 
+ 575      20210D0A 
+ 576              		.section	.text.Enable_SPI4051,"ax",%progbits
+ 577              		.align	1
+ 578              		.global	Enable_SPI4051
+ 579              		.syntax unified
+ 580              		.thumb
+ 581              		.thumb_func
+ 583              	Enable_SPI4051:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 15
+
+
+ 584              	.LVL71:
+ 585              	.LFB136:
+ 120:USER/Src/manager.c **** 
+ 121:USER/Src/manager.c **** void Enable_SPI4051(uint8_t i,uint8_t j)
+ 122:USER/Src/manager.c **** {
+ 586              		.loc 1 122 1 is_stmt 1 view -0
+ 587              		.cfi_startproc
+ 588              		@ args = 0, pretend = 0, frame = 0
+ 589              		@ frame_needed = 0, uses_anonymous_args = 0
+ 590              		.loc 1 122 1 is_stmt 0 view .LVU103
+ 591 0000 38B5     		push	{r3, r4, r5, lr}
+ 592              	.LCFI5:
+ 593              		.cfi_def_cfa_offset 16
+ 594              		.cfi_offset 3, -16
+ 595              		.cfi_offset 4, -12
+ 596              		.cfi_offset 5, -8
+ 597              		.cfi_offset 14, -4
+ 598 0002 0446     		mov	r4, r0
+ 123:USER/Src/manager.c ****     switch (j)
+ 599              		.loc 1 123 5 is_stmt 1 view .LVU104
+ 600 0004 0229     		cmp	r1, #2
+ 601 0006 22D0     		beq	.L33
+ 602 0008 0329     		cmp	r1, #3
+ 603 000a 3CD0     		beq	.L34
+ 604 000c 0129     		cmp	r1, #1
+ 605 000e 03D0     		beq	.L41
+ 124:USER/Src/manager.c **** 		{
+ 125:USER/Src/manager.c **** 			case 1:
+ 126:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET); 
+ 127:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET); 
+ 128:USER/Src/manager.c ****                 if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)==GPIO_PIN_RESET)
+ 129:USER/Src/manager.c ****                 {
+ 130:USER/Src/manager.c ****                     Set_Port_Number(i-1); 
+ 131:USER/Src/manager.c ****                     UsbPrintf("--INT OUT 1!\r\n");          
+ 132:USER/Src/manager.c ****                 }else{
+ 133:USER/Src/manager.c ****                     UsbPrintf("--Enable 1 Error !\r\n");
+ 134:USER/Src/manager.c ****                 }
+ 135:USER/Src/manager.c **** 				break;
+ 136:USER/Src/manager.c **** 			case 2:
+ 137:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); 
+ 138:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_4, GPIO_PIN_SET); 
+ 139:USER/Src/manager.c ****                 if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1)==GPIO_PIN_RESET)
+ 140:USER/Src/manager.c ****                 {
+ 141:USER/Src/manager.c ****                     Set_Port_Number(i-1); 
+ 142:USER/Src/manager.c ****                     UsbPrintf("--INT OUT 2!\r\n");       
+ 143:USER/Src/manager.c ****                 }else{
+ 144:USER/Src/manager.c ****                     UsbPrintf("--Enable 2 Error !\r\n");
+ 145:USER/Src/manager.c ****                 }
+ 146:USER/Src/manager.c **** 				break;
+ 147:USER/Src/manager.c **** 			case 3:
+ 148:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET); 
+ 149:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_0, GPIO_PIN_SET); 
+ 150:USER/Src/manager.c ****                 if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)==GPIO_PIN_RESET)
+ 151:USER/Src/manager.c ****                 {
+ 152:USER/Src/manager.c ****                     Set_Port_Number(i-1); 
+ 153:USER/Src/manager.c ****                     UsbPrintf("--INT OUT 3!\r\n");       
+ 154:USER/Src/manager.c ****                 }else{
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 16
+
+
+ 155:USER/Src/manager.c ****                     UsbPrintf("--Enable 3 Error !\r\n");
+ 156:USER/Src/manager.c ****                 }
+ 157:USER/Src/manager.c **** 			break;
+ 158:USER/Src/manager.c **** 			default:
+ 159:USER/Src/manager.c ****                 UsbPrintf("--Enable Error !\r\n");
+ 606              		.loc 1 159 17 view .LVU105
+ 607 0010 2B48     		ldr	r0, .L42
+ 608              	.LVL72:
+ 609              		.loc 1 159 17 is_stmt 0 view .LVU106
+ 610 0012 FFF7FEFF 		bl	UsbPrintf
+ 611              	.LVL73:
+ 160:USER/Src/manager.c **** 				break;
+ 612              		.loc 1 160 5 is_stmt 1 view .LVU107
+ 613              	.L32:
+ 161:USER/Src/manager.c **** 		}
+ 162:USER/Src/manager.c **** }
+ 614              		.loc 1 162 1 is_stmt 0 view .LVU108
+ 615 0016 38BD     		pop	{r3, r4, r5, pc}
+ 616              	.LVL74:
+ 617              	.L41:
+ 126:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET); 
+ 618              		.loc 1 126 5 is_stmt 1 view .LVU109
+ 619 0018 2A4D     		ldr	r5, .L42+4
+ 620 001a 0022     		movs	r2, #0
+ 621 001c 2846     		mov	r0, r5
+ 622              	.LVL75:
+ 126:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_SET); 
+ 623              		.loc 1 126 5 is_stmt 0 view .LVU110
+ 624 001e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 625              	.LVL76:
+ 127:USER/Src/manager.c ****                 if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)==GPIO_PIN_RESET)
+ 626              		.loc 1 127 5 is_stmt 1 view .LVU111
+ 627 0022 0122     		movs	r2, #1
+ 628 0024 1221     		movs	r1, #18
+ 629 0026 2846     		mov	r0, r5
+ 630 0028 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 631              	.LVL77:
+ 128:USER/Src/manager.c ****                 {
+ 632              		.loc 1 128 17 view .LVU112
+ 128:USER/Src/manager.c ****                 {
+ 633              		.loc 1 128 20 is_stmt 0 view .LVU113
+ 634 002c 0121     		movs	r1, #1
+ 635 002e 2846     		mov	r0, r5
+ 636 0030 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 637              	.LVL78:
+ 128:USER/Src/manager.c ****                 {
+ 638              		.loc 1 128 19 view .LVU114
+ 639 0034 38B9     		cbnz	r0, .L36
+ 130:USER/Src/manager.c ****                     UsbPrintf("--INT OUT 1!\r\n");          
+ 640              		.loc 1 130 21 is_stmt 1 view .LVU115
+ 641 0036 601E     		subs	r0, r4, #1
+ 642 0038 C0B2     		uxtb	r0, r0
+ 643 003a FFF7FEFF 		bl	Set_Port_Number
+ 644              	.LVL79:
+ 131:USER/Src/manager.c ****                 }else{
+ 645              		.loc 1 131 21 view .LVU116
+ 646 003e 2248     		ldr	r0, .L42+8
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 17
+
+
+ 647 0040 FFF7FEFF 		bl	UsbPrintf
+ 648              	.LVL80:
+ 649 0044 E7E7     		b	.L32
+ 650              	.L36:
+ 133:USER/Src/manager.c ****                 }
+ 651              		.loc 1 133 21 view .LVU117
+ 652 0046 2148     		ldr	r0, .L42+12
+ 653 0048 FFF7FEFF 		bl	UsbPrintf
+ 654              	.LVL81:
+ 655 004c E3E7     		b	.L32
+ 656              	.LVL82:
+ 657              	.L33:
+ 137:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_4, GPIO_PIN_SET); 
+ 658              		.loc 1 137 5 view .LVU118
+ 659 004e 1D4D     		ldr	r5, .L42+4
+ 660 0050 0022     		movs	r2, #0
+ 661 0052 0221     		movs	r1, #2
+ 662              	.LVL83:
+ 137:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_4, GPIO_PIN_SET); 
+ 663              		.loc 1 137 5 is_stmt 0 view .LVU119
+ 664 0054 2846     		mov	r0, r5
+ 665              	.LVL84:
+ 137:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_4, GPIO_PIN_SET); 
+ 666              		.loc 1 137 5 view .LVU120
+ 667 0056 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 668              	.LVL85:
+ 138:USER/Src/manager.c ****                 if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1)==GPIO_PIN_RESET)
+ 669              		.loc 1 138 5 is_stmt 1 view .LVU121
+ 670 005a 0122     		movs	r2, #1
+ 671 005c 1121     		movs	r1, #17
+ 672 005e 2846     		mov	r0, r5
+ 673 0060 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 674              	.LVL86:
+ 139:USER/Src/manager.c ****                 {
+ 675              		.loc 1 139 17 view .LVU122
+ 139:USER/Src/manager.c ****                 {
+ 676              		.loc 1 139 20 is_stmt 0 view .LVU123
+ 677 0064 0221     		movs	r1, #2
+ 678 0066 2846     		mov	r0, r5
+ 679 0068 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 680              	.LVL87:
+ 139:USER/Src/manager.c ****                 {
+ 681              		.loc 1 139 19 view .LVU124
+ 682 006c 38B9     		cbnz	r0, .L38
+ 141:USER/Src/manager.c ****                     UsbPrintf("--INT OUT 2!\r\n");       
+ 683              		.loc 1 141 21 is_stmt 1 view .LVU125
+ 684 006e 601E     		subs	r0, r4, #1
+ 685 0070 C0B2     		uxtb	r0, r0
+ 686 0072 FFF7FEFF 		bl	Set_Port_Number
+ 687              	.LVL88:
+ 142:USER/Src/manager.c ****                 }else{
+ 688              		.loc 1 142 21 view .LVU126
+ 689 0076 1648     		ldr	r0, .L42+16
+ 690 0078 FFF7FEFF 		bl	UsbPrintf
+ 691              	.LVL89:
+ 692 007c CBE7     		b	.L32
+ 693              	.L38:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 18
+
+
+ 144:USER/Src/manager.c ****                 }
+ 694              		.loc 1 144 21 view .LVU127
+ 695 007e 1548     		ldr	r0, .L42+20
+ 696 0080 FFF7FEFF 		bl	UsbPrintf
+ 697              	.LVL90:
+ 698 0084 C7E7     		b	.L32
+ 699              	.LVL91:
+ 700              	.L34:
+ 148:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_0, GPIO_PIN_SET); 
+ 701              		.loc 1 148 5 view .LVU128
+ 702 0086 0F4D     		ldr	r5, .L42+4
+ 703 0088 0022     		movs	r2, #0
+ 704 008a 1021     		movs	r1, #16
+ 705              	.LVL92:
+ 148:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_0, GPIO_PIN_SET); 
+ 706              		.loc 1 148 5 is_stmt 0 view .LVU129
+ 707 008c 2846     		mov	r0, r5
+ 708              	.LVL93:
+ 148:USER/Src/manager.c **** 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_0, GPIO_PIN_SET); 
+ 709              		.loc 1 148 5 view .LVU130
+ 710 008e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 711              	.LVL94:
+ 149:USER/Src/manager.c ****                 if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)==GPIO_PIN_RESET)
+ 712              		.loc 1 149 5 is_stmt 1 view .LVU131
+ 713 0092 0122     		movs	r2, #1
+ 714 0094 0321     		movs	r1, #3
+ 715 0096 2846     		mov	r0, r5
+ 716 0098 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 717              	.LVL95:
+ 150:USER/Src/manager.c ****                 {
+ 718              		.loc 1 150 17 view .LVU132
+ 150:USER/Src/manager.c ****                 {
+ 719              		.loc 1 150 20 is_stmt 0 view .LVU133
+ 720 009c 1021     		movs	r1, #16
+ 721 009e 2846     		mov	r0, r5
+ 722 00a0 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 723              	.LVL96:
+ 150:USER/Src/manager.c ****                 {
+ 724              		.loc 1 150 19 view .LVU134
+ 725 00a4 38B9     		cbnz	r0, .L39
+ 152:USER/Src/manager.c ****                     UsbPrintf("--INT OUT 3!\r\n");       
+ 726              		.loc 1 152 21 is_stmt 1 view .LVU135
+ 727 00a6 601E     		subs	r0, r4, #1
+ 728 00a8 C0B2     		uxtb	r0, r0
+ 729 00aa FFF7FEFF 		bl	Set_Port_Number
+ 730              	.LVL97:
+ 153:USER/Src/manager.c ****                 }else{
+ 731              		.loc 1 153 21 view .LVU136
+ 732 00ae 0A48     		ldr	r0, .L42+24
+ 733 00b0 FFF7FEFF 		bl	UsbPrintf
+ 734              	.LVL98:
+ 735 00b4 AFE7     		b	.L32
+ 736              	.L39:
+ 155:USER/Src/manager.c ****                 }
+ 737              		.loc 1 155 21 view .LVU137
+ 738 00b6 0948     		ldr	r0, .L42+28
+ 739 00b8 FFF7FEFF 		bl	UsbPrintf
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 19
+
+
+ 740              	.LVL99:
+ 741 00bc ABE7     		b	.L32
+ 742              	.L43:
+ 743 00be 00BF     		.align	2
+ 744              	.L42:
+ 745 00c0 84000000 		.word	.LC6
+ 746 00c4 00000240 		.word	1073872896
+ 747 00c8 00000000 		.word	.LC7
+ 748 00cc 10000000 		.word	.LC8
+ 749 00d0 28000000 		.word	.LC9
+ 750 00d4 38000000 		.word	.LC10
+ 751 00d8 50000000 		.word	.LC11
+ 752 00dc 60000000 		.word	.LC12
+ 753              		.cfi_endproc
+ 754              	.LFE136:
+ 756              		.section	.text.Control_level,"ax",%progbits
+ 757              		.align	1
+ 758              		.global	Control_level
+ 759              		.syntax unified
+ 760              		.thumb
+ 761              		.thumb_func
+ 763              	Control_level:
+ 764              	.LVL100:
+ 765              	.LFB137:
+ 163:USER/Src/manager.c **** 
+ 164:USER/Src/manager.c **** void Control_level(uint8_t i ,uint8_t level)
+ 165:USER/Src/manager.c **** {
+ 766              		.loc 1 165 1 view -0
+ 767              		.cfi_startproc
+ 768              		@ args = 0, pretend = 0, frame = 0
+ 769              		@ frame_needed = 0, uses_anonymous_args = 0
+ 770              		.loc 1 165 1 is_stmt 0 view .LVU139
+ 771 0000 08B5     		push	{r3, lr}
+ 772              	.LCFI6:
+ 773              		.cfi_def_cfa_offset 8
+ 774              		.cfi_offset 3, -8
+ 775              		.cfi_offset 14, -4
+ 776 0002 0A46     		mov	r2, r1
+ 166:USER/Src/manager.c ****     switch(i)
+ 777              		.loc 1 166 5 is_stmt 1 view .LVU140
+ 778 0004 0228     		cmp	r0, #2
+ 779 0006 0ED0     		beq	.L45
+ 780 0008 0328     		cmp	r0, #3
+ 781 000a 11D0     		beq	.L46
+ 782 000c 0128     		cmp	r0, #1
+ 783 000e 05D0     		beq	.L50
+ 167:USER/Src/manager.c ****     {
+ 168:USER/Src/manager.c ****         case 1:
+ 169:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, level);
+ 170:USER/Src/manager.c ****             break;
+ 171:USER/Src/manager.c ****         case 2:
+ 172:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, level);
+ 173:USER/Src/manager.c ****             break;
+ 174:USER/Src/manager.c ****         case 3:
+ 175:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, level);
+ 176:USER/Src/manager.c ****             break;   
+ 177:USER/Src/manager.c ****         default:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 20
+
+
+ 178:USER/Src/manager.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_0, GPIO_PIN_RESET);
+ 784              		.loc 1 178 13 view .LVU141
+ 785 0010 0022     		movs	r2, #0
+ 786 0012 0721     		movs	r1, #7
+ 787              	.LVL101:
+ 788              		.loc 1 178 13 is_stmt 0 view .LVU142
+ 789 0014 0948     		ldr	r0, .L51
+ 790              	.LVL102:
+ 791              		.loc 1 178 13 view .LVU143
+ 792 0016 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 793              	.LVL103:
+ 179:USER/Src/manager.c ****             break;
+ 794              		.loc 1 179 13 is_stmt 1 view .LVU144
+ 180:USER/Src/manager.c ****     }
+ 181:USER/Src/manager.c **** }
+ 795              		.loc 1 181 1 is_stmt 0 view .LVU145
+ 796 001a 03E0     		b	.L44
+ 797              	.LVL104:
+ 798              	.L50:
+ 169:USER/Src/manager.c ****             break;
+ 799              		.loc 1 169 13 is_stmt 1 view .LVU146
+ 800 001c 0121     		movs	r1, #1
+ 801              	.LVL105:
+ 169:USER/Src/manager.c ****             break;
+ 802              		.loc 1 169 13 is_stmt 0 view .LVU147
+ 803 001e 0748     		ldr	r0, .L51
+ 804              	.LVL106:
+ 169:USER/Src/manager.c ****             break;
+ 805              		.loc 1 169 13 view .LVU148
+ 806 0020 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 807              	.LVL107:
+ 170:USER/Src/manager.c ****         case 2:
+ 808              		.loc 1 170 13 is_stmt 1 view .LVU149
+ 809              	.L44:
+ 810              		.loc 1 181 1 is_stmt 0 view .LVU150
+ 811 0024 08BD     		pop	{r3, pc}
+ 812              	.LVL108:
+ 813              	.L45:
+ 172:USER/Src/manager.c ****             break;
+ 814              		.loc 1 172 13 is_stmt 1 view .LVU151
+ 815 0026 0221     		movs	r1, #2
+ 816              	.LVL109:
+ 172:USER/Src/manager.c ****             break;
+ 817              		.loc 1 172 13 is_stmt 0 view .LVU152
+ 818 0028 0448     		ldr	r0, .L51
+ 819              	.LVL110:
+ 172:USER/Src/manager.c ****             break;
+ 820              		.loc 1 172 13 view .LVU153
+ 821 002a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 822              	.LVL111:
+ 173:USER/Src/manager.c ****         case 3:
+ 823              		.loc 1 173 13 is_stmt 1 view .LVU154
+ 824 002e F9E7     		b	.L44
+ 825              	.LVL112:
+ 826              	.L46:
+ 175:USER/Src/manager.c ****             break;   
+ 827              		.loc 1 175 13 view .LVU155
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 21
+
+
+ 828 0030 0421     		movs	r1, #4
+ 829              	.LVL113:
+ 175:USER/Src/manager.c ****             break;   
+ 830              		.loc 1 175 13 is_stmt 0 view .LVU156
+ 831 0032 0248     		ldr	r0, .L51
+ 832              	.LVL114:
+ 175:USER/Src/manager.c ****             break;   
+ 833              		.loc 1 175 13 view .LVU157
+ 834 0034 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 835              	.LVL115:
+ 176:USER/Src/manager.c ****         default:
+ 836              		.loc 1 176 13 is_stmt 1 view .LVU158
+ 837 0038 F4E7     		b	.L44
+ 838              	.L52:
+ 839 003a 00BF     		.align	2
+ 840              	.L51:
+ 841 003c 000C0240 		.word	1073875968
+ 842              		.cfi_endproc
+ 843              	.LFE137:
+ 845              		.section	.rodata.INT_Choose.str1.4,"aMS",%progbits,1
+ 846              		.align	2
+ 847              	.LC13:
+ 848 0000 33324B00 		.ascii	"32K\000"
+ 849              		.align	2
+ 850              	.LC14:
+ 851 0004 3634485A 		.ascii	"64HZ\000"
+ 851      00
+ 852 0009 000000   		.align	2
+ 853              	.LC15:
+ 854 000c 31303234 		.ascii	"1024HZ\000"
+ 854      485A00
+ 855 0013 00       		.align	2
+ 856              	.LC16:
+ 857 0014 34303936 		.ascii	"4096HZ\000"
+ 857      485A00
+ 858 001b 00       		.align	2
+ 859              	.LC17:
+ 860 001c 31485A00 		.ascii	"1HZ\000"
+ 861              		.align	2
+ 862              	.LC18:
+ 863 0020 38313932 		.ascii	"8192HZ\000"
+ 863      485A00
+ 864 0027 00       		.align	2
+ 865              	.LC19:
+ 866 0028 316D696E 		.ascii	"1min\000"
+ 866      00
+ 867 002d 000000   		.align	2
+ 868              	.LC20:
+ 869 0030 315300   		.ascii	"1S\000"
+ 870              		.section	.text.INT_Choose,"ax",%progbits
+ 871              		.align	1
+ 872              		.global	INT_Choose
+ 873              		.syntax unified
+ 874              		.thumb
+ 875              		.thumb_func
+ 877              	INT_Choose:
+ 878              	.LVL116:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 22
+
+
+ 879              	.LFB138:
+ 182:USER/Src/manager.c **** 
+ 183:USER/Src/manager.c **** 
+ 184:USER/Src/manager.c **** uint8_t INT_Choose(char* command)
+ 185:USER/Src/manager.c **** {
+ 880              		.loc 1 185 1 view -0
+ 881              		.cfi_startproc
+ 882              		@ args = 0, pretend = 0, frame = 0
+ 883              		@ frame_needed = 0, uses_anonymous_args = 0
+ 884              		.loc 1 185 1 is_stmt 0 view .LVU160
+ 885 0000 10B5     		push	{r4, lr}
+ 886              	.LCFI7:
+ 887              		.cfi_def_cfa_offset 8
+ 888              		.cfi_offset 4, -8
+ 889              		.cfi_offset 14, -4
+ 890 0002 0446     		mov	r4, r0
+ 186:USER/Src/manager.c ****     if(strstr(command,"32K"))
+ 891              		.loc 1 186 5 is_stmt 1 view .LVU161
+ 892              		.loc 1 186 8 is_stmt 0 view .LVU162
+ 893 0004 1B49     		ldr	r1, .L65
+ 894 0006 FFF7FEFF 		bl	strstr
+ 895              	.LVL117:
+ 896              		.loc 1 186 7 view .LVU163
+ 897 000a 30BB     		cbnz	r0, .L55
+ 187:USER/Src/manager.c **** 	{
+ 188:USER/Src/manager.c **** 		return 32;
+ 189:USER/Src/manager.c **** 	}
+ 190:USER/Src/manager.c **** 	else if(strstr(command,"64HZ"))
+ 898              		.loc 1 190 7 is_stmt 1 view .LVU164
+ 899              		.loc 1 190 10 is_stmt 0 view .LVU165
+ 900 000c 1A49     		ldr	r1, .L65+4
+ 901 000e 2046     		mov	r0, r4
+ 902 0010 FFF7FEFF 		bl	strstr
+ 903              	.LVL118:
+ 904              		.loc 1 190 9 view .LVU166
+ 905 0014 18BB     		cbnz	r0, .L56
+ 191:USER/Src/manager.c **** 	{
+ 192:USER/Src/manager.c **** 		return 64;
+ 193:USER/Src/manager.c **** 	}
+ 194:USER/Src/manager.c ****     else if(strstr(command,"1024HZ"))
+ 906              		.loc 1 194 10 is_stmt 1 view .LVU167
+ 907              		.loc 1 194 13 is_stmt 0 view .LVU168
+ 908 0016 1949     		ldr	r1, .L65+8
+ 909 0018 2046     		mov	r0, r4
+ 910 001a FFF7FEFF 		bl	strstr
+ 911              	.LVL119:
+ 912              		.loc 1 194 12 view .LVU169
+ 913 001e 00BB     		cbnz	r0, .L57
+ 195:USER/Src/manager.c **** 	{
+ 196:USER/Src/manager.c **** 		return 24;
+ 197:USER/Src/manager.c **** 	}
+ 198:USER/Src/manager.c ****     else if(strstr(command,"4096HZ"))
+ 914              		.loc 1 198 10 is_stmt 1 view .LVU170
+ 915              		.loc 1 198 13 is_stmt 0 view .LVU171
+ 916 0020 1749     		ldr	r1, .L65+12
+ 917 0022 2046     		mov	r0, r4
+ 918 0024 FFF7FEFF 		bl	strstr
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 23
+
+
+ 919              	.LVL120:
+ 920              		.loc 1 198 12 view .LVU172
+ 921 0028 E8B9     		cbnz	r0, .L58
+ 199:USER/Src/manager.c **** 	{
+ 200:USER/Src/manager.c **** 		return 96;
+ 201:USER/Src/manager.c **** 	}
+ 202:USER/Src/manager.c ****     else if(strstr(command,"1HZ"))
+ 922              		.loc 1 202 10 is_stmt 1 view .LVU173
+ 923              		.loc 1 202 13 is_stmt 0 view .LVU174
+ 924 002a 1649     		ldr	r1, .L65+16
+ 925 002c 2046     		mov	r0, r4
+ 926 002e FFF7FEFF 		bl	strstr
+ 927              	.LVL121:
+ 928              		.loc 1 202 12 view .LVU175
+ 929 0032 08B1     		cbz	r0, .L64
+ 203:USER/Src/manager.c ****     {
+ 204:USER/Src/manager.c ****         return 1;
+ 930              		.loc 1 204 16 view .LVU176
+ 931 0034 0120     		movs	r0, #1
+ 932 0036 11E0     		b	.L54
+ 933              	.L64:
+ 205:USER/Src/manager.c ****     }
+ 206:USER/Src/manager.c ****     else if(strstr(command,"8192HZ"))
+ 934              		.loc 1 206 10 is_stmt 1 view .LVU177
+ 935              		.loc 1 206 13 is_stmt 0 view .LVU178
+ 936 0038 1349     		ldr	r1, .L65+20
+ 937 003a 2046     		mov	r0, r4
+ 938 003c FFF7FEFF 		bl	strstr
+ 939              	.LVL122:
+ 940              		.loc 1 206 12 view .LVU179
+ 941 0040 98B9     		cbnz	r0, .L60
+ 207:USER/Src/manager.c ****     {
+ 208:USER/Src/manager.c ****         return 92;
+ 209:USER/Src/manager.c ****     }
+ 210:USER/Src/manager.c ****     else if(strstr(command,"1min"))
+ 942              		.loc 1 210 10 is_stmt 1 view .LVU180
+ 943              		.loc 1 210 13 is_stmt 0 view .LVU181
+ 944 0042 1249     		ldr	r1, .L65+24
+ 945 0044 2046     		mov	r0, r4
+ 946 0046 FFF7FEFF 		bl	strstr
+ 947              	.LVL123:
+ 948              		.loc 1 210 12 view .LVU182
+ 949 004a 80B9     		cbnz	r0, .L61
+ 211:USER/Src/manager.c ****     {
+ 212:USER/Src/manager.c ****         return 60;
+ 213:USER/Src/manager.c ****     }
+ 214:USER/Src/manager.c ****      else if(strstr(command,"1S"))
+ 950              		.loc 1 214 11 is_stmt 1 view .LVU183
+ 951              		.loc 1 214 14 is_stmt 0 view .LVU184
+ 952 004c 1049     		ldr	r1, .L65+28
+ 953 004e 2046     		mov	r0, r4
+ 954 0050 FFF7FEFF 		bl	strstr
+ 955              	.LVL124:
+ 956              		.loc 1 214 13 view .LVU185
+ 957 0054 10B1     		cbz	r0, .L54
+ 215:USER/Src/manager.c ****     {
+ 216:USER/Src/manager.c ****         return 61;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 24
+
+
+ 958              		.loc 1 216 16 view .LVU186
+ 959 0056 3D20     		movs	r0, #61
+ 960 0058 00E0     		b	.L54
+ 961              	.L55:
+ 188:USER/Src/manager.c **** 	}
+ 962              		.loc 1 188 10 view .LVU187
+ 963 005a 2020     		movs	r0, #32
+ 964              	.L54:
+ 217:USER/Src/manager.c ****     }
+ 218:USER/Src/manager.c **** 
+ 219:USER/Src/manager.c ****     return 0;
+ 220:USER/Src/manager.c **** }
+ 965              		.loc 1 220 1 view .LVU188
+ 966 005c 10BD     		pop	{r4, pc}
+ 967              	.LVL125:
+ 968              	.L56:
+ 192:USER/Src/manager.c **** 	}
+ 969              		.loc 1 192 10 view .LVU189
+ 970 005e 4020     		movs	r0, #64
+ 971 0060 FCE7     		b	.L54
+ 972              	.L57:
+ 196:USER/Src/manager.c **** 	}
+ 973              		.loc 1 196 10 view .LVU190
+ 974 0062 1820     		movs	r0, #24
+ 975 0064 FAE7     		b	.L54
+ 976              	.L58:
+ 200:USER/Src/manager.c **** 	}
+ 977              		.loc 1 200 10 view .LVU191
+ 978 0066 6020     		movs	r0, #96
+ 979 0068 F8E7     		b	.L54
+ 980              	.L60:
+ 208:USER/Src/manager.c ****     }
+ 981              		.loc 1 208 16 view .LVU192
+ 982 006a 5C20     		movs	r0, #92
+ 983 006c F6E7     		b	.L54
+ 984              	.L61:
+ 212:USER/Src/manager.c ****     }
+ 985              		.loc 1 212 16 view .LVU193
+ 986 006e 3C20     		movs	r0, #60
+ 987 0070 F4E7     		b	.L54
+ 988              	.L66:
+ 989 0072 00BF     		.align	2
+ 990              	.L65:
+ 991 0074 00000000 		.word	.LC13
+ 992 0078 04000000 		.word	.LC14
+ 993 007c 0C000000 		.word	.LC15
+ 994 0080 14000000 		.word	.LC16
+ 995 0084 1C000000 		.word	.LC17
+ 996 0088 20000000 		.word	.LC18
+ 997 008c 28000000 		.word	.LC19
+ 998 0090 30000000 		.word	.LC20
+ 999              		.cfi_endproc
+ 1000              	.LFE138:
+ 1002              		.text
+ 1003              	.Letext0:
+ 1004              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1005              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 25
+
+
+ 1006              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 1007              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 1008              		.file 6 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1009              		.file 7 "Core/Inc/main.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s 			page 26
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 manager.c
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:20     .text.Manager_Init:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:26     .text.Manager_Init:00000000 Manager_Init
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:101    .text.Manager_Init:00000044 $d
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:106    .text.Set_Port_Number:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:112    .text.Set_Port_Number:00000000 Set_Port_Number
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:130    .text.Set_Port_Number:0000000a $d
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:138    .text.Set_Port_Number:00000012 $t
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:344    .text.Set_Port_Number:00000124 $d
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:349    .rodata.Enable_IIC4051.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:371    .text.Enable_IIC4051:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:377    .text.Enable_IIC4051:00000000 Enable_IIC4051
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:401    .text.Enable_IIC4051:0000000e $d
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:407    .text.Enable_IIC4051:00000014 $t
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:546    .text.Enable_IIC4051:000000c4 $d
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:558    .rodata.Enable_SPI4051.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:577    .text.Enable_SPI4051:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:583    .text.Enable_SPI4051:00000000 Enable_SPI4051
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:745    .text.Enable_SPI4051:000000c0 $d
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:757    .text.Control_level:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:763    .text.Control_level:00000000 Control_level
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:841    .text.Control_level:0000003c $d
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:846    .rodata.INT_Choose.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:871    .text.INT_Choose:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:877    .text.INT_Choose:00000000 INT_Choose
+C:\Users\84759\AppData\Local\Temp\cc5p6HZv.s:991    .text.INT_Choose:00000074 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_Init
+HAL_GPIO_WritePin
+HAL_GPIO_ReadPin
+UsbPrintf
+strstr
