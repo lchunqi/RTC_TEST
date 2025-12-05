@@ -1,0 +1,746 @@
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"control.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.ControlPrintf,"ax",%progbits
+  20              		.align	1
+  21              		.global	ControlPrintf
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	ControlPrintf:
+  27              	.LVL0:
+  28              	.LFB238:
+  29              		.file 1 "App/Src/control.c"
+   1:App/Src/control.c **** #include "control.h"
+   2:App/Src/control.c **** #include "main.h"
+   3:App/Src/control.c **** #include "string.h"
+   4:App/Src/control.c **** #include <stdio.h>
+   5:App/Src/control.c **** #include <stdarg.h>
+   6:App/Src/control.c **** #include "user_tool.h"
+   7:App/Src/control.c **** #include "lcd_driver.h"
+   8:App/Src/control.c **** 
+   9:App/Src/control.c **** #define CONTROL_RECEIVE_BUFF_NUMBER    200
+  10:App/Src/control.c **** #define CONTROL_TRANSMIT_BUFF_NUMBER   300
+  11:App/Src/control.c **** #define CTRL_UART_TICK_CLEAR         50//50ms
+  12:App/Src/control.c **** 
+  13:App/Src/control.c **** extern UART_HandleTypeDef huart2;
+  14:App/Src/control.c **** static uint16_t control_Rx_Cnt = 0;		//
+  15:App/Src/control.c **** static uint8_t controlRxBuf;
+  16:App/Src/control.c **** uint8_t g_controlRxBuff[CONTROL_RECEIVE_BUFF_NUMBER] = {0};
+  17:App/Src/control.c **** uint8_t g_controlTxBuff[CONTROL_TRANSMIT_BUFF_NUMBER] = {0};
+  18:App/Src/control.c **** uint8_t g_controlATStatus = 0;
+  19:App/Src/control.c **** 
+  20:App/Src/control.c **** #define MAX_CONTROL_NUMBER  15
+  21:App/Src/control.c **** #define MAX_CONTROL_LENGTH  20
+  22:App/Src/control.c **** static char CtrlStringList[MAX_CONTROL_NUMBER][MAX_CONTROL_LENGTH] = {
+  23:App/Src/control.c ****     "AT^CONNECT?",
+  24:App/Src/control.c **** };
+  25:App/Src/control.c **** 
+  26:App/Src/control.c **** void ControlPrintf(char* fmt,...)  
+  27:App/Src/control.c **** {  
+  30              		.loc 1 27 1 view -0
+  31              		.cfi_startproc
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 2
+
+
+  32              		@ args = 4, pretend = 16, frame = 8
+  33              		@ frame_needed = 0, uses_anonymous_args = 1
+  34              		.loc 1 27 1 is_stmt 0 view .LVU1
+  35 0000 0FB4     		push	{r0, r1, r2, r3}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 16
+  38              		.cfi_offset 0, -16
+  39              		.cfi_offset 1, -12
+  40              		.cfi_offset 2, -8
+  41              		.cfi_offset 3, -4
+  42 0002 F0B5     		push	{r4, r5, r6, r7, lr}
+  43              	.LCFI1:
+  44              		.cfi_def_cfa_offset 36
+  45              		.cfi_offset 4, -36
+  46              		.cfi_offset 5, -32
+  47              		.cfi_offset 6, -28
+  48              		.cfi_offset 7, -24
+  49              		.cfi_offset 14, -20
+  50 0004 83B0     		sub	sp, sp, #12
+  51              	.LCFI2:
+  52              		.cfi_def_cfa_offset 48
+  53 0006 08AD     		add	r5, sp, #32
+  54 0008 55F8047B 		ldr	r7, [r5], #4
+  28:App/Src/control.c **** 	va_list ap;//
+  55              		.loc 1 28 2 is_stmt 1 view .LVU2
+  29:App/Src/control.c **** 	memset(g_controlTxBuff, 0, CONTROL_TRANSMIT_BUFF_NUMBER);
+  56              		.loc 1 29 2 view .LVU3
+  57 000c 0E4C     		ldr	r4, .L3
+  58 000e 4FF49676 		mov	r6, #300
+  59 0012 3246     		mov	r2, r6
+  60 0014 0021     		movs	r1, #0
+  61 0016 2046     		mov	r0, r4
+  62 0018 FFF7FEFF 		bl	memset
+  63              	.LVL1:
+  30:App/Src/control.c **** 	va_start(ap, fmt);//
+  64              		.loc 1 30 2 view .LVU4
+  65 001c 0195     		str	r5, [sp, #4]
+  31:App/Src/control.c **** 	vsnprintf((char*)g_controlTxBuff, CONTROL_TRANSMIT_BUFF_NUMBER, fmt, ap);//
+  66              		.loc 1 31 2 view .LVU5
+  67 001e 2B46     		mov	r3, r5
+  68 0020 3A46     		mov	r2, r7
+  69 0022 3146     		mov	r1, r6
+  70 0024 2046     		mov	r0, r4
+  71 0026 FFF7FEFF 		bl	vsnprintf
+  72              	.LVL2:
+  32:App/Src/control.c **** 	va_end(ap);
+  73              		.loc 1 32 2 view .LVU6
+  33:App/Src/control.c **** 	HAL_UART_Transmit(&huart2, g_controlTxBuff, strlen((char*)g_controlTxBuff), 1000);
+  74              		.loc 1 33 2 view .LVU7
+  75              		.loc 1 33 46 is_stmt 0 view .LVU8
+  76 002a 2046     		mov	r0, r4
+  77 002c FFF7FEFF 		bl	strlen
+  78              	.LVL3:
+  79              		.loc 1 33 2 view .LVU9
+  80 0030 4FF47A73 		mov	r3, #1000
+  81 0034 82B2     		uxth	r2, r0
+  82 0036 2146     		mov	r1, r4
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 3
+
+
+  83 0038 0448     		ldr	r0, .L3+4
+  84 003a FFF7FEFF 		bl	HAL_UART_Transmit
+  85              	.LVL4:
+  34:App/Src/control.c **** }
+  86              		.loc 1 34 1 view .LVU10
+  87 003e 03B0     		add	sp, sp, #12
+  88              	.LCFI3:
+  89              		.cfi_def_cfa_offset 36
+  90              		@ sp needed
+  91 0040 BDE8F040 		pop	{r4, r5, r6, r7, lr}
+  92              	.LCFI4:
+  93              		.cfi_restore 14
+  94              		.cfi_restore 7
+  95              		.cfi_restore 6
+  96              		.cfi_restore 5
+  97              		.cfi_restore 4
+  98              		.cfi_def_cfa_offset 16
+  99 0044 04B0     		add	sp, sp, #16
+ 100              	.LCFI5:
+ 101              		.cfi_restore 3
+ 102              		.cfi_restore 2
+ 103              		.cfi_restore 1
+ 104              		.cfi_restore 0
+ 105              		.cfi_def_cfa_offset 0
+ 106 0046 7047     		bx	lr
+ 107              	.L4:
+ 108              		.align	2
+ 109              	.L3:
+ 110 0048 00000000 		.word	.LANCHOR0
+ 111 004c 00000000 		.word	huart2
+ 112              		.cfi_endproc
+ 113              	.LFE238:
+ 115              		.section	.rodata.CTL_CONNECT_Handle.str1.4,"aMS",%progbits,1
+ 116              		.align	2
+ 117              	.LC0:
+ 118 0000 4F4B0A00 		.ascii	"OK\012\000"
+ 119              		.section	.text.CTL_CONNECT_Handle,"ax",%progbits
+ 120              		.align	1
+ 121              		.global	CTL_CONNECT_Handle
+ 122              		.syntax unified
+ 123              		.thumb
+ 124              		.thumb_func
+ 126              	CTL_CONNECT_Handle:
+ 127              	.LVL5:
+ 128              	.LFB240:
+  35:App/Src/control.c **** 
+  36:App/Src/control.c **** 
+  37:App/Src/control.c **** void control_usart_init(void)
+  38:App/Src/control.c **** {
+  39:App/Src/control.c **** 	HAL_UART_Receive_IT(&huart2, &controlRxBuf, 1);		
+  40:App/Src/control.c ****     memset(g_controlRxBuff, 0x00, sizeof(g_controlRxBuff));
+  41:App/Src/control.c **** 	memset(g_controlTxBuff, 0x00, sizeof(g_controlTxBuff));
+  42:App/Src/control.c ****     ControlPrintf("LCD uart init success...\n");
+  43:App/Src/control.c ****     SetScreen(DEFAULT_SCREEN_ID);
+  44:App/Src/control.c **** }
+  45:App/Src/control.c **** 
+  46:App/Src/control.c **** void CTL_CONNECT_Handle(char* command)
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 4
+
+
+  47:App/Src/control.c **** {
+ 129              		.loc 1 47 1 is_stmt 1 view -0
+ 130              		.cfi_startproc
+ 131              		@ args = 0, pretend = 0, frame = 0
+ 132              		@ frame_needed = 0, uses_anonymous_args = 0
+ 133              		.loc 1 47 1 is_stmt 0 view .LVU12
+ 134 0000 08B5     		push	{r3, lr}
+ 135              	.LCFI6:
+ 136              		.cfi_def_cfa_offset 8
+ 137              		.cfi_offset 3, -8
+ 138              		.cfi_offset 14, -4
+  48:App/Src/control.c ****     ControlPrintf("OK\n");
+ 139              		.loc 1 48 5 is_stmt 1 view .LVU13
+ 140 0002 0248     		ldr	r0, .L7
+ 141              	.LVL6:
+ 142              		.loc 1 48 5 is_stmt 0 view .LVU14
+ 143 0004 FFF7FEFF 		bl	ControlPrintf
+ 144              	.LVL7:
+  49:App/Src/control.c **** }
+ 145              		.loc 1 49 1 view .LVU15
+ 146 0008 08BD     		pop	{r3, pc}
+ 147              	.L8:
+ 148 000a 00BF     		.align	2
+ 149              	.L7:
+ 150 000c 00000000 		.word	.LC0
+ 151              		.cfi_endproc
+ 152              	.LFE240:
+ 154              		.section	.rodata.control_usart_init.str1.4,"aMS",%progbits,1
+ 155              		.align	2
+ 156              	.LC1:
+ 157 0000 4C434420 		.ascii	"LCD uart init success...\012\000"
+ 157      75617274 
+ 157      20696E69 
+ 157      74207375 
+ 157      63636573 
+ 158              		.section	.text.control_usart_init,"ax",%progbits
+ 159              		.align	1
+ 160              		.global	control_usart_init
+ 161              		.syntax unified
+ 162              		.thumb
+ 163              		.thumb_func
+ 165              	control_usart_init:
+ 166              	.LFB239:
+  38:App/Src/control.c **** 	HAL_UART_Receive_IT(&huart2, &controlRxBuf, 1);		
+ 167              		.loc 1 38 1 is_stmt 1 view -0
+ 168              		.cfi_startproc
+ 169              		@ args = 0, pretend = 0, frame = 0
+ 170              		@ frame_needed = 0, uses_anonymous_args = 0
+ 171 0000 08B5     		push	{r3, lr}
+ 172              	.LCFI7:
+ 173              		.cfi_def_cfa_offset 8
+ 174              		.cfi_offset 3, -8
+ 175              		.cfi_offset 14, -4
+  39:App/Src/control.c ****     memset(g_controlRxBuff, 0x00, sizeof(g_controlRxBuff));
+ 176              		.loc 1 39 2 view .LVU17
+ 177 0002 0122     		movs	r2, #1
+ 178 0004 0A49     		ldr	r1, .L11
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 5
+
+
+ 179 0006 0B48     		ldr	r0, .L11+4
+ 180 0008 FFF7FEFF 		bl	HAL_UART_Receive_IT
+ 181              	.LVL8:
+  40:App/Src/control.c **** 	memset(g_controlTxBuff, 0x00, sizeof(g_controlTxBuff));
+ 182              		.loc 1 40 5 view .LVU18
+ 183 000c C822     		movs	r2, #200
+ 184 000e 0021     		movs	r1, #0
+ 185 0010 0948     		ldr	r0, .L11+8
+ 186 0012 FFF7FEFF 		bl	memset
+ 187              	.LVL9:
+  41:App/Src/control.c ****     ControlPrintf("LCD uart init success...\n");
+ 188              		.loc 1 41 2 view .LVU19
+ 189 0016 4FF49672 		mov	r2, #300
+ 190 001a 0021     		movs	r1, #0
+ 191 001c 0748     		ldr	r0, .L11+12
+ 192 001e FFF7FEFF 		bl	memset
+ 193              	.LVL10:
+  42:App/Src/control.c ****     SetScreen(DEFAULT_SCREEN_ID);
+ 194              		.loc 1 42 5 view .LVU20
+ 195 0022 0748     		ldr	r0, .L11+16
+ 196 0024 FFF7FEFF 		bl	ControlPrintf
+ 197              	.LVL11:
+  43:App/Src/control.c **** }
+ 198              		.loc 1 43 5 view .LVU21
+ 199 0028 0020     		movs	r0, #0
+ 200 002a FFF7FEFF 		bl	SetScreen
+ 201              	.LVL12:
+  44:App/Src/control.c **** 
+ 202              		.loc 1 44 1 is_stmt 0 view .LVU22
+ 203 002e 08BD     		pop	{r3, pc}
+ 204              	.L12:
+ 205              		.align	2
+ 206              	.L11:
+ 207 0030 00000000 		.word	.LANCHOR1
+ 208 0034 00000000 		.word	huart2
+ 209 0038 00000000 		.word	.LANCHOR2
+ 210 003c 00000000 		.word	.LANCHOR0
+ 211 0040 00000000 		.word	.LC1
+ 212              		.cfi_endproc
+ 213              	.LFE239:
+ 215              		.section	.text.control_usart_receive,"ax",%progbits
+ 216              		.align	1
+ 217              		.global	control_usart_receive
+ 218              		.syntax unified
+ 219              		.thumb
+ 220              		.thumb_func
+ 222              	control_usart_receive:
+ 223              	.LFB241:
+  50:App/Src/control.c **** 
+  51:App/Src/control.c **** typedef void(*function)(char* s);
+  52:App/Src/control.c **** function ControlCommand[MAX_CONTROL_NUMBER] = {
+  53:App/Src/control.c ****     CTL_CONNECT_Handle,
+  54:App/Src/control.c **** };
+  55:App/Src/control.c **** 
+  56:App/Src/control.c **** void control_usart_receive(void)//接收中断回调函数
+  57:App/Src/control.c **** {
+ 224              		.loc 1 57 1 is_stmt 1 view -0
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 6
+
+
+ 225              		.cfi_startproc
+ 226              		@ args = 0, pretend = 0, frame = 0
+ 227              		@ frame_needed = 0, uses_anonymous_args = 0
+ 228 0000 08B5     		push	{r3, lr}
+ 229              	.LCFI8:
+ 230              		.cfi_def_cfa_offset 8
+ 231              		.cfi_offset 3, -8
+ 232              		.cfi_offset 14, -4
+  58:App/Src/control.c ****     if (control_Rx_Cnt == 0 && (controlRxBuf == ' ' || controlRxBuf == '\r' || controlRxBuf == '\n'
+ 233              		.loc 1 58 5 view .LVU24
+ 234              		.loc 1 58 24 is_stmt 0 view .LVU25
+ 235 0002 174B     		ldr	r3, .L21
+ 236 0004 1B88     		ldrh	r3, [r3]
+ 237              		.loc 1 58 8 view .LVU26
+ 238 0006 3BB9     		cbnz	r3, .L14
+ 239              		.loc 1 58 46 discriminator 1 view .LVU27
+ 240 0008 164A     		ldr	r2, .L21+4
+ 241 000a 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 242              		.loc 1 58 29 discriminator 1 view .LVU28
+ 243 000c 202A     		cmp	r2, #32
+ 244 000e 20D0     		beq	.L15
+ 245              		.loc 1 58 53 discriminator 2 view .LVU29
+ 246 0010 0D2A     		cmp	r2, #13
+ 247 0012 1ED0     		beq	.L15
+ 248              		.loc 1 58 77 discriminator 3 view .LVU30
+ 249 0014 0A2A     		cmp	r2, #10
+ 250 0016 1CD0     		beq	.L15
+ 251              	.L14:
+  59:App/Src/control.c ****         HAL_UART_Receive_IT(&huart2, &controlRxBuf, 1);
+  60:App/Src/control.c ****         return;
+  61:App/Src/control.c ****     }
+  62:App/Src/control.c ****     if (control_Rx_Cnt < CONTROL_RECEIVE_BUFF_NUMBER && g_controlATStatus == 0) {
+ 252              		.loc 1 62 5 is_stmt 1 view .LVU31
+ 253              		.loc 1 62 8 is_stmt 0 view .LVU32
+ 254 0018 C72B     		cmp	r3, #199
+ 255 001a 09D8     		bhi	.L17
+ 256              		.loc 1 62 75 discriminator 1 view .LVU33
+ 257 001c 124A     		ldr	r2, .L21+8
+ 258 001e 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 259              		.loc 1 62 54 discriminator 1 view .LVU34
+ 260 0020 32B9     		cbnz	r2, .L17
+  63:App/Src/control.c ****         g_controlRxBuff[control_Rx_Cnt] = controlRxBuf;
+ 261              		.loc 1 63 9 is_stmt 1 view .LVU35
+ 262              		.loc 1 63 41 is_stmt 0 view .LVU36
+ 263 0022 104A     		ldr	r2, .L21+4
+ 264 0024 1178     		ldrb	r1, [r2]	@ zero_extendqisi2
+ 265 0026 114A     		ldr	r2, .L21+12
+ 266 0028 D154     		strb	r1, [r2, r3]
+  64:App/Src/control.c ****         control_Rx_Cnt++;
+ 267              		.loc 1 64 9 is_stmt 1 view .LVU37
+ 268              		.loc 1 64 23 is_stmt 0 view .LVU38
+ 269 002a 0133     		adds	r3, r3, #1
+ 270 002c 0C4A     		ldr	r2, .L21
+ 271 002e 1380     		strh	r3, [r2]	@ movhi
+ 272              	.L17:
+  65:App/Src/control.c ****     }
+  66:App/Src/control.c ****     if (control_Rx_Cnt >= CONTROL_RECEIVE_BUFF_NUMBER || controlRxBuf == ' ') {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 7
+
+
+ 273              		.loc 1 66 5 is_stmt 1 view .LVU39
+ 274              		.loc 1 66 24 is_stmt 0 view .LVU40
+ 275 0030 0B4B     		ldr	r3, .L21
+ 276 0032 1B88     		ldrh	r3, [r3]
+ 277              		.loc 1 66 8 view .LVU41
+ 278 0034 C72B     		cmp	r3, #199
+ 279 0036 03D8     		bhi	.L18
+ 280              		.loc 1 66 71 discriminator 1 view .LVU42
+ 281 0038 0A4B     		ldr	r3, .L21+4
+ 282 003a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 283              		.loc 1 66 55 discriminator 1 view .LVU43
+ 284 003c 202B     		cmp	r3, #32
+ 285 003e 02D1     		bne	.L19
+ 286              	.L18:
+  67:App/Src/control.c ****         g_controlATStatus = 1;
+ 287              		.loc 1 67 9 is_stmt 1 view .LVU44
+ 288              		.loc 1 67 27 is_stmt 0 view .LVU45
+ 289 0040 094B     		ldr	r3, .L21+8
+ 290 0042 0122     		movs	r2, #1
+ 291 0044 1A70     		strb	r2, [r3]
+ 292              	.L19:
+  68:App/Src/control.c ****     } 
+  69:App/Src/control.c ****     HAL_UART_Receive_IT(&huart2, &controlRxBuf, 1);
+ 293              		.loc 1 69 5 is_stmt 1 view .LVU46
+ 294 0046 0122     		movs	r2, #1
+ 295 0048 0649     		ldr	r1, .L21+4
+ 296 004a 0948     		ldr	r0, .L21+16
+ 297 004c FFF7FEFF 		bl	HAL_UART_Receive_IT
+ 298              	.LVL13:
+ 299              	.L13:
+  70:App/Src/control.c **** }
+ 300              		.loc 1 70 1 is_stmt 0 view .LVU47
+ 301 0050 08BD     		pop	{r3, pc}
+ 302              	.L15:
+  59:App/Src/control.c ****         return;
+ 303              		.loc 1 59 9 is_stmt 1 view .LVU48
+ 304 0052 0122     		movs	r2, #1
+ 305 0054 0349     		ldr	r1, .L21+4
+ 306 0056 0648     		ldr	r0, .L21+16
+ 307 0058 FFF7FEFF 		bl	HAL_UART_Receive_IT
+ 308              	.LVL14:
+  60:App/Src/control.c ****     }
+ 309              		.loc 1 60 9 view .LVU49
+ 310 005c F8E7     		b	.L13
+ 311              	.L22:
+ 312 005e 00BF     		.align	2
+ 313              	.L21:
+ 314 0060 00000000 		.word	.LANCHOR3
+ 315 0064 00000000 		.word	.LANCHOR1
+ 316 0068 00000000 		.word	.LANCHOR4
+ 317 006c 00000000 		.word	.LANCHOR2
+ 318 0070 00000000 		.word	huart2
+ 319              		.cfi_endproc
+ 320              	.LFE241:
+ 322              		.section	.text.CheckControlList,"ax",%progbits
+ 323              		.align	1
+ 324              		.global	CheckControlList
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 8
+
+
+ 325              		.syntax unified
+ 326              		.thumb
+ 327              		.thumb_func
+ 329              	CheckControlList:
+ 330              	.LFB242:
+  71:App/Src/control.c **** 
+  72:App/Src/control.c **** void CheckControlList(void)
+  73:App/Src/control.c **** {
+ 331              		.loc 1 73 1 view -0
+ 332              		.cfi_startproc
+ 333              		@ args = 0, pretend = 0, frame = 0
+ 334              		@ frame_needed = 0, uses_anonymous_args = 0
+ 335 0000 38B5     		push	{r3, r4, r5, lr}
+ 336              	.LCFI9:
+ 337              		.cfi_def_cfa_offset 16
+ 338              		.cfi_offset 3, -16
+ 339              		.cfi_offset 4, -12
+ 340              		.cfi_offset 5, -8
+ 341              		.cfi_offset 14, -4
+  74:App/Src/control.c ****     uint8_t i;
+ 342              		.loc 1 74 5 view .LVU51
+  75:App/Src/control.c ****     static uint16_t controlTick = 0;
+ 343              		.loc 1 75 5 view .LVU52
+  76:App/Src/control.c ****     static uint16_t lastControlRx = 0;
+ 344              		.loc 1 76 5 view .LVU53
+  77:App/Src/control.c ****     if (control_Rx_Cnt == 0) { return; }
+ 345              		.loc 1 77 5 view .LVU54
+ 346              		.loc 1 77 24 is_stmt 0 view .LVU55
+ 347 0002 224B     		ldr	r3, .L35
+ 348 0004 1B88     		ldrh	r3, [r3]
+ 349              		.loc 1 77 8 view .LVU56
+ 350 0006 002B     		cmp	r3, #0
+ 351 0008 3CD0     		beq	.L23
+  78:App/Src/control.c ****     if (control_Rx_Cnt > lastControlRx) {
+ 352              		.loc 1 78 5 is_stmt 1 view .LVU57
+ 353              		.loc 1 78 24 is_stmt 0 view .LVU58
+ 354 000a 214A     		ldr	r2, .L35+4
+ 355 000c 1288     		ldrh	r2, [r2]
+ 356              		.loc 1 78 8 view .LVU59
+ 357 000e 9342     		cmp	r3, r2
+ 358 0010 0ED9     		bls	.L25
+  79:App/Src/control.c ****         lastControlRx = control_Rx_Cnt;
+ 359              		.loc 1 79 9 is_stmt 1 view .LVU60
+ 360              		.loc 1 79 23 is_stmt 0 view .LVU61
+ 361 0012 1F4A     		ldr	r2, .L35+4
+ 362 0014 1380     		strh	r3, [r2]	@ movhi
+  80:App/Src/control.c ****         controlTick = 0;
+ 363              		.loc 1 80 9 is_stmt 1 view .LVU62
+ 364              		.loc 1 80 21 is_stmt 0 view .LVU63
+ 365 0016 1F4B     		ldr	r3, .L35+8
+ 366 0018 0022     		movs	r2, #0
+ 367 001a 1A80     		strh	r2, [r3]	@ movhi
+ 368              	.L26:
+  81:App/Src/control.c ****     } else {
+  82:App/Src/control.c ****         controlTick++;
+  83:App/Src/control.c ****     }
+  84:App/Src/control.c ****     if (controlTick >= CTRL_UART_TICK_CLEAR || g_controlATStatus == 1) {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 9
+
+
+ 369              		.loc 1 84 5 is_stmt 1 view .LVU64
+ 370              		.loc 1 84 21 is_stmt 0 view .LVU65
+ 371 001c 1D4B     		ldr	r3, .L35+8
+ 372 001e 1B88     		ldrh	r3, [r3]
+ 373              		.loc 1 84 8 view .LVU66
+ 374 0020 312B     		cmp	r3, #49
+ 375 0022 30D8     		bhi	.L32
+ 376              		.loc 1 84 66 discriminator 1 view .LVU67
+ 377 0024 1C4B     		ldr	r3, .L35+12
+ 378 0026 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 379              		.loc 1 84 45 discriminator 1 view .LVU68
+ 380 0028 012B     		cmp	r3, #1
+ 381 002a 2BD1     		bne	.L23
+ 382 002c 0024     		movs	r4, #0
+ 383 002e 06E0     		b	.L30
+ 384              	.L25:
+  82:App/Src/control.c ****     }
+ 385              		.loc 1 82 9 is_stmt 1 view .LVU69
+  82:App/Src/control.c ****     }
+ 386              		.loc 1 82 20 is_stmt 0 view .LVU70
+ 387 0030 184A     		ldr	r2, .L35+8
+ 388 0032 1388     		ldrh	r3, [r2]
+ 389 0034 0133     		adds	r3, r3, #1
+ 390 0036 1380     		strh	r3, [r2]	@ movhi
+ 391 0038 F0E7     		b	.L26
+ 392              	.LVL15:
+ 393              	.L28:
+  85:App/Src/control.c ****         for (i = 0; i < MAX_CONTROL_NUMBER; i++) {
+ 394              		.loc 1 85 45 is_stmt 1 discriminator 2 view .LVU71
+ 395              		.loc 1 85 46 is_stmt 0 discriminator 2 view .LVU72
+ 396 003a 0134     		adds	r4, r4, #1
+ 397              	.LVL16:
+ 398              		.loc 1 85 46 discriminator 2 view .LVU73
+ 399 003c E4B2     		uxtb	r4, r4
+ 400              	.LVL17:
+ 401              	.L30:
+ 402              		.loc 1 85 21 is_stmt 1 discriminator 1 view .LVU74
+ 403              		.loc 1 85 9 is_stmt 0 discriminator 1 view .LVU75
+ 404 003e 0E2C     		cmp	r4, #14
+ 405 0040 12D8     		bhi	.L29
+  86:App/Src/control.c ****             if (strlen(CtrlStringList[i]) > 0 && strSearch((char*)g_controlRxBuff, CtrlStringList[i
+ 406              		.loc 1 86 13 is_stmt 1 view .LVU76
+ 407              		.loc 1 86 38 is_stmt 0 view .LVU77
+ 408 0042 164B     		ldr	r3, .L35+16
+ 409 0044 04EB8402 		add	r2, r4, r4, lsl #2
+ 410 0048 03EB8201 		add	r1, r3, r2, lsl #2
+ 411              		.loc 1 86 43 view .LVU78
+ 412 004c 13F82230 		ldrb	r3, [r3, r2, lsl #2]	@ zero_extendqisi2
+ 413              		.loc 1 86 16 view .LVU79
+ 414 0050 002B     		cmp	r3, #0
+ 415 0052 F2D0     		beq	.L28
+ 416              		.loc 1 86 50 discriminator 1 view .LVU80
+ 417 0054 1248     		ldr	r0, .L35+20
+ 418 0056 FFF7FEFF 		bl	strSearch
+ 419              	.LVL18:
+ 420              		.loc 1 86 47 discriminator 1 view .LVU81
+ 421 005a 0028     		cmp	r0, #0
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 10
+
+
+ 422 005c EDD1     		bne	.L28
+  87:App/Src/control.c ****                 ControlCommand[i]((char*)g_controlRxBuff);
+ 423              		.loc 1 87 17 is_stmt 1 view .LVU82
+ 424              		.loc 1 87 31 is_stmt 0 view .LVU83
+ 425 005e 114B     		ldr	r3, .L35+24
+ 426 0060 53F82430 		ldr	r3, [r3, r4, lsl #2]
+ 427              		.loc 1 87 17 view .LVU84
+ 428 0064 0E48     		ldr	r0, .L35+20
+ 429 0066 9847     		blx	r3
+ 430              	.LVL19:
+  88:App/Src/control.c ****                 break;
+ 431              		.loc 1 88 17 is_stmt 1 view .LVU85
+ 432              	.L29:
+  89:App/Src/control.c ****             }
+  90:App/Src/control.c ****         }				
+  91:App/Src/control.c ****         memset(g_controlRxBuff, 0, CONTROL_RECEIVE_BUFF_NUMBER);
+ 433              		.loc 1 91 9 view .LVU86
+ 434 0068 C822     		movs	r2, #200
+ 435 006a 0021     		movs	r1, #0
+ 436 006c 0C48     		ldr	r0, .L35+20
+ 437 006e FFF7FEFF 		bl	memset
+ 438              	.LVL20:
+  92:App/Src/control.c ****         control_Rx_Cnt = 0;
+ 439              		.loc 1 92 9 view .LVU87
+ 440              		.loc 1 92 24 is_stmt 0 view .LVU88
+ 441 0072 0023     		movs	r3, #0
+ 442 0074 054A     		ldr	r2, .L35
+ 443 0076 1380     		strh	r3, [r2]	@ movhi
+  93:App/Src/control.c ****         g_controlATStatus = 0;
+ 444              		.loc 1 93 9 is_stmt 1 view .LVU89
+ 445              		.loc 1 93 27 is_stmt 0 view .LVU90
+ 446 0078 074A     		ldr	r2, .L35+12
+ 447 007a 1370     		strb	r3, [r2]
+  94:App/Src/control.c ****         controlTick = 0;
+ 448              		.loc 1 94 9 is_stmt 1 view .LVU91
+ 449              		.loc 1 94 21 is_stmt 0 view .LVU92
+ 450 007c 054A     		ldr	r2, .L35+8
+ 451 007e 1380     		strh	r3, [r2]	@ movhi
+  95:App/Src/control.c ****         lastControlRx = 0;
+ 452              		.loc 1 95 9 is_stmt 1 view .LVU93
+ 453              		.loc 1 95 23 is_stmt 0 view .LVU94
+ 454 0080 034A     		ldr	r2, .L35+4
+ 455 0082 1380     		strh	r3, [r2]	@ movhi
+ 456              	.LVL21:
+ 457              	.L23:
+  96:App/Src/control.c ****     }
+  97:App/Src/control.c **** }
+ 458              		.loc 1 97 1 view .LVU95
+ 459 0084 38BD     		pop	{r3, r4, r5, pc}
+ 460              	.L32:
+ 461 0086 0024     		movs	r4, #0
+ 462 0088 D9E7     		b	.L30
+ 463              	.L36:
+ 464 008a 00BF     		.align	2
+ 465              	.L35:
+ 466 008c 00000000 		.word	.LANCHOR3
+ 467 0090 00000000 		.word	.LANCHOR5
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 11
+
+
+ 468 0094 00000000 		.word	.LANCHOR6
+ 469 0098 00000000 		.word	.LANCHOR4
+ 470 009c 00000000 		.word	.LANCHOR7
+ 471 00a0 00000000 		.word	.LANCHOR2
+ 472 00a4 00000000 		.word	.LANCHOR8
+ 473              		.cfi_endproc
+ 474              	.LFE242:
+ 476              		.global	ControlCommand
+ 477              		.global	g_controlATStatus
+ 478              		.global	g_controlTxBuff
+ 479              		.global	g_controlRxBuff
+ 480              		.section	.bss.controlRxBuf,"aw",%nobits
+ 481              		.set	.LANCHOR1,. + 0
+ 484              	controlRxBuf:
+ 485 0000 00       		.space	1
+ 486              		.section	.bss.controlTick.0,"aw",%nobits
+ 487              		.align	1
+ 488              		.set	.LANCHOR6,. + 0
+ 491              	controlTick.0:
+ 492 0000 0000     		.space	2
+ 493              		.section	.bss.control_Rx_Cnt,"aw",%nobits
+ 494              		.align	1
+ 495              		.set	.LANCHOR3,. + 0
+ 498              	control_Rx_Cnt:
+ 499 0000 0000     		.space	2
+ 500              		.section	.bss.g_controlATStatus,"aw",%nobits
+ 501              		.set	.LANCHOR4,. + 0
+ 504              	g_controlATStatus:
+ 505 0000 00       		.space	1
+ 506              		.section	.bss.g_controlRxBuff,"aw",%nobits
+ 507              		.align	2
+ 508              		.set	.LANCHOR2,. + 0
+ 511              	g_controlRxBuff:
+ 512 0000 00000000 		.space	200
+ 512      00000000 
+ 512      00000000 
+ 512      00000000 
+ 512      00000000 
+ 513              		.section	.bss.g_controlTxBuff,"aw",%nobits
+ 514              		.align	2
+ 515              		.set	.LANCHOR0,. + 0
+ 518              	g_controlTxBuff:
+ 519 0000 00000000 		.space	300
+ 519      00000000 
+ 519      00000000 
+ 519      00000000 
+ 519      00000000 
+ 520              		.section	.bss.lastControlRx.1,"aw",%nobits
+ 521              		.align	1
+ 522              		.set	.LANCHOR5,. + 0
+ 525              	lastControlRx.1:
+ 526 0000 0000     		.space	2
+ 527              		.section	.data.ControlCommand,"aw"
+ 528              		.align	2
+ 529              		.set	.LANCHOR8,. + 0
+ 532              	ControlCommand:
+ 533 0000 00000000 		.word	CTL_CONNECT_Handle
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 12
+
+
+ 534 0004 00000000 		.space	56
+ 534      00000000 
+ 534      00000000 
+ 534      00000000 
+ 534      00000000 
+ 535              		.section	.data.CtrlStringList,"aw"
+ 536              		.align	2
+ 537              		.set	.LANCHOR7,. + 0
+ 540              	CtrlStringList:
+ 541 0000 41545E43 		.ascii	"AT^CONNECT?\000"
+ 541      4F4E4E45 
+ 541      43543F00 
+ 542 000c 00000000 		.space	8
+ 542      00000000 
+ 543 0014 00000000 		.space	280
+ 543      00000000 
+ 543      00000000 
+ 543      00000000 
+ 543      00000000 
+ 544              		.text
+ 545              	.Letext0:
+ 546              		.file 2 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_default_
+ 547              		.file 3 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 548              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 549              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 550              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 551              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h"
+ 552              		.file 8 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\lib\\gcc\\arm-none-eabi\\10.3.1\\include\\
+ 553              		.file 9 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\stdio.h"
+ 554              		.file 10 "Device/Inc/user_tool.h"
+ 555              		.file 11 "Device/Inc/lcd_driver.h"
+ 556              		.file 12 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\string.h"
+ 557              		.file 13 "<built-in>"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s 			page 13
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 control.c
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:20     .text.ControlPrintf:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:26     .text.ControlPrintf:00000000 ControlPrintf
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:110    .text.ControlPrintf:00000048 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:116    .rodata.CTL_CONNECT_Handle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:120    .text.CTL_CONNECT_Handle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:126    .text.CTL_CONNECT_Handle:00000000 CTL_CONNECT_Handle
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:150    .text.CTL_CONNECT_Handle:0000000c $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:155    .rodata.control_usart_init.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:159    .text.control_usart_init:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:165    .text.control_usart_init:00000000 control_usart_init
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:207    .text.control_usart_init:00000030 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:216    .text.control_usart_receive:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:222    .text.control_usart_receive:00000000 control_usart_receive
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:314    .text.control_usart_receive:00000060 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:323    .text.CheckControlList:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:329    .text.CheckControlList:00000000 CheckControlList
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:466    .text.CheckControlList:0000008c $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:532    .data.ControlCommand:00000000 ControlCommand
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:504    .bss.g_controlATStatus:00000000 g_controlATStatus
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:518    .bss.g_controlTxBuff:00000000 g_controlTxBuff
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:511    .bss.g_controlRxBuff:00000000 g_controlRxBuff
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:484    .bss.controlRxBuf:00000000 controlRxBuf
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:485    .bss.controlRxBuf:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:487    .bss.controlTick.0:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:491    .bss.controlTick.0:00000000 controlTick.0
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:494    .bss.control_Rx_Cnt:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:498    .bss.control_Rx_Cnt:00000000 control_Rx_Cnt
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:505    .bss.g_controlATStatus:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:507    .bss.g_controlRxBuff:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:514    .bss.g_controlTxBuff:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:521    .bss.lastControlRx.1:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:525    .bss.lastControlRx.1:00000000 lastControlRx.1
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:528    .data.ControlCommand:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:536    .data.CtrlStringList:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccLdsBhx.s:540    .data.CtrlStringList:00000000 CtrlStringList
+
+UNDEFINED SYMBOLS
+memset
+vsnprintf
+strlen
+HAL_UART_Transmit
+huart2
+HAL_UART_Receive_IT
+SetScreen
+strSearch

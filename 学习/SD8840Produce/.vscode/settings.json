@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "main.h": "c",
+        "adjust_i2c.h": "c"
+    }
+}

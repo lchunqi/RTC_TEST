@@ -1,0 +1,4045 @@
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"flash.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.CheckBusy,"ax",%progbits
+  20              		.align	1
+  21              		.global	CheckBusy
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	CheckBusy:
+  27              	.LFB235:
+  28              		.file 1 "Device/Src/flash.c"
+   1:Device/Src/flash.c **** 
+   2:Device/Src/flash.c **** #include "main.h"
+   3:Device/Src/flash.c **** #include <string.h>
+   4:Device/Src/flash.c **** #include "flash.h"
+   5:Device/Src/flash.c **** 
+   6:Device/Src/flash.c **** //--------------------------------
+   7:Device/Src/flash.c **** // flash_read_data函数和flash_write_data函数是最底层的函数
+   8:Device/Src/flash.c **** // 可以对25Q64系列的flash进行读写操作
+   9:Device/Src/flash.c **** // 但是要注意的是，读和写的长度不能超过页，否则会数据出错
+  10:Device/Src/flash.c **** // 另外的封装函数固定读取某些部分的数据，在设计的时候就避免了数据越界
+  11:Device/Src/flash.c **** //------------------------------
+  12:Device/Src/flash.c **** #define ERASE_SECTOR_ADDR   0x20                   // 
+  13:Device/Src/flash.c **** #define ERASE_BLOCK_ADDR    0xd8                    //
+  14:Device/Src/flash.c **** #define ERASE_CHIP_ADDR     0xC7                    // 
+  15:Device/Src/flash.c **** 
+  16:Device/Src/flash.c **** extern SPI_HandleTypeDef hspi1;
+  17:Device/Src/flash.c **** #define W25Q64SPI hspi1
+  18:Device/Src/flash.c **** uint8_t w25x_read_id = 0x90;                    // 
+  19:Device/Src/flash.c **** uint8_t check_addr   = 0x05;                    // 
+  20:Device/Src/flash.c **** uint8_t enable_write = 0x06;                    // 
+  21:Device/Src/flash.c **** uint8_t write_addr   = 0x02;                    // 
+  22:Device/Src/flash.c **** uint8_t read_addr    = 0x03;                    //
+  23:Device/Src/flash.c **** uint8_t g_bufferSector[SECTOR_SIZE];
+  24:Device/Src/flash.c **** 
+  25:Device/Src/flash.c **** #define CS_HIGH     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET)
+  26:Device/Src/flash.c **** #define CS_LOW      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET)
+  27:Device/Src/flash.c **** int CheckBusy(void)
+  28:Device/Src/flash.c **** {
+  29              		.loc 1 28 1 view -0
+  30              		.cfi_startproc
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 2
+
+
+  31              		@ args = 0, pretend = 0, frame = 8
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 70B5     		push	{r4, r5, r6, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 16
+  36              		.cfi_offset 4, -16
+  37              		.cfi_offset 5, -12
+  38              		.cfi_offset 6, -8
+  39              		.cfi_offset 14, -4
+  40 0002 82B0     		sub	sp, sp, #8
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_offset 24
+  29:Device/Src/flash.c ****     uint8_t status = 1;
+  43              		.loc 1 29 5 view .LVU1
+  44              		.loc 1 29 13 is_stmt 0 view .LVU2
+  45 0004 0123     		movs	r3, #1
+  46 0006 8DF80730 		strb	r3, [sp, #7]
+  30:Device/Src/flash.c ****     int timeCount = 0;
+  47              		.loc 1 30 5 is_stmt 1 view .LVU3
+  48              	.LVL0:
+  31:Device/Src/flash.c **** 
+  32:Device/Src/flash.c ****     for (timeCount = 0; timeCount < 20; timeCount++) {
+  49              		.loc 1 32 5 view .LVU4
+  50              		.loc 1 32 20 is_stmt 0 view .LVU5
+  51 000a 0024     		movs	r4, #0
+  52              	.LVL1:
+  53              	.L2:
+  54              		.loc 1 32 25 is_stmt 1 discriminator 1 view .LVU6
+  55              		.loc 1 32 5 is_stmt 0 discriminator 1 view .LVU7
+  56 000c 132C     		cmp	r4, #19
+  57 000e 24DC     		bgt	.L7
+  33:Device/Src/flash.c ****         CS_LOW;
+  58              		.loc 1 33 9 is_stmt 1 view .LVU8
+  59 0010 144D     		ldr	r5, .L8
+  60 0012 0022     		movs	r2, #0
+  61 0014 4FF40041 		mov	r1, #32768
+  62 0018 2846     		mov	r0, r5
+  63 001a FFF7FEFF 		bl	HAL_GPIO_WritePin
+  64              	.LVL2:
+  34:Device/Src/flash.c ****         HAL_SPI_Transmit(&W25Q64SPI, &check_addr, 1, 10);
+  65              		.loc 1 34 9 view .LVU9
+  66 001e 124E     		ldr	r6, .L8+4
+  67 0020 0A23     		movs	r3, #10
+  68 0022 0122     		movs	r2, #1
+  69 0024 1149     		ldr	r1, .L8+8
+  70 0026 3046     		mov	r0, r6
+  71 0028 FFF7FEFF 		bl	HAL_SPI_Transmit
+  72              	.LVL3:
+  35:Device/Src/flash.c ****         HAL_SPI_Receive(&W25Q64SPI, &status, 1, 10);
+  73              		.loc 1 35 9 view .LVU10
+  74 002c 0A23     		movs	r3, #10
+  75 002e 0122     		movs	r2, #1
+  76 0030 0DF10701 		add	r1, sp, #7
+  77 0034 3046     		mov	r0, r6
+  78 0036 FFF7FEFF 		bl	HAL_SPI_Receive
+  79              	.LVL4:
+  36:Device/Src/flash.c ****         CS_HIGH;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 3
+
+
+  80              		.loc 1 36 9 view .LVU11
+  81 003a 0122     		movs	r2, #1
+  82 003c 4FF40041 		mov	r1, #32768
+  83 0040 2846     		mov	r0, r5
+  84 0042 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  85              	.LVL5:
+  37:Device/Src/flash.c ****         if ((status & 0x01) == 0) { return 1; }
+  86              		.loc 1 37 9 view .LVU12
+  87              		.loc 1 37 21 is_stmt 0 view .LVU13
+  88 0046 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+  89              		.loc 1 37 12 view .LVU14
+  90 004a 13F0010F 		tst	r3, #1
+  91 004e 06D0     		beq	.L5
+  38:Device/Src/flash.c ****         HAL_Delay(1);
+  92              		.loc 1 38 9 is_stmt 1 discriminator 2 view .LVU15
+  93 0050 0120     		movs	r0, #1
+  94 0052 FFF7FEFF 		bl	HAL_Delay
+  95              	.LVL6:
+  32:Device/Src/flash.c ****         CS_LOW;
+  96              		.loc 1 32 41 discriminator 2 view .LVU16
+  32:Device/Src/flash.c ****         CS_LOW;
+  97              		.loc 1 32 50 is_stmt 0 discriminator 2 view .LVU17
+  98 0056 0134     		adds	r4, r4, #1
+  99              	.LVL7:
+  32:Device/Src/flash.c ****         CS_LOW;
+ 100              		.loc 1 32 50 discriminator 2 view .LVU18
+ 101 0058 D8E7     		b	.L2
+ 102              	.L7:
+  39:Device/Src/flash.c ****     }
+  40:Device/Src/flash.c ****     return 0;
+ 103              		.loc 1 40 12 view .LVU19
+ 104 005a 0020     		movs	r0, #0
+ 105 005c 00E0     		b	.L1
+ 106              	.L5:
+  37:Device/Src/flash.c ****         HAL_Delay(1);
+ 107              		.loc 1 37 44 view .LVU20
+ 108 005e 0120     		movs	r0, #1
+ 109              	.L1:
+  41:Device/Src/flash.c **** }
+ 110              		.loc 1 41 1 view .LVU21
+ 111 0060 02B0     		add	sp, sp, #8
+ 112              	.LCFI2:
+ 113              		.cfi_def_cfa_offset 16
+ 114              		@ sp needed
+ 115 0062 70BD     		pop	{r4, r5, r6, pc}
+ 116              	.LVL8:
+ 117              	.L9:
+ 118              		.loc 1 41 1 view .LVU22
+ 119              		.align	2
+ 120              	.L8:
+ 121 0064 00000240 		.word	1073872896
+ 122 0068 00000000 		.word	hspi1
+ 123 006c 00000000 		.word	.LANCHOR0
+ 124              		.cfi_endproc
+ 125              	.LFE235:
+ 127              		.section	.rodata.flash_device_id.str1.4,"aMS",%progbits,1
+ 128              		.align	2
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 4
+
+
+ 129              	.LC1:
+ 130 0000 666C6173 		.ascii	"flash ID is 0x%x%x\012\000"
+ 130      68204944 
+ 130      20697320 
+ 130      30782578 
+ 130      25780A00 
+ 131              		.section	.text.flash_device_id,"ax",%progbits
+ 132              		.align	1
+ 133              		.global	flash_device_id
+ 134              		.syntax unified
+ 135              		.thumb
+ 136              		.thumb_func
+ 138              	flash_device_id:
+ 139              	.LFB236:
+  42:Device/Src/flash.c **** 
+  43:Device/Src/flash.c **** uint16_t flash_device_id(void)
+  44:Device/Src/flash.c **** {
+ 140              		.loc 1 44 1 is_stmt 1 view -0
+ 141              		.cfi_startproc
+ 142              		@ args = 0, pretend = 0, frame = 8
+ 143              		@ frame_needed = 0, uses_anonymous_args = 0
+ 144 0000 30B5     		push	{r4, r5, lr}
+ 145              	.LCFI3:
+ 146              		.cfi_def_cfa_offset 12
+ 147              		.cfi_offset 4, -12
+ 148              		.cfi_offset 5, -8
+ 149              		.cfi_offset 14, -4
+ 150 0002 83B0     		sub	sp, sp, #12
+ 151              	.LCFI4:
+ 152              		.cfi_def_cfa_offset 24
+  45:Device/Src/flash.c ****     uint8_t buff[5] = {0,0,0,0,0};
+ 153              		.loc 1 45 5 view .LVU24
+ 154              		.loc 1 45 13 is_stmt 0 view .LVU25
+ 155 0004 174B     		ldr	r3, .L12
+ 156 0006 93E80300 		ldm	r3, {r0, r1}
+ 157 000a 0090     		str	r0, [sp]
+ 158 000c 8DF80410 		strb	r1, [sp, #4]
+  46:Device/Src/flash.c ****     uint16_t deviceId = 0;
+ 159              		.loc 1 46 5 is_stmt 1 view .LVU26
+ 160              	.LVL9:
+  47:Device/Src/flash.c ****     CS_LOW;
+ 161              		.loc 1 47 5 view .LVU27
+ 162 0010 154C     		ldr	r4, .L12+4
+ 163 0012 0022     		movs	r2, #0
+ 164 0014 4FF40041 		mov	r1, #32768
+ 165 0018 2046     		mov	r0, r4
+ 166 001a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 167              	.LVL10:
+  48:Device/Src/flash.c ****     HAL_SPI_Transmit(&W25Q64SPI, &w25x_read_id, 1, 10);
+ 168              		.loc 1 48 5 view .LVU28
+ 169 001e 134D     		ldr	r5, .L12+8
+ 170 0020 0A23     		movs	r3, #10
+ 171 0022 0122     		movs	r2, #1
+ 172 0024 1249     		ldr	r1, .L12+12
+ 173 0026 2846     		mov	r0, r5
+ 174 0028 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 175              	.LVL11:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 5
+
+
+  49:Device/Src/flash.c ****     HAL_SPI_Receive(&W25Q64SPI, buff, 5, 10);
+ 176              		.loc 1 49 5 view .LVU29
+ 177 002c 0A23     		movs	r3, #10
+ 178 002e 0522     		movs	r2, #5
+ 179 0030 6946     		mov	r1, sp
+ 180 0032 2846     		mov	r0, r5
+ 181 0034 FFF7FEFF 		bl	HAL_SPI_Receive
+ 182              	.LVL12:
+  50:Device/Src/flash.c ****     CS_HIGH;
+ 183              		.loc 1 50 5 view .LVU30
+ 184 0038 0122     		movs	r2, #1
+ 185 003a 4FF40041 		mov	r1, #32768
+ 186 003e 2046     		mov	r0, r4
+ 187 0040 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 188              	.LVL13:
+  51:Device/Src/flash.c ****     UsbPrintf("flash ID is 0x%x%x\n", buff[3], buff[4]);
+ 189              		.loc 1 51 5 view .LVU31
+ 190 0044 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+ 191 0048 9DF80310 		ldrb	r1, [sp, #3]	@ zero_extendqisi2
+ 192 004c 0948     		ldr	r0, .L12+16
+ 193 004e FFF7FEFF 		bl	UsbPrintf
+ 194              	.LVL14:
+  52:Device/Src/flash.c ****     deviceId = buff[3];
+ 195              		.loc 1 52 5 view .LVU32
+ 196              		.loc 1 52 14 is_stmt 0 view .LVU33
+ 197 0052 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 198              	.LVL15:
+  53:Device/Src/flash.c ****     deviceId = deviceId * 256 + buff[4];
+ 199              		.loc 1 53 5 is_stmt 1 view .LVU34
+ 200              		.loc 1 53 37 is_stmt 0 view .LVU35
+ 201 0056 9DF80400 		ldrb	r0, [sp, #4]	@ zero_extendqisi2
+ 202              		.loc 1 53 14 view .LVU36
+ 203 005a 00EB0320 		add	r0, r0, r3, lsl #8
+ 204              	.LVL16:
+  54:Device/Src/flash.c ****     return deviceId; 
+ 205              		.loc 1 54 5 is_stmt 1 view .LVU37
+  55:Device/Src/flash.c **** }
+ 206              		.loc 1 55 1 is_stmt 0 view .LVU38
+ 207 005e 80B2     		uxth	r0, r0
+ 208              		.loc 1 55 1 view .LVU39
+ 209 0060 03B0     		add	sp, sp, #12
+ 210              	.LCFI5:
+ 211              		.cfi_def_cfa_offset 12
+ 212              		@ sp needed
+ 213 0062 30BD     		pop	{r4, r5, pc}
+ 214              	.L13:
+ 215              		.align	2
+ 216              	.L12:
+ 217 0064 00000000 		.word	.LANCHOR1
+ 218 0068 00000240 		.word	1073872896
+ 219 006c 00000000 		.word	hspi1
+ 220 0070 00000000 		.word	.LANCHOR2
+ 221 0074 00000000 		.word	.LC1
+ 222              		.cfi_endproc
+ 223              	.LFE236:
+ 225              		.section	.text.address_32_to_8,"ax",%progbits
+ 226              		.align	1
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 6
+
+
+ 227              		.global	address_32_to_8
+ 228              		.syntax unified
+ 229              		.thumb
+ 230              		.thumb_func
+ 232              	address_32_to_8:
+ 233              	.LVL17:
+ 234              	.LFB237:
+  56:Device/Src/flash.c **** 
+  57:Device/Src/flash.c **** void address_32_to_8(uint32_t address, uint8_t* addr8)
+  58:Device/Src/flash.c **** {
+ 235              		.loc 1 58 1 is_stmt 1 view -0
+ 236              		.cfi_startproc
+ 237              		@ args = 0, pretend = 0, frame = 0
+ 238              		@ frame_needed = 0, uses_anonymous_args = 0
+ 239              		@ link register save eliminated.
+  59:Device/Src/flash.c ****     int i;
+ 240              		.loc 1 59 5 view .LVU41
+  60:Device/Src/flash.c ****     for (i = 2; i >= 0; i--) {
+ 241              		.loc 1 60 5 view .LVU42
+ 242              		.loc 1 60 12 is_stmt 0 view .LVU43
+ 243 0000 0223     		movs	r3, #2
+ 244              		.loc 1 60 5 view .LVU44
+ 245 0002 02E0     		b	.L15
+ 246              	.LVL18:
+ 247              	.L16:
+  61:Device/Src/flash.c ****         addr8[i] = address % 256;
+ 248              		.loc 1 61 9 is_stmt 1 discriminator 3 view .LVU45
+ 249              		.loc 1 61 18 is_stmt 0 discriminator 3 view .LVU46
+ 250 0004 C854     		strb	r0, [r1, r3]
+  62:Device/Src/flash.c ****         address = address / 256;
+ 251              		.loc 1 62 9 is_stmt 1 discriminator 3 view .LVU47
+ 252              		.loc 1 62 17 is_stmt 0 discriminator 3 view .LVU48
+ 253 0006 000A     		lsrs	r0, r0, #8
+ 254              	.LVL19:
+  60:Device/Src/flash.c ****     for (i = 2; i >= 0; i--) {
+ 255              		.loc 1 60 25 is_stmt 1 discriminator 3 view .LVU49
+  60:Device/Src/flash.c ****     for (i = 2; i >= 0; i--) {
+ 256              		.loc 1 60 26 is_stmt 0 discriminator 3 view .LVU50
+ 257 0008 013B     		subs	r3, r3, #1
+ 258              	.LVL20:
+ 259              	.L15:
+  60:Device/Src/flash.c ****     for (i = 2; i >= 0; i--) {
+ 260              		.loc 1 60 17 is_stmt 1 discriminator 1 view .LVU51
+  60:Device/Src/flash.c ****     for (i = 2; i >= 0; i--) {
+ 261              		.loc 1 60 5 is_stmt 0 discriminator 1 view .LVU52
+ 262 000a 002B     		cmp	r3, #0
+ 263 000c FADA     		bge	.L16
+  63:Device/Src/flash.c ****     }
+  64:Device/Src/flash.c **** }
+ 264              		.loc 1 64 1 view .LVU53
+ 265 000e 7047     		bx	lr
+ 266              		.cfi_endproc
+ 267              	.LFE237:
+ 269              		.section	.text.flash_erase,"ax",%progbits
+ 270              		.align	1
+ 271              		.global	flash_erase
+ 272              		.syntax unified
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 7
+
+
+ 273              		.thumb
+ 274              		.thumb_func
+ 276              	flash_erase:
+ 277              	.LVL21:
+ 278              	.LFB238:
+  65:Device/Src/flash.c **** 
+  66:Device/Src/flash.c **** int flash_erase(uint32_t address, uint8_t mode)
+  67:Device/Src/flash.c **** {
+ 279              		.loc 1 67 1 is_stmt 1 view -0
+ 280              		.cfi_startproc
+ 281              		@ args = 0, pretend = 0, frame = 8
+ 282              		@ frame_needed = 0, uses_anonymous_args = 0
+ 283              		.loc 1 67 1 is_stmt 0 view .LVU55
+ 284 0000 30B5     		push	{r4, r5, lr}
+ 285              	.LCFI6:
+ 286              		.cfi_def_cfa_offset 12
+ 287              		.cfi_offset 4, -12
+ 288              		.cfi_offset 5, -8
+ 289              		.cfi_offset 14, -4
+ 290 0002 83B0     		sub	sp, sp, #12
+ 291              	.LCFI7:
+ 292              		.cfi_def_cfa_offset 24
+ 293 0004 0C46     		mov	r4, r1
+  68:Device/Src/flash.c ****     uint8_t erase_address;
+ 294              		.loc 1 68 5 is_stmt 1 view .LVU56
+  69:Device/Src/flash.c ****     uint8_t addr[3] = {0};
+ 295              		.loc 1 69 5 view .LVU57
+ 296              		.loc 1 69 13 is_stmt 0 view .LVU58
+ 297 0006 2A4B     		ldr	r3, .L28
+ 298 0008 1B89     		ldrh	r3, [r3, #8]
+ 299 000a ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 300 000e 0023     		movs	r3, #0
+ 301 0010 8DF80630 		strb	r3, [sp, #6]
+  70:Device/Src/flash.c **** 
+  71:Device/Src/flash.c ****     address_32_to_8(address, addr);
+ 302              		.loc 1 71 5 is_stmt 1 view .LVU59
+ 303 0014 01A9     		add	r1, sp, #4
+ 304              	.LVL22:
+ 305              		.loc 1 71 5 is_stmt 0 view .LVU60
+ 306 0016 FFF7FEFF 		bl	address_32_to_8
+ 307              	.LVL23:
+  72:Device/Src/flash.c ****     if (CheckBusy() <= 0) {
+ 308              		.loc 1 72 5 is_stmt 1 view .LVU61
+ 309              		.loc 1 72 9 is_stmt 0 view .LVU62
+ 310 001a FFF7FEFF 		bl	CheckBusy
+ 311              	.LVL24:
+ 312              		.loc 1 72 8 view .LVU63
+ 313 001e 0028     		cmp	r0, #0
+ 314 0020 42DD     		ble	.L23
+  73:Device/Src/flash.c ****         return -1;
+  74:Device/Src/flash.c ****     }
+  75:Device/Src/flash.c ****     CS_LOW;
+ 315              		.loc 1 75 5 is_stmt 1 view .LVU64
+ 316 0022 244D     		ldr	r5, .L28+4
+ 317 0024 0022     		movs	r2, #0
+ 318 0026 4FF40041 		mov	r1, #32768
+ 319 002a 2846     		mov	r0, r5
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 8
+
+
+ 320 002c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 321              	.LVL25:
+  76:Device/Src/flash.c ****     HAL_SPI_Transmit(&W25Q64SPI, &enable_write, 1, 10);
+ 322              		.loc 1 76 5 view .LVU65
+ 323 0030 0A23     		movs	r3, #10
+ 324 0032 0122     		movs	r2, #1
+ 325 0034 2049     		ldr	r1, .L28+8
+ 326 0036 2148     		ldr	r0, .L28+12
+ 327 0038 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 328              	.LVL26:
+  77:Device/Src/flash.c ****     CS_HIGH;
+ 329              		.loc 1 77 5 view .LVU66
+ 330 003c 0122     		movs	r2, #1
+ 331 003e 4FF40041 		mov	r1, #32768
+ 332 0042 2846     		mov	r0, r5
+ 333 0044 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 334              	.LVL27:
+  78:Device/Src/flash.c ****     switch (mode) {
+ 335              		.loc 1 78 5 view .LVU67
+ 336 0048 012C     		cmp	r4, #1
+ 337 004a 1ED0     		beq	.L19
+ 338 004c 022C     		cmp	r4, #2
+ 339 004e 20D0     		beq	.L20
+ 340 0050 0CB1     		cbz	r4, .L26
+ 341 0052 0020     		movs	r0, #0
+ 342 0054 17E0     		b	.L17
+ 343              	.L26:
+  79:Device/Src/flash.c ****         case 0:
+  80:Device/Src/flash.c ****             erase_address = ERASE_CHIP_ADDR;
+ 344              		.loc 1 80 13 view .LVU68
+ 345              		.loc 1 80 27 is_stmt 0 view .LVU69
+ 346 0056 C723     		movs	r3, #199
+ 347 0058 8DF80730 		strb	r3, [sp, #7]
+  81:Device/Src/flash.c ****             break;
+ 348              		.loc 1 81 13 is_stmt 1 view .LVU70
+ 349              	.L21:
+  82:Device/Src/flash.c ****         case 1:
+  83:Device/Src/flash.c ****             erase_address = ERASE_BLOCK_ADDR;
+  84:Device/Src/flash.c ****             break;
+  85:Device/Src/flash.c ****         case 2:
+  86:Device/Src/flash.c ****             erase_address = ERASE_SECTOR_ADDR;
+  87:Device/Src/flash.c ****             break;
+  88:Device/Src/flash.c ****         default:
+  89:Device/Src/flash.c ****             return 0;
+  90:Device/Src/flash.c ****             break;
+ 350              		.loc 1 90 13 view .LVU71
+  91:Device/Src/flash.c ****     }
+  92:Device/Src/flash.c ****     
+  93:Device/Src/flash.c ****     CS_LOW;
+ 351              		.loc 1 93 5 view .LVU72
+ 352 005c 0022     		movs	r2, #0
+ 353 005e 4FF40041 		mov	r1, #32768
+ 354 0062 1448     		ldr	r0, .L28+4
+ 355 0064 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 356              	.LVL28:
+  94:Device/Src/flash.c ****     HAL_SPI_Transmit(&W25Q64SPI, &erase_address, 1, 10);//
+ 357              		.loc 1 94 5 view .LVU73
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 9
+
+
+ 358 0068 0A23     		movs	r3, #10
+ 359 006a 0122     		movs	r2, #1
+ 360 006c 0DF10701 		add	r1, sp, #7
+ 361 0070 1248     		ldr	r0, .L28+12
+ 362 0072 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 363              	.LVL29:
+  95:Device/Src/flash.c ****     if (mode != 0) {                                    // 
+ 364              		.loc 1 95 5 view .LVU74
+ 365              		.loc 1 95 8 is_stmt 0 view .LVU75
+ 366 0076 84B9     		cbnz	r4, .L27
+ 367              	.L22:
+  96:Device/Src/flash.c ****         HAL_SPI_Transmit(&W25Q64SPI, addr, 3, 10);      //****
+  97:Device/Src/flash.c ****     }
+  98:Device/Src/flash.c ****     CS_HIGH;
+ 368              		.loc 1 98 5 is_stmt 1 view .LVU76
+ 369 0078 0122     		movs	r2, #1
+ 370 007a 4FF40041 		mov	r1, #32768
+ 371 007e 0D48     		ldr	r0, .L28+4
+ 372 0080 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 373              	.LVL30:
+  99:Device/Src/flash.c ****     return 1;
+ 374              		.loc 1 99 5 view .LVU77
+ 375              		.loc 1 99 12 is_stmt 0 view .LVU78
+ 376 0084 0120     		movs	r0, #1
+ 377              	.L17:
+ 100:Device/Src/flash.c **** }
+ 378              		.loc 1 100 1 view .LVU79
+ 379 0086 03B0     		add	sp, sp, #12
+ 380              	.LCFI8:
+ 381              		.cfi_remember_state
+ 382              		.cfi_def_cfa_offset 12
+ 383              		@ sp needed
+ 384 0088 30BD     		pop	{r4, r5, pc}
+ 385              	.L19:
+ 386              	.LCFI9:
+ 387              		.cfi_restore_state
+  83:Device/Src/flash.c ****             break;
+ 388              		.loc 1 83 13 is_stmt 1 view .LVU80
+  83:Device/Src/flash.c ****             break;
+ 389              		.loc 1 83 27 is_stmt 0 view .LVU81
+ 390 008a D823     		movs	r3, #216
+ 391 008c 8DF80730 		strb	r3, [sp, #7]
+  84:Device/Src/flash.c ****         case 2:
+ 392              		.loc 1 84 13 is_stmt 1 view .LVU82
+ 393 0090 E4E7     		b	.L21
+ 394              	.L20:
+  86:Device/Src/flash.c ****             break;
+ 395              		.loc 1 86 13 view .LVU83
+  86:Device/Src/flash.c ****             break;
+ 396              		.loc 1 86 27 is_stmt 0 view .LVU84
+ 397 0092 2023     		movs	r3, #32
+ 398 0094 8DF80730 		strb	r3, [sp, #7]
+  87:Device/Src/flash.c ****         default:
+ 399              		.loc 1 87 13 is_stmt 1 view .LVU85
+ 400 0098 E0E7     		b	.L21
+ 401              	.L27:
+  96:Device/Src/flash.c ****     }
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 10
+
+
+ 402              		.loc 1 96 9 view .LVU86
+ 403 009a 0A23     		movs	r3, #10
+ 404 009c 0322     		movs	r2, #3
+ 405 009e 01A9     		add	r1, sp, #4
+ 406 00a0 0648     		ldr	r0, .L28+12
+ 407 00a2 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 408              	.LVL31:
+ 409 00a6 E7E7     		b	.L22
+ 410              	.L23:
+  73:Device/Src/flash.c ****     }
+ 411              		.loc 1 73 16 is_stmt 0 view .LVU87
+ 412 00a8 4FF0FF30 		mov	r0, #-1
+ 413 00ac EBE7     		b	.L17
+ 414              	.L29:
+ 415 00ae 00BF     		.align	2
+ 416              	.L28:
+ 417 00b0 00000000 		.word	.LANCHOR1
+ 418 00b4 00000240 		.word	1073872896
+ 419 00b8 00000000 		.word	.LANCHOR3
+ 420 00bc 00000000 		.word	hspi1
+ 421              		.cfi_endproc
+ 422              	.LFE238:
+ 424              		.section	.text.flash_write_data,"ax",%progbits
+ 425              		.align	1
+ 426              		.global	flash_write_data
+ 427              		.syntax unified
+ 428              		.thumb
+ 429              		.thumb_func
+ 431              	flash_write_data:
+ 432              	.LVL32:
+ 433              	.LFB239:
+ 101:Device/Src/flash.c **** 
+ 102:Device/Src/flash.c **** int flash_write_data(uint32_t address, uint8_t* buffer, uint16_t size)
+ 103:Device/Src/flash.c **** {
+ 434              		.loc 1 103 1 is_stmt 1 view -0
+ 435              		.cfi_startproc
+ 436              		@ args = 0, pretend = 0, frame = 8
+ 437              		@ frame_needed = 0, uses_anonymous_args = 0
+ 438              		.loc 1 103 1 is_stmt 0 view .LVU89
+ 439 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 440              	.LCFI10:
+ 441              		.cfi_def_cfa_offset 20
+ 442              		.cfi_offset 4, -20
+ 443              		.cfi_offset 5, -16
+ 444              		.cfi_offset 6, -12
+ 445              		.cfi_offset 7, -8
+ 446              		.cfi_offset 14, -4
+ 447 0002 83B0     		sub	sp, sp, #12
+ 448              	.LCFI11:
+ 449              		.cfi_def_cfa_offset 32
+ 104:Device/Src/flash.c ****     uint8_t addr[3] = {0};
+ 450              		.loc 1 104 5 is_stmt 1 view .LVU90
+ 451              		.loc 1 104 13 is_stmt 0 view .LVU91
+ 452 0004 2C4B     		ldr	r3, .L37
+ 453 0006 1B89     		ldrh	r3, [r3, #8]
+ 454 0008 ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 455 000c 0023     		movs	r3, #0
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 11
+
+
+ 456 000e 8DF80630 		strb	r3, [sp, #6]
+ 105:Device/Src/flash.c **** 
+ 106:Device/Src/flash.c ****     if (address >= FLASH_END_ADDR || size > PAGE_SIZE) {
+ 457              		.loc 1 106 5 is_stmt 1 view .LVU92
+ 458              		.loc 1 106 8 is_stmt 0 view .LVU93
+ 459 0012 6FF07F43 		mvn	r3, #-16777216
+ 460 0016 9842     		cmp	r0, r3
+ 461 0018 48D2     		bcs	.L32
+ 462 001a 0446     		mov	r4, r0
+ 463 001c 0D46     		mov	r5, r1
+ 464 001e 1646     		mov	r6, r2
+ 465              		.loc 1 106 35 discriminator 1 view .LVU94
+ 466 0020 B2F5807F 		cmp	r2, #256
+ 467 0024 01D9     		bls	.L36
+ 107:Device/Src/flash.c ****         return 0;
+ 468              		.loc 1 107 16 view .LVU95
+ 469 0026 0020     		movs	r0, #0
+ 470              	.LVL33:
+ 471              		.loc 1 107 16 view .LVU96
+ 472 0028 41E0     		b	.L30
+ 473              	.LVL34:
+ 474              	.L36:
+ 108:Device/Src/flash.c ****     }
+ 109:Device/Src/flash.c ****     if (CheckBusy() == 0) { return 0;  }
+ 475              		.loc 1 109 5 is_stmt 1 view .LVU97
+ 476              		.loc 1 109 9 is_stmt 0 view .LVU98
+ 477 002a FFF7FEFF 		bl	CheckBusy
+ 478              	.LVL35:
+ 479              		.loc 1 109 8 view .LVU99
+ 480 002e 0028     		cmp	r0, #0
+ 481 0030 3DD0     		beq	.L30
+ 110:Device/Src/flash.c ****     address_32_to_8(address, addr);
+ 482              		.loc 1 110 5 is_stmt 1 view .LVU100
+ 483 0032 01A9     		add	r1, sp, #4
+ 484 0034 2046     		mov	r0, r4
+ 485 0036 FFF7FEFF 		bl	address_32_to_8
+ 486              	.LVL36:
+ 111:Device/Src/flash.c ****     CS_LOW;
+ 487              		.loc 1 111 5 view .LVU101
+ 488 003a 204C     		ldr	r4, .L37+4
+ 489              	.LVL37:
+ 490              		.loc 1 111 5 is_stmt 0 view .LVU102
+ 491 003c 0022     		movs	r2, #0
+ 492 003e 4FF40041 		mov	r1, #32768
+ 493 0042 2046     		mov	r0, r4
+ 494 0044 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 495              	.LVL38:
+ 112:Device/Src/flash.c ****     HAL_SPI_Transmit(&W25Q64SPI, &enable_write, 1, 10);//
+ 496              		.loc 1 112 5 is_stmt 1 view .LVU103
+ 497 0048 0A23     		movs	r3, #10
+ 498 004a 0122     		movs	r2, #1
+ 499 004c 1C49     		ldr	r1, .L37+8
+ 500 004e 1D48     		ldr	r0, .L37+12
+ 501 0050 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 502              	.LVL39:
+ 113:Device/Src/flash.c ****     CS_HIGH;
+ 503              		.loc 1 113 5 view .LVU104
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 12
+
+
+ 504 0054 0122     		movs	r2, #1
+ 505 0056 4FF40041 		mov	r1, #32768
+ 506 005a 2046     		mov	r0, r4
+ 507 005c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 508              	.LVL40:
+ 114:Device/Src/flash.c ****     if (CheckBusy() <= 0) {
+ 509              		.loc 1 114 5 view .LVU105
+ 510              		.loc 1 114 9 is_stmt 0 view .LVU106
+ 511 0060 FFF7FEFF 		bl	CheckBusy
+ 512              	.LVL41:
+ 513              		.loc 1 114 8 view .LVU107
+ 514 0064 0028     		cmp	r0, #0
+ 515 0066 24DD     		ble	.L34
+ 115:Device/Src/flash.c ****         return -1;
+ 116:Device/Src/flash.c ****     } 
+ 117:Device/Src/flash.c **** 
+ 118:Device/Src/flash.c ****     CS_LOW;
+ 516              		.loc 1 118 5 is_stmt 1 view .LVU108
+ 517 0068 2746     		mov	r7, r4
+ 518 006a 0022     		movs	r2, #0
+ 519 006c 4FF40041 		mov	r1, #32768
+ 520 0070 2046     		mov	r0, r4
+ 521 0072 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 522              	.LVL42:
+ 119:Device/Src/flash.c ****     HAL_SPI_Transmit(&W25Q64SPI, &write_addr, 1, 10);//
+ 523              		.loc 1 119 5 view .LVU109
+ 524 0076 134C     		ldr	r4, .L37+12
+ 525 0078 0A23     		movs	r3, #10
+ 526 007a 0122     		movs	r2, #1
+ 527 007c 1249     		ldr	r1, .L37+16
+ 528 007e 2046     		mov	r0, r4
+ 529 0080 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 530              	.LVL43:
+ 120:Device/Src/flash.c ****     HAL_SPI_Transmit(&W25Q64SPI, addr, 3, 10);//
+ 531              		.loc 1 120 5 view .LVU110
+ 532 0084 0A23     		movs	r3, #10
+ 533 0086 0322     		movs	r2, #3
+ 534 0088 01A9     		add	r1, sp, #4
+ 535 008a 2046     		mov	r0, r4
+ 536 008c FFF7FEFF 		bl	HAL_SPI_Transmit
+ 537              	.LVL44:
+ 121:Device/Src/flash.c ****     HAL_SPI_Transmit(&W25Q64SPI, buffer, size, 10);//
+ 538              		.loc 1 121 5 view .LVU111
+ 539 0090 0A23     		movs	r3, #10
+ 540 0092 3246     		mov	r2, r6
+ 541 0094 2946     		mov	r1, r5
+ 542 0096 2046     		mov	r0, r4
+ 543 0098 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 544              	.LVL45:
+ 122:Device/Src/flash.c ****     CS_HIGH;
+ 545              		.loc 1 122 5 view .LVU112
+ 546 009c 0122     		movs	r2, #1
+ 547 009e 4FF40041 		mov	r1, #32768
+ 548 00a2 3846     		mov	r0, r7
+ 549 00a4 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 550              	.LVL46:
+ 123:Device/Src/flash.c ****     return 1;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 13
+
+
+ 551              		.loc 1 123 5 view .LVU113
+ 552              		.loc 1 123 12 is_stmt 0 view .LVU114
+ 553 00a8 0120     		movs	r0, #1
+ 554 00aa 00E0     		b	.L30
+ 555              	.LVL47:
+ 556              	.L32:
+ 107:Device/Src/flash.c ****     }
+ 557              		.loc 1 107 16 view .LVU115
+ 558 00ac 0020     		movs	r0, #0
+ 559              	.LVL48:
+ 560              	.L30:
+ 124:Device/Src/flash.c **** }
+ 561              		.loc 1 124 1 view .LVU116
+ 562 00ae 03B0     		add	sp, sp, #12
+ 563              	.LCFI12:
+ 564              		.cfi_remember_state
+ 565              		.cfi_def_cfa_offset 20
+ 566              		@ sp needed
+ 567 00b0 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 568              	.LVL49:
+ 569              	.L34:
+ 570              	.LCFI13:
+ 571              		.cfi_restore_state
+ 115:Device/Src/flash.c ****     } 
+ 572              		.loc 1 115 16 view .LVU117
+ 573 00b2 4FF0FF30 		mov	r0, #-1
+ 574 00b6 FAE7     		b	.L30
+ 575              	.L38:
+ 576              		.align	2
+ 577              	.L37:
+ 578 00b8 00000000 		.word	.LANCHOR1
+ 579 00bc 00000240 		.word	1073872896
+ 580 00c0 00000000 		.word	.LANCHOR3
+ 581 00c4 00000000 		.word	hspi1
+ 582 00c8 00000000 		.word	.LANCHOR4
+ 583              		.cfi_endproc
+ 584              	.LFE239:
+ 586              		.section	.text.flash_read_data,"ax",%progbits
+ 587              		.align	1
+ 588              		.global	flash_read_data
+ 589              		.syntax unified
+ 590              		.thumb
+ 591              		.thumb_func
+ 593              	flash_read_data:
+ 594              	.LVL50:
+ 595              	.LFB240:
+ 125:Device/Src/flash.c **** 
+ 126:Device/Src/flash.c **** int flash_read_data(uint32_t address, uint8_t* buffer, uint16_t length)
+ 127:Device/Src/flash.c **** {
+ 596              		.loc 1 127 1 is_stmt 1 view -0
+ 597              		.cfi_startproc
+ 598              		@ args = 0, pretend = 0, frame = 8
+ 599              		@ frame_needed = 0, uses_anonymous_args = 0
+ 600              		.loc 1 127 1 is_stmt 0 view .LVU119
+ 601 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 602              	.LCFI14:
+ 603              		.cfi_def_cfa_offset 20
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 14
+
+
+ 604              		.cfi_offset 4, -20
+ 605              		.cfi_offset 5, -16
+ 606              		.cfi_offset 6, -12
+ 607              		.cfi_offset 7, -8
+ 608              		.cfi_offset 14, -4
+ 609 0002 83B0     		sub	sp, sp, #12
+ 610              	.LCFI15:
+ 611              		.cfi_def_cfa_offset 32
+ 128:Device/Src/flash.c ****     uint8_t addr[3] = {0};
+ 612              		.loc 1 128 5 is_stmt 1 view .LVU120
+ 613              		.loc 1 128 13 is_stmt 0 view .LVU121
+ 614 0004 1F4B     		ldr	r3, .L45
+ 615 0006 1B89     		ldrh	r3, [r3, #8]
+ 616 0008 ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 617 000c 0023     		movs	r3, #0
+ 618 000e 8DF80630 		strb	r3, [sp, #6]
+ 129:Device/Src/flash.c ****     if (address >= FLASH_END_ADDR || length > PAGE_SIZE) {
+ 619              		.loc 1 129 5 is_stmt 1 view .LVU122
+ 620              		.loc 1 129 8 is_stmt 0 view .LVU123
+ 621 0012 6FF07F43 		mvn	r3, #-16777216
+ 622 0016 9842     		cmp	r0, r3
+ 623 0018 30D2     		bcs	.L41
+ 624 001a 0446     		mov	r4, r0
+ 625 001c 0D46     		mov	r5, r1
+ 626 001e 1646     		mov	r6, r2
+ 627              		.loc 1 129 35 discriminator 1 view .LVU124
+ 628 0020 B2F5807F 		cmp	r2, #256
+ 629 0024 01D9     		bls	.L44
+ 130:Device/Src/flash.c ****         return 0;
+ 630              		.loc 1 130 16 view .LVU125
+ 631 0026 0020     		movs	r0, #0
+ 632              	.LVL51:
+ 633              		.loc 1 130 16 view .LVU126
+ 634 0028 29E0     		b	.L39
+ 635              	.LVL52:
+ 636              	.L44:
+ 131:Device/Src/flash.c ****     }
+ 132:Device/Src/flash.c ****     if (CheckBusy() == 0) { return 0;  }
+ 637              		.loc 1 132 5 is_stmt 1 view .LVU127
+ 638              		.loc 1 132 9 is_stmt 0 view .LVU128
+ 639 002a FFF7FEFF 		bl	CheckBusy
+ 640              	.LVL53:
+ 641              		.loc 1 132 8 view .LVU129
+ 642 002e 30B3     		cbz	r0, .L39
+ 133:Device/Src/flash.c ****     address_32_to_8(address, addr);
+ 643              		.loc 1 133 5 is_stmt 1 view .LVU130
+ 644 0030 01A9     		add	r1, sp, #4
+ 645 0032 2046     		mov	r0, r4
+ 646 0034 FFF7FEFF 		bl	address_32_to_8
+ 647              	.LVL54:
+ 134:Device/Src/flash.c ****     CS_LOW;
+ 648              		.loc 1 134 5 view .LVU131
+ 649 0038 134F     		ldr	r7, .L45+4
+ 650 003a 0022     		movs	r2, #0
+ 651 003c 4FF40041 		mov	r1, #32768
+ 652 0040 3846     		mov	r0, r7
+ 653 0042 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 15
+
+
+ 654              	.LVL55:
+ 135:Device/Src/flash.c ****     HAL_SPI_Transmit(&W25Q64SPI, &read_addr, 1, 10);
+ 655              		.loc 1 135 5 view .LVU132
+ 656 0046 114C     		ldr	r4, .L45+8
+ 657              	.LVL56:
+ 658              		.loc 1 135 5 is_stmt 0 view .LVU133
+ 659 0048 0A23     		movs	r3, #10
+ 660 004a 0122     		movs	r2, #1
+ 661 004c 1049     		ldr	r1, .L45+12
+ 662 004e 2046     		mov	r0, r4
+ 663 0050 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 664              	.LVL57:
+ 136:Device/Src/flash.c ****     HAL_SPI_Transmit(&W25Q64SPI,addr, 3, 10);
+ 665              		.loc 1 136 5 is_stmt 1 view .LVU134
+ 666 0054 0A23     		movs	r3, #10
+ 667 0056 0322     		movs	r2, #3
+ 668 0058 01A9     		add	r1, sp, #4
+ 669 005a 2046     		mov	r0, r4
+ 670 005c FFF7FEFF 		bl	HAL_SPI_Transmit
+ 671              	.LVL58:
+ 137:Device/Src/flash.c ****     HAL_SPI_Receive(&W25Q64SPI, buffer, length, 50);
+ 672              		.loc 1 137 5 view .LVU135
+ 673 0060 3223     		movs	r3, #50
+ 674 0062 3246     		mov	r2, r6
+ 675 0064 2946     		mov	r1, r5
+ 676 0066 2046     		mov	r0, r4
+ 677 0068 FFF7FEFF 		bl	HAL_SPI_Receive
+ 678              	.LVL59:
+ 138:Device/Src/flash.c ****     CS_HIGH;
+ 679              		.loc 1 138 5 view .LVU136
+ 680 006c 0122     		movs	r2, #1
+ 681 006e 4FF40041 		mov	r1, #32768
+ 682 0072 3846     		mov	r0, r7
+ 683 0074 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 684              	.LVL60:
+ 139:Device/Src/flash.c ****     return 1;
+ 685              		.loc 1 139 5 view .LVU137
+ 686              		.loc 1 139 12 is_stmt 0 view .LVU138
+ 687 0078 0120     		movs	r0, #1
+ 688 007a 00E0     		b	.L39
+ 689              	.LVL61:
+ 690              	.L41:
+ 130:Device/Src/flash.c ****     }
+ 691              		.loc 1 130 16 view .LVU139
+ 692 007c 0020     		movs	r0, #0
+ 693              	.LVL62:
+ 694              	.L39:
+ 140:Device/Src/flash.c **** }
+ 695              		.loc 1 140 1 view .LVU140
+ 696 007e 03B0     		add	sp, sp, #12
+ 697              	.LCFI16:
+ 698              		.cfi_def_cfa_offset 20
+ 699              		@ sp needed
+ 700 0080 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 701              	.L46:
+ 702 0082 00BF     		.align	2
+ 703              	.L45:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 16
+
+
+ 704 0084 00000000 		.word	.LANCHOR1
+ 705 0088 00000240 		.word	1073872896
+ 706 008c 00000000 		.word	hspi1
+ 707 0090 00000000 		.word	.LANCHOR5
+ 708              		.cfi_endproc
+ 709              	.LFE240:
+ 711              		.section	.text.float_to_uint8,"ax",%progbits
+ 712              		.align	1
+ 713              		.global	float_to_uint8
+ 714              		.syntax unified
+ 715              		.thumb
+ 716              		.thumb_func
+ 718              	float_to_uint8:
+ 719              	.LVL63:
+ 720              	.LFB241:
+ 141:Device/Src/flash.c **** 
+ 142:Device/Src/flash.c **** void float_to_uint8(uint8_t* target, float* source)
+ 143:Device/Src/flash.c **** {
+ 721              		.loc 1 143 1 is_stmt 1 view -0
+ 722              		.cfi_startproc
+ 723              		@ args = 0, pretend = 0, frame = 0
+ 724              		@ frame_needed = 0, uses_anonymous_args = 0
+ 725              		@ link register save eliminated.
+ 144:Device/Src/flash.c ****     uint32_t sum = 0;
+ 726              		.loc 1 144 5 view .LVU142
+ 145:Device/Src/flash.c ****     int i;
+ 727              		.loc 1 145 5 view .LVU143
+ 146:Device/Src/flash.c ****     sum = *((uint32_t *)source);
+ 728              		.loc 1 146 5 view .LVU144
+ 729              		.loc 1 146 9 is_stmt 0 view .LVU145
+ 730 0000 0A68     		ldr	r2, [r1]
+ 731              	.LVL64:
+ 147:Device/Src/flash.c ****     for (i = 3; i >= 0; i--) {
+ 732              		.loc 1 147 5 is_stmt 1 view .LVU146
+ 733              		.loc 1 147 12 is_stmt 0 view .LVU147
+ 734 0002 0323     		movs	r3, #3
+ 735              		.loc 1 147 5 view .LVU148
+ 736 0004 02E0     		b	.L48
+ 737              	.LVL65:
+ 738              	.L49:
+ 148:Device/Src/flash.c ****         target[i] = sum % 256;
+ 739              		.loc 1 148 9 is_stmt 1 discriminator 3 view .LVU149
+ 740              		.loc 1 148 19 is_stmt 0 discriminator 3 view .LVU150
+ 741 0006 C254     		strb	r2, [r0, r3]
+ 149:Device/Src/flash.c ****         sum = sum >> 8;
+ 742              		.loc 1 149 9 is_stmt 1 discriminator 3 view .LVU151
+ 743              		.loc 1 149 13 is_stmt 0 discriminator 3 view .LVU152
+ 744 0008 120A     		lsrs	r2, r2, #8
+ 745              	.LVL66:
+ 147:Device/Src/flash.c ****     for (i = 3; i >= 0; i--) {
+ 746              		.loc 1 147 25 is_stmt 1 discriminator 3 view .LVU153
+ 147:Device/Src/flash.c ****     for (i = 3; i >= 0; i--) {
+ 747              		.loc 1 147 26 is_stmt 0 discriminator 3 view .LVU154
+ 748 000a 013B     		subs	r3, r3, #1
+ 749              	.LVL67:
+ 750              	.L48:
+ 147:Device/Src/flash.c ****     for (i = 3; i >= 0; i--) {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 17
+
+
+ 751              		.loc 1 147 17 is_stmt 1 discriminator 1 view .LVU155
+ 147:Device/Src/flash.c ****     for (i = 3; i >= 0; i--) {
+ 752              		.loc 1 147 5 is_stmt 0 discriminator 1 view .LVU156
+ 753 000c 002B     		cmp	r3, #0
+ 754 000e FADA     		bge	.L49
+ 150:Device/Src/flash.c ****     }
+ 151:Device/Src/flash.c **** }
+ 755              		.loc 1 151 1 view .LVU157
+ 756 0010 7047     		bx	lr
+ 757              		.cfi_endproc
+ 758              	.LFE241:
+ 760              		.section	.text.uint8_to_float,"ax",%progbits
+ 761              		.align	1
+ 762              		.global	uint8_to_float
+ 763              		.syntax unified
+ 764              		.thumb
+ 765              		.thumb_func
+ 767              	uint8_to_float:
+ 768              	.LVL68:
+ 769              	.LFB242:
+ 152:Device/Src/flash.c **** void uint8_to_float(float* target, uint8_t* source)
+ 153:Device/Src/flash.c **** {
+ 770              		.loc 1 153 1 is_stmt 1 view -0
+ 771              		.cfi_startproc
+ 772              		@ args = 0, pretend = 0, frame = 0
+ 773              		@ frame_needed = 0, uses_anonymous_args = 0
+ 774              		@ link register save eliminated.
+ 154:Device/Src/flash.c ****     uint32_t sum = 0;
+ 775              		.loc 1 154 5 view .LVU159
+ 155:Device/Src/flash.c ****     int i;
+ 776              		.loc 1 155 5 view .LVU160
+ 156:Device/Src/flash.c ****     for (i = 0; i < 4; i++) {
+ 777              		.loc 1 156 5 view .LVU161
+ 154:Device/Src/flash.c ****     uint32_t sum = 0;
+ 778              		.loc 1 154 14 is_stmt 0 view .LVU162
+ 779 0000 0022     		movs	r2, #0
+ 780              		.loc 1 156 12 view .LVU163
+ 781 0002 1346     		mov	r3, r2
+ 782              		.loc 1 156 5 view .LVU164
+ 783 0004 04E0     		b	.L51
+ 784              	.LVL69:
+ 785              	.L52:
+ 157:Device/Src/flash.c ****         sum = (sum << 8) + source[i];
+ 786              		.loc 1 157 9 is_stmt 1 discriminator 3 view .LVU165
+ 787              		.loc 1 157 34 is_stmt 0 discriminator 3 view .LVU166
+ 788 0006 11F803C0 		ldrb	ip, [r1, r3]	@ zero_extendqisi2
+ 789              		.loc 1 157 26 discriminator 3 view .LVU167
+ 790 000a 0CEB0222 		add	r2, ip, r2, lsl #8
+ 791              	.LVL70:
+ 156:Device/Src/flash.c ****     for (i = 0; i < 4; i++) {
+ 792              		.loc 1 156 24 is_stmt 1 discriminator 3 view .LVU168
+ 156:Device/Src/flash.c ****     for (i = 0; i < 4; i++) {
+ 793              		.loc 1 156 25 is_stmt 0 discriminator 3 view .LVU169
+ 794 000e 0133     		adds	r3, r3, #1
+ 795              	.LVL71:
+ 796              	.L51:
+ 156:Device/Src/flash.c ****     for (i = 0; i < 4; i++) {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 18
+
+
+ 797              		.loc 1 156 17 is_stmt 1 discriminator 1 view .LVU170
+ 156:Device/Src/flash.c ****     for (i = 0; i < 4; i++) {
+ 798              		.loc 1 156 5 is_stmt 0 discriminator 1 view .LVU171
+ 799 0010 032B     		cmp	r3, #3
+ 800 0012 F8DD     		ble	.L52
+ 158:Device/Src/flash.c ****     }
+ 159:Device/Src/flash.c ****     *target = *((float*)&sum);
+ 801              		.loc 1 159 5 is_stmt 1 view .LVU172
+ 802              		.loc 1 159 13 is_stmt 0 view .LVU173
+ 803 0014 0260     		str	r2, [r0]	@ float
+ 804              	.LVL72:
+ 160:Device/Src/flash.c **** }
+ 805              		.loc 1 160 1 view .LVU174
+ 806 0016 7047     		bx	lr
+ 807              		.cfi_endproc
+ 808              	.LFE242:
+ 810              		.section	.text.flash_test_flag_manage,"ax",%progbits
+ 811              		.align	1
+ 812              		.global	flash_test_flag_manage
+ 813              		.syntax unified
+ 814              		.thumb
+ 815              		.thumb_func
+ 817              	flash_test_flag_manage:
+ 818              	.LVL73:
+ 819              	.LFB243:
+ 161:Device/Src/flash.c **** 
+ 162:Device/Src/flash.c **** int flash_test_flag_manage(uint8_t* buffer, TestFlagList handle, TestFlagHandle mode)
+ 163:Device/Src/flash.c **** {
+ 820              		.loc 1 163 1 is_stmt 1 view -0
+ 821              		.cfi_startproc
+ 822              		@ args = 0, pretend = 0, frame = 1536
+ 823              		@ frame_needed = 0, uses_anonymous_args = 0
+ 824              		.loc 1 163 1 is_stmt 0 view .LVU176
+ 825 0000 70B5     		push	{r4, r5, r6, lr}
+ 826              	.LCFI17:
+ 827              		.cfi_def_cfa_offset 16
+ 828              		.cfi_offset 4, -16
+ 829              		.cfi_offset 5, -12
+ 830              		.cfi_offset 6, -8
+ 831              		.cfi_offset 14, -4
+ 832 0002 ADF5C06D 		sub	sp, sp, #1536
+ 833              	.LCFI18:
+ 834              		.cfi_def_cfa_offset 1552
+ 835 0006 0446     		mov	r4, r0
+ 836 0008 0D46     		mov	r5, r1
+ 837 000a 1646     		mov	r6, r2
+ 164:Device/Src/flash.c ****     uint32_t address;
+ 838              		.loc 1 164 5 is_stmt 1 view .LVU177
+ 165:Device/Src/flash.c ****     int i;
+ 839              		.loc 1 165 5 view .LVU178
+ 166:Device/Src/flash.c ****     uint8_t writeBuffer[PAGE_SIZE * 6] = {0xff};
+ 840              		.loc 1 166 5 view .LVU179
+ 841              		.loc 1 166 13 is_stmt 0 view .LVU180
+ 842 000c FF23     		movs	r3, #255
+ 843 000e 0093     		str	r3, [sp]
+ 844 0010 40F2FC52 		movw	r2, #1532
+ 845              	.LVL74:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 19
+
+
+ 846              		.loc 1 166 13 view .LVU181
+ 847 0014 0021     		movs	r1, #0
+ 848              	.LVL75:
+ 849              		.loc 1 166 13 view .LVU182
+ 850 0016 01A8     		add	r0, sp, #4
+ 851              	.LVL76:
+ 852              		.loc 1 166 13 view .LVU183
+ 853 0018 FFF7FEFF 		bl	memset
+ 854              	.LVL77:
+ 167:Device/Src/flash.c ****     switch (mode) {
+ 855              		.loc 1 167 5 is_stmt 1 view .LVU184
+ 856 001c 012E     		cmp	r6, #1
+ 857 001e 0CD0     		beq	.L54
+ 858 0020 022E     		cmp	r6, #2
+ 859 0022 1CD0     		beq	.L62
+ 860 0024 1EB1     		cbz	r6, .L64
+ 861              	.LVL78:
+ 862              	.L56:
+ 168:Device/Src/flash.c ****         case FLASH_FLAG_READ:
+ 169:Device/Src/flash.c ****             address = TEST_FALG_START_ADDR + handle * PAGE_SIZE;
+ 170:Device/Src/flash.c ****             flash_read_data(address, buffer, MAX_CHIP_NUMBER);
+ 171:Device/Src/flash.c ****         break;
+ 172:Device/Src/flash.c ****         case FLASH_FLAG_WRITE_ADD:
+ 173:Device/Src/flash.c ****             address = TEST_FALG_START_ADDR + handle * PAGE_SIZE;
+ 174:Device/Src/flash.c ****             flash_write_data(address, buffer, MAX_CHIP_NUMBER);
+ 175:Device/Src/flash.c ****         break;
+ 176:Device/Src/flash.c ****         case FLASH_FLAG_WRITE_COVER:
+ 177:Device/Src/flash.c ****             for (i = 0; i < 6; i++) {
+ 178:Device/Src/flash.c ****                 flash_read_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer + i * PAGE_SIZE, 
+ 179:Device/Src/flash.c ****             }
+ 180:Device/Src/flash.c ****             for (i = 0; i < MAX_CHIP_NUMBER; i++) {
+ 181:Device/Src/flash.c ****                 writeBuffer[PAGE_SIZE * handle + i] = buffer[i];
+ 182:Device/Src/flash.c ****             }
+ 183:Device/Src/flash.c ****             HAL_Delay(5);
+ 184:Device/Src/flash.c **** 
+ 185:Device/Src/flash.c ****             flash_erase(TEST_FALG_START_ADDR, 2);//erase the sector    
+ 186:Device/Src/flash.c ****             HAL_Delay(50);
+ 187:Device/Src/flash.c **** 
+ 188:Device/Src/flash.c ****             for (i = 0; i < 6; i++) {
+ 189:Device/Src/flash.c ****                 flash_write_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer+ i * PAGE_SIZE, 
+ 190:Device/Src/flash.c ****                 HAL_Delay(5);
+ 191:Device/Src/flash.c ****             }
+ 192:Device/Src/flash.c ****         break;
+ 193:Device/Src/flash.c ****         default:
+ 194:Device/Src/flash.c ****         break;
+ 195:Device/Src/flash.c ****     }
+ 196:Device/Src/flash.c **** 
+ 197:Device/Src/flash.c ****     return 1;
+ 863              		.loc 1 197 5 view .LVU185
+ 198:Device/Src/flash.c **** }
+ 864              		.loc 1 198 1 is_stmt 0 view .LVU186
+ 865 0026 0120     		movs	r0, #1
+ 866 0028 0DF5C06D 		add	sp, sp, #1536
+ 867              	.LCFI19:
+ 868              		.cfi_remember_state
+ 869              		.cfi_def_cfa_offset 16
+ 870              		@ sp needed
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 20
+
+
+ 871 002c 70BD     		pop	{r4, r5, r6, pc}
+ 872              	.LVL79:
+ 873              	.L64:
+ 874              	.LCFI20:
+ 875              		.cfi_restore_state
+ 169:Device/Src/flash.c ****             flash_read_data(address, buffer, MAX_CHIP_NUMBER);
+ 876              		.loc 1 169 13 is_stmt 1 view .LVU187
+ 170:Device/Src/flash.c ****         break;
+ 877              		.loc 1 170 13 view .LVU188
+ 878 002e 6422     		movs	r2, #100
+ 879 0030 2146     		mov	r1, r4
+ 880 0032 2802     		lsls	r0, r5, #8
+ 881              	.LVL80:
+ 170:Device/Src/flash.c ****         break;
+ 882              		.loc 1 170 13 is_stmt 0 view .LVU189
+ 883 0034 FFF7FEFF 		bl	flash_read_data
+ 884              	.LVL81:
+ 171:Device/Src/flash.c ****         case FLASH_FLAG_WRITE_ADD:
+ 885              		.loc 1 171 9 is_stmt 1 view .LVU190
+ 886 0038 F5E7     		b	.L56
+ 887              	.LVL82:
+ 888              	.L54:
+ 173:Device/Src/flash.c ****             flash_write_data(address, buffer, MAX_CHIP_NUMBER);
+ 889              		.loc 1 173 13 view .LVU191
+ 174:Device/Src/flash.c ****         break;
+ 890              		.loc 1 174 13 view .LVU192
+ 891 003a 6422     		movs	r2, #100
+ 892 003c 2146     		mov	r1, r4
+ 893 003e 2802     		lsls	r0, r5, #8
+ 894              	.LVL83:
+ 174:Device/Src/flash.c ****         break;
+ 895              		.loc 1 174 13 is_stmt 0 view .LVU193
+ 896 0040 FFF7FEFF 		bl	flash_write_data
+ 897              	.LVL84:
+ 175:Device/Src/flash.c ****         case FLASH_FLAG_WRITE_COVER:
+ 898              		.loc 1 175 9 is_stmt 1 view .LVU194
+ 899 0044 EFE7     		b	.L56
+ 900              	.LVL85:
+ 901              	.L57:
+ 178:Device/Src/flash.c ****             }
+ 902              		.loc 1 178 17 discriminator 3 view .LVU195
+ 903 0046 4FF48072 		mov	r2, #256
+ 904 004a 0DEB0621 		add	r1, sp, r6, lsl #8
+ 905 004e 3002     		lsls	r0, r6, #8
+ 906 0050 FFF7FEFF 		bl	flash_read_data
+ 907              	.LVL86:
+ 177:Device/Src/flash.c ****                 flash_read_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer + i * PAGE_SIZE, 
+ 908              		.loc 1 177 32 discriminator 3 view .LVU196
+ 177:Device/Src/flash.c ****                 flash_read_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer + i * PAGE_SIZE, 
+ 909              		.loc 1 177 33 is_stmt 0 discriminator 3 view .LVU197
+ 910 0054 0136     		adds	r6, r6, #1
+ 911              	.LVL87:
+ 912              	.L55:
+ 177:Device/Src/flash.c ****                 flash_read_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer + i * PAGE_SIZE, 
+ 913              		.loc 1 177 25 is_stmt 1 discriminator 1 view .LVU198
+ 177:Device/Src/flash.c ****                 flash_read_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer + i * PAGE_SIZE, 
+ 914              		.loc 1 177 13 is_stmt 0 discriminator 1 view .LVU199
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 21
+
+
+ 915 0056 052E     		cmp	r6, #5
+ 916 0058 F5DD     		ble	.L57
+ 180:Device/Src/flash.c ****                 writeBuffer[PAGE_SIZE * handle + i] = buffer[i];
+ 917              		.loc 1 180 20 view .LVU200
+ 918 005a 0023     		movs	r3, #0
+ 919 005c 08E0     		b	.L58
+ 920              	.LVL88:
+ 921              	.L62:
+ 167:Device/Src/flash.c ****         case FLASH_FLAG_READ:
+ 922              		.loc 1 167 5 view .LVU201
+ 923 005e 0026     		movs	r6, #0
+ 924 0060 F9E7     		b	.L55
+ 925              	.LVL89:
+ 926              	.L59:
+ 181:Device/Src/flash.c ****             }
+ 927              		.loc 1 181 17 is_stmt 1 discriminator 3 view .LVU202
+ 181:Device/Src/flash.c ****             }
+ 928              		.loc 1 181 48 is_stmt 0 discriminator 3 view .LVU203
+ 929 0062 03EB0522 		add	r2, r3, r5, lsl #8
+ 181:Device/Src/flash.c ****             }
+ 930              		.loc 1 181 61 discriminator 3 view .LVU204
+ 931 0066 14F803C0 		ldrb	ip, [r4, r3]	@ zero_extendqisi2
+ 181:Device/Src/flash.c ****             }
+ 932              		.loc 1 181 53 discriminator 3 view .LVU205
+ 933 006a 0DF802C0 		strb	ip, [sp, r2]
+ 180:Device/Src/flash.c ****                 writeBuffer[PAGE_SIZE * handle + i] = buffer[i];
+ 934              		.loc 1 180 46 is_stmt 1 discriminator 3 view .LVU206
+ 180:Device/Src/flash.c ****                 writeBuffer[PAGE_SIZE * handle + i] = buffer[i];
+ 935              		.loc 1 180 47 is_stmt 0 discriminator 3 view .LVU207
+ 936 006e 0133     		adds	r3, r3, #1
+ 937              	.LVL90:
+ 938              	.L58:
+ 180:Device/Src/flash.c ****                 writeBuffer[PAGE_SIZE * handle + i] = buffer[i];
+ 939              		.loc 1 180 25 is_stmt 1 discriminator 1 view .LVU208
+ 180:Device/Src/flash.c ****                 writeBuffer[PAGE_SIZE * handle + i] = buffer[i];
+ 940              		.loc 1 180 13 is_stmt 0 discriminator 1 view .LVU209
+ 941 0070 632B     		cmp	r3, #99
+ 942 0072 F6DD     		ble	.L59
+ 183:Device/Src/flash.c **** 
+ 943              		.loc 1 183 13 is_stmt 1 view .LVU210
+ 944 0074 0520     		movs	r0, #5
+ 945 0076 FFF7FEFF 		bl	HAL_Delay
+ 946              	.LVL91:
+ 185:Device/Src/flash.c ****             HAL_Delay(50);
+ 947              		.loc 1 185 13 view .LVU211
+ 948 007a 0221     		movs	r1, #2
+ 949 007c 0020     		movs	r0, #0
+ 950 007e FFF7FEFF 		bl	flash_erase
+ 951              	.LVL92:
+ 186:Device/Src/flash.c **** 
+ 952              		.loc 1 186 13 view .LVU212
+ 953 0082 3220     		movs	r0, #50
+ 954 0084 FFF7FEFF 		bl	HAL_Delay
+ 955              	.LVL93:
+ 188:Device/Src/flash.c ****                 flash_write_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer+ i * PAGE_SIZE, 
+ 956              		.loc 1 188 13 view .LVU213
+ 188:Device/Src/flash.c ****                 flash_write_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer+ i * PAGE_SIZE, 
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 22
+
+
+ 957              		.loc 1 188 20 is_stmt 0 view .LVU214
+ 958 0088 0024     		movs	r4, #0
+ 959              	.LVL94:
+ 188:Device/Src/flash.c ****                 flash_write_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer+ i * PAGE_SIZE, 
+ 960              		.loc 1 188 13 view .LVU215
+ 961 008a 0AE0     		b	.L60
+ 962              	.LVL95:
+ 963              	.L61:
+ 189:Device/Src/flash.c ****                 HAL_Delay(5);
+ 964              		.loc 1 189 17 is_stmt 1 discriminator 3 view .LVU216
+ 965 008c 4FF48072 		mov	r2, #256
+ 966 0090 0DEB0421 		add	r1, sp, r4, lsl #8
+ 967 0094 2002     		lsls	r0, r4, #8
+ 968 0096 FFF7FEFF 		bl	flash_write_data
+ 969              	.LVL96:
+ 190:Device/Src/flash.c ****             }
+ 970              		.loc 1 190 17 discriminator 3 view .LVU217
+ 971 009a 0520     		movs	r0, #5
+ 972 009c FFF7FEFF 		bl	HAL_Delay
+ 973              	.LVL97:
+ 188:Device/Src/flash.c ****                 flash_write_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer+ i * PAGE_SIZE, 
+ 974              		.loc 1 188 32 discriminator 3 view .LVU218
+ 188:Device/Src/flash.c ****                 flash_write_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer+ i * PAGE_SIZE, 
+ 975              		.loc 1 188 33 is_stmt 0 discriminator 3 view .LVU219
+ 976 00a0 0134     		adds	r4, r4, #1
+ 977              	.LVL98:
+ 978              	.L60:
+ 188:Device/Src/flash.c ****                 flash_write_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer+ i * PAGE_SIZE, 
+ 979              		.loc 1 188 25 is_stmt 1 discriminator 1 view .LVU220
+ 188:Device/Src/flash.c ****                 flash_write_data(TEST_FALG_START_ADDR + i * PAGE_SIZE, writeBuffer+ i * PAGE_SIZE, 
+ 980              		.loc 1 188 13 is_stmt 0 discriminator 1 view .LVU221
+ 981 00a2 052C     		cmp	r4, #5
+ 982 00a4 F2DD     		ble	.L61
+ 983 00a6 BEE7     		b	.L56
+ 984              		.cfi_endproc
+ 985              	.LFE243:
+ 987              		.section	.text.flash_test_data_read,"ax",%progbits
+ 988              		.align	1
+ 989              		.global	flash_test_data_read
+ 990              		.syntax unified
+ 991              		.thumb
+ 992              		.thumb_func
+ 994              	flash_test_data_read:
+ 995              	.LVL99:
+ 996              	.LFB244:
+ 199:Device/Src/flash.c **** 
+ 200:Device/Src/flash.c **** void flash_test_data_read(TestResult* result, uint8_t rtcNumber, TestResultList handle)
+ 201:Device/Src/flash.c **** {
+ 997              		.loc 1 201 1 is_stmt 1 view -0
+ 998              		.cfi_startproc
+ 999              		@ args = 0, pretend = 0, frame = 8
+ 1000              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1001              		.loc 1 201 1 is_stmt 0 view .LVU223
+ 1002 0000 70B5     		push	{r4, r5, r6, lr}
+ 1003              	.LCFI21:
+ 1004              		.cfi_def_cfa_offset 16
+ 1005              		.cfi_offset 4, -16
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 23
+
+
+ 1006              		.cfi_offset 5, -12
+ 1007              		.cfi_offset 6, -8
+ 1008              		.cfi_offset 14, -4
+ 1009 0002 82B0     		sub	sp, sp, #8
+ 1010              	.LCFI22:
+ 1011              		.cfi_def_cfa_offset 24
+ 202:Device/Src/flash.c ****     uint32_t address;
+ 1012              		.loc 1 202 5 is_stmt 1 view .LVU224
+ 203:Device/Src/flash.c ****     uint8_t buffer[4] = {0};
+ 1013              		.loc 1 203 5 view .LVU225
+ 1014              		.loc 1 203 13 is_stmt 0 view .LVU226
+ 1015 0004 0023     		movs	r3, #0
+ 1016 0006 0193     		str	r3, [sp, #4]
+ 204:Device/Src/flash.c ****     int i;
+ 1017              		.loc 1 204 5 is_stmt 1 view .LVU227
+ 205:Device/Src/flash.c ****     if (rtcNumber < 1 || rtcNumber > 84) {
+ 1018              		.loc 1 205 5 view .LVU228
+ 1019              		.loc 1 205 23 is_stmt 0 view .LVU229
+ 1020 0008 4B1E     		subs	r3, r1, #1
+ 1021 000a DBB2     		uxtb	r3, r3
+ 1022              		.loc 1 205 8 view .LVU230
+ 1023 000c 532B     		cmp	r3, #83
+ 1024 000e 3BD8     		bhi	.L65
+ 1025 0010 0646     		mov	r6, r0
+ 1026 0012 0D46     		mov	r5, r1
+ 206:Device/Src/flash.c ****         return;
+ 207:Device/Src/flash.c ****     }
+ 208:Device/Src/flash.c ****     address = TEST_RESULT_START_ADDR + (rtcNumber - 1) * TEST_RESULT_ONE_SIZE + handle;
+ 1027              		.loc 1 208 5 is_stmt 1 view .LVU231
+ 1028              		.loc 1 208 38 is_stmt 0 view .LVU232
+ 1029 0014 CC1D     		adds	r4, r1, #7
+ 1030              		.loc 1 208 79 view .LVU233
+ 1031 0016 02EB4424 		add	r4, r2, r4, lsl #9
+ 1032              	.LVL100:
+ 209:Device/Src/flash.c ****     switch (handle) {
+ 1033              		.loc 1 209 5 is_stmt 1 view .LVU234
+ 1034 001a 422A     		cmp	r2, #66
+ 1035 001c 25D8     		bhi	.L68
+ 1036 001e 422A     		cmp	r2, #66
+ 1037 0020 32D8     		bhi	.L65
+ 1038 0022 DFE802F0 		tbb	[pc, r2]
+ 1039              	.L71:
+ 1040 0026 2C       		.byte	(.L83-.L71)/2
+ 1041 0027 31       		.byte	(.L65-.L71)/2
+ 1042 0028 31       		.byte	(.L65-.L71)/2
+ 1043 0029 31       		.byte	(.L65-.L71)/2
+ 1044 002a 31       		.byte	(.L65-.L71)/2
+ 1045 002b 31       		.byte	(.L65-.L71)/2
+ 1046 002c 31       		.byte	(.L65-.L71)/2
+ 1047 002d 31       		.byte	(.L65-.L71)/2
+ 1048 002e 44       		.byte	(.L89-.L71)/2
+ 1049 002f 31       		.byte	(.L65-.L71)/2
+ 1050 0030 31       		.byte	(.L65-.L71)/2
+ 1051 0031 31       		.byte	(.L65-.L71)/2
+ 1052 0032 31       		.byte	(.L65-.L71)/2
+ 1053 0033 31       		.byte	(.L65-.L71)/2
+ 1054 0034 31       		.byte	(.L65-.L71)/2
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 24
+
+
+ 1055 0035 31       		.byte	(.L65-.L71)/2
+ 1056 0036 31       		.byte	(.L65-.L71)/2
+ 1057 0037 31       		.byte	(.L65-.L71)/2
+ 1058 0038 31       		.byte	(.L65-.L71)/2
+ 1059 0039 31       		.byte	(.L65-.L71)/2
+ 1060 003a 31       		.byte	(.L65-.L71)/2
+ 1061 003b 31       		.byte	(.L65-.L71)/2
+ 1062 003c 31       		.byte	(.L65-.L71)/2
+ 1063 003d 31       		.byte	(.L65-.L71)/2
+ 1064 003e 31       		.byte	(.L65-.L71)/2
+ 1065 003f 31       		.byte	(.L65-.L71)/2
+ 1066 0040 31       		.byte	(.L65-.L71)/2
+ 1067 0041 31       		.byte	(.L65-.L71)/2
+ 1068 0042 58       		.byte	(.L90-.L71)/2
+ 1069 0043 31       		.byte	(.L65-.L71)/2
+ 1070 0044 31       		.byte	(.L65-.L71)/2
+ 1071 0045 31       		.byte	(.L65-.L71)/2
+ 1072 0046 31       		.byte	(.L65-.L71)/2
+ 1073 0047 31       		.byte	(.L65-.L71)/2
+ 1074 0048 31       		.byte	(.L65-.L71)/2
+ 1075 0049 31       		.byte	(.L65-.L71)/2
+ 1076 004a 31       		.byte	(.L65-.L71)/2
+ 1077 004b 31       		.byte	(.L65-.L71)/2
+ 1078 004c 31       		.byte	(.L65-.L71)/2
+ 1079 004d 31       		.byte	(.L65-.L71)/2
+ 1080 004e 31       		.byte	(.L65-.L71)/2
+ 1081 004f 31       		.byte	(.L65-.L71)/2
+ 1082 0050 31       		.byte	(.L65-.L71)/2
+ 1083 0051 31       		.byte	(.L65-.L71)/2
+ 1084 0052 31       		.byte	(.L65-.L71)/2
+ 1085 0053 31       		.byte	(.L65-.L71)/2
+ 1086 0054 31       		.byte	(.L65-.L71)/2
+ 1087 0055 31       		.byte	(.L65-.L71)/2
+ 1088 0056 5A       		.byte	(.L80-.L71)/2
+ 1089 0057 61       		.byte	(.L79-.L71)/2
+ 1090 0058 31       		.byte	(.L65-.L71)/2
+ 1091 0059 68       		.byte	(.L78-.L71)/2
+ 1092 005a 31       		.byte	(.L65-.L71)/2
+ 1093 005b 75       		.byte	(.L77-.L71)/2
+ 1094 005c 82       		.byte	(.L76-.L71)/2
+ 1095 005d 89       		.byte	(.L75-.L71)/2
+ 1096 005e 90       		.byte	(.L74-.L71)/2
+ 1097 005f 97       		.byte	(.L73-.L71)/2
+ 1098 0060 9E       		.byte	(.L72-.L71)/2
+ 1099 0061 31       		.byte	(.L65-.L71)/2
+ 1100 0062 31       		.byte	(.L65-.L71)/2
+ 1101 0063 31       		.byte	(.L65-.L71)/2
+ 1102 0064 31       		.byte	(.L65-.L71)/2
+ 1103 0065 31       		.byte	(.L65-.L71)/2
+ 1104 0066 31       		.byte	(.L65-.L71)/2
+ 1105 0067 31       		.byte	(.L65-.L71)/2
+ 1106 0068 B5       		.byte	(.L70-.L71)/2
+ 1107 0069 00       		.p2align 1
+ 1108              	.L68:
+ 1109 006a B2F5807F 		cmp	r2, #256
+ 1110 006e 00F0EA80 		beq	.L84
+ 1111 0072 40F20113 		movw	r3, #257
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 25
+
+
+ 1112 0076 9A42     		cmp	r2, r3
+ 1113 0078 06D1     		bne	.L65
+ 1114 007a 0024     		movs	r4, #0
+ 1115              	.LVL101:
+ 1116              		.loc 1 209 5 is_stmt 0 view .LVU235
+ 1117 007c F0E0     		b	.L85
+ 1118              	.LVL102:
+ 1119              	.L83:
+ 210:Device/Src/flash.c ****         case CHIP_ID:
+ 211:Device/Src/flash.c ****             flash_read_data(address, result->chipID, 8);
+ 1120              		.loc 1 211 13 is_stmt 1 view .LVU236
+ 1121 007e 0822     		movs	r2, #8
+ 1122              	.LVL103:
+ 1123              		.loc 1 211 13 is_stmt 0 view .LVU237
+ 1124 0080 0146     		mov	r1, r0
+ 1125              	.LVL104:
+ 1126              		.loc 1 211 13 view .LVU238
+ 1127 0082 2046     		mov	r0, r4
+ 1128              	.LVL105:
+ 1129              		.loc 1 211 13 view .LVU239
+ 1130 0084 FFF7FEFF 		bl	flash_read_data
+ 1131              	.LVL106:
+ 212:Device/Src/flash.c ****         break;
+ 1132              		.loc 1 212 9 is_stmt 1 view .LVU240
+ 1133              	.L65:
+ 213:Device/Src/flash.c ****         case TEST_DOT_TEMP:
+ 214:Device/Src/flash.c ****             for (i = 0; i < MAX_TEST_DOT_NUMBER; i++) {
+ 215:Device/Src/flash.c ****                 flash_read_data(address, buffer, 4);
+ 216:Device/Src/flash.c ****                 uint8_to_float(&(result->testDotTemp[i]), buffer);
+ 217:Device/Src/flash.c ****                 address  += 4;
+ 218:Device/Src/flash.c ****             }
+ 219:Device/Src/flash.c ****         break;
+ 220:Device/Src/flash.c ****         case TEST_DOT_CAP:
+ 221:Device/Src/flash.c ****             for (i = 0; i < MAX_TEST_DOT_NUMBER; i++) {
+ 222:Device/Src/flash.c ****                 flash_read_data(address, buffer, 4);
+ 223:Device/Src/flash.c ****                 uint8_to_float(&(result->testDotCap[i]), buffer);
+ 224:Device/Src/flash.c ****                 address  += 4;
+ 225:Device/Src/flash.c ****             }
+ 226:Device/Src/flash.c ****         break;
+ 227:Device/Src/flash.c ****         case SET_TEMP:
+ 228:Device/Src/flash.c ****             flash_read_data(address, &(result->setTemp), 1);
+ 229:Device/Src/flash.c ****         break;
+ 230:Device/Src/flash.c ****         case TEMP_CONFIG:
+ 231:Device/Src/flash.c ****             flash_read_data(address, &(result->tempConfig), 1);
+ 232:Device/Src/flash.c ****         break;
+ 233:Device/Src/flash.c ****         case START_TIME_HOT:
+ 234:Device/Src/flash.c ****             flash_read_data(address, buffer, 2);
+ 235:Device/Src/flash.c ****             result->startTimeHot = buffer[0] * 256 + buffer[1];
+ 236:Device/Src/flash.c ****         break;
+ 237:Device/Src/flash.c ****         case START_TIME_COLD:
+ 238:Device/Src/flash.c ****             flash_read_data(address, buffer, 2);
+ 239:Device/Src/flash.c ****             result->startTimeCold = buffer[0] * 256 + buffer[1];
+ 240:Device/Src/flash.c ****         break;
+ 241:Device/Src/flash.c ****         case ERROR_TIME_HOT:
+ 242:Device/Src/flash.c ****             flash_read_data(address, &(result->errorTimeHot), 1);
+ 243:Device/Src/flash.c ****         break;
+ 244:Device/Src/flash.c ****         case ERROR_TIME_COLD:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 26
+
+
+ 245:Device/Src/flash.c ****             flash_read_data(address, &(result->errorTimeCold), 1);
+ 246:Device/Src/flash.c ****         break;
+ 247:Device/Src/flash.c ****         case CALCUL_FLAG:
+ 248:Device/Src/flash.c ****             flash_read_data(address, &(result->calculFlag), 1);
+ 249:Device/Src/flash.c ****         break;
+ 250:Device/Src/flash.c ****         case TEMP_LOAD_FLAG:
+ 251:Device/Src/flash.c ****             flash_read_data(address, &(result->tempLoadFlag), 1);
+ 252:Device/Src/flash.c ****         break;
+ 253:Device/Src/flash.c ****         case TEST_CENTER:
+ 254:Device/Src/flash.c ****             flash_read_data(address, buffer, 4);
+ 255:Device/Src/flash.c ****             uint8_to_float(&(result->testCenter[0]), buffer);
+ 256:Device/Src/flash.c ****             flash_read_data(address + 4, buffer, 4);
+ 257:Device/Src/flash.c ****             uint8_to_float(&(result->testCenter[1]), buffer);
+ 258:Device/Src/flash.c ****         break;
+ 259:Device/Src/flash.c ****         case MACHINE_TEST_ALL:
+ 260:Device/Src/flash.c ****             flash_read_data(address + MACHINE_I_VDD, buffer, 2);
+ 261:Device/Src/flash.c ****             result->machine.Ivdd = buffer[0] * 256 + buffer[1];
+ 262:Device/Src/flash.c ****             flash_read_data(address + MACHINE_I_VBAT, buffer, 2);
+ 263:Device/Src/flash.c ****             result->machine.Ivbat = buffer[0] * 256 + buffer[1];
+ 264:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CONFIG_9, &(result->machine.config9), 1);
+ 265:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CONFIG_C, &(result->machine.configC), 1);
+ 266:Device/Src/flash.c ****             flash_read_data(address + MACHINE_SYSTEM_TEMP, &(result->machine.sysTemp), 1);
+ 267:Device/Src/flash.c ****             flash_read_data(address + MACHINE_RTC_TEMP, &(result->machine.rtcTemp), 1);
+ 268:Device/Src/flash.c ****             flash_read_data(address + MACHINE_TEST_FREQ, buffer, 4);
+ 269:Device/Src/flash.c ****             uint8_to_float(&(result->machine.testFreq), buffer);
+ 270:Device/Src/flash.c ****             flash_read_data(address + MACHINE_VBAT_2V5, buffer, 2);
+ 271:Device/Src/flash.c ****             result->machine.vbat_2V5 = buffer[0] * 256 + buffer[1];
+ 272:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CHARGE, buffer, 2);
+ 273:Device/Src/flash.c ****             result->machine.charge = buffer[0] * 256 + buffer[1];
+ 274:Device/Src/flash.c ****         break;
+ 275:Device/Src/flash.c ****         case CAP_CALCULATE:
+ 276:Device/Src/flash.c ****             flash_read_data(address, result->capCalcul, 151);
+ 277:Device/Src/flash.c ****         break;
+ 278:Device/Src/flash.c ****         case TEST_DATA_ALL:
+ 279:Device/Src/flash.c ****             for (i = 0; i <= CAP_CALCULATE; i++) {
+ 280:Device/Src/flash.c ****                 flash_test_data_read(result, rtcNumber, i);
+ 281:Device/Src/flash.c ****             }
+ 282:Device/Src/flash.c ****         break;
+ 283:Device/Src/flash.c ****         default: break;
+ 284:Device/Src/flash.c ****     }
+ 285:Device/Src/flash.c **** }
+ 1134              		.loc 1 285 1 is_stmt 0 view .LVU241
+ 1135 0088 02B0     		add	sp, sp, #8
+ 1136              	.LCFI23:
+ 1137              		.cfi_remember_state
+ 1138              		.cfi_def_cfa_offset 16
+ 1139              		@ sp needed
+ 1140 008a 70BD     		pop	{r4, r5, r6, pc}
+ 1141              	.LVL107:
+ 1142              	.L86:
+ 1143              	.LCFI24:
+ 1144              		.cfi_restore_state
+ 215:Device/Src/flash.c ****                 uint8_to_float(&(result->testDotTemp[i]), buffer);
+ 1145              		.loc 1 215 17 is_stmt 1 discriminator 3 view .LVU242
+ 1146 008c 0422     		movs	r2, #4
+ 1147 008e 0DEB0201 		add	r1, sp, r2
+ 1148 0092 2046     		mov	r0, r4
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 27
+
+
+ 1149 0094 FFF7FEFF 		bl	flash_read_data
+ 1150              	.LVL108:
+ 216:Device/Src/flash.c ****                 address  += 4;
+ 1151              		.loc 1 216 17 discriminator 3 view .LVU243
+ 1152 0098 A81C     		adds	r0, r5, #2
+ 1153 009a 01A9     		add	r1, sp, #4
+ 1154 009c 06EB8000 		add	r0, r6, r0, lsl #2
+ 1155 00a0 FFF7FEFF 		bl	uint8_to_float
+ 1156              	.LVL109:
+ 217:Device/Src/flash.c ****             }
+ 1157              		.loc 1 217 17 discriminator 3 view .LVU244
+ 217:Device/Src/flash.c ****             }
+ 1158              		.loc 1 217 26 is_stmt 0 discriminator 3 view .LVU245
+ 1159 00a4 0434     		adds	r4, r4, #4
+ 1160              	.LVL110:
+ 214:Device/Src/flash.c ****                 flash_read_data(address, buffer, 4);
+ 1161              		.loc 1 214 50 is_stmt 1 discriminator 3 view .LVU246
+ 214:Device/Src/flash.c ****                 flash_read_data(address, buffer, 4);
+ 1162              		.loc 1 214 51 is_stmt 0 discriminator 3 view .LVU247
+ 1163 00a6 0135     		adds	r5, r5, #1
+ 1164              	.LVL111:
+ 1165              	.L82:
+ 214:Device/Src/flash.c ****                 flash_read_data(address, buffer, 4);
+ 1166              		.loc 1 214 25 is_stmt 1 discriminator 1 view .LVU248
+ 214:Device/Src/flash.c ****                 flash_read_data(address, buffer, 4);
+ 1167              		.loc 1 214 13 is_stmt 0 discriminator 1 view .LVU249
+ 1168 00a8 042D     		cmp	r5, #4
+ 1169 00aa EFDD     		ble	.L86
+ 214:Device/Src/flash.c ****                 flash_read_data(address, buffer, 4);
+ 1170              		.loc 1 214 13 discriminator 1 view .LVU250
+ 1171 00ac ECE7     		b	.L65
+ 1172              	.LVL112:
+ 1173              	.L89:
+ 209:Device/Src/flash.c ****         case CHIP_ID:
+ 1174              		.loc 1 209 5 view .LVU251
+ 1175 00ae 0025     		movs	r5, #0
+ 1176 00b0 FAE7     		b	.L82
+ 1177              	.LVL113:
+ 1178              	.L87:
+ 222:Device/Src/flash.c ****                 uint8_to_float(&(result->testDotCap[i]), buffer);
+ 1179              		.loc 1 222 17 is_stmt 1 discriminator 3 view .LVU252
+ 1180 00b2 0422     		movs	r2, #4
+ 1181 00b4 0DEB0201 		add	r1, sp, r2
+ 1182 00b8 2046     		mov	r0, r4
+ 1183 00ba FFF7FEFF 		bl	flash_read_data
+ 1184              	.LVL114:
+ 223:Device/Src/flash.c ****                 address  += 4;
+ 1185              		.loc 1 223 17 discriminator 3 view .LVU253
+ 1186 00be A81D     		adds	r0, r5, #6
+ 1187 00c0 06EB8000 		add	r0, r6, r0, lsl #2
+ 1188 00c4 01A9     		add	r1, sp, #4
+ 1189 00c6 0430     		adds	r0, r0, #4
+ 1190 00c8 FFF7FEFF 		bl	uint8_to_float
+ 1191              	.LVL115:
+ 224:Device/Src/flash.c ****             }
+ 1192              		.loc 1 224 17 discriminator 3 view .LVU254
+ 224:Device/Src/flash.c ****             }
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 28
+
+
+ 1193              		.loc 1 224 26 is_stmt 0 discriminator 3 view .LVU255
+ 1194 00cc 0434     		adds	r4, r4, #4
+ 1195              	.LVL116:
+ 221:Device/Src/flash.c ****                 flash_read_data(address, buffer, 4);
+ 1196              		.loc 1 221 50 is_stmt 1 discriminator 3 view .LVU256
+ 221:Device/Src/flash.c ****                 flash_read_data(address, buffer, 4);
+ 1197              		.loc 1 221 51 is_stmt 0 discriminator 3 view .LVU257
+ 1198 00ce 0135     		adds	r5, r5, #1
+ 1199              	.LVL117:
+ 1200              	.L81:
+ 221:Device/Src/flash.c ****                 flash_read_data(address, buffer, 4);
+ 1201              		.loc 1 221 25 is_stmt 1 discriminator 1 view .LVU258
+ 221:Device/Src/flash.c ****                 flash_read_data(address, buffer, 4);
+ 1202              		.loc 1 221 13 is_stmt 0 discriminator 1 view .LVU259
+ 1203 00d0 042D     		cmp	r5, #4
+ 1204 00d2 EEDD     		ble	.L87
+ 221:Device/Src/flash.c ****                 flash_read_data(address, buffer, 4);
+ 1205              		.loc 1 221 13 discriminator 1 view .LVU260
+ 1206 00d4 D8E7     		b	.L65
+ 1207              	.LVL118:
+ 1208              	.L90:
+ 209:Device/Src/flash.c ****         case CHIP_ID:
+ 1209              		.loc 1 209 5 view .LVU261
+ 1210 00d6 0025     		movs	r5, #0
+ 1211 00d8 FAE7     		b	.L81
+ 1212              	.L80:
+ 228:Device/Src/flash.c ****         break;
+ 1213              		.loc 1 228 13 is_stmt 1 view .LVU262
+ 1214 00da 0122     		movs	r2, #1
+ 1215              	.LVL119:
+ 228:Device/Src/flash.c ****         break;
+ 1216              		.loc 1 228 13 is_stmt 0 view .LVU263
+ 1217 00dc 00F13001 		add	r1, r0, #48
+ 1218              	.LVL120:
+ 228:Device/Src/flash.c ****         break;
+ 1219              		.loc 1 228 13 view .LVU264
+ 1220 00e0 2046     		mov	r0, r4
+ 1221              	.LVL121:
+ 228:Device/Src/flash.c ****         break;
+ 1222              		.loc 1 228 13 view .LVU265
+ 1223 00e2 FFF7FEFF 		bl	flash_read_data
+ 1224              	.LVL122:
+ 229:Device/Src/flash.c ****         case TEMP_CONFIG:
+ 1225              		.loc 1 229 9 is_stmt 1 view .LVU266
+ 1226 00e6 CFE7     		b	.L65
+ 1227              	.LVL123:
+ 1228              	.L79:
+ 231:Device/Src/flash.c ****         break;
+ 1229              		.loc 1 231 13 view .LVU267
+ 1230 00e8 0122     		movs	r2, #1
+ 1231              	.LVL124:
+ 231:Device/Src/flash.c ****         break;
+ 1232              		.loc 1 231 13 is_stmt 0 view .LVU268
+ 1233 00ea 00F13101 		add	r1, r0, #49
+ 1234              	.LVL125:
+ 231:Device/Src/flash.c ****         break;
+ 1235              		.loc 1 231 13 view .LVU269
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 29
+
+
+ 1236 00ee 2046     		mov	r0, r4
+ 1237              	.LVL126:
+ 231:Device/Src/flash.c ****         break;
+ 1238              		.loc 1 231 13 view .LVU270
+ 1239 00f0 FFF7FEFF 		bl	flash_read_data
+ 1240              	.LVL127:
+ 232:Device/Src/flash.c ****         case START_TIME_HOT:
+ 1241              		.loc 1 232 9 is_stmt 1 view .LVU271
+ 1242 00f4 C8E7     		b	.L65
+ 1243              	.LVL128:
+ 1244              	.L78:
+ 234:Device/Src/flash.c ****             result->startTimeHot = buffer[0] * 256 + buffer[1];
+ 1245              		.loc 1 234 13 view .LVU272
+ 1246 00f6 0222     		movs	r2, #2
+ 1247              	.LVL129:
+ 234:Device/Src/flash.c ****             result->startTimeHot = buffer[0] * 256 + buffer[1];
+ 1248              		.loc 1 234 13 is_stmt 0 view .LVU273
+ 1249 00f8 01A9     		add	r1, sp, #4
+ 1250              	.LVL130:
+ 234:Device/Src/flash.c ****             result->startTimeHot = buffer[0] * 256 + buffer[1];
+ 1251              		.loc 1 234 13 view .LVU274
+ 1252 00fa 2046     		mov	r0, r4
+ 1253              	.LVL131:
+ 234:Device/Src/flash.c ****             result->startTimeHot = buffer[0] * 256 + buffer[1];
+ 1254              		.loc 1 234 13 view .LVU275
+ 1255 00fc FFF7FEFF 		bl	flash_read_data
+ 1256              	.LVL132:
+ 235:Device/Src/flash.c ****         break;
+ 1257              		.loc 1 235 13 is_stmt 1 view .LVU276
+ 235:Device/Src/flash.c ****         break;
+ 1258              		.loc 1 235 42 is_stmt 0 view .LVU277
+ 1259 0100 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+ 235:Device/Src/flash.c ****         break;
+ 1260              		.loc 1 235 60 view .LVU278
+ 1261 0104 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 235:Device/Src/flash.c ****         break;
+ 1262              		.loc 1 235 52 view .LVU279
+ 1263 0108 03EB0223 		add	r3, r3, r2, lsl #8
+ 235:Device/Src/flash.c ****         break;
+ 1264              		.loc 1 235 34 view .LVU280
+ 1265 010c 7386     		strh	r3, [r6, #50]	@ movhi
+ 236:Device/Src/flash.c ****         case START_TIME_COLD:
+ 1266              		.loc 1 236 9 is_stmt 1 view .LVU281
+ 1267 010e BBE7     		b	.L65
+ 1268              	.LVL133:
+ 1269              	.L77:
+ 238:Device/Src/flash.c ****             result->startTimeCold = buffer[0] * 256 + buffer[1];
+ 1270              		.loc 1 238 13 view .LVU282
+ 1271 0110 0222     		movs	r2, #2
+ 1272              	.LVL134:
+ 238:Device/Src/flash.c ****             result->startTimeCold = buffer[0] * 256 + buffer[1];
+ 1273              		.loc 1 238 13 is_stmt 0 view .LVU283
+ 1274 0112 01A9     		add	r1, sp, #4
+ 1275              	.LVL135:
+ 238:Device/Src/flash.c ****             result->startTimeCold = buffer[0] * 256 + buffer[1];
+ 1276              		.loc 1 238 13 view .LVU284
+ 1277 0114 2046     		mov	r0, r4
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 30
+
+
+ 1278              	.LVL136:
+ 238:Device/Src/flash.c ****             result->startTimeCold = buffer[0] * 256 + buffer[1];
+ 1279              		.loc 1 238 13 view .LVU285
+ 1280 0116 FFF7FEFF 		bl	flash_read_data
+ 1281              	.LVL137:
+ 239:Device/Src/flash.c ****         break;
+ 1282              		.loc 1 239 13 is_stmt 1 view .LVU286
+ 239:Device/Src/flash.c ****         break;
+ 1283              		.loc 1 239 43 is_stmt 0 view .LVU287
+ 1284 011a 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+ 239:Device/Src/flash.c ****         break;
+ 1285              		.loc 1 239 61 view .LVU288
+ 1286 011e 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 239:Device/Src/flash.c ****         break;
+ 1287              		.loc 1 239 53 view .LVU289
+ 1288 0122 03EB0223 		add	r3, r3, r2, lsl #8
+ 239:Device/Src/flash.c ****         break;
+ 1289              		.loc 1 239 35 view .LVU290
+ 1290 0126 B386     		strh	r3, [r6, #52]	@ movhi
+ 240:Device/Src/flash.c ****         case ERROR_TIME_HOT:
+ 1291              		.loc 1 240 9 is_stmt 1 view .LVU291
+ 1292 0128 AEE7     		b	.L65
+ 1293              	.LVL138:
+ 1294              	.L76:
+ 242:Device/Src/flash.c ****         break;
+ 1295              		.loc 1 242 13 view .LVU292
+ 1296 012a 0122     		movs	r2, #1
+ 1297              	.LVL139:
+ 242:Device/Src/flash.c ****         break;
+ 1298              		.loc 1 242 13 is_stmt 0 view .LVU293
+ 1299 012c 00F13601 		add	r1, r0, #54
+ 1300              	.LVL140:
+ 242:Device/Src/flash.c ****         break;
+ 1301              		.loc 1 242 13 view .LVU294
+ 1302 0130 2046     		mov	r0, r4
+ 1303              	.LVL141:
+ 242:Device/Src/flash.c ****         break;
+ 1304              		.loc 1 242 13 view .LVU295
+ 1305 0132 FFF7FEFF 		bl	flash_read_data
+ 1306              	.LVL142:
+ 243:Device/Src/flash.c ****         case ERROR_TIME_COLD:
+ 1307              		.loc 1 243 9 is_stmt 1 view .LVU296
+ 1308 0136 A7E7     		b	.L65
+ 1309              	.LVL143:
+ 1310              	.L75:
+ 245:Device/Src/flash.c ****         break;
+ 1311              		.loc 1 245 13 view .LVU297
+ 1312 0138 0122     		movs	r2, #1
+ 1313              	.LVL144:
+ 245:Device/Src/flash.c ****         break;
+ 1314              		.loc 1 245 13 is_stmt 0 view .LVU298
+ 1315 013a 00F13701 		add	r1, r0, #55
+ 1316              	.LVL145:
+ 245:Device/Src/flash.c ****         break;
+ 1317              		.loc 1 245 13 view .LVU299
+ 1318 013e 2046     		mov	r0, r4
+ 1319              	.LVL146:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 31
+
+
+ 245:Device/Src/flash.c ****         break;
+ 1320              		.loc 1 245 13 view .LVU300
+ 1321 0140 FFF7FEFF 		bl	flash_read_data
+ 1322              	.LVL147:
+ 246:Device/Src/flash.c ****         case CALCUL_FLAG:
+ 1323              		.loc 1 246 9 is_stmt 1 view .LVU301
+ 1324 0144 A0E7     		b	.L65
+ 1325              	.LVL148:
+ 1326              	.L74:
+ 248:Device/Src/flash.c ****         break;
+ 1327              		.loc 1 248 13 view .LVU302
+ 1328 0146 0122     		movs	r2, #1
+ 1329              	.LVL149:
+ 248:Device/Src/flash.c ****         break;
+ 1330              		.loc 1 248 13 is_stmt 0 view .LVU303
+ 1331 0148 00F13801 		add	r1, r0, #56
+ 1332              	.LVL150:
+ 248:Device/Src/flash.c ****         break;
+ 1333              		.loc 1 248 13 view .LVU304
+ 1334 014c 2046     		mov	r0, r4
+ 1335              	.LVL151:
+ 248:Device/Src/flash.c ****         break;
+ 1336              		.loc 1 248 13 view .LVU305
+ 1337 014e FFF7FEFF 		bl	flash_read_data
+ 1338              	.LVL152:
+ 249:Device/Src/flash.c ****         case TEMP_LOAD_FLAG:
+ 1339              		.loc 1 249 9 is_stmt 1 view .LVU306
+ 1340 0152 99E7     		b	.L65
+ 1341              	.LVL153:
+ 1342              	.L73:
+ 251:Device/Src/flash.c ****         break;
+ 1343              		.loc 1 251 13 view .LVU307
+ 1344 0154 0122     		movs	r2, #1
+ 1345              	.LVL154:
+ 251:Device/Src/flash.c ****         break;
+ 1346              		.loc 1 251 13 is_stmt 0 view .LVU308
+ 1347 0156 00F13901 		add	r1, r0, #57
+ 1348              	.LVL155:
+ 251:Device/Src/flash.c ****         break;
+ 1349              		.loc 1 251 13 view .LVU309
+ 1350 015a 2046     		mov	r0, r4
+ 1351              	.LVL156:
+ 251:Device/Src/flash.c ****         break;
+ 1352              		.loc 1 251 13 view .LVU310
+ 1353 015c FFF7FEFF 		bl	flash_read_data
+ 1354              	.LVL157:
+ 252:Device/Src/flash.c ****         case TEST_CENTER:
+ 1355              		.loc 1 252 9 is_stmt 1 view .LVU311
+ 1356 0160 92E7     		b	.L65
+ 1357              	.LVL158:
+ 1358              	.L72:
+ 254:Device/Src/flash.c ****             uint8_to_float(&(result->testCenter[0]), buffer);
+ 1359              		.loc 1 254 13 view .LVU312
+ 1360 0162 0422     		movs	r2, #4
+ 1361              	.LVL159:
+ 254:Device/Src/flash.c ****             uint8_to_float(&(result->testCenter[0]), buffer);
+ 1362              		.loc 1 254 13 is_stmt 0 view .LVU313
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 32
+
+
+ 1363 0164 0DEB0201 		add	r1, sp, r2
+ 1364              	.LVL160:
+ 254:Device/Src/flash.c ****             uint8_to_float(&(result->testCenter[0]), buffer);
+ 1365              		.loc 1 254 13 view .LVU314
+ 1366 0168 2046     		mov	r0, r4
+ 1367              	.LVL161:
+ 254:Device/Src/flash.c ****             uint8_to_float(&(result->testCenter[0]), buffer);
+ 1368              		.loc 1 254 13 view .LVU315
+ 1369 016a FFF7FEFF 		bl	flash_read_data
+ 1370              	.LVL162:
+ 255:Device/Src/flash.c ****             flash_read_data(address + 4, buffer, 4);
+ 1371              		.loc 1 255 13 is_stmt 1 view .LVU316
+ 1372 016e 01A9     		add	r1, sp, #4
+ 1373 0170 06F13C00 		add	r0, r6, #60
+ 1374 0174 FFF7FEFF 		bl	uint8_to_float
+ 1375              	.LVL163:
+ 256:Device/Src/flash.c ****             uint8_to_float(&(result->testCenter[1]), buffer);
+ 1376              		.loc 1 256 13 view .LVU317
+ 1377 0178 0422     		movs	r2, #4
+ 1378 017a 0DEB0201 		add	r1, sp, r2
+ 1379 017e A018     		adds	r0, r4, r2
+ 1380 0180 FFF7FEFF 		bl	flash_read_data
+ 1381              	.LVL164:
+ 257:Device/Src/flash.c ****         break;
+ 1382              		.loc 1 257 13 view .LVU318
+ 1383 0184 01A9     		add	r1, sp, #4
+ 1384 0186 06F14000 		add	r0, r6, #64
+ 1385 018a FFF7FEFF 		bl	uint8_to_float
+ 1386              	.LVL165:
+ 258:Device/Src/flash.c ****         case MACHINE_TEST_ALL:
+ 1387              		.loc 1 258 9 view .LVU319
+ 1388 018e 7BE7     		b	.L65
+ 1389              	.LVL166:
+ 1390              	.L70:
+ 260:Device/Src/flash.c ****             result->machine.Ivdd = buffer[0] * 256 + buffer[1];
+ 1391              		.loc 1 260 13 view .LVU320
+ 1392 0190 0222     		movs	r2, #2
+ 1393              	.LVL167:
+ 260:Device/Src/flash.c ****             result->machine.Ivdd = buffer[0] * 256 + buffer[1];
+ 1394              		.loc 1 260 13 is_stmt 0 view .LVU321
+ 1395 0192 01A9     		add	r1, sp, #4
+ 1396              	.LVL168:
+ 260:Device/Src/flash.c ****             result->machine.Ivdd = buffer[0] * 256 + buffer[1];
+ 1397              		.loc 1 260 13 view .LVU322
+ 1398 0194 2046     		mov	r0, r4
+ 1399              	.LVL169:
+ 260:Device/Src/flash.c ****             result->machine.Ivdd = buffer[0] * 256 + buffer[1];
+ 1400              		.loc 1 260 13 view .LVU323
+ 1401 0196 FFF7FEFF 		bl	flash_read_data
+ 1402              	.LVL170:
+ 261:Device/Src/flash.c ****             flash_read_data(address + MACHINE_I_VBAT, buffer, 2);
+ 1403              		.loc 1 261 13 is_stmt 1 view .LVU324
+ 261:Device/Src/flash.c ****             flash_read_data(address + MACHINE_I_VBAT, buffer, 2);
+ 1404              		.loc 1 261 42 is_stmt 0 view .LVU325
+ 1405 019a 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+ 261:Device/Src/flash.c ****             flash_read_data(address + MACHINE_I_VBAT, buffer, 2);
+ 1406              		.loc 1 261 60 view .LVU326
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 33
+
+
+ 1407 019e 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 261:Device/Src/flash.c ****             flash_read_data(address + MACHINE_I_VBAT, buffer, 2);
+ 1408              		.loc 1 261 52 view .LVU327
+ 1409 01a2 03EB0223 		add	r3, r3, r2, lsl #8
+ 261:Device/Src/flash.c ****             flash_read_data(address + MACHINE_I_VBAT, buffer, 2);
+ 1410              		.loc 1 261 34 view .LVU328
+ 1411 01a6 A6F84430 		strh	r3, [r6, #68]	@ movhi
+ 262:Device/Src/flash.c ****             result->machine.Ivbat = buffer[0] * 256 + buffer[1];
+ 1412              		.loc 1 262 13 is_stmt 1 view .LVU329
+ 1413 01aa 0222     		movs	r2, #2
+ 1414 01ac 01A9     		add	r1, sp, #4
+ 1415 01ae A018     		adds	r0, r4, r2
+ 1416 01b0 FFF7FEFF 		bl	flash_read_data
+ 1417              	.LVL171:
+ 263:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CONFIG_9, &(result->machine.config9), 1);
+ 1418              		.loc 1 263 13 view .LVU330
+ 263:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CONFIG_9, &(result->machine.config9), 1);
+ 1419              		.loc 1 263 43 is_stmt 0 view .LVU331
+ 1420 01b4 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+ 263:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CONFIG_9, &(result->machine.config9), 1);
+ 1421              		.loc 1 263 61 view .LVU332
+ 1422 01b8 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 263:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CONFIG_9, &(result->machine.config9), 1);
+ 1423              		.loc 1 263 53 view .LVU333
+ 1424 01bc 03EB0223 		add	r3, r3, r2, lsl #8
+ 263:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CONFIG_9, &(result->machine.config9), 1);
+ 1425              		.loc 1 263 35 view .LVU334
+ 1426 01c0 A6F84630 		strh	r3, [r6, #70]	@ movhi
+ 264:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CONFIG_C, &(result->machine.configC), 1);
+ 1427              		.loc 1 264 13 is_stmt 1 view .LVU335
+ 1428 01c4 0122     		movs	r2, #1
+ 1429 01c6 06F14801 		add	r1, r6, #72
+ 1430 01ca 201D     		adds	r0, r4, #4
+ 1431 01cc FFF7FEFF 		bl	flash_read_data
+ 1432              	.LVL172:
+ 265:Device/Src/flash.c ****             flash_read_data(address + MACHINE_SYSTEM_TEMP, &(result->machine.sysTemp), 1);
+ 1433              		.loc 1 265 13 view .LVU336
+ 1434 01d0 0122     		movs	r2, #1
+ 1435 01d2 06F14901 		add	r1, r6, #73
+ 1436 01d6 601D     		adds	r0, r4, #5
+ 1437 01d8 FFF7FEFF 		bl	flash_read_data
+ 1438              	.LVL173:
+ 266:Device/Src/flash.c ****             flash_read_data(address + MACHINE_RTC_TEMP, &(result->machine.rtcTemp), 1);
+ 1439              		.loc 1 266 13 view .LVU337
+ 1440 01dc 0122     		movs	r2, #1
+ 1441 01de 06F14A01 		add	r1, r6, #74
+ 1442 01e2 A01D     		adds	r0, r4, #6
+ 1443 01e4 FFF7FEFF 		bl	flash_read_data
+ 1444              	.LVL174:
+ 267:Device/Src/flash.c ****             flash_read_data(address + MACHINE_TEST_FREQ, buffer, 4);
+ 1445              		.loc 1 267 13 view .LVU338
+ 1446 01e8 0122     		movs	r2, #1
+ 1447 01ea 06F14B01 		add	r1, r6, #75
+ 1448 01ee E01D     		adds	r0, r4, #7
+ 1449 01f0 FFF7FEFF 		bl	flash_read_data
+ 1450              	.LVL175:
+ 268:Device/Src/flash.c ****             uint8_to_float(&(result->machine.testFreq), buffer);
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 34
+
+
+ 1451              		.loc 1 268 13 view .LVU339
+ 1452 01f4 0422     		movs	r2, #4
+ 1453 01f6 0DEB0201 		add	r1, sp, r2
+ 1454 01fa 04F10800 		add	r0, r4, #8
+ 1455 01fe FFF7FEFF 		bl	flash_read_data
+ 1456              	.LVL176:
+ 269:Device/Src/flash.c ****             flash_read_data(address + MACHINE_VBAT_2V5, buffer, 2);
+ 1457              		.loc 1 269 13 view .LVU340
+ 1458 0202 01A9     		add	r1, sp, #4
+ 1459 0204 06F14C00 		add	r0, r6, #76
+ 1460 0208 FFF7FEFF 		bl	uint8_to_float
+ 1461              	.LVL177:
+ 270:Device/Src/flash.c ****             result->machine.vbat_2V5 = buffer[0] * 256 + buffer[1];
+ 1462              		.loc 1 270 13 view .LVU341
+ 1463 020c 0222     		movs	r2, #2
+ 1464 020e 01A9     		add	r1, sp, #4
+ 1465 0210 04F10C00 		add	r0, r4, #12
+ 1466 0214 FFF7FEFF 		bl	flash_read_data
+ 1467              	.LVL178:
+ 271:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CHARGE, buffer, 2);
+ 1468              		.loc 1 271 13 view .LVU342
+ 271:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CHARGE, buffer, 2);
+ 1469              		.loc 1 271 46 is_stmt 0 view .LVU343
+ 1470 0218 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+ 271:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CHARGE, buffer, 2);
+ 1471              		.loc 1 271 64 view .LVU344
+ 1472 021c 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 271:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CHARGE, buffer, 2);
+ 1473              		.loc 1 271 56 view .LVU345
+ 1474 0220 03EB0223 		add	r3, r3, r2, lsl #8
+ 271:Device/Src/flash.c ****             flash_read_data(address + MACHINE_CHARGE, buffer, 2);
+ 1475              		.loc 1 271 38 view .LVU346
+ 1476 0224 A6F85030 		strh	r3, [r6, #80]	@ movhi
+ 272:Device/Src/flash.c ****             result->machine.charge = buffer[0] * 256 + buffer[1];
+ 1477              		.loc 1 272 13 is_stmt 1 view .LVU347
+ 1478 0228 0222     		movs	r2, #2
+ 1479 022a 01A9     		add	r1, sp, #4
+ 1480 022c 04F10E00 		add	r0, r4, #14
+ 1481 0230 FFF7FEFF 		bl	flash_read_data
+ 1482              	.LVL179:
+ 273:Device/Src/flash.c ****         break;
+ 1483              		.loc 1 273 13 view .LVU348
+ 273:Device/Src/flash.c ****         break;
+ 1484              		.loc 1 273 44 is_stmt 0 view .LVU349
+ 1485 0234 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+ 273:Device/Src/flash.c ****         break;
+ 1486              		.loc 1 273 62 view .LVU350
+ 1487 0238 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 273:Device/Src/flash.c ****         break;
+ 1488              		.loc 1 273 54 view .LVU351
+ 1489 023c 03EB0223 		add	r3, r3, r2, lsl #8
+ 273:Device/Src/flash.c ****         break;
+ 1490              		.loc 1 273 36 view .LVU352
+ 1491 0240 A6F85230 		strh	r3, [r6, #82]	@ movhi
+ 274:Device/Src/flash.c ****         case CAP_CALCULATE:
+ 1492              		.loc 1 274 9 is_stmt 1 view .LVU353
+ 1493 0244 20E7     		b	.L65
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 35
+
+
+ 1494              	.LVL180:
+ 1495              	.L84:
+ 276:Device/Src/flash.c ****         break;
+ 1496              		.loc 1 276 13 view .LVU354
+ 1497 0246 9722     		movs	r2, #151
+ 1498              	.LVL181:
+ 276:Device/Src/flash.c ****         break;
+ 1499              		.loc 1 276 13 is_stmt 0 view .LVU355
+ 1500 0248 00F15401 		add	r1, r0, #84
+ 1501              	.LVL182:
+ 276:Device/Src/flash.c ****         break;
+ 1502              		.loc 1 276 13 view .LVU356
+ 1503 024c 2046     		mov	r0, r4
+ 1504              	.LVL183:
+ 276:Device/Src/flash.c ****         break;
+ 1505              		.loc 1 276 13 view .LVU357
+ 1506 024e FFF7FEFF 		bl	flash_read_data
+ 1507              	.LVL184:
+ 277:Device/Src/flash.c ****         case TEST_DATA_ALL:
+ 1508              		.loc 1 277 9 is_stmt 1 view .LVU358
+ 1509 0252 19E7     		b	.L65
+ 1510              	.LVL185:
+ 1511              	.L88:
+ 280:Device/Src/flash.c ****             }
+ 1512              		.loc 1 280 17 discriminator 3 view .LVU359
+ 1513 0254 A2B2     		uxth	r2, r4
+ 1514 0256 2946     		mov	r1, r5
+ 1515 0258 3046     		mov	r0, r6
+ 1516 025a FFF7FEFF 		bl	flash_test_data_read
+ 1517              	.LVL186:
+ 279:Device/Src/flash.c ****                 flash_test_data_read(result, rtcNumber, i);
+ 1518              		.loc 1 279 45 discriminator 3 view .LVU360
+ 279:Device/Src/flash.c ****                 flash_test_data_read(result, rtcNumber, i);
+ 1519              		.loc 1 279 46 is_stmt 0 discriminator 3 view .LVU361
+ 1520 025e 0134     		adds	r4, r4, #1
+ 1521              	.LVL187:
+ 1522              	.L85:
+ 279:Device/Src/flash.c ****                 flash_test_data_read(result, rtcNumber, i);
+ 1523              		.loc 1 279 25 is_stmt 1 discriminator 1 view .LVU362
+ 279:Device/Src/flash.c ****                 flash_test_data_read(result, rtcNumber, i);
+ 1524              		.loc 1 279 13 is_stmt 0 discriminator 1 view .LVU363
+ 1525 0260 B4F5807F 		cmp	r4, #256
+ 1526 0264 F6DD     		ble	.L88
+ 1527 0266 0FE7     		b	.L65
+ 1528              		.cfi_endproc
+ 1529              	.LFE244:
+ 1531              		.section	.text.flash_test_data_write_add,"ax",%progbits
+ 1532              		.align	1
+ 1533              		.global	flash_test_data_write_add
+ 1534              		.syntax unified
+ 1535              		.thumb
+ 1536              		.thumb_func
+ 1538              	flash_test_data_write_add:
+ 1539              	.LVL188:
+ 1540              	.LFB245:
+ 286:Device/Src/flash.c **** 
+ 287:Device/Src/flash.c **** void flash_test_data_write_add(TestResult* result, uint8_t rtcNumber, TestResultList handle)
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 36
+
+
+ 288:Device/Src/flash.c **** {
+ 1541              		.loc 1 288 1 is_stmt 1 view -0
+ 1542              		.cfi_startproc
+ 1543              		@ args = 0, pretend = 0, frame = 24
+ 1544              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1545              		.loc 1 288 1 is_stmt 0 view .LVU365
+ 1546 0000 70B5     		push	{r4, r5, r6, lr}
+ 1547              	.LCFI25:
+ 1548              		.cfi_def_cfa_offset 16
+ 1549              		.cfi_offset 4, -16
+ 1550              		.cfi_offset 5, -12
+ 1551              		.cfi_offset 6, -8
+ 1552              		.cfi_offset 14, -4
+ 1553 0002 86B0     		sub	sp, sp, #24
+ 1554              	.LCFI26:
+ 1555              		.cfi_def_cfa_offset 40
+ 289:Device/Src/flash.c ****     uint32_t address;
+ 1556              		.loc 1 289 5 is_stmt 1 view .LVU366
+ 290:Device/Src/flash.c ****     uint8_t buffer[4] = {0};
+ 1557              		.loc 1 290 5 view .LVU367
+ 1558              		.loc 1 290 13 is_stmt 0 view .LVU368
+ 1559 0004 0023     		movs	r3, #0
+ 1560 0006 0593     		str	r3, [sp, #20]
+ 291:Device/Src/flash.c ****     uint8_t machineBuffer[FALSH_MACHINE_DATA_LENGTH] = {0};
+ 1561              		.loc 1 291 5 is_stmt 1 view .LVU369
+ 1562              		.loc 1 291 13 is_stmt 0 view .LVU370
+ 1563 0008 0193     		str	r3, [sp, #4]
+ 1564 000a 0293     		str	r3, [sp, #8]
+ 1565 000c 0393     		str	r3, [sp, #12]
+ 1566 000e 0493     		str	r3, [sp, #16]
+ 292:Device/Src/flash.c ****     int i;
+ 1567              		.loc 1 292 5 is_stmt 1 view .LVU371
+ 293:Device/Src/flash.c ****     if (rtcNumber < 1 || rtcNumber > 84) {
+ 1568              		.loc 1 293 5 view .LVU372
+ 1569              		.loc 1 293 23 is_stmt 0 view .LVU373
+ 1570 0010 4B1E     		subs	r3, r1, #1
+ 1571 0012 DBB2     		uxtb	r3, r3
+ 1572              		.loc 1 293 8 view .LVU374
+ 1573 0014 532B     		cmp	r3, #83
+ 1574 0016 3BD8     		bhi	.L93
+ 1575 0018 0646     		mov	r6, r0
+ 1576 001a 0D46     		mov	r5, r1
+ 294:Device/Src/flash.c ****         return;
+ 295:Device/Src/flash.c ****     }
+ 296:Device/Src/flash.c ****     address = TEST_RESULT_START_ADDR + (rtcNumber - 1) * TEST_RESULT_ONE_SIZE + handle;
+ 1577              		.loc 1 296 5 is_stmt 1 view .LVU375
+ 1578              		.loc 1 296 38 is_stmt 0 view .LVU376
+ 1579 001c CC1D     		adds	r4, r1, #7
+ 1580              		.loc 1 296 79 view .LVU377
+ 1581 001e 02EB4424 		add	r4, r2, r4, lsl #9
+ 1582              	.LVL189:
+ 297:Device/Src/flash.c ****     switch (handle) {
+ 1583              		.loc 1 297 5 is_stmt 1 view .LVU378
+ 1584 0022 422A     		cmp	r2, #66
+ 1585 0024 25D8     		bhi	.L96
+ 1586 0026 422A     		cmp	r2, #66
+ 1587 0028 32D8     		bhi	.L93
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 37
+
+
+ 1588 002a DFE802F0 		tbb	[pc, r2]
+ 1589              	.L99:
+ 1590 002e 2C       		.byte	(.L111-.L99)/2
+ 1591 002f 31       		.byte	(.L93-.L99)/2
+ 1592 0030 31       		.byte	(.L93-.L99)/2
+ 1593 0031 31       		.byte	(.L93-.L99)/2
+ 1594 0032 31       		.byte	(.L93-.L99)/2
+ 1595 0033 31       		.byte	(.L93-.L99)/2
+ 1596 0034 31       		.byte	(.L93-.L99)/2
+ 1597 0035 31       		.byte	(.L93-.L99)/2
+ 1598 0036 43       		.byte	(.L120-.L99)/2
+ 1599 0037 31       		.byte	(.L93-.L99)/2
+ 1600 0038 31       		.byte	(.L93-.L99)/2
+ 1601 0039 31       		.byte	(.L93-.L99)/2
+ 1602 003a 31       		.byte	(.L93-.L99)/2
+ 1603 003b 31       		.byte	(.L93-.L99)/2
+ 1604 003c 31       		.byte	(.L93-.L99)/2
+ 1605 003d 31       		.byte	(.L93-.L99)/2
+ 1606 003e 31       		.byte	(.L93-.L99)/2
+ 1607 003f 31       		.byte	(.L93-.L99)/2
+ 1608 0040 31       		.byte	(.L93-.L99)/2
+ 1609 0041 31       		.byte	(.L93-.L99)/2
+ 1610 0042 31       		.byte	(.L93-.L99)/2
+ 1611 0043 31       		.byte	(.L93-.L99)/2
+ 1612 0044 31       		.byte	(.L93-.L99)/2
+ 1613 0045 31       		.byte	(.L93-.L99)/2
+ 1614 0046 31       		.byte	(.L93-.L99)/2
+ 1615 0047 31       		.byte	(.L93-.L99)/2
+ 1616 0048 31       		.byte	(.L93-.L99)/2
+ 1617 0049 31       		.byte	(.L93-.L99)/2
+ 1618 004a 56       		.byte	(.L121-.L99)/2
+ 1619 004b 31       		.byte	(.L93-.L99)/2
+ 1620 004c 31       		.byte	(.L93-.L99)/2
+ 1621 004d 31       		.byte	(.L93-.L99)/2
+ 1622 004e 31       		.byte	(.L93-.L99)/2
+ 1623 004f 31       		.byte	(.L93-.L99)/2
+ 1624 0050 31       		.byte	(.L93-.L99)/2
+ 1625 0051 31       		.byte	(.L93-.L99)/2
+ 1626 0052 31       		.byte	(.L93-.L99)/2
+ 1627 0053 31       		.byte	(.L93-.L99)/2
+ 1628 0054 31       		.byte	(.L93-.L99)/2
+ 1629 0055 31       		.byte	(.L93-.L99)/2
+ 1630 0056 31       		.byte	(.L93-.L99)/2
+ 1631 0057 31       		.byte	(.L93-.L99)/2
+ 1632 0058 31       		.byte	(.L93-.L99)/2
+ 1633 0059 31       		.byte	(.L93-.L99)/2
+ 1634 005a 31       		.byte	(.L93-.L99)/2
+ 1635 005b 31       		.byte	(.L93-.L99)/2
+ 1636 005c 31       		.byte	(.L93-.L99)/2
+ 1637 005d 31       		.byte	(.L93-.L99)/2
+ 1638 005e 58       		.byte	(.L108-.L99)/2
+ 1639 005f 5F       		.byte	(.L107-.L99)/2
+ 1640 0060 31       		.byte	(.L93-.L99)/2
+ 1641 0061 66       		.byte	(.L106-.L99)/2
+ 1642 0062 31       		.byte	(.L93-.L99)/2
+ 1643 0063 72       		.byte	(.L105-.L99)/2
+ 1644 0064 7E       		.byte	(.L104-.L99)/2
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 38
+
+
+ 1645 0065 85       		.byte	(.L103-.L99)/2
+ 1646 0066 8C       		.byte	(.L102-.L99)/2
+ 1647 0067 93       		.byte	(.L101-.L99)/2
+ 1648 0068 AC       		.byte	(.L122-.L99)/2
+ 1649 0069 31       		.byte	(.L93-.L99)/2
+ 1650 006a 31       		.byte	(.L93-.L99)/2
+ 1651 006b 31       		.byte	(.L93-.L99)/2
+ 1652 006c 31       		.byte	(.L93-.L99)/2
+ 1653 006d 31       		.byte	(.L93-.L99)/2
+ 1654 006e 31       		.byte	(.L93-.L99)/2
+ 1655 006f 31       		.byte	(.L93-.L99)/2
+ 1656 0070 AE       		.byte	(.L98-.L99)/2
+ 1657 0071 00       		.p2align 1
+ 1658              	.L96:
+ 1659 0072 B2F5807F 		cmp	r2, #256
+ 1660 0076 00F0CE80 		beq	.L112
+ 1661 007a 40F20113 		movw	r3, #257
+ 1662 007e 9A42     		cmp	r2, r3
+ 1663 0080 06D1     		bne	.L93
+ 1664 0082 0024     		movs	r4, #0
+ 1665              	.LVL190:
+ 1666              		.loc 1 297 5 is_stmt 0 view .LVU379
+ 1667 0084 D4E0     		b	.L113
+ 1668              	.LVL191:
+ 1669              	.L111:
+ 298:Device/Src/flash.c ****         case CHIP_ID:
+ 299:Device/Src/flash.c ****             flash_write_data(address, result->chipID, 8);
+ 1670              		.loc 1 299 13 is_stmt 1 view .LVU380
+ 1671 0086 0822     		movs	r2, #8
+ 1672              	.LVL192:
+ 1673              		.loc 1 299 13 is_stmt 0 view .LVU381
+ 1674 0088 0146     		mov	r1, r0
+ 1675              	.LVL193:
+ 1676              		.loc 1 299 13 view .LVU382
+ 1677 008a 2046     		mov	r0, r4
+ 1678              	.LVL194:
+ 1679              		.loc 1 299 13 view .LVU383
+ 1680 008c FFF7FEFF 		bl	flash_write_data
+ 1681              	.LVL195:
+ 300:Device/Src/flash.c ****         break;
+ 1682              		.loc 1 300 9 is_stmt 1 view .LVU384
+ 1683              	.L93:
+ 301:Device/Src/flash.c ****         case TEST_DOT_TEMP:
+ 302:Device/Src/flash.c ****             for (i = 0; i < MAX_TEST_DOT_NUMBER; i++) {
+ 303:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testDotTemp[i]));
+ 304:Device/Src/flash.c ****                 flash_write_data(address, buffer, 4);
+ 305:Device/Src/flash.c ****                 address += 4;
+ 306:Device/Src/flash.c ****             }
+ 307:Device/Src/flash.c ****         break;
+ 308:Device/Src/flash.c ****         case TEST_DOT_CAP:
+ 309:Device/Src/flash.c ****             for (i = 0; i < MAX_TEST_DOT_NUMBER; i++) {
+ 310:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testDotCap[i]));
+ 311:Device/Src/flash.c ****                 flash_write_data(address, buffer, 4);
+ 312:Device/Src/flash.c ****                 address += 4;
+ 313:Device/Src/flash.c ****             }
+ 314:Device/Src/flash.c ****         break;
+ 315:Device/Src/flash.c ****         case SET_TEMP:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 39
+
+
+ 316:Device/Src/flash.c ****             flash_write_data(address, &(result->setTemp), 1);
+ 317:Device/Src/flash.c ****         break;
+ 318:Device/Src/flash.c ****         case TEMP_CONFIG:
+ 319:Device/Src/flash.c ****             flash_write_data(address, &(result->tempConfig), 1);
+ 320:Device/Src/flash.c ****         break;
+ 321:Device/Src/flash.c ****         case START_TIME_HOT:
+ 322:Device/Src/flash.c ****             buffer[0] = result->startTimeHot / 256;
+ 323:Device/Src/flash.c ****             buffer[1] = result->startTimeHot % 256;
+ 324:Device/Src/flash.c ****             flash_write_data(address, buffer, 2);
+ 325:Device/Src/flash.c ****         break;
+ 326:Device/Src/flash.c ****         case START_TIME_COLD:
+ 327:Device/Src/flash.c ****             buffer[0] = result->startTimeCold / 256;
+ 328:Device/Src/flash.c ****             buffer[1] = result->startTimeCold % 256;
+ 329:Device/Src/flash.c ****             flash_write_data(address, buffer, 2);
+ 330:Device/Src/flash.c ****         break;
+ 331:Device/Src/flash.c ****         case ERROR_TIME_HOT:
+ 332:Device/Src/flash.c ****             flash_write_data(address, &(result->errorTimeHot), 1);
+ 333:Device/Src/flash.c ****         break;
+ 334:Device/Src/flash.c ****         case ERROR_TIME_COLD:
+ 335:Device/Src/flash.c ****             flash_write_data(address, &(result->errorTimeCold), 1);
+ 336:Device/Src/flash.c ****         break;
+ 337:Device/Src/flash.c ****         case CALCUL_FLAG:
+ 338:Device/Src/flash.c ****             flash_write_data(address, &(result->calculFlag), 1);
+ 339:Device/Src/flash.c ****         break;
+ 340:Device/Src/flash.c ****         case TEMP_LOAD_FLAG:
+ 341:Device/Src/flash.c ****             flash_write_data(address, &(result->tempLoadFlag), 1);
+ 342:Device/Src/flash.c ****         break;
+ 343:Device/Src/flash.c ****         case TEST_CENTER:
+ 344:Device/Src/flash.c ****             for (i = 0; i < 2; i++) {
+ 345:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testCenter[i]));
+ 346:Device/Src/flash.c ****                 flash_write_data(address, buffer, 4);
+ 347:Device/Src/flash.c ****                 address += 4;
+ 348:Device/Src/flash.c ****             }
+ 349:Device/Src/flash.c ****         break;
+ 350:Device/Src/flash.c ****         case MACHINE_TEST_ALL:
+ 351:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VDD] = result->machine.Ivdd / 256;
+ 352:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VDD + 1] = result->machine.Ivdd % 256;
+ 353:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VBAT] = result->machine.Ivbat / 256;
+ 354:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VBAT + 1] = result->machine.Ivbat % 256;
+ 355:Device/Src/flash.c ****             machineBuffer[MACHINE_CONFIG_9] = result->machine.config9;
+ 356:Device/Src/flash.c ****             machineBuffer[MACHINE_CONFIG_C] = result->machine.configC;
+ 357:Device/Src/flash.c ****             machineBuffer[MACHINE_SYSTEM_TEMP] = result->machine.sysTemp;
+ 358:Device/Src/flash.c ****             machineBuffer[MACHINE_RTC_TEMP] = result->machine.rtcTemp;
+ 359:Device/Src/flash.c ****             float_to_uint8(buffer, &(result->machine.testFreq));
+ 360:Device/Src/flash.c ****             for (i = 0; i < 4; i++) {
+ 361:Device/Src/flash.c ****                machineBuffer[MACHINE_TEST_FREQ + i] = buffer[i]; 
+ 362:Device/Src/flash.c ****             }
+ 363:Device/Src/flash.c ****             machineBuffer[MACHINE_VBAT_2V5] = result->machine.vbat_2V5 / 256;
+ 364:Device/Src/flash.c ****             machineBuffer[MACHINE_VBAT_2V5 + 1] = result->machine.vbat_2V5 % 256;
+ 365:Device/Src/flash.c ****             machineBuffer[MACHINE_CHARGE] = result->machine.charge / 256;
+ 366:Device/Src/flash.c ****             machineBuffer[MACHINE_CHARGE + 1] = result->machine.charge % 256;
+ 367:Device/Src/flash.c ****             flash_write_data(address, machineBuffer, FALSH_MACHINE_DATA_LENGTH);
+ 368:Device/Src/flash.c ****         break;
+ 369:Device/Src/flash.c ****         case CAP_CALCULATE:
+ 370:Device/Src/flash.c ****             flash_write_data(address, result->capCalcul, 151);
+ 371:Device/Src/flash.c ****         break;
+ 372:Device/Src/flash.c ****         case TEST_DATA_ALL:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 40
+
+
+ 373:Device/Src/flash.c ****             for (i = 0; i <= CAP_CALCULATE; i++) {
+ 374:Device/Src/flash.c ****                 flash_test_data_write_add(result, rtcNumber, i);
+ 375:Device/Src/flash.c ****             }
+ 376:Device/Src/flash.c ****         break;
+ 377:Device/Src/flash.c ****         default: break;
+ 378:Device/Src/flash.c ****     }
+ 379:Device/Src/flash.c **** }
+ 1684              		.loc 1 379 1 is_stmt 0 view .LVU385
+ 1685 0090 06B0     		add	sp, sp, #24
+ 1686              	.LCFI27:
+ 1687              		.cfi_remember_state
+ 1688              		.cfi_def_cfa_offset 16
+ 1689              		@ sp needed
+ 1690 0092 70BD     		pop	{r4, r5, r6, pc}
+ 1691              	.LVL196:
+ 1692              	.L114:
+ 1693              	.LCFI28:
+ 1694              		.cfi_restore_state
+ 303:Device/Src/flash.c ****                 flash_write_data(address, buffer, 4);
+ 1695              		.loc 1 303 17 is_stmt 1 discriminator 3 view .LVU386
+ 1696 0094 A91C     		adds	r1, r5, #2
+ 1697 0096 06EB8101 		add	r1, r6, r1, lsl #2
+ 1698 009a 05A8     		add	r0, sp, #20
+ 1699 009c FFF7FEFF 		bl	float_to_uint8
+ 1700              	.LVL197:
+ 304:Device/Src/flash.c ****                 address += 4;
+ 1701              		.loc 1 304 17 discriminator 3 view .LVU387
+ 1702 00a0 0422     		movs	r2, #4
+ 1703 00a2 05A9     		add	r1, sp, #20
+ 1704 00a4 2046     		mov	r0, r4
+ 1705 00a6 FFF7FEFF 		bl	flash_write_data
+ 1706              	.LVL198:
+ 305:Device/Src/flash.c ****             }
+ 1707              		.loc 1 305 17 discriminator 3 view .LVU388
+ 305:Device/Src/flash.c ****             }
+ 1708              		.loc 1 305 25 is_stmt 0 discriminator 3 view .LVU389
+ 1709 00aa 0434     		adds	r4, r4, #4
+ 1710              	.LVL199:
+ 302:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testDotTemp[i]));
+ 1711              		.loc 1 302 50 is_stmt 1 discriminator 3 view .LVU390
+ 302:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testDotTemp[i]));
+ 1712              		.loc 1 302 51 is_stmt 0 discriminator 3 view .LVU391
+ 1713 00ac 0135     		adds	r5, r5, #1
+ 1714              	.LVL200:
+ 1715              	.L110:
+ 302:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testDotTemp[i]));
+ 1716              		.loc 1 302 25 is_stmt 1 discriminator 1 view .LVU392
+ 302:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testDotTemp[i]));
+ 1717              		.loc 1 302 13 is_stmt 0 discriminator 1 view .LVU393
+ 1718 00ae 042D     		cmp	r5, #4
+ 1719 00b0 F0DD     		ble	.L114
+ 302:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testDotTemp[i]));
+ 1720              		.loc 1 302 13 discriminator 1 view .LVU394
+ 1721 00b2 EDE7     		b	.L93
+ 1722              	.LVL201:
+ 1723              	.L120:
+ 297:Device/Src/flash.c ****         case CHIP_ID:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 41
+
+
+ 1724              		.loc 1 297 5 view .LVU395
+ 1725 00b4 0025     		movs	r5, #0
+ 1726 00b6 FAE7     		b	.L110
+ 1727              	.LVL202:
+ 1728              	.L115:
+ 310:Device/Src/flash.c ****                 flash_write_data(address, buffer, 4);
+ 1729              		.loc 1 310 17 is_stmt 1 discriminator 3 view .LVU396
+ 1730 00b8 A91D     		adds	r1, r5, #6
+ 1731 00ba 06EB8101 		add	r1, r6, r1, lsl #2
+ 1732 00be 0431     		adds	r1, r1, #4
+ 1733 00c0 05A8     		add	r0, sp, #20
+ 1734 00c2 FFF7FEFF 		bl	float_to_uint8
+ 1735              	.LVL203:
+ 311:Device/Src/flash.c ****                 address += 4;
+ 1736              		.loc 1 311 17 discriminator 3 view .LVU397
+ 1737 00c6 0422     		movs	r2, #4
+ 1738 00c8 05A9     		add	r1, sp, #20
+ 1739 00ca 2046     		mov	r0, r4
+ 1740 00cc FFF7FEFF 		bl	flash_write_data
+ 1741              	.LVL204:
+ 312:Device/Src/flash.c ****             }
+ 1742              		.loc 1 312 17 discriminator 3 view .LVU398
+ 312:Device/Src/flash.c ****             }
+ 1743              		.loc 1 312 25 is_stmt 0 discriminator 3 view .LVU399
+ 1744 00d0 0434     		adds	r4, r4, #4
+ 1745              	.LVL205:
+ 309:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testDotCap[i]));
+ 1746              		.loc 1 309 50 is_stmt 1 discriminator 3 view .LVU400
+ 309:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testDotCap[i]));
+ 1747              		.loc 1 309 51 is_stmt 0 discriminator 3 view .LVU401
+ 1748 00d2 0135     		adds	r5, r5, #1
+ 1749              	.LVL206:
+ 1750              	.L109:
+ 309:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testDotCap[i]));
+ 1751              		.loc 1 309 25 is_stmt 1 discriminator 1 view .LVU402
+ 309:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testDotCap[i]));
+ 1752              		.loc 1 309 13 is_stmt 0 discriminator 1 view .LVU403
+ 1753 00d4 042D     		cmp	r5, #4
+ 1754 00d6 EFDD     		ble	.L115
+ 309:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testDotCap[i]));
+ 1755              		.loc 1 309 13 discriminator 1 view .LVU404
+ 1756 00d8 DAE7     		b	.L93
+ 1757              	.LVL207:
+ 1758              	.L121:
+ 297:Device/Src/flash.c ****         case CHIP_ID:
+ 1759              		.loc 1 297 5 view .LVU405
+ 1760 00da 0025     		movs	r5, #0
+ 1761 00dc FAE7     		b	.L109
+ 1762              	.L108:
+ 316:Device/Src/flash.c ****         break;
+ 1763              		.loc 1 316 13 is_stmt 1 view .LVU406
+ 1764 00de 0122     		movs	r2, #1
+ 1765              	.LVL208:
+ 316:Device/Src/flash.c ****         break;
+ 1766              		.loc 1 316 13 is_stmt 0 view .LVU407
+ 1767 00e0 00F13001 		add	r1, r0, #48
+ 1768              	.LVL209:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 42
+
+
+ 316:Device/Src/flash.c ****         break;
+ 1769              		.loc 1 316 13 view .LVU408
+ 1770 00e4 2046     		mov	r0, r4
+ 1771              	.LVL210:
+ 316:Device/Src/flash.c ****         break;
+ 1772              		.loc 1 316 13 view .LVU409
+ 1773 00e6 FFF7FEFF 		bl	flash_write_data
+ 1774              	.LVL211:
+ 317:Device/Src/flash.c ****         case TEMP_CONFIG:
+ 1775              		.loc 1 317 9 is_stmt 1 view .LVU410
+ 1776 00ea D1E7     		b	.L93
+ 1777              	.LVL212:
+ 1778              	.L107:
+ 319:Device/Src/flash.c ****         break;
+ 1779              		.loc 1 319 13 view .LVU411
+ 1780 00ec 0122     		movs	r2, #1
+ 1781              	.LVL213:
+ 319:Device/Src/flash.c ****         break;
+ 1782              		.loc 1 319 13 is_stmt 0 view .LVU412
+ 1783 00ee 00F13101 		add	r1, r0, #49
+ 1784              	.LVL214:
+ 319:Device/Src/flash.c ****         break;
+ 1785              		.loc 1 319 13 view .LVU413
+ 1786 00f2 2046     		mov	r0, r4
+ 1787              	.LVL215:
+ 319:Device/Src/flash.c ****         break;
+ 1788              		.loc 1 319 13 view .LVU414
+ 1789 00f4 FFF7FEFF 		bl	flash_write_data
+ 1790              	.LVL216:
+ 320:Device/Src/flash.c ****         case START_TIME_HOT:
+ 1791              		.loc 1 320 9 is_stmt 1 view .LVU415
+ 1792 00f8 CAE7     		b	.L93
+ 1793              	.LVL217:
+ 1794              	.L106:
+ 322:Device/Src/flash.c ****             buffer[1] = result->startTimeHot % 256;
+ 1795              		.loc 1 322 13 view .LVU416
+ 322:Device/Src/flash.c ****             buffer[1] = result->startTimeHot % 256;
+ 1796              		.loc 1 322 31 is_stmt 0 view .LVU417
+ 1797 00fa 438E     		ldrh	r3, [r0, #50]
+ 322:Device/Src/flash.c ****             buffer[1] = result->startTimeHot % 256;
+ 1798              		.loc 1 322 23 view .LVU418
+ 1799 00fc 1A0A     		lsrs	r2, r3, #8
+ 1800              	.LVL218:
+ 322:Device/Src/flash.c ****             buffer[1] = result->startTimeHot % 256;
+ 1801              		.loc 1 322 23 view .LVU419
+ 1802 00fe 8DF81420 		strb	r2, [sp, #20]
+ 323:Device/Src/flash.c ****             flash_write_data(address, buffer, 2);
+ 1803              		.loc 1 323 13 is_stmt 1 view .LVU420
+ 323:Device/Src/flash.c ****             flash_write_data(address, buffer, 2);
+ 1804              		.loc 1 323 23 is_stmt 0 view .LVU421
+ 1805 0102 8DF81530 		strb	r3, [sp, #21]
+ 324:Device/Src/flash.c ****         break;
+ 1806              		.loc 1 324 13 is_stmt 1 view .LVU422
+ 1807 0106 0222     		movs	r2, #2
+ 1808 0108 05A9     		add	r1, sp, #20
+ 1809              	.LVL219:
+ 324:Device/Src/flash.c ****         break;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 43
+
+
+ 1810              		.loc 1 324 13 is_stmt 0 view .LVU423
+ 1811 010a 2046     		mov	r0, r4
+ 1812              	.LVL220:
+ 324:Device/Src/flash.c ****         break;
+ 1813              		.loc 1 324 13 view .LVU424
+ 1814 010c FFF7FEFF 		bl	flash_write_data
+ 1815              	.LVL221:
+ 325:Device/Src/flash.c ****         case START_TIME_COLD:
+ 1816              		.loc 1 325 9 is_stmt 1 view .LVU425
+ 1817 0110 BEE7     		b	.L93
+ 1818              	.LVL222:
+ 1819              	.L105:
+ 327:Device/Src/flash.c ****             buffer[1] = result->startTimeCold % 256;
+ 1820              		.loc 1 327 13 view .LVU426
+ 327:Device/Src/flash.c ****             buffer[1] = result->startTimeCold % 256;
+ 1821              		.loc 1 327 31 is_stmt 0 view .LVU427
+ 1822 0112 838E     		ldrh	r3, [r0, #52]
+ 327:Device/Src/flash.c ****             buffer[1] = result->startTimeCold % 256;
+ 1823              		.loc 1 327 23 view .LVU428
+ 1824 0114 1A0A     		lsrs	r2, r3, #8
+ 1825              	.LVL223:
+ 327:Device/Src/flash.c ****             buffer[1] = result->startTimeCold % 256;
+ 1826              		.loc 1 327 23 view .LVU429
+ 1827 0116 8DF81420 		strb	r2, [sp, #20]
+ 328:Device/Src/flash.c ****             flash_write_data(address, buffer, 2);
+ 1828              		.loc 1 328 13 is_stmt 1 view .LVU430
+ 328:Device/Src/flash.c ****             flash_write_data(address, buffer, 2);
+ 1829              		.loc 1 328 23 is_stmt 0 view .LVU431
+ 1830 011a 8DF81530 		strb	r3, [sp, #21]
+ 329:Device/Src/flash.c ****         break;
+ 1831              		.loc 1 329 13 is_stmt 1 view .LVU432
+ 1832 011e 0222     		movs	r2, #2
+ 1833 0120 05A9     		add	r1, sp, #20
+ 1834              	.LVL224:
+ 329:Device/Src/flash.c ****         break;
+ 1835              		.loc 1 329 13 is_stmt 0 view .LVU433
+ 1836 0122 2046     		mov	r0, r4
+ 1837              	.LVL225:
+ 329:Device/Src/flash.c ****         break;
+ 1838              		.loc 1 329 13 view .LVU434
+ 1839 0124 FFF7FEFF 		bl	flash_write_data
+ 1840              	.LVL226:
+ 330:Device/Src/flash.c ****         case ERROR_TIME_HOT:
+ 1841              		.loc 1 330 9 is_stmt 1 view .LVU435
+ 1842 0128 B2E7     		b	.L93
+ 1843              	.LVL227:
+ 1844              	.L104:
+ 332:Device/Src/flash.c ****         break;
+ 1845              		.loc 1 332 13 view .LVU436
+ 1846 012a 0122     		movs	r2, #1
+ 1847              	.LVL228:
+ 332:Device/Src/flash.c ****         break;
+ 1848              		.loc 1 332 13 is_stmt 0 view .LVU437
+ 1849 012c 00F13601 		add	r1, r0, #54
+ 1850              	.LVL229:
+ 332:Device/Src/flash.c ****         break;
+ 1851              		.loc 1 332 13 view .LVU438
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 44
+
+
+ 1852 0130 2046     		mov	r0, r4
+ 1853              	.LVL230:
+ 332:Device/Src/flash.c ****         break;
+ 1854              		.loc 1 332 13 view .LVU439
+ 1855 0132 FFF7FEFF 		bl	flash_write_data
+ 1856              	.LVL231:
+ 333:Device/Src/flash.c ****         case ERROR_TIME_COLD:
+ 1857              		.loc 1 333 9 is_stmt 1 view .LVU440
+ 1858 0136 ABE7     		b	.L93
+ 1859              	.LVL232:
+ 1860              	.L103:
+ 335:Device/Src/flash.c ****         break;
+ 1861              		.loc 1 335 13 view .LVU441
+ 1862 0138 0122     		movs	r2, #1
+ 1863              	.LVL233:
+ 335:Device/Src/flash.c ****         break;
+ 1864              		.loc 1 335 13 is_stmt 0 view .LVU442
+ 1865 013a 00F13701 		add	r1, r0, #55
+ 1866              	.LVL234:
+ 335:Device/Src/flash.c ****         break;
+ 1867              		.loc 1 335 13 view .LVU443
+ 1868 013e 2046     		mov	r0, r4
+ 1869              	.LVL235:
+ 335:Device/Src/flash.c ****         break;
+ 1870              		.loc 1 335 13 view .LVU444
+ 1871 0140 FFF7FEFF 		bl	flash_write_data
+ 1872              	.LVL236:
+ 336:Device/Src/flash.c ****         case CALCUL_FLAG:
+ 1873              		.loc 1 336 9 is_stmt 1 view .LVU445
+ 1874 0144 A4E7     		b	.L93
+ 1875              	.LVL237:
+ 1876              	.L102:
+ 338:Device/Src/flash.c ****         break;
+ 1877              		.loc 1 338 13 view .LVU446
+ 1878 0146 0122     		movs	r2, #1
+ 1879              	.LVL238:
+ 338:Device/Src/flash.c ****         break;
+ 1880              		.loc 1 338 13 is_stmt 0 view .LVU447
+ 1881 0148 00F13801 		add	r1, r0, #56
+ 1882              	.LVL239:
+ 338:Device/Src/flash.c ****         break;
+ 1883              		.loc 1 338 13 view .LVU448
+ 1884 014c 2046     		mov	r0, r4
+ 1885              	.LVL240:
+ 338:Device/Src/flash.c ****         break;
+ 1886              		.loc 1 338 13 view .LVU449
+ 1887 014e FFF7FEFF 		bl	flash_write_data
+ 1888              	.LVL241:
+ 339:Device/Src/flash.c ****         case TEMP_LOAD_FLAG:
+ 1889              		.loc 1 339 9 is_stmt 1 view .LVU450
+ 1890 0152 9DE7     		b	.L93
+ 1891              	.LVL242:
+ 1892              	.L101:
+ 341:Device/Src/flash.c ****         break;
+ 1893              		.loc 1 341 13 view .LVU451
+ 1894 0154 0122     		movs	r2, #1
+ 1895              	.LVL243:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 45
+
+
+ 341:Device/Src/flash.c ****         break;
+ 1896              		.loc 1 341 13 is_stmt 0 view .LVU452
+ 1897 0156 00F13901 		add	r1, r0, #57
+ 1898              	.LVL244:
+ 341:Device/Src/flash.c ****         break;
+ 1899              		.loc 1 341 13 view .LVU453
+ 1900 015a 2046     		mov	r0, r4
+ 1901              	.LVL245:
+ 341:Device/Src/flash.c ****         break;
+ 1902              		.loc 1 341 13 view .LVU454
+ 1903 015c FFF7FEFF 		bl	flash_write_data
+ 1904              	.LVL246:
+ 342:Device/Src/flash.c ****         case TEST_CENTER:
+ 1905              		.loc 1 342 9 is_stmt 1 view .LVU455
+ 1906 0160 96E7     		b	.L93
+ 1907              	.LVL247:
+ 1908              	.L116:
+ 345:Device/Src/flash.c ****                 flash_write_data(address, buffer, 4);
+ 1909              		.loc 1 345 17 discriminator 3 view .LVU456
+ 1910 0162 05F10E01 		add	r1, r5, #14
+ 1911 0166 06EB8101 		add	r1, r6, r1, lsl #2
+ 1912 016a 0431     		adds	r1, r1, #4
+ 1913 016c 05A8     		add	r0, sp, #20
+ 1914 016e FFF7FEFF 		bl	float_to_uint8
+ 1915              	.LVL248:
+ 346:Device/Src/flash.c ****                 address += 4;
+ 1916              		.loc 1 346 17 discriminator 3 view .LVU457
+ 1917 0172 0422     		movs	r2, #4
+ 1918 0174 05A9     		add	r1, sp, #20
+ 1919 0176 2046     		mov	r0, r4
+ 1920 0178 FFF7FEFF 		bl	flash_write_data
+ 1921              	.LVL249:
+ 347:Device/Src/flash.c ****             }
+ 1922              		.loc 1 347 17 discriminator 3 view .LVU458
+ 347:Device/Src/flash.c ****             }
+ 1923              		.loc 1 347 25 is_stmt 0 discriminator 3 view .LVU459
+ 1924 017c 0434     		adds	r4, r4, #4
+ 1925              	.LVL250:
+ 344:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testCenter[i]));
+ 1926              		.loc 1 344 32 is_stmt 1 discriminator 3 view .LVU460
+ 344:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testCenter[i]));
+ 1927              		.loc 1 344 33 is_stmt 0 discriminator 3 view .LVU461
+ 1928 017e 0135     		adds	r5, r5, #1
+ 1929              	.LVL251:
+ 1930              	.L100:
+ 344:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testCenter[i]));
+ 1931              		.loc 1 344 25 is_stmt 1 discriminator 1 view .LVU462
+ 344:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testCenter[i]));
+ 1932              		.loc 1 344 13 is_stmt 0 discriminator 1 view .LVU463
+ 1933 0180 012D     		cmp	r5, #1
+ 1934 0182 EEDD     		ble	.L116
+ 344:Device/Src/flash.c ****                 float_to_uint8(buffer, &(result->testCenter[i]));
+ 1935              		.loc 1 344 13 discriminator 1 view .LVU464
+ 1936 0184 84E7     		b	.L93
+ 1937              	.LVL252:
+ 1938              	.L122:
+ 297:Device/Src/flash.c ****         case CHIP_ID:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 46
+
+
+ 1939              		.loc 1 297 5 view .LVU465
+ 1940 0186 0025     		movs	r5, #0
+ 1941 0188 FAE7     		b	.L100
+ 1942              	.L98:
+ 351:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VDD + 1] = result->machine.Ivdd % 256;
+ 1943              		.loc 1 351 13 is_stmt 1 view .LVU466
+ 351:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VDD + 1] = result->machine.Ivdd % 256;
+ 1944              		.loc 1 351 59 is_stmt 0 view .LVU467
+ 1945 018a B0F84430 		ldrh	r3, [r0, #68]
+ 351:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VDD + 1] = result->machine.Ivdd % 256;
+ 1946              		.loc 1 351 42 view .LVU468
+ 1947 018e 1A0A     		lsrs	r2, r3, #8
+ 1948              	.LVL253:
+ 351:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VDD + 1] = result->machine.Ivdd % 256;
+ 1949              		.loc 1 351 42 view .LVU469
+ 1950 0190 8DF80420 		strb	r2, [sp, #4]
+ 352:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VBAT] = result->machine.Ivbat / 256;
+ 1951              		.loc 1 352 13 is_stmt 1 view .LVU470
+ 352:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VBAT] = result->machine.Ivbat / 256;
+ 1952              		.loc 1 352 46 is_stmt 0 view .LVU471
+ 1953 0194 8DF80530 		strb	r3, [sp, #5]
+ 353:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VBAT + 1] = result->machine.Ivbat % 256;
+ 1954              		.loc 1 353 13 is_stmt 1 view .LVU472
+ 353:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VBAT + 1] = result->machine.Ivbat % 256;
+ 1955              		.loc 1 353 60 is_stmt 0 view .LVU473
+ 1956 0198 B0F84630 		ldrh	r3, [r0, #70]
+ 353:Device/Src/flash.c ****             machineBuffer[MACHINE_I_VBAT + 1] = result->machine.Ivbat % 256;
+ 1957              		.loc 1 353 43 view .LVU474
+ 1958 019c 1A0A     		lsrs	r2, r3, #8
+ 1959 019e 8DF80620 		strb	r2, [sp, #6]
+ 354:Device/Src/flash.c ****             machineBuffer[MACHINE_CONFIG_9] = result->machine.config9;
+ 1960              		.loc 1 354 13 is_stmt 1 view .LVU475
+ 354:Device/Src/flash.c ****             machineBuffer[MACHINE_CONFIG_9] = result->machine.config9;
+ 1961              		.loc 1 354 47 is_stmt 0 view .LVU476
+ 1962 01a2 8DF80730 		strb	r3, [sp, #7]
+ 355:Device/Src/flash.c ****             machineBuffer[MACHINE_CONFIG_C] = result->machine.configC;
+ 1963              		.loc 1 355 13 is_stmt 1 view .LVU477
+ 355:Device/Src/flash.c ****             machineBuffer[MACHINE_CONFIG_C] = result->machine.configC;
+ 1964              		.loc 1 355 62 is_stmt 0 view .LVU478
+ 1965 01a6 90F84830 		ldrb	r3, [r0, #72]	@ zero_extendqisi2
+ 355:Device/Src/flash.c ****             machineBuffer[MACHINE_CONFIG_C] = result->machine.configC;
+ 1966              		.loc 1 355 45 view .LVU479
+ 1967 01aa 8DF80830 		strb	r3, [sp, #8]
+ 356:Device/Src/flash.c ****             machineBuffer[MACHINE_SYSTEM_TEMP] = result->machine.sysTemp;
+ 1968              		.loc 1 356 13 is_stmt 1 view .LVU480
+ 356:Device/Src/flash.c ****             machineBuffer[MACHINE_SYSTEM_TEMP] = result->machine.sysTemp;
+ 1969              		.loc 1 356 62 is_stmt 0 view .LVU481
+ 1970 01ae 90F84930 		ldrb	r3, [r0, #73]	@ zero_extendqisi2
+ 356:Device/Src/flash.c ****             machineBuffer[MACHINE_SYSTEM_TEMP] = result->machine.sysTemp;
+ 1971              		.loc 1 356 45 view .LVU482
+ 1972 01b2 8DF80930 		strb	r3, [sp, #9]
+ 357:Device/Src/flash.c ****             machineBuffer[MACHINE_RTC_TEMP] = result->machine.rtcTemp;
+ 1973              		.loc 1 357 13 is_stmt 1 view .LVU483
+ 357:Device/Src/flash.c ****             machineBuffer[MACHINE_RTC_TEMP] = result->machine.rtcTemp;
+ 1974              		.loc 1 357 65 is_stmt 0 view .LVU484
+ 1975 01b6 90F84A30 		ldrb	r3, [r0, #74]	@ zero_extendqisi2
+ 357:Device/Src/flash.c ****             machineBuffer[MACHINE_RTC_TEMP] = result->machine.rtcTemp;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 47
+
+
+ 1976              		.loc 1 357 48 view .LVU485
+ 1977 01ba 8DF80A30 		strb	r3, [sp, #10]
+ 358:Device/Src/flash.c ****             float_to_uint8(buffer, &(result->machine.testFreq));
+ 1978              		.loc 1 358 13 is_stmt 1 view .LVU486
+ 358:Device/Src/flash.c ****             float_to_uint8(buffer, &(result->machine.testFreq));
+ 1979              		.loc 1 358 62 is_stmt 0 view .LVU487
+ 1980 01be 90F84B30 		ldrb	r3, [r0, #75]	@ zero_extendqisi2
+ 358:Device/Src/flash.c ****             float_to_uint8(buffer, &(result->machine.testFreq));
+ 1981              		.loc 1 358 45 view .LVU488
+ 1982 01c2 8DF80B30 		strb	r3, [sp, #11]
+ 359:Device/Src/flash.c ****             for (i = 0; i < 4; i++) {
+ 1983              		.loc 1 359 13 is_stmt 1 view .LVU489
+ 1984 01c6 00F14C01 		add	r1, r0, #76
+ 1985              	.LVL254:
+ 359:Device/Src/flash.c ****             for (i = 0; i < 4; i++) {
+ 1986              		.loc 1 359 13 is_stmt 0 view .LVU490
+ 1987 01ca 05A8     		add	r0, sp, #20
+ 1988              	.LVL255:
+ 359:Device/Src/flash.c ****             for (i = 0; i < 4; i++) {
+ 1989              		.loc 1 359 13 view .LVU491
+ 1990 01cc FFF7FEFF 		bl	float_to_uint8
+ 1991              	.LVL256:
+ 360:Device/Src/flash.c ****                machineBuffer[MACHINE_TEST_FREQ + i] = buffer[i]; 
+ 1992              		.loc 1 360 13 is_stmt 1 view .LVU492
+ 360:Device/Src/flash.c ****                machineBuffer[MACHINE_TEST_FREQ + i] = buffer[i]; 
+ 1993              		.loc 1 360 20 is_stmt 0 view .LVU493
+ 1994 01d0 0023     		movs	r3, #0
+ 360:Device/Src/flash.c ****                machineBuffer[MACHINE_TEST_FREQ + i] = buffer[i]; 
+ 1995              		.loc 1 360 13 view .LVU494
+ 1996 01d2 0AE0     		b	.L117
+ 1997              	.LVL257:
+ 1998              	.L118:
+ 361:Device/Src/flash.c ****             }
+ 1999              		.loc 1 361 16 is_stmt 1 discriminator 3 view .LVU495
+ 361:Device/Src/flash.c ****             }
+ 2000              		.loc 1 361 61 is_stmt 0 discriminator 3 view .LVU496
+ 2001 01d4 03F11801 		add	r1, r3, #24
+ 2002 01d8 6944     		add	r1, sp, r1
+ 2003 01da 11F8041C 		ldrb	r1, [r1, #-4]	@ zero_extendqisi2
+ 361:Device/Src/flash.c ****             }
+ 2004              		.loc 1 361 53 discriminator 3 view .LVU497
+ 2005 01de 03F12002 		add	r2, r3, #32
+ 2006 01e2 6A44     		add	r2, sp, r2
+ 2007 01e4 02F8141C 		strb	r1, [r2, #-20]
+ 360:Device/Src/flash.c ****                machineBuffer[MACHINE_TEST_FREQ + i] = buffer[i]; 
+ 2008              		.loc 1 360 32 is_stmt 1 discriminator 3 view .LVU498
+ 360:Device/Src/flash.c ****                machineBuffer[MACHINE_TEST_FREQ + i] = buffer[i]; 
+ 2009              		.loc 1 360 33 is_stmt 0 discriminator 3 view .LVU499
+ 2010 01e8 0133     		adds	r3, r3, #1
+ 2011              	.LVL258:
+ 2012              	.L117:
+ 360:Device/Src/flash.c ****                machineBuffer[MACHINE_TEST_FREQ + i] = buffer[i]; 
+ 2013              		.loc 1 360 25 is_stmt 1 discriminator 1 view .LVU500
+ 360:Device/Src/flash.c ****                machineBuffer[MACHINE_TEST_FREQ + i] = buffer[i]; 
+ 2014              		.loc 1 360 13 is_stmt 0 discriminator 1 view .LVU501
+ 2015 01ea 032B     		cmp	r3, #3
+ 2016 01ec F2DD     		ble	.L118
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 48
+
+
+ 363:Device/Src/flash.c ****             machineBuffer[MACHINE_VBAT_2V5 + 1] = result->machine.vbat_2V5 % 256;
+ 2017              		.loc 1 363 13 is_stmt 1 view .LVU502
+ 363:Device/Src/flash.c ****             machineBuffer[MACHINE_VBAT_2V5 + 1] = result->machine.vbat_2V5 % 256;
+ 2018              		.loc 1 363 62 is_stmt 0 view .LVU503
+ 2019 01ee B6F85030 		ldrh	r3, [r6, #80]
+ 2020              	.LVL259:
+ 363:Device/Src/flash.c ****             machineBuffer[MACHINE_VBAT_2V5 + 1] = result->machine.vbat_2V5 % 256;
+ 2021              		.loc 1 363 45 view .LVU504
+ 2022 01f2 1A0A     		lsrs	r2, r3, #8
+ 2023 01f4 8DF81020 		strb	r2, [sp, #16]
+ 364:Device/Src/flash.c ****             machineBuffer[MACHINE_CHARGE] = result->machine.charge / 256;
+ 2024              		.loc 1 364 13 is_stmt 1 view .LVU505
+ 364:Device/Src/flash.c ****             machineBuffer[MACHINE_CHARGE] = result->machine.charge / 256;
+ 2025              		.loc 1 364 49 is_stmt 0 view .LVU506
+ 2026 01f8 8DF81130 		strb	r3, [sp, #17]
+ 365:Device/Src/flash.c ****             machineBuffer[MACHINE_CHARGE + 1] = result->machine.charge % 256;
+ 2027              		.loc 1 365 13 is_stmt 1 view .LVU507
+ 365:Device/Src/flash.c ****             machineBuffer[MACHINE_CHARGE + 1] = result->machine.charge % 256;
+ 2028              		.loc 1 365 60 is_stmt 0 view .LVU508
+ 2029 01fc B6F85230 		ldrh	r3, [r6, #82]
+ 365:Device/Src/flash.c ****             machineBuffer[MACHINE_CHARGE + 1] = result->machine.charge % 256;
+ 2030              		.loc 1 365 43 view .LVU509
+ 2031 0200 1A0A     		lsrs	r2, r3, #8
+ 2032 0202 8DF81220 		strb	r2, [sp, #18]
+ 366:Device/Src/flash.c ****             flash_write_data(address, machineBuffer, FALSH_MACHINE_DATA_LENGTH);
+ 2033              		.loc 1 366 13 is_stmt 1 view .LVU510
+ 366:Device/Src/flash.c ****             flash_write_data(address, machineBuffer, FALSH_MACHINE_DATA_LENGTH);
+ 2034              		.loc 1 366 47 is_stmt 0 view .LVU511
+ 2035 0206 8DF81330 		strb	r3, [sp, #19]
+ 367:Device/Src/flash.c ****         break;
+ 2036              		.loc 1 367 13 is_stmt 1 view .LVU512
+ 2037 020a 1022     		movs	r2, #16
+ 2038 020c 01A9     		add	r1, sp, #4
+ 2039 020e 2046     		mov	r0, r4
+ 2040 0210 FFF7FEFF 		bl	flash_write_data
+ 2041              	.LVL260:
+ 368:Device/Src/flash.c ****         case CAP_CALCULATE:
+ 2042              		.loc 1 368 9 view .LVU513
+ 2043 0214 3CE7     		b	.L93
+ 2044              	.LVL261:
+ 2045              	.L112:
+ 370:Device/Src/flash.c ****         break;
+ 2046              		.loc 1 370 13 view .LVU514
+ 2047 0216 9722     		movs	r2, #151
+ 2048              	.LVL262:
+ 370:Device/Src/flash.c ****         break;
+ 2049              		.loc 1 370 13 is_stmt 0 view .LVU515
+ 2050 0218 00F15401 		add	r1, r0, #84
+ 2051              	.LVL263:
+ 370:Device/Src/flash.c ****         break;
+ 2052              		.loc 1 370 13 view .LVU516
+ 2053 021c 2046     		mov	r0, r4
+ 2054              	.LVL264:
+ 370:Device/Src/flash.c ****         break;
+ 2055              		.loc 1 370 13 view .LVU517
+ 2056 021e FFF7FEFF 		bl	flash_write_data
+ 2057              	.LVL265:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 49
+
+
+ 371:Device/Src/flash.c ****         case TEST_DATA_ALL:
+ 2058              		.loc 1 371 9 is_stmt 1 view .LVU518
+ 2059 0222 35E7     		b	.L93
+ 2060              	.LVL266:
+ 2061              	.L119:
+ 374:Device/Src/flash.c ****             }
+ 2062              		.loc 1 374 17 discriminator 3 view .LVU519
+ 2063 0224 A2B2     		uxth	r2, r4
+ 2064 0226 2946     		mov	r1, r5
+ 2065 0228 3046     		mov	r0, r6
+ 2066 022a FFF7FEFF 		bl	flash_test_data_write_add
+ 2067              	.LVL267:
+ 373:Device/Src/flash.c ****                 flash_test_data_write_add(result, rtcNumber, i);
+ 2068              		.loc 1 373 45 discriminator 3 view .LVU520
+ 373:Device/Src/flash.c ****                 flash_test_data_write_add(result, rtcNumber, i);
+ 2069              		.loc 1 373 46 is_stmt 0 discriminator 3 view .LVU521
+ 2070 022e 0134     		adds	r4, r4, #1
+ 2071              	.LVL268:
+ 2072              	.L113:
+ 373:Device/Src/flash.c ****                 flash_test_data_write_add(result, rtcNumber, i);
+ 2073              		.loc 1 373 25 is_stmt 1 discriminator 1 view .LVU522
+ 373:Device/Src/flash.c ****                 flash_test_data_write_add(result, rtcNumber, i);
+ 2074              		.loc 1 373 13 is_stmt 0 discriminator 1 view .LVU523
+ 2075 0230 B4F5807F 		cmp	r4, #256
+ 2076 0234 F6DD     		ble	.L119
+ 2077 0236 2BE7     		b	.L93
+ 2078              		.cfi_endproc
+ 2079              	.LFE245:
+ 2081              		.section	.text.flash_test_data_clear,"ax",%progbits
+ 2082              		.align	1
+ 2083              		.global	flash_test_data_clear
+ 2084              		.syntax unified
+ 2085              		.thumb
+ 2086              		.thumb_func
+ 2088              	flash_test_data_clear:
+ 2089              	.LVL269:
+ 2090              	.LFB246:
+ 380:Device/Src/flash.c **** 
+ 381:Device/Src/flash.c **** #define CHIP_SECTOR_NUMBER     (MAX_CHIP_NUMBER / 8) + 1 // 13
+ 382:Device/Src/flash.c **** void flash_test_data_clear(FlashClearMode mode)
+ 383:Device/Src/flash.c **** {
+ 2091              		.loc 1 383 1 is_stmt 1 view -0
+ 2092              		.cfi_startproc
+ 2093              		@ args = 0, pretend = 0, frame = 0
+ 2094              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2095              		.loc 1 383 1 is_stmt 0 view .LVU525
+ 2096 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 2097              	.LCFI29:
+ 2098              		.cfi_def_cfa_offset 24
+ 2099              		.cfi_offset 4, -24
+ 2100              		.cfi_offset 5, -20
+ 2101              		.cfi_offset 6, -16
+ 2102              		.cfi_offset 7, -12
+ 2103              		.cfi_offset 8, -8
+ 2104              		.cfi_offset 14, -4
+ 2105 0004 0446     		mov	r4, r0
+ 384:Device/Src/flash.c ****     int i, j, k;
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 50
+
+
+ 2106              		.loc 1 384 5 is_stmt 1 view .LVU526
+ 385:Device/Src/flash.c ****     uint32_t address;
+ 2107              		.loc 1 385 5 view .LVU527
+ 386:Device/Src/flash.c ****     uint32_t range;
+ 2108              		.loc 1 386 5 view .LVU528
+ 387:Device/Src/flash.c **** 
+ 388:Device/Src/flash.c ****     for (k = 0; k < CHIP_SECTOR_NUMBER; k++) {
+ 2109              		.loc 1 388 5 view .LVU529
+ 2110              	.LVL270:
+ 2111              		.loc 1 388 12 is_stmt 0 view .LVU530
+ 2112 0006 0026     		movs	r6, #0
+ 2113              		.loc 1 388 5 view .LVU531
+ 2114 0008 8AE0     		b	.L126
+ 2115              	.LVL271:
+ 2116              	.L128:
+ 389:Device/Src/flash.c ****         memset(g_bufferSector, 0xff, SECTOR_SIZE);
+ 390:Device/Src/flash.c ****         address = TEST_RESULT_START_ADDR + SECTOR_SIZE * k;
+ 391:Device/Src/flash.c ****         for (i = 0; i < PAGES_IN_SECTOR; i++) {
+ 392:Device/Src/flash.c ****             flash_read_data(address + (PAGE_SIZE * i), g_bufferSector + (PAGE_SIZE * i), PAGE_SIZE)
+ 2117              		.loc 1 392 13 is_stmt 1 discriminator 3 view .LVU532
+ 2118 000a 4FF48072 		mov	r2, #256
+ 2119 000e 4B49     		ldr	r1, .L153
+ 2120 0010 01EB0721 		add	r1, r1, r7, lsl #8
+ 2121 0014 05EB0720 		add	r0, r5, r7, lsl #8
+ 2122 0018 FFF7FEFF 		bl	flash_read_data
+ 2123              	.LVL272:
+ 391:Device/Src/flash.c ****             flash_read_data(address + (PAGE_SIZE * i), g_bufferSector + (PAGE_SIZE * i), PAGE_SIZE)
+ 2124              		.loc 1 391 42 discriminator 3 view .LVU533
+ 391:Device/Src/flash.c ****             flash_read_data(address + (PAGE_SIZE * i), g_bufferSector + (PAGE_SIZE * i), PAGE_SIZE)
+ 2125              		.loc 1 391 43 is_stmt 0 discriminator 3 view .LVU534
+ 2126 001c 0137     		adds	r7, r7, #1
+ 2127              	.LVL273:
+ 2128              	.L127:
+ 391:Device/Src/flash.c ****             flash_read_data(address + (PAGE_SIZE * i), g_bufferSector + (PAGE_SIZE * i), PAGE_SIZE)
+ 2129              		.loc 1 391 21 is_stmt 1 discriminator 1 view .LVU535
+ 391:Device/Src/flash.c ****             flash_read_data(address + (PAGE_SIZE * i), g_bufferSector + (PAGE_SIZE * i), PAGE_SIZE)
+ 2130              		.loc 1 391 9 is_stmt 0 discriminator 1 view .LVU536
+ 2131 001e 0F2F     		cmp	r7, #15
+ 2132 0020 F3DD     		ble	.L128
+ 393:Device/Src/flash.c ****         }
+ 394:Device/Src/flash.c ****         for (i = 0; i < (SECTOR_SIZE / TEST_RESULT_ONE_SIZE); i++) {//每个sector有8个芯片
+ 2133              		.loc 1 394 16 view .LVU537
+ 2134 0022 4FF0000E 		mov	lr, #0
+ 2135 0026 2EE0     		b	.L129
+ 2136              	.LVL274:
+ 2137              	.L135:
+ 395:Device/Src/flash.c ****             switch (mode) {
+ 396:Device/Src/flash.c ****                 case FLASH_CLEAR_DOT_1:
+ 397:Device/Src/flash.c ****                 case FLASH_CLEAR_DOT_3://-10度和60度两个点需要把中心电容对应的误差值清零
+ 398:Device/Src/flash.c ****                     range = i * TEST_RESULT_ONE_SIZE + TEST_CENTER + (mode / 2) * 4;
+ 2138              		.loc 1 398 21 is_stmt 1 view .LVU538
+ 2139              		.loc 1 398 33 is_stmt 0 view .LVU539
+ 2140 0028 4FEA4E22 		lsl	r2, lr, #9
+ 2141              		.loc 1 398 54 view .LVU540
+ 2142 002c 3A32     		adds	r2, r2, #58
+ 2143              		.loc 1 398 76 view .LVU541
+ 2144 002e 6308     		lsrs	r3, r4, #1
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 51
+
+
+ 2145              		.loc 1 398 68 view .LVU542
+ 2146 0030 02EB8302 		add	r2, r2, r3, lsl #2
+ 2147              	.LVL275:
+ 399:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2148              		.loc 1 399 21 is_stmt 1 view .LVU543
+ 2149              		.loc 1 399 28 is_stmt 0 view .LVU544
+ 2150 0034 0023     		movs	r3, #0
+ 2151              		.loc 1 399 21 view .LVU545
+ 2152 0036 04E0     		b	.L136
+ 2153              	.LVL276:
+ 2154              	.L137:
+ 400:Device/Src/flash.c ****                         g_bufferSector[range + j] = 0xff;
+ 2155              		.loc 1 400 25 is_stmt 1 discriminator 3 view .LVU546
+ 2156              		.loc 1 400 46 is_stmt 0 discriminator 3 view .LVU547
+ 2157 0038 9918     		adds	r1, r3, r2
+ 2158              		.loc 1 400 51 discriminator 3 view .LVU548
+ 2159 003a 4048     		ldr	r0, .L153
+ 2160 003c FF27     		movs	r7, #255
+ 2161 003e 4754     		strb	r7, [r0, r1]
+ 399:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2162              		.loc 1 399 40 is_stmt 1 discriminator 3 view .LVU549
+ 399:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2163              		.loc 1 399 41 is_stmt 0 discriminator 3 view .LVU550
+ 2164 0040 0133     		adds	r3, r3, #1
+ 2165              	.LVL277:
+ 2166              	.L136:
+ 399:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2167              		.loc 1 399 33 is_stmt 1 discriminator 1 view .LVU551
+ 399:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2168              		.loc 1 399 21 is_stmt 0 discriminator 1 view .LVU552
+ 2169 0042 032B     		cmp	r3, #3
+ 2170 0044 F8DD     		ble	.L137
+ 2171              	.LVL278:
+ 2172              	.L134:
+ 401:Device/Src/flash.c ****                     }
+ 402:Device/Src/flash.c ****                 case FLASH_CLEAR_DOT_0:
+ 403:Device/Src/flash.c ****                 case FLASH_CLEAR_DOT_2:
+ 404:Device/Src/flash.c ****                 case FLASH_CLEAR_DOT_4:
+ 405:Device/Src/flash.c ****                     range = i * TEST_RESULT_ONE_SIZE + TEST_DOT_TEMP + mode * 4;
+ 2173              		.loc 1 405 21 is_stmt 1 view .LVU553
+ 2174              		.loc 1 405 33 is_stmt 0 view .LVU554
+ 2175 0046 4FEA4E28 		lsl	r8, lr, #9
+ 2176              		.loc 1 405 54 view .LVU555
+ 2177 004a 08F10807 		add	r7, r8, #8
+ 2178              		.loc 1 405 77 view .LVU556
+ 2179 004e 4FEA840C 		lsl	ip, r4, #2
+ 2180              		.loc 1 405 70 view .LVU557
+ 2181 0052 07EB8407 		add	r7, r7, r4, lsl #2
+ 2182              	.LVL279:
+ 406:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2183              		.loc 1 406 21 is_stmt 1 view .LVU558
+ 2184              		.loc 1 406 28 is_stmt 0 view .LVU559
+ 2185 0056 0023     		movs	r3, #0
+ 2186              		.loc 1 406 21 view .LVU560
+ 2187 0058 04E0     		b	.L138
+ 2188              	.LVL280:
+ 2189              	.L139:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 52
+
+
+ 407:Device/Src/flash.c ****                         g_bufferSector[range + j] = 0xff;
+ 2190              		.loc 1 407 25 is_stmt 1 discriminator 3 view .LVU561
+ 2191              		.loc 1 407 46 is_stmt 0 discriminator 3 view .LVU562
+ 2192 005a DA19     		adds	r2, r3, r7
+ 2193              		.loc 1 407 51 discriminator 3 view .LVU563
+ 2194 005c 3749     		ldr	r1, .L153
+ 2195 005e FF20     		movs	r0, #255
+ 2196 0060 8854     		strb	r0, [r1, r2]
+ 406:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2197              		.loc 1 406 40 is_stmt 1 discriminator 3 view .LVU564
+ 406:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2198              		.loc 1 406 41 is_stmt 0 discriminator 3 view .LVU565
+ 2199 0062 0133     		adds	r3, r3, #1
+ 2200              	.LVL281:
+ 2201              	.L138:
+ 406:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2202              		.loc 1 406 33 is_stmt 1 discriminator 1 view .LVU566
+ 406:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2203              		.loc 1 406 21 is_stmt 0 discriminator 1 view .LVU567
+ 2204 0064 032B     		cmp	r3, #3
+ 2205 0066 F8DD     		ble	.L139
+ 408:Device/Src/flash.c ****                     }
+ 409:Device/Src/flash.c ****                     range = i * TEST_RESULT_ONE_SIZE + TEST_DOT_CAP + mode * 4;
+ 2206              		.loc 1 409 21 is_stmt 1 view .LVU568
+ 2207              		.loc 1 409 54 is_stmt 0 view .LVU569
+ 2208 0068 08F11C08 		add	r8, r8, #28
+ 2209              		.loc 1 409 69 view .LVU570
+ 2210 006c C444     		add	ip, ip, r8
+ 2211              	.LVL282:
+ 410:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2212              		.loc 1 410 21 is_stmt 1 view .LVU571
+ 2213              		.loc 1 410 28 is_stmt 0 view .LVU572
+ 2214 006e 0023     		movs	r3, #0
+ 2215              		.loc 1 410 21 view .LVU573
+ 2216 0070 05E0     		b	.L140
+ 2217              	.LVL283:
+ 2218              	.L141:
+ 411:Device/Src/flash.c ****                         g_bufferSector[range + j] = 0xff;
+ 2219              		.loc 1 411 25 is_stmt 1 discriminator 3 view .LVU574
+ 2220              		.loc 1 411 46 is_stmt 0 discriminator 3 view .LVU575
+ 2221 0072 03EB0C02 		add	r2, r3, ip
+ 2222              		.loc 1 411 51 discriminator 3 view .LVU576
+ 2223 0076 3149     		ldr	r1, .L153
+ 2224 0078 FF20     		movs	r0, #255
+ 2225 007a 8854     		strb	r0, [r1, r2]
+ 410:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2226              		.loc 1 410 40 is_stmt 1 discriminator 3 view .LVU577
+ 410:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2227              		.loc 1 410 41 is_stmt 0 discriminator 3 view .LVU578
+ 2228 007c 0133     		adds	r3, r3, #1
+ 2229              	.LVL284:
+ 2230              	.L140:
+ 410:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2231              		.loc 1 410 33 is_stmt 1 discriminator 1 view .LVU579
+ 410:Device/Src/flash.c ****                     for (j = 0; j < 4; j++) {
+ 2232              		.loc 1 410 21 is_stmt 0 discriminator 1 view .LVU580
+ 2233 007e 032B     		cmp	r3, #3
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 53
+
+
+ 2234 0080 F7DD     		ble	.L141
+ 2235              	.LVL285:
+ 2236              	.L130:
+ 394:Device/Src/flash.c ****             switch (mode) {
+ 2237              		.loc 1 394 63 is_stmt 1 discriminator 2 view .LVU581
+ 394:Device/Src/flash.c ****             switch (mode) {
+ 2238              		.loc 1 394 64 is_stmt 0 discriminator 2 view .LVU582
+ 2239 0082 0EF1010E 		add	lr, lr, #1
+ 2240              	.LVL286:
+ 2241              	.L129:
+ 394:Device/Src/flash.c ****             switch (mode) {
+ 2242              		.loc 1 394 21 is_stmt 1 discriminator 1 view .LVU583
+ 394:Device/Src/flash.c ****             switch (mode) {
+ 2243              		.loc 1 394 9 is_stmt 0 discriminator 1 view .LVU584
+ 2244 0086 BEF11F0F 		cmp	lr, #31
+ 2245 008a 31DC     		bgt	.L151
+ 395:Device/Src/flash.c ****                 case FLASH_CLEAR_DOT_1:
+ 2246              		.loc 1 395 13 is_stmt 1 view .LVU585
+ 2247 008c 062C     		cmp	r4, #6
+ 2248 008e F8D8     		bhi	.L130
+ 2249 0090 01A3     		adr	r3, .L132
+ 2250 0092 53F824F0 		ldr	pc, [r3, r4, lsl #2]
+ 2251 0096 00BF     		.p2align 2
+ 2252              	.L132:
+ 2253 0098 47000000 		.word	.L134+1
+ 2254 009c 29000000 		.word	.L135+1
+ 2255 00a0 47000000 		.word	.L134+1
+ 2256 00a4 29000000 		.word	.L135+1
+ 2257 00a8 47000000 		.word	.L134+1
+ 2258 00ac B5000000 		.word	.L133+1
+ 2259 00b0 D3000000 		.word	.L131+1
+ 2260              		.p2align 1
+ 2261              	.L133:
+ 412:Device/Src/flash.c ****                     }
+ 413:Device/Src/flash.c ****                 break;
+ 414:Device/Src/flash.c ****                 case FLASH_CLEAR_CALCUL:
+ 415:Device/Src/flash.c ****                     range = i * TEST_RESULT_ONE_SIZE + CAP_CALCULATE;
+ 2262              		.loc 1 415 21 view .LVU586
+ 2263              		.loc 1 415 33 is_stmt 0 view .LVU587
+ 2264 00b4 4FEA4E2C 		lsl	ip, lr, #9
+ 2265              		.loc 1 415 54 view .LVU588
+ 2266 00b8 0CF5807C 		add	ip, ip, #256
+ 2267              	.LVL287:
+ 416:Device/Src/flash.c ****                     for (j = 0; j < 151; j++) {
+ 2268              		.loc 1 416 21 is_stmt 1 view .LVU589
+ 2269              		.loc 1 416 28 is_stmt 0 view .LVU590
+ 2270 00bc 0023     		movs	r3, #0
+ 2271              		.loc 1 416 21 view .LVU591
+ 2272 00be 05E0     		b	.L142
+ 2273              	.LVL288:
+ 2274              	.L143:
+ 417:Device/Src/flash.c ****                         g_bufferSector[range + j] = 0xff;
+ 2275              		.loc 1 417 25 is_stmt 1 discriminator 3 view .LVU592
+ 2276              		.loc 1 417 46 is_stmt 0 discriminator 3 view .LVU593
+ 2277 00c0 03EB0C02 		add	r2, r3, ip
+ 2278              		.loc 1 417 51 discriminator 3 view .LVU594
+ 2279 00c4 1D49     		ldr	r1, .L153
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 54
+
+
+ 2280 00c6 FF20     		movs	r0, #255
+ 2281 00c8 8854     		strb	r0, [r1, r2]
+ 416:Device/Src/flash.c ****                     for (j = 0; j < 151; j++) {
+ 2282              		.loc 1 416 42 is_stmt 1 discriminator 3 view .LVU595
+ 416:Device/Src/flash.c ****                     for (j = 0; j < 151; j++) {
+ 2283              		.loc 1 416 43 is_stmt 0 discriminator 3 view .LVU596
+ 2284 00ca 0133     		adds	r3, r3, #1
+ 2285              	.LVL289:
+ 2286              	.L142:
+ 416:Device/Src/flash.c ****                     for (j = 0; j < 151; j++) {
+ 2287              		.loc 1 416 33 is_stmt 1 discriminator 1 view .LVU597
+ 416:Device/Src/flash.c ****                     for (j = 0; j < 151; j++) {
+ 2288              		.loc 1 416 21 is_stmt 0 discriminator 1 view .LVU598
+ 2289 00cc 962B     		cmp	r3, #150
+ 2290 00ce F7DD     		ble	.L143
+ 2291 00d0 D7E7     		b	.L130
+ 2292              	.LVL290:
+ 2293              	.L131:
+ 418:Device/Src/flash.c ****                     }
+ 419:Device/Src/flash.c ****                 break;
+ 420:Device/Src/flash.c ****                 case FLASH_CLEAR_MACHINE:
+ 421:Device/Src/flash.c ****                     range = i * TEST_RESULT_ONE_SIZE + MACHINE_TEST_ALL;
+ 2294              		.loc 1 421 21 is_stmt 1 view .LVU599
+ 2295              		.loc 1 421 33 is_stmt 0 view .LVU600
+ 2296 00d2 4FEA4E2C 		lsl	ip, lr, #9
+ 2297              		.loc 1 421 54 view .LVU601
+ 2298 00d6 0CF1420C 		add	ip, ip, #66
+ 2299              	.LVL291:
+ 422:Device/Src/flash.c ****                     for (j = 0; j < FALSH_MACHINE_DATA_LENGTH; j++) {
+ 2300              		.loc 1 422 21 is_stmt 1 view .LVU602
+ 2301              		.loc 1 422 28 is_stmt 0 view .LVU603
+ 2302 00da 0023     		movs	r3, #0
+ 2303              		.loc 1 422 21 view .LVU604
+ 2304 00dc 05E0     		b	.L144
+ 2305              	.LVL292:
+ 2306              	.L145:
+ 423:Device/Src/flash.c ****                         g_bufferSector[range + j] = 0xff;
+ 2307              		.loc 1 423 25 is_stmt 1 discriminator 3 view .LVU605
+ 2308              		.loc 1 423 46 is_stmt 0 discriminator 3 view .LVU606
+ 2309 00de 03EB0C02 		add	r2, r3, ip
+ 2310              		.loc 1 423 51 discriminator 3 view .LVU607
+ 2311 00e2 1649     		ldr	r1, .L153
+ 2312 00e4 FF20     		movs	r0, #255
+ 2313 00e6 8854     		strb	r0, [r1, r2]
+ 422:Device/Src/flash.c ****                     for (j = 0; j < FALSH_MACHINE_DATA_LENGTH; j++) {
+ 2314              		.loc 1 422 64 is_stmt 1 discriminator 3 view .LVU608
+ 422:Device/Src/flash.c ****                     for (j = 0; j < FALSH_MACHINE_DATA_LENGTH; j++) {
+ 2315              		.loc 1 422 65 is_stmt 0 discriminator 3 view .LVU609
+ 2316 00e8 0133     		adds	r3, r3, #1
+ 2317              	.LVL293:
+ 2318              	.L144:
+ 422:Device/Src/flash.c ****                     for (j = 0; j < FALSH_MACHINE_DATA_LENGTH; j++) {
+ 2319              		.loc 1 422 33 is_stmt 1 discriminator 1 view .LVU610
+ 422:Device/Src/flash.c ****                     for (j = 0; j < FALSH_MACHINE_DATA_LENGTH; j++) {
+ 2320              		.loc 1 422 21 is_stmt 0 discriminator 1 view .LVU611
+ 2321 00ea 0F2B     		cmp	r3, #15
+ 2322 00ec F7DD     		ble	.L145
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 55
+
+
+ 2323 00ee C8E7     		b	.L130
+ 2324              	.LVL294:
+ 2325              	.L151:
+ 424:Device/Src/flash.c ****                     }
+ 425:Device/Src/flash.c ****                 break;
+ 426:Device/Src/flash.c ****                 default: break;
+ 427:Device/Src/flash.c ****             }
+ 428:Device/Src/flash.c ****         }
+ 429:Device/Src/flash.c ****         flash_erase(address, 2);//erase the sector    
+ 2326              		.loc 1 429 9 is_stmt 1 view .LVU612
+ 2327 00f0 0221     		movs	r1, #2
+ 2328 00f2 2846     		mov	r0, r5
+ 2329 00f4 FFF7FEFF 		bl	flash_erase
+ 2330              	.LVL295:
+ 430:Device/Src/flash.c ****         HAL_Delay(20);
+ 2331              		.loc 1 430 9 view .LVU613
+ 2332 00f8 1420     		movs	r0, #20
+ 2333 00fa FFF7FEFF 		bl	HAL_Delay
+ 2334              	.LVL296:
+ 431:Device/Src/flash.c ****         for (i = 0; i < PAGES_IN_SECTOR; i++) {
+ 2335              		.loc 1 431 9 view .LVU614
+ 2336              		.loc 1 431 16 is_stmt 0 view .LVU615
+ 2337 00fe 0027     		movs	r7, #0
+ 2338              		.loc 1 431 9 view .LVU616
+ 2339 0100 0CE0     		b	.L147
+ 2340              	.LVL297:
+ 2341              	.L148:
+ 432:Device/Src/flash.c ****             flash_write_data(address + (PAGE_SIZE * i), g_bufferSector + (PAGE_SIZE * i), PAGE_SIZE
+ 2342              		.loc 1 432 13 is_stmt 1 discriminator 3 view .LVU617
+ 2343 0102 4FF48072 		mov	r2, #256
+ 2344 0106 0D49     		ldr	r1, .L153
+ 2345 0108 01EB0721 		add	r1, r1, r7, lsl #8
+ 2346 010c 05EB0720 		add	r0, r5, r7, lsl #8
+ 2347 0110 FFF7FEFF 		bl	flash_write_data
+ 2348              	.LVL298:
+ 433:Device/Src/flash.c ****             HAL_Delay(5);
+ 2349              		.loc 1 433 13 discriminator 3 view .LVU618
+ 2350 0114 0520     		movs	r0, #5
+ 2351 0116 FFF7FEFF 		bl	HAL_Delay
+ 2352              	.LVL299:
+ 431:Device/Src/flash.c ****         for (i = 0; i < PAGES_IN_SECTOR; i++) {
+ 2353              		.loc 1 431 42 discriminator 3 view .LVU619
+ 431:Device/Src/flash.c ****         for (i = 0; i < PAGES_IN_SECTOR; i++) {
+ 2354              		.loc 1 431 43 is_stmt 0 discriminator 3 view .LVU620
+ 2355 011a 0137     		adds	r7, r7, #1
+ 2356              	.LVL300:
+ 2357              	.L147:
+ 431:Device/Src/flash.c ****         for (i = 0; i < PAGES_IN_SECTOR; i++) {
+ 2358              		.loc 1 431 21 is_stmt 1 discriminator 1 view .LVU621
+ 431:Device/Src/flash.c ****         for (i = 0; i < PAGES_IN_SECTOR; i++) {
+ 2359              		.loc 1 431 9 is_stmt 0 discriminator 1 view .LVU622
+ 2360 011c 0F2F     		cmp	r7, #15
+ 2361 011e F0DD     		ble	.L148
+ 2362              	.LVL301:
+ 2363              	.L126:
+ 388:Device/Src/flash.c ****         memset(g_bufferSector, 0xff, SECTOR_SIZE);
+ 2364              		.loc 1 388 17 is_stmt 1 discriminator 1 view .LVU623
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 56
+
+
+ 388:Device/Src/flash.c ****         memset(g_bufferSector, 0xff, SECTOR_SIZE);
+ 2365              		.loc 1 388 5 is_stmt 0 discriminator 1 view .LVU624
+ 2366 0120 0C2E     		cmp	r6, #12
+ 2367 0122 09DC     		bgt	.L152
+ 389:Device/Src/flash.c ****         address = TEST_RESULT_START_ADDR + SECTOR_SIZE * k;
+ 2368              		.loc 1 389 9 is_stmt 1 view .LVU625
+ 2369 0124 4FF48052 		mov	r2, #4096
+ 2370 0128 FF21     		movs	r1, #255
+ 2371 012a 0448     		ldr	r0, .L153
+ 2372 012c FFF7FEFF 		bl	memset
+ 2373              	.LVL302:
+ 390:Device/Src/flash.c ****         for (i = 0; i < PAGES_IN_SECTOR; i++) {
+ 2374              		.loc 1 390 9 view .LVU626
+ 390:Device/Src/flash.c ****         for (i = 0; i < PAGES_IN_SECTOR; i++) {
+ 2375              		.loc 1 390 42 is_stmt 0 view .LVU627
+ 2376 0130 0136     		adds	r6, r6, #1
+ 2377              	.LVL303:
+ 390:Device/Src/flash.c ****         for (i = 0; i < PAGES_IN_SECTOR; i++) {
+ 2378              		.loc 1 390 42 view .LVU628
+ 2379 0132 3503     		lsls	r5, r6, #12
+ 2380              	.LVL304:
+ 391:Device/Src/flash.c ****             flash_read_data(address + (PAGE_SIZE * i), g_bufferSector + (PAGE_SIZE * i), PAGE_SIZE)
+ 2381              		.loc 1 391 9 is_stmt 1 view .LVU629
+ 391:Device/Src/flash.c ****             flash_read_data(address + (PAGE_SIZE * i), g_bufferSector + (PAGE_SIZE * i), PAGE_SIZE)
+ 2382              		.loc 1 391 16 is_stmt 0 view .LVU630
+ 2383 0134 0027     		movs	r7, #0
+ 391:Device/Src/flash.c ****             flash_read_data(address + (PAGE_SIZE * i), g_bufferSector + (PAGE_SIZE * i), PAGE_SIZE)
+ 2384              		.loc 1 391 9 view .LVU631
+ 2385 0136 72E7     		b	.L127
+ 2386              	.LVL305:
+ 2387              	.L152:
+ 434:Device/Src/flash.c ****         }
+ 435:Device/Src/flash.c ****     }
+ 436:Device/Src/flash.c ****     
+ 437:Device/Src/flash.c **** }
+ 2388              		.loc 1 437 1 view .LVU632
+ 2389 0138 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 2390              	.LVL306:
+ 2391              	.L154:
+ 2392              		.loc 1 437 1 view .LVU633
+ 2393              		.align	2
+ 2394              	.L153:
+ 2395 013c 00000000 		.word	g_bufferSector
+ 2396              		.cfi_endproc
+ 2397              	.LFE246:
+ 2399              		.section	.rodata.test_data_printf.str1.4,"aMS",%progbits,1
+ 2400              		.align	2
+ 2401              	.LC3:
+ 2402 0000 49443A25 		.ascii	"ID:%02X%02X%02X%02X%02X%02X%02X%02X\012\000"
+ 2402      30325825 
+ 2402      30325825 
+ 2402      30325825 
+ 2402      30325825 
+ 2403 0025 000000   		.align	2
+ 2404              	.LC4:
+ 2405 0028 63617020 		.ascii	"cap adjust tset:\012\000"
+ 2405      61646A75 
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 57
+
+
+ 2405      73742074 
+ 2405      7365743A 
+ 2405      0A00
+ 2406              		.global	__aeabi_f2d
+ 2407 003a 0000     		.align	2
+ 2408              	.LC5:
+ 2409 003c 5B252E31 		.ascii	"[%.1f, %.2f] \000"
+ 2409      662C2025 
+ 2409      2E32665D 
+ 2409      2000
+ 2410 004a 0000     		.align	2
+ 2411              	.LC6:
+ 2412 004c 0A00     		.ascii	"\012\000"
+ 2413 004e 0000     		.align	2
+ 2414              	.LC7:
+ 2415 0050 5B2D3130 		.ascii	"[-10C error]%.2fppm, [60C error]%.2fppm \012\000"
+ 2415      43206572 
+ 2415      726F725D 
+ 2415      252E3266 
+ 2415      70706D2C 
+ 2416 007a 0000     		.align	2
+ 2417              	.LC8:
+ 2418 007c 6167696E 		.ascii	"aging data:\012\000"
+ 2418      67206461 
+ 2418      74613A0A 
+ 2418      00
+ 2419 0089 000000   		.align	2
+ 2420              	.LC9:
+ 2421 008c 74657374 		.ascii	"test temp:%d, config9:%d\012\000"
+ 2421      2074656D 
+ 2421      703A2564 
+ 2421      2C20636F 
+ 2421      6E666967 
+ 2422 00a6 0000     		.align	2
+ 2423              	.LC10:
+ 2424 00a8 6D616368 		.ascii	"machine data:\012\000"
+ 2424      696E6520 
+ 2424      64617461 
+ 2424      3A0A00
+ 2425 00b7 00       		.align	2
+ 2426              	.LC11:
+ 2427 00b8 49766464 		.ascii	"Ivdd:%dnA, Ivbat:%dnA\012\000"
+ 2427      3A25646E 
+ 2427      412C2049 
+ 2427      76626174 
+ 2427      3A25646E 
+ 2428 00cf 00       		.align	2
+ 2429              	.LC12:
+ 2430 00d0 636F6E66 		.ascii	"config9:%02X, configC:%02X\012\000"
+ 2430      6967393A 
+ 2430      25303258 
+ 2430      2C20636F 
+ 2430      6E666967 
+ 2431              		.align	2
+ 2432              	.LC13:
+ 2433 00ec 74656D70 		.ascii	"temp system:%dC, rtc:%dC\012\000"
+ 2433      20737973 
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 58
+
+
+ 2433      74656D3A 
+ 2433      2564432C 
+ 2433      20727463 
+ 2434 0106 0000     		.align	2
+ 2435              	.LC14:
+ 2436 0108 74657374 		.ascii	"test frequency:%fkHz\012\000"
+ 2436      20667265 
+ 2436      7175656E 
+ 2436      63793A25 
+ 2436      666B487A 
+ 2437 011e 0000     		.align	2
+ 2438              	.LC15:
+ 2439 0120 76626174 		.ascii	"vbat:%dmV, charge:%dmV\012\000"
+ 2439      3A25646D 
+ 2439      562C2063 
+ 2439      68617267 
+ 2439      653A2564 
+ 2440              		.align	2
+ 2441              	.LC16:
+ 2442 0138 63617020 		.ascii	"cap calculate:\000"
+ 2442      63616C63 
+ 2442      756C6174 
+ 2442      653A00
+ 2443 0147 00       		.align	2
+ 2444              	.LC17:
+ 2445 0148 0A5B2564 		.ascii	"\012[%d]\011\000"
+ 2445      5D0900
+ 2446 014f 00       		.align	2
+ 2447              	.LC18:
+ 2448 0150 25303258 		.ascii	"%02X \000"
+ 2448      2000
+ 2449              		.section	.text.test_data_printf,"ax",%progbits
+ 2450              		.align	1
+ 2451              		.global	test_data_printf
+ 2452              		.syntax unified
+ 2453              		.thumb
+ 2454              		.thumb_func
+ 2456              	test_data_printf:
+ 2457              	.LVL307:
+ 2458              	.LFB247:
+ 438:Device/Src/flash.c **** 
+ 439:Device/Src/flash.c **** 
+ 440:Device/Src/flash.c **** void test_data_printf(uint8_t mode, TestResult result) 
+ 441:Device/Src/flash.c **** {
+ 2459              		.loc 1 441 1 is_stmt 1 view -0
+ 2460              		.cfi_startproc
+ 2461              		@ args = 240, pretend = 16, frame = 0
+ 2462              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2463              		.loc 1 441 1 is_stmt 0 view .LVU635
+ 2464 0000 84B0     		sub	sp, sp, #16
+ 2465              	.LCFI30:
+ 2466              		.cfi_def_cfa_offset 16
+ 2467 0002 F0B5     		push	{r4, r5, r6, r7, lr}
+ 2468              	.LCFI31:
+ 2469              		.cfi_def_cfa_offset 36
+ 2470              		.cfi_offset 4, -36
+ 2471              		.cfi_offset 5, -32
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 59
+
+
+ 2472              		.cfi_offset 6, -28
+ 2473              		.cfi_offset 7, -24
+ 2474              		.cfi_offset 14, -20
+ 2475 0004 B9B0     		sub	sp, sp, #228
+ 2476              	.LCFI32:
+ 2477              		.cfi_def_cfa_offset 264
+ 2478 0006 3FAC     		add	r4, sp, #252
+ 2479 0008 84E80E00 		stm	r4, {r1, r2, r3}
+ 442:Device/Src/flash.c ****     int i;
+ 2480              		.loc 1 442 5 is_stmt 1 view .LVU636
+ 443:Device/Src/flash.c ****     uint8_t k;
+ 2481              		.loc 1 443 5 view .LVU637
+ 444:Device/Src/flash.c **** 		switch (mode) {
+ 2482              		.loc 1 444 3 view .LVU638
+ 2483 000c 0528     		cmp	r0, #5
+ 2484 000e 12D8     		bhi	.L155
+ 2485 0010 DFE800F0 		tbb	[pc, r0]
+ 2486              	.L158:
+ 2487 0014 16       		.byte	(.L170-.L158)/2
+ 2488 0015 18       		.byte	(.L162-.L158)/2
+ 2489 0016 31       		.byte	(.L161-.L158)/2
+ 2490 0017 64       		.byte	(.L160-.L158)/2
+ 2491 0018 6F       		.byte	(.L159-.L158)/2
+ 2492 0019 97       		.byte	(.L157-.L158)/2
+ 2493              	.LVL308:
+ 2494              		.p2align 1
+ 2495              	.L164:
+ 445:Device/Src/flash.c **** 			case 0://all printf
+ 446:Device/Src/flash.c ****                 for (k = 1; k < 6; k++) {
+ 447:Device/Src/flash.c ****                     test_data_printf(k, result);
+ 2496              		.loc 1 447 21 discriminator 3 view .LVU639
+ 2497 001a E022     		movs	r2, #224
+ 2498 001c 42A9     		add	r1, sp, #264
+ 2499 001e 6846     		mov	r0, sp
+ 2500 0020 FFF7FEFF 		bl	memcpy
+ 2501              	.LVL309:
+ 2502 0024 3FAB     		add	r3, sp, #252
+ 2503 0026 0ECB     		ldm	r3, {r1, r2, r3}
+ 2504 0028 2046     		mov	r0, r4
+ 2505 002a FFF7FEFF 		bl	test_data_printf
+ 2506              	.LVL310:
+ 446:Device/Src/flash.c ****                     test_data_printf(k, result);
+ 2507              		.loc 1 446 36 discriminator 3 view .LVU640
+ 446:Device/Src/flash.c ****                     test_data_printf(k, result);
+ 2508              		.loc 1 446 37 is_stmt 0 discriminator 3 view .LVU641
+ 2509 002e 0134     		adds	r4, r4, #1
+ 2510              	.LVL311:
+ 446:Device/Src/flash.c ****                     test_data_printf(k, result);
+ 2511              		.loc 1 446 37 discriminator 3 view .LVU642
+ 2512 0030 E4B2     		uxtb	r4, r4
+ 2513              	.LVL312:
+ 2514              	.L163:
+ 446:Device/Src/flash.c ****                     test_data_printf(k, result);
+ 2515              		.loc 1 446 29 is_stmt 1 discriminator 1 view .LVU643
+ 446:Device/Src/flash.c ****                     test_data_printf(k, result);
+ 2516              		.loc 1 446 17 is_stmt 0 discriminator 1 view .LVU644
+ 2517 0032 052C     		cmp	r4, #5
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 60
+
+
+ 2518 0034 F1D9     		bls	.L164
+ 2519              	.LVL313:
+ 2520              	.L155:
+ 448:Device/Src/flash.c ****                 }
+ 449:Device/Src/flash.c **** 			break;
+ 450:Device/Src/flash.c **** 			case 1:
+ 451:Device/Src/flash.c **** 				UsbPrintf("ID:%02X%02X%02X%02X%02X%02X%02X%02X\n", result.chipID[0], result.chipID[1], 
+ 452:Device/Src/flash.c **** 				result.chipID[2], result.chipID[3], result.chipID[4], result.chipID[5], result.chipID[6], resul
+ 453:Device/Src/flash.c **** 			break;
+ 454:Device/Src/flash.c **** 			case 2:
+ 455:Device/Src/flash.c **** 				UsbPrintf("cap adjust tset:\n");
+ 456:Device/Src/flash.c **** 				for (i = 0; i < MAX_TEST_DOT_NUMBER; i++) {
+ 457:Device/Src/flash.c **** 					UsbPrintf("[%.1f, %.2f] ", result.testDotTemp[i], result.testDotCap[i]);
+ 458:Device/Src/flash.c **** 				}
+ 459:Device/Src/flash.c ****                 UsbPrintf("\n");
+ 460:Device/Src/flash.c **** 				UsbPrintf("[-10C error]%.2fppm, [60C error]%.2fppm \n", result.testCenter[0], result.testCenter
+ 461:Device/Src/flash.c **** 			break;
+ 462:Device/Src/flash.c **** 			case 3:
+ 463:Device/Src/flash.c **** 				UsbPrintf("aging data:\n");
+ 464:Device/Src/flash.c **** 				UsbPrintf("test temp:%d, config9:%d\n", result.setTemp, result.tempConfig);
+ 465:Device/Src/flash.c **** 				// UsbPrintf("start time cold:%dms, hot:%dms\n", result.startTimeCold, result.startTimeHot);
+ 466:Device/Src/flash.c **** 				// UsbPrintf("error time cold:%ds, hot:%ds\n", result.errorTimeCold, result.errorTimeHot);
+ 467:Device/Src/flash.c **** 			break;
+ 468:Device/Src/flash.c **** 			case 4:
+ 469:Device/Src/flash.c **** 				UsbPrintf("machine data:\n");
+ 470:Device/Src/flash.c **** 				UsbPrintf("Ivdd:%dnA, Ivbat:%dnA\n", result.machine.Ivdd, result.machine.Ivbat);
+ 471:Device/Src/flash.c **** 				UsbPrintf("config9:%02X, configC:%02X\n", result.machine.config9, result.machine.configC);
+ 472:Device/Src/flash.c **** 				UsbPrintf("temp system:%dC, rtc:%dC\n", result.machine.sysTemp, result.machine.rtcTemp);
+ 473:Device/Src/flash.c **** 				UsbPrintf("test frequency:%fkHz\n", result.machine.testFreq);
+ 474:Device/Src/flash.c **** 				UsbPrintf("vbat:%dmV, charge:%dmV\n", result.machine.vbat_2V5, result.machine.charge);
+ 475:Device/Src/flash.c **** 			break;
+ 476:Device/Src/flash.c **** 			case 5:
+ 477:Device/Src/flash.c **** 				UsbPrintf("cap calculate:");
+ 478:Device/Src/flash.c **** 				for (i = 0; i < 151; i++) {
+ 479:Device/Src/flash.c **** 					if (i % 20 == 0) { UsbPrintf("\n[%d]\t", i);}
+ 480:Device/Src/flash.c **** 					UsbPrintf("%02X ", result.capCalcul[i]);
+ 481:Device/Src/flash.c **** 				}
+ 482:Device/Src/flash.c **** 			break;
+ 483:Device/Src/flash.c **** 			default:
+ 484:Device/Src/flash.c **** 			break;
+ 485:Device/Src/flash.c **** 		}
+ 486:Device/Src/flash.c **** 
+ 487:Device/Src/flash.c **** }
+ 2521              		.loc 1 487 1 view .LVU645
+ 2522 0036 39B0     		add	sp, sp, #228
+ 2523              	.LCFI33:
+ 2524              		.cfi_remember_state
+ 2525              		.cfi_def_cfa_offset 36
+ 2526              		@ sp needed
+ 2527 0038 BDE8F040 		pop	{r4, r5, r6, r7, lr}
+ 2528              	.LCFI34:
+ 2529              		.cfi_restore 14
+ 2530              		.cfi_restore 7
+ 2531              		.cfi_restore 6
+ 2532              		.cfi_restore 5
+ 2533              		.cfi_restore 4
+ 2534              		.cfi_def_cfa_offset 16
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 61
+
+
+ 2535 003c 04B0     		add	sp, sp, #16
+ 2536              	.LCFI35:
+ 2537              		.cfi_def_cfa_offset 0
+ 2538 003e 7047     		bx	lr
+ 2539              	.LVL314:
+ 2540              	.L170:
+ 2541              	.LCFI36:
+ 2542              		.cfi_restore_state
+ 444:Device/Src/flash.c **** 			case 0://all printf
+ 2543              		.loc 1 444 3 view .LVU646
+ 2544 0040 0124     		movs	r4, #1
+ 2545 0042 F6E7     		b	.L163
+ 2546              	.L162:
+ 451:Device/Src/flash.c **** 				result.chipID[2], result.chipID[3], result.chipID[4], result.chipID[5], result.chipID[6], resul
+ 2547              		.loc 1 451 5 is_stmt 1 view .LVU647
+ 452:Device/Src/flash.c **** 			break;
+ 2548              		.loc 1 452 36 is_stmt 0 view .LVU648
+ 2549 0044 9DF8FF30 		ldrb	r3, [sp, #255]	@ zero_extendqisi2
+ 452:Device/Src/flash.c **** 			break;
+ 2550              		.loc 1 452 54 view .LVU649
+ 2551 0048 9DF80021 		ldrb	r2, [sp, #256]	@ zero_extendqisi2
+ 452:Device/Src/flash.c **** 			break;
+ 2552              		.loc 1 452 72 view .LVU650
+ 2553 004c 9DF80111 		ldrb	r1, [sp, #257]	@ zero_extendqisi2
+ 452:Device/Src/flash.c **** 			break;
+ 2554              		.loc 1 452 90 view .LVU651
+ 2555 0050 9DF80201 		ldrb	r0, [sp, #258]	@ zero_extendqisi2
+ 2556              	.LVL315:
+ 452:Device/Src/flash.c **** 			break;
+ 2557              		.loc 1 452 108 view .LVU652
+ 2558 0054 9DF80341 		ldrb	r4, [sp, #259]	@ zero_extendqisi2
+ 451:Device/Src/flash.c **** 				result.chipID[2], result.chipID[3], result.chipID[4], result.chipID[5], result.chipID[6], resul
+ 2559              		.loc 1 451 5 view .LVU653
+ 2560 0058 0494     		str	r4, [sp, #16]
+ 2561 005a 0390     		str	r0, [sp, #12]
+ 2562 005c 0291     		str	r1, [sp, #8]
+ 2563 005e 0192     		str	r2, [sp, #4]
+ 2564 0060 0093     		str	r3, [sp]
+ 2565 0062 9DF8FE30 		ldrb	r3, [sp, #254]	@ zero_extendqisi2
+ 2566 0066 9DF8FD20 		ldrb	r2, [sp, #253]	@ zero_extendqisi2
+ 2567 006a 9DF8FC10 		ldrb	r1, [sp, #252]	@ zero_extendqisi2
+ 2568 006e 4548     		ldr	r0, .L172
+ 2569 0070 FFF7FEFF 		bl	UsbPrintf
+ 2570              	.LVL316:
+ 453:Device/Src/flash.c **** 			case 2:
+ 2571              		.loc 1 453 4 is_stmt 1 view .LVU654
+ 2572 0074 DFE7     		b	.L155
+ 2573              	.LVL317:
+ 2574              	.L161:
+ 455:Device/Src/flash.c **** 				for (i = 0; i < MAX_TEST_DOT_NUMBER; i++) {
+ 2575              		.loc 1 455 5 view .LVU655
+ 2576 0076 4448     		ldr	r0, .L172+4
+ 2577              	.LVL318:
+ 455:Device/Src/flash.c **** 				for (i = 0; i < MAX_TEST_DOT_NUMBER; i++) {
+ 2578              		.loc 1 455 5 is_stmt 0 view .LVU656
+ 2579 0078 FFF7FEFF 		bl	UsbPrintf
+ 2580              	.LVL319:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 62
+
+
+ 456:Device/Src/flash.c **** 					UsbPrintf("[%.1f, %.2f] ", result.testDotTemp[i], result.testDotCap[i]);
+ 2581              		.loc 1 456 5 is_stmt 1 view .LVU657
+ 456:Device/Src/flash.c **** 					UsbPrintf("[%.1f, %.2f] ", result.testDotTemp[i], result.testDotCap[i]);
+ 2582              		.loc 1 456 12 is_stmt 0 view .LVU658
+ 2583 007c 0024     		movs	r4, #0
+ 456:Device/Src/flash.c **** 					UsbPrintf("[%.1f, %.2f] ", result.testDotTemp[i], result.testDotCap[i]);
+ 2584              		.loc 1 456 5 view .LVU659
+ 2585 007e 18E0     		b	.L165
+ 2586              	.LVL320:
+ 2587              	.L166:
+ 457:Device/Src/flash.c **** 				}
+ 2588              		.loc 1 457 6 is_stmt 1 discriminator 3 view .LVU660
+ 457:Device/Src/flash.c **** 				}
+ 2589              		.loc 1 457 51 is_stmt 0 discriminator 3 view .LVU661
+ 2590 0080 A31C     		adds	r3, r4, #2
+ 2591 0082 3EAA     		add	r2, sp, #248
+ 2592 0084 02EB8303 		add	r3, r2, r3, lsl #2
+ 457:Device/Src/flash.c **** 				}
+ 2593              		.loc 1 457 73 discriminator 3 view .LVU662
+ 2594 0088 A21D     		adds	r2, r4, #6
+ 2595 008a 3EA9     		add	r1, sp, #248
+ 2596 008c 01EB8202 		add	r2, r1, r2, lsl #2
+ 2597 0090 9568     		ldr	r5, [r2, #8]	@ float
+ 457:Device/Src/flash.c **** 				}
+ 2598              		.loc 1 457 6 discriminator 3 view .LVU663
+ 2599 0092 5868     		ldr	r0, [r3, #4]	@ float
+ 2600 0094 FFF7FEFF 		bl	__aeabi_f2d
+ 2601              	.LVL321:
+ 2602 0098 0646     		mov	r6, r0
+ 2603 009a 0F46     		mov	r7, r1
+ 2604 009c 2846     		mov	r0, r5	@ float
+ 2605 009e FFF7FEFF 		bl	__aeabi_f2d
+ 2606              	.LVL322:
+ 2607 00a2 CDE90001 		strd	r0, [sp]
+ 2608 00a6 3246     		mov	r2, r6
+ 2609 00a8 3B46     		mov	r3, r7
+ 2610 00aa 3848     		ldr	r0, .L172+8
+ 2611 00ac FFF7FEFF 		bl	UsbPrintf
+ 2612              	.LVL323:
+ 456:Device/Src/flash.c **** 					UsbPrintf("[%.1f, %.2f] ", result.testDotTemp[i], result.testDotCap[i]);
+ 2613              		.loc 1 456 42 is_stmt 1 discriminator 3 view .LVU664
+ 456:Device/Src/flash.c **** 					UsbPrintf("[%.1f, %.2f] ", result.testDotTemp[i], result.testDotCap[i]);
+ 2614              		.loc 1 456 43 is_stmt 0 discriminator 3 view .LVU665
+ 2615 00b0 0134     		adds	r4, r4, #1
+ 2616              	.LVL324:
+ 2617              	.L165:
+ 456:Device/Src/flash.c **** 					UsbPrintf("[%.1f, %.2f] ", result.testDotTemp[i], result.testDotCap[i]);
+ 2618              		.loc 1 456 17 is_stmt 1 discriminator 1 view .LVU666
+ 456:Device/Src/flash.c **** 					UsbPrintf("[%.1f, %.2f] ", result.testDotTemp[i], result.testDotCap[i]);
+ 2619              		.loc 1 456 5 is_stmt 0 discriminator 1 view .LVU667
+ 2620 00b2 042C     		cmp	r4, #4
+ 2621 00b4 E4DD     		ble	.L166
+ 459:Device/Src/flash.c **** 				UsbPrintf("[-10C error]%.2fppm, [60C error]%.2fppm \n", result.testCenter[0], result.testCenter
+ 2622              		.loc 1 459 17 is_stmt 1 view .LVU668
+ 2623 00b6 3648     		ldr	r0, .L172+12
+ 2624 00b8 FFF7FEFF 		bl	UsbPrintf
+ 2625              	.LVL325:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 63
+
+
+ 460:Device/Src/flash.c **** 			break;
+ 2626              		.loc 1 460 5 view .LVU669
+ 2627 00bc 4E98     		ldr	r0, [sp, #312]	@ float
+ 2628 00be FFF7FEFF 		bl	__aeabi_f2d
+ 2629              	.LVL326:
+ 2630 00c2 0446     		mov	r4, r0
+ 2631              	.LVL327:
+ 460:Device/Src/flash.c **** 			break;
+ 2632              		.loc 1 460 5 is_stmt 0 view .LVU670
+ 2633 00c4 0D46     		mov	r5, r1
+ 2634 00c6 4F98     		ldr	r0, [sp, #316]	@ float
+ 2635 00c8 FFF7FEFF 		bl	__aeabi_f2d
+ 2636              	.LVL328:
+ 2637 00cc CDE90001 		strd	r0, [sp]
+ 2638 00d0 2246     		mov	r2, r4
+ 2639 00d2 2B46     		mov	r3, r5
+ 2640 00d4 2F48     		ldr	r0, .L172+16
+ 2641 00d6 FFF7FEFF 		bl	UsbPrintf
+ 2642              	.LVL329:
+ 461:Device/Src/flash.c **** 			case 3:
+ 2643              		.loc 1 461 4 is_stmt 1 view .LVU671
+ 2644 00da ACE7     		b	.L155
+ 2645              	.LVL330:
+ 2646              	.L160:
+ 463:Device/Src/flash.c **** 				UsbPrintf("test temp:%d, config9:%d\n", result.setTemp, result.tempConfig);
+ 2647              		.loc 1 463 5 view .LVU672
+ 2648 00dc 2E48     		ldr	r0, .L172+20
+ 2649              	.LVL331:
+ 463:Device/Src/flash.c **** 				UsbPrintf("test temp:%d, config9:%d\n", result.setTemp, result.tempConfig);
+ 2650              		.loc 1 463 5 is_stmt 0 view .LVU673
+ 2651 00de FFF7FEFF 		bl	UsbPrintf
+ 2652              	.LVL332:
+ 464:Device/Src/flash.c **** 				// UsbPrintf("start time cold:%dms, hot:%dms\n", result.startTimeCold, result.startTimeHot);
+ 2653              		.loc 1 464 5 is_stmt 1 view .LVU674
+ 2654 00e2 9DF82D21 		ldrb	r2, [sp, #301]	@ zero_extendqisi2
+ 2655 00e6 9DF82C11 		ldrb	r1, [sp, #300]	@ zero_extendqisi2
+ 2656 00ea 2C48     		ldr	r0, .L172+24
+ 2657 00ec FFF7FEFF 		bl	UsbPrintf
+ 2658              	.LVL333:
+ 467:Device/Src/flash.c **** 			case 4:
+ 2659              		.loc 1 467 4 view .LVU675
+ 2660 00f0 A1E7     		b	.L155
+ 2661              	.LVL334:
+ 2662              	.L159:
+ 469:Device/Src/flash.c **** 				UsbPrintf("Ivdd:%dnA, Ivbat:%dnA\n", result.machine.Ivdd, result.machine.Ivbat);
+ 2663              		.loc 1 469 5 view .LVU676
+ 2664 00f2 2B48     		ldr	r0, .L172+28
+ 2665              	.LVL335:
+ 469:Device/Src/flash.c **** 				UsbPrintf("Ivdd:%dnA, Ivbat:%dnA\n", result.machine.Ivdd, result.machine.Ivbat);
+ 2666              		.loc 1 469 5 is_stmt 0 view .LVU677
+ 2667 00f4 FFF7FEFF 		bl	UsbPrintf
+ 2668              	.LVL336:
+ 470:Device/Src/flash.c **** 				UsbPrintf("config9:%02X, configC:%02X\n", result.machine.config9, result.machine.configC);
+ 2669              		.loc 1 470 5 is_stmt 1 view .LVU678
+ 2670 00f8 BDF84221 		ldrh	r2, [sp, #322]
+ 2671 00fc BDF84011 		ldrh	r1, [sp, #320]
+ 2672 0100 2848     		ldr	r0, .L172+32
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 64
+
+
+ 2673 0102 FFF7FEFF 		bl	UsbPrintf
+ 2674              	.LVL337:
+ 471:Device/Src/flash.c **** 				UsbPrintf("temp system:%dC, rtc:%dC\n", result.machine.sysTemp, result.machine.rtcTemp);
+ 2675              		.loc 1 471 5 view .LVU679
+ 2676 0106 9DF84521 		ldrb	r2, [sp, #325]	@ zero_extendqisi2
+ 2677 010a 9DF84411 		ldrb	r1, [sp, #324]	@ zero_extendqisi2
+ 2678 010e 2648     		ldr	r0, .L172+36
+ 2679 0110 FFF7FEFF 		bl	UsbPrintf
+ 2680              	.LVL338:
+ 472:Device/Src/flash.c **** 				UsbPrintf("test frequency:%fkHz\n", result.machine.testFreq);
+ 2681              		.loc 1 472 5 view .LVU680
+ 2682 0114 9DF84721 		ldrb	r2, [sp, #327]	@ zero_extendqisi2
+ 2683 0118 9DF84611 		ldrb	r1, [sp, #326]	@ zero_extendqisi2
+ 2684 011c 2348     		ldr	r0, .L172+40
+ 2685 011e FFF7FEFF 		bl	UsbPrintf
+ 2686              	.LVL339:
+ 473:Device/Src/flash.c **** 				UsbPrintf("vbat:%dmV, charge:%dmV\n", result.machine.vbat_2V5, result.machine.charge);
+ 2687              		.loc 1 473 5 view .LVU681
+ 2688 0122 5298     		ldr	r0, [sp, #328]	@ float
+ 2689 0124 FFF7FEFF 		bl	__aeabi_f2d
+ 2690              	.LVL340:
+ 2691 0128 0246     		mov	r2, r0
+ 2692 012a 0B46     		mov	r3, r1
+ 2693 012c 2048     		ldr	r0, .L172+44
+ 2694 012e FFF7FEFF 		bl	UsbPrintf
+ 2695              	.LVL341:
+ 474:Device/Src/flash.c **** 			break;
+ 2696              		.loc 1 474 5 view .LVU682
+ 2697 0132 BDF84E21 		ldrh	r2, [sp, #334]
+ 2698 0136 BDF84C11 		ldrh	r1, [sp, #332]
+ 2699 013a 1E48     		ldr	r0, .L172+48
+ 2700 013c FFF7FEFF 		bl	UsbPrintf
+ 2701              	.LVL342:
+ 475:Device/Src/flash.c **** 			case 5:
+ 2702              		.loc 1 475 4 view .LVU683
+ 2703 0140 79E7     		b	.L155
+ 2704              	.LVL343:
+ 2705              	.L157:
+ 477:Device/Src/flash.c **** 				for (i = 0; i < 151; i++) {
+ 2706              		.loc 1 477 5 view .LVU684
+ 2707 0142 1D48     		ldr	r0, .L172+52
+ 2708              	.LVL344:
+ 477:Device/Src/flash.c **** 				for (i = 0; i < 151; i++) {
+ 2709              		.loc 1 477 5 is_stmt 0 view .LVU685
+ 2710 0144 FFF7FEFF 		bl	UsbPrintf
+ 2711              	.LVL345:
+ 478:Device/Src/flash.c **** 					if (i % 20 == 0) { UsbPrintf("\n[%d]\t", i);}
+ 2712              		.loc 1 478 5 is_stmt 1 view .LVU686
+ 478:Device/Src/flash.c **** 					if (i % 20 == 0) { UsbPrintf("\n[%d]\t", i);}
+ 2713              		.loc 1 478 12 is_stmt 0 view .LVU687
+ 2714 0148 0024     		movs	r4, #0
+ 478:Device/Src/flash.c **** 					if (i % 20 == 0) { UsbPrintf("\n[%d]\t", i);}
+ 2715              		.loc 1 478 5 view .LVU688
+ 2716 014a 08E0     		b	.L167
+ 2717              	.LVL346:
+ 2718              	.L168:
+ 480:Device/Src/flash.c **** 				}
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 65
+
+
+ 2719              		.loc 1 480 6 is_stmt 1 discriminator 2 view .LVU689
+ 480:Device/Src/flash.c **** 				}
+ 2720              		.loc 1 480 41 is_stmt 0 discriminator 2 view .LVU690
+ 2721 014c 04F1F803 		add	r3, r4, #248
+ 2722 0150 6B44     		add	r3, sp, r3
+ 480:Device/Src/flash.c **** 				}
+ 2723              		.loc 1 480 6 discriminator 2 view .LVU691
+ 2724 0152 93F85810 		ldrb	r1, [r3, #88]	@ zero_extendqisi2
+ 2725 0156 1948     		ldr	r0, .L172+56
+ 2726 0158 FFF7FEFF 		bl	UsbPrintf
+ 2727              	.LVL347:
+ 478:Device/Src/flash.c **** 					if (i % 20 == 0) { UsbPrintf("\n[%d]\t", i);}
+ 2728              		.loc 1 478 26 is_stmt 1 discriminator 2 view .LVU692
+ 478:Device/Src/flash.c **** 					if (i % 20 == 0) { UsbPrintf("\n[%d]\t", i);}
+ 2729              		.loc 1 478 27 is_stmt 0 discriminator 2 view .LVU693
+ 2730 015c 0134     		adds	r4, r4, #1
+ 2731              	.LVL348:
+ 2732              	.L167:
+ 478:Device/Src/flash.c **** 					if (i % 20 == 0) { UsbPrintf("\n[%d]\t", i);}
+ 2733              		.loc 1 478 17 is_stmt 1 discriminator 1 view .LVU694
+ 478:Device/Src/flash.c **** 					if (i % 20 == 0) { UsbPrintf("\n[%d]\t", i);}
+ 2734              		.loc 1 478 5 is_stmt 0 discriminator 1 view .LVU695
+ 2735 015e 962C     		cmp	r4, #150
+ 2736 0160 3FF769AF 		bgt	.L155
+ 479:Device/Src/flash.c **** 					UsbPrintf("%02X ", result.capCalcul[i]);
+ 2737              		.loc 1 479 6 is_stmt 1 view .LVU696
+ 479:Device/Src/flash.c **** 					UsbPrintf("%02X ", result.capCalcul[i]);
+ 2738              		.loc 1 479 12 is_stmt 0 view .LVU697
+ 2739 0164 164A     		ldr	r2, .L172+60
+ 2740 0166 82FB0432 		smull	r3, r2, r2, r4
+ 2741 016a E317     		asrs	r3, r4, #31
+ 2742 016c C3EBE203 		rsb	r3, r3, r2, asr #3
+ 2743 0170 03EB8303 		add	r3, r3, r3, lsl #2
+ 479:Device/Src/flash.c **** 					UsbPrintf("%02X ", result.capCalcul[i]);
+ 2744              		.loc 1 479 9 view .LVU698
+ 2745 0174 B4EB830F 		cmp	r4, r3, lsl #2
+ 2746 0178 E8D1     		bne	.L168
+ 479:Device/Src/flash.c **** 					UsbPrintf("%02X ", result.capCalcul[i]);
+ 2747              		.loc 1 479 25 is_stmt 1 discriminator 1 view .LVU699
+ 2748 017a 2146     		mov	r1, r4
+ 2749 017c 1148     		ldr	r0, .L172+64
+ 2750 017e FFF7FEFF 		bl	UsbPrintf
+ 2751              	.LVL349:
+ 2752 0182 E3E7     		b	.L168
+ 2753              	.L173:
+ 2754              		.align	2
+ 2755              	.L172:
+ 2756 0184 00000000 		.word	.LC3
+ 2757 0188 28000000 		.word	.LC4
+ 2758 018c 3C000000 		.word	.LC5
+ 2759 0190 4C000000 		.word	.LC6
+ 2760 0194 50000000 		.word	.LC7
+ 2761 0198 7C000000 		.word	.LC8
+ 2762 019c 8C000000 		.word	.LC9
+ 2763 01a0 A8000000 		.word	.LC10
+ 2764 01a4 B8000000 		.word	.LC11
+ 2765 01a8 D0000000 		.word	.LC12
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 66
+
+
+ 2766 01ac EC000000 		.word	.LC13
+ 2767 01b0 08010000 		.word	.LC14
+ 2768 01b4 20010000 		.word	.LC15
+ 2769 01b8 38010000 		.word	.LC16
+ 2770 01bc 50010000 		.word	.LC18
+ 2771 01c0 67666666 		.word	1717986919
+ 2772 01c4 48010000 		.word	.LC17
+ 2773              		.cfi_endproc
+ 2774              	.LFE247:
+ 2776              		.global	g_bufferSector
+ 2777              		.global	read_addr
+ 2778              		.global	write_addr
+ 2779              		.global	enable_write
+ 2780              		.global	check_addr
+ 2781              		.global	w25x_read_id
+ 2782              		.section	.rodata
+ 2783              		.align	2
+ 2784              		.set	.LANCHOR1,. + 0
+ 2785              	.LC0:
+ 2786 0000 00000000 		.ascii	"\000\000\000\000\000"
+ 2786      00
+ 2787 0005 000000   		.space	3
+ 2788              	.LC2:
+ 2789 0008 0000     		.ascii	"\000\000"
+ 2790 000a 00       		.space	1
+ 2791              		.section	.bss.g_bufferSector,"aw",%nobits
+ 2792              		.align	2
+ 2795              	g_bufferSector:
+ 2796 0000 00000000 		.space	4096
+ 2796      00000000 
+ 2796      00000000 
+ 2796      00000000 
+ 2796      00000000 
+ 2797              		.section	.data.check_addr,"aw"
+ 2798              		.set	.LANCHOR0,. + 0
+ 2801              	check_addr:
+ 2802 0000 05       		.byte	5
+ 2803              		.section	.data.enable_write,"aw"
+ 2804              		.set	.LANCHOR3,. + 0
+ 2807              	enable_write:
+ 2808 0000 06       		.byte	6
+ 2809              		.section	.data.read_addr,"aw"
+ 2810              		.set	.LANCHOR5,. + 0
+ 2813              	read_addr:
+ 2814 0000 03       		.byte	3
+ 2815              		.section	.data.w25x_read_id,"aw"
+ 2816              		.set	.LANCHOR2,. + 0
+ 2819              	w25x_read_id:
+ 2820 0000 90       		.byte	-112
+ 2821              		.section	.data.write_addr,"aw"
+ 2822              		.set	.LANCHOR4,. + 0
+ 2825              	write_addr:
+ 2826 0000 02       		.byte	2
+ 2827              		.text
+ 2828              	.Letext0:
+ 2829              		.file 2 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_default_
+ 2830              		.file 3 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 67
+
+
+ 2831              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 2832              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 2833              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 2834              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 2835              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h"
+ 2836              		.file 9 "Device/Inc/flash.h"
+ 2837              		.file 10 "Core/Inc/main.h"
+ 2838              		.file 11 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 2839              		.file 12 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\string.h"
+ 2840              		.file 13 "<built-in>"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 68
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 flash.c
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:20     .text.CheckBusy:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:26     .text.CheckBusy:00000000 CheckBusy
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:121    .text.CheckBusy:00000064 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:128    .rodata.flash_device_id.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:132    .text.flash_device_id:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:138    .text.flash_device_id:00000000 flash_device_id
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:217    .text.flash_device_id:00000064 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:226    .text.address_32_to_8:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:232    .text.address_32_to_8:00000000 address_32_to_8
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:270    .text.flash_erase:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:276    .text.flash_erase:00000000 flash_erase
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:417    .text.flash_erase:000000b0 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:425    .text.flash_write_data:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:431    .text.flash_write_data:00000000 flash_write_data
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:578    .text.flash_write_data:000000b8 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:587    .text.flash_read_data:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:593    .text.flash_read_data:00000000 flash_read_data
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:704    .text.flash_read_data:00000084 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:712    .text.float_to_uint8:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:718    .text.float_to_uint8:00000000 float_to_uint8
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:761    .text.uint8_to_float:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:767    .text.uint8_to_float:00000000 uint8_to_float
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:811    .text.flash_test_flag_manage:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:817    .text.flash_test_flag_manage:00000000 flash_test_flag_manage
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:988    .text.flash_test_data_read:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:994    .text.flash_test_data_read:00000000 flash_test_data_read
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:1040   .text.flash_test_data_read:00000026 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:1532   .text.flash_test_data_write_add:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:1538   .text.flash_test_data_write_add:00000000 flash_test_data_write_add
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:1590   .text.flash_test_data_write_add:0000002e $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2082   .text.flash_test_data_clear:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2088   .text.flash_test_data_clear:00000000 flash_test_data_clear
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2253   .text.flash_test_data_clear:00000098 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2260   .text.flash_test_data_clear:000000b4 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2395   .text.flash_test_data_clear:0000013c $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2795   .bss.g_bufferSector:00000000 g_bufferSector
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2400   .rodata.test_data_printf.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2450   .text.test_data_printf:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2456   .text.test_data_printf:00000000 test_data_printf
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2487   .text.test_data_printf:00000014 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2494   .text.test_data_printf:0000001a $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2756   .text.test_data_printf:00000184 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2813   .data.read_addr:00000000 read_addr
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2825   .data.write_addr:00000000 write_addr
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2807   .data.enable_write:00000000 enable_write
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2801   .data.check_addr:00000000 check_addr
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2819   .data.w25x_read_id:00000000 w25x_read_id
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2783   .rodata:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:2792   .bss.g_bufferSector:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:1107   .text.flash_test_data_read:00000069 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:1107   .text.flash_test_data_read:0000006a $t
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:1657   .text.flash_test_data_write_add:00000071 $d
+C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s:1657   .text.flash_test_data_write_add:00000072 $t
+
+UNDEFINED SYMBOLS
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccWHwlFr.s 			page 69
+
+
+HAL_GPIO_WritePin
+HAL_SPI_Transmit
+HAL_SPI_Receive
+HAL_Delay
+hspi1
+UsbPrintf
+memset
+__aeabi_f2d
+memcpy
