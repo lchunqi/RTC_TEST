@@ -1,0 +1,2044 @@
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"devices.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.init_key_word_length,"ax",%progbits
+  20              		.align	1
+  21              		.global	init_key_word_length
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	init_key_word_length:
+  27              	.LFB243:
+  28              		.file 1 "App/Src/devices.c"
+   1:App/Src/devices.c **** #include "main.h"
+   2:App/Src/devices.c **** #include "devices.h"
+   3:App/Src/devices.c **** #include "cmsis_os.h"
+   4:App/Src/devices.c **** #include "soft_uart.h"
+   5:App/Src/devices.c **** #include <string.h>
+   6:App/Src/devices.c **** #include "user_tool.h"
+   7:App/Src/devices.c **** #include "lcd_driver.h"
+   8:App/Src/devices.c **** #include  "sd2506.h"
+   9:App/Src/devices.c **** #include <stdio.h>
+  10:App/Src/devices.c **** 
+  11:App/Src/devices.c **** uint32_t g_rxTick[MAX_DEVICES_CHANNEL] = {0};
+  12:App/Src/devices.c **** extern ExcelMessage g_deviceMessage[MAX_DEVICES_CHANNEL];
+  13:App/Src/devices.c **** extern RealTime g_systemTime;
+  14:App/Src/devices.c **** 
+  15:App/Src/devices.c **** // typedef struct {
+  16:App/Src/devices.c **** //     uint8_t board;
+  17:App/Src/devices.c **** //     float systemTemp;
+  18:App/Src/devices.c **** //     uint8_t okNumber;
+  19:App/Src/devices.c **** //     uint8_t chipName;
+  20:App/Src/devices.c **** //     int chipTemp;
+  21:App/Src/devices.c **** //     char state[20];
+  22:App/Src/devices.c **** //     char message[20];
+  23:App/Src/devices.c **** // }ExcelMessage;
+  24:App/Src/devices.c **** #define KEY_WORD_NUMBER             7
+  25:App/Src/devices.c **** char DeviceKeyWord[KEY_WORD_NUMBER][15] = {
+  26:App/Src/devices.c ****     "board:", "systemTemp:", "okNumber:", "chipName:", "chipTemp:", "state:", "message:"}; 
+  27:App/Src/devices.c **** uint8_t g_lengthKeyWord[KEY_WORD_NUMBER] = {0};
+  28:App/Src/devices.c **** uint8_t g_syncState[MAX_DEVICES_CHANNEL] = {0};
+  29:App/Src/devices.c **** 
+  30:App/Src/devices.c **** void init_key_word_length(void)
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 2
+
+
+  31:App/Src/devices.c **** {
+  29              		.loc 1 31 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 10B5     		push	{r4, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 4, -8
+  37              		.cfi_offset 14, -4
+  32:App/Src/devices.c ****     int i;
+  38              		.loc 1 32 5 view .LVU1
+  33:App/Src/devices.c ****     for (i = 0; i < KEY_WORD_NUMBER; i++) {
+  39              		.loc 1 33 5 view .LVU2
+  40              	.LVL0:
+  41              		.loc 1 33 12 is_stmt 0 view .LVU3
+  42 0002 0024     		movs	r4, #0
+  43              		.loc 1 33 5 view .LVU4
+  44 0004 08E0     		b	.L2
+  45              	.LVL1:
+  46              	.L3:
+  34:App/Src/devices.c ****         g_lengthKeyWord[i] = strlen(DeviceKeyWord[i]);
+  47              		.loc 1 34 9 is_stmt 1 discriminator 3 view .LVU5
+  48              		.loc 1 34 50 is_stmt 0 discriminator 3 view .LVU6
+  49 0006 C4EB0413 		rsb	r3, r4, r4, lsl #4
+  50              		.loc 1 34 30 discriminator 3 view .LVU7
+  51 000a 0548     		ldr	r0, .L5
+  52 000c 1844     		add	r0, r0, r3
+  53 000e FFF7FEFF 		bl	strlen
+  54              	.LVL2:
+  55              		.loc 1 34 28 discriminator 3 view .LVU8
+  56 0012 044B     		ldr	r3, .L5+4
+  57 0014 1855     		strb	r0, [r3, r4]
+  33:App/Src/devices.c ****     for (i = 0; i < KEY_WORD_NUMBER; i++) {
+  58              		.loc 1 33 38 is_stmt 1 discriminator 3 view .LVU9
+  33:App/Src/devices.c ****     for (i = 0; i < KEY_WORD_NUMBER; i++) {
+  59              		.loc 1 33 39 is_stmt 0 discriminator 3 view .LVU10
+  60 0016 0134     		adds	r4, r4, #1
+  61              	.LVL3:
+  62              	.L2:
+  33:App/Src/devices.c ****     for (i = 0; i < KEY_WORD_NUMBER; i++) {
+  63              		.loc 1 33 17 is_stmt 1 discriminator 1 view .LVU11
+  33:App/Src/devices.c ****     for (i = 0; i < KEY_WORD_NUMBER; i++) {
+  64              		.loc 1 33 5 is_stmt 0 discriminator 1 view .LVU12
+  65 0018 062C     		cmp	r4, #6
+  66 001a F4DD     		ble	.L3
+  35:App/Src/devices.c ****     }
+  36:App/Src/devices.c **** }
+  67              		.loc 1 36 1 view .LVU13
+  68 001c 10BD     		pop	{r4, pc}
+  69              	.LVL4:
+  70              	.L6:
+  71              		.loc 1 36 1 view .LVU14
+  72 001e 00BF     		.align	2
+  73              	.L5:
+  74 0020 00000000 		.word	.LANCHOR0
+  75 0024 00000000 		.word	.LANCHOR1
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 3
+
+
+  76              		.cfi_endproc
+  77              	.LFE243:
+  79              		.section	.rodata.selete_vddmode_devices.str1.4,"aMS",%progbits,1
+  80              		.align	2
+  81              	.LC0:
+  82 0000 D2D1C1AC 		.ascii	"\322\321\301\254\275\323\000"
+  82      BDD300
+  83 0007 00       		.align	2
+  84              	.LC1:
+  85 0008 41545E56 		.ascii	"AT^VDDMODE=%d\012\000"
+  85      44444D4F 
+  85      44453D25 
+  85      640A00
+  86              		.section	.text.selete_vddmode_devices,"ax",%progbits
+  87              		.align	1
+  88              		.global	selete_vddmode_devices
+  89              		.syntax unified
+  90              		.thumb
+  91              		.thumb_func
+  93              	selete_vddmode_devices:
+  94              	.LVL5:
+  95              	.LFB244:
+  37:App/Src/devices.c **** 
+  38:App/Src/devices.c **** void selete_vddmode_devices(uint8_t command)
+  39:App/Src/devices.c **** {
+  96              		.loc 1 39 1 is_stmt 1 view -0
+  97              		.cfi_startproc
+  98              		@ args = 0, pretend = 0, frame = 0
+  99              		@ frame_needed = 0, uses_anonymous_args = 0
+ 100              		.loc 1 39 1 is_stmt 0 view .LVU16
+ 101 0000 38B5     		push	{r3, r4, r5, lr}
+ 102              	.LCFI1:
+ 103              		.cfi_def_cfa_offset 16
+ 104              		.cfi_offset 3, -16
+ 105              		.cfi_offset 4, -12
+ 106              		.cfi_offset 5, -8
+ 107              		.cfi_offset 14, -4
+ 108 0002 0546     		mov	r5, r0
+  40:App/Src/devices.c ****     int i;
+ 109              		.loc 1 40 5 is_stmt 1 view .LVU17
+  41:App/Src/devices.c ****     for (i = 0; i < MAX_DEVICES_CHANNEL; i++) {
+ 110              		.loc 1 41 5 view .LVU18
+ 111              	.LVL6:
+ 112              		.loc 1 41 12 is_stmt 0 view .LVU19
+ 113 0004 0024     		movs	r4, #0
+ 114              		.loc 1 41 5 view .LVU20
+ 115 0006 00E0     		b	.L8
+ 116              	.LVL7:
+ 117              	.L9:
+ 118              		.loc 1 41 42 is_stmt 1 discriminator 2 view .LVU21
+ 119              		.loc 1 41 43 is_stmt 0 discriminator 2 view .LVU22
+ 120 0008 0134     		adds	r4, r4, #1
+ 121              	.LVL8:
+ 122              	.L8:
+ 123              		.loc 1 41 17 is_stmt 1 discriminator 1 view .LVU23
+ 124              		.loc 1 41 5 is_stmt 0 discriminator 1 view .LVU24
+ 125 000a 092C     		cmp	r4, #9
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 4
+
+
+ 126 000c 14DC     		bgt	.L12
+  42:App/Src/devices.c ****         if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+ 127              		.loc 1 42 9 is_stmt 1 view .LVU25
+ 128              		.loc 1 42 41 is_stmt 0 view .LVU26
+ 129 000e C4EBC403 		rsb	r3, r4, r4, lsl #3
+ 130 0012 DB00     		lsls	r3, r3, #3
+ 131 0014 1033     		adds	r3, r3, #16
+ 132              		.loc 1 42 13 view .LVU27
+ 133 0016 0949     		ldr	r1, .L13
+ 134 0018 0948     		ldr	r0, .L13+4
+ 135 001a 1844     		add	r0, r0, r3
+ 136 001c FFF7FEFF 		bl	strSearch
+ 137              	.LVL9:
+ 138              		.loc 1 42 12 view .LVU28
+ 139 0020 0028     		cmp	r0, #0
+ 140 0022 F1DB     		blt	.L9
+  43:App/Src/devices.c ****             devices_printf(&uart_dev[i], "AT^VDDMODE=%d\n", command);
+ 141              		.loc 1 43 13 is_stmt 1 view .LVU29
+ 142 0024 04EB4413 		add	r3, r4, r4, lsl #5
+ 143 0028 2A46     		mov	r2, r5
+ 144 002a 0649     		ldr	r1, .L13+8
+ 145 002c 0648     		ldr	r0, .L13+12
+ 146 002e 00EBC300 		add	r0, r0, r3, lsl #3
+ 147 0032 FFF7FEFF 		bl	devices_printf
+ 148              	.LVL10:
+ 149 0036 E7E7     		b	.L9
+ 150              	.L12:
+  44:App/Src/devices.c ****         }
+  45:App/Src/devices.c ****     }
+  46:App/Src/devices.c **** }
+ 151              		.loc 1 46 1 is_stmt 0 view .LVU30
+ 152 0038 38BD     		pop	{r3, r4, r5, pc}
+ 153              	.LVL11:
+ 154              	.L14:
+ 155              		.loc 1 46 1 view .LVU31
+ 156 003a 00BF     		.align	2
+ 157              	.L13:
+ 158 003c 00000000 		.word	.LC0
+ 159 0040 00000000 		.word	g_deviceMessage
+ 160 0044 08000000 		.word	.LC1
+ 161 0048 00000000 		.word	uart_dev
+ 162              		.cfi_endproc
+ 163              	.LFE244:
+ 165              		.section	.rodata.set_chipid_devices.str1.4,"aMS",%progbits,1
+ 166              		.align	2
+ 167              	.LC2:
+ 168 0000 41545E43 		.ascii	"AT^CSN=%d\012\000"
+ 168      534E3D25 
+ 168      640A00
+ 169              		.section	.text.set_chipid_devices,"ax",%progbits
+ 170              		.align	1
+ 171              		.global	set_chipid_devices
+ 172              		.syntax unified
+ 173              		.thumb
+ 174              		.thumb_func
+ 176              	set_chipid_devices:
+ 177              	.LVL12:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 5
+
+
+ 178              	.LFB245:
+  47:App/Src/devices.c **** 
+  48:App/Src/devices.c **** void set_chipid_devices(uint16_t command)
+  49:App/Src/devices.c **** {
+ 179              		.loc 1 49 1 is_stmt 1 view -0
+ 180              		.cfi_startproc
+ 181              		@ args = 0, pretend = 0, frame = 0
+ 182              		@ frame_needed = 0, uses_anonymous_args = 0
+ 183              		.loc 1 49 1 is_stmt 0 view .LVU33
+ 184 0000 38B5     		push	{r3, r4, r5, lr}
+ 185              	.LCFI2:
+ 186              		.cfi_def_cfa_offset 16
+ 187              		.cfi_offset 3, -16
+ 188              		.cfi_offset 4, -12
+ 189              		.cfi_offset 5, -8
+ 190              		.cfi_offset 14, -4
+ 191 0002 0546     		mov	r5, r0
+  50:App/Src/devices.c ****     int i;
+ 192              		.loc 1 50 5 is_stmt 1 view .LVU34
+  51:App/Src/devices.c ****     for (i = 0; i < MAX_DEVICES_CHANNEL; i++) {
+ 193              		.loc 1 51 5 view .LVU35
+ 194              	.LVL13:
+ 195              		.loc 1 51 12 is_stmt 0 view .LVU36
+ 196 0004 0024     		movs	r4, #0
+ 197              		.loc 1 51 5 view .LVU37
+ 198 0006 00E0     		b	.L16
+ 199              	.LVL14:
+ 200              	.L17:
+ 201              		.loc 1 51 42 is_stmt 1 discriminator 2 view .LVU38
+ 202              		.loc 1 51 43 is_stmt 0 discriminator 2 view .LVU39
+ 203 0008 0134     		adds	r4, r4, #1
+ 204              	.LVL15:
+ 205              	.L16:
+ 206              		.loc 1 51 17 is_stmt 1 discriminator 1 view .LVU40
+ 207              		.loc 1 51 5 is_stmt 0 discriminator 1 view .LVU41
+ 208 000a 092C     		cmp	r4, #9
+ 209 000c 14DC     		bgt	.L20
+  52:App/Src/devices.c ****         if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+ 210              		.loc 1 52 9 is_stmt 1 view .LVU42
+ 211              		.loc 1 52 41 is_stmt 0 view .LVU43
+ 212 000e C4EBC403 		rsb	r3, r4, r4, lsl #3
+ 213 0012 DB00     		lsls	r3, r3, #3
+ 214 0014 1033     		adds	r3, r3, #16
+ 215              		.loc 1 52 13 view .LVU44
+ 216 0016 0949     		ldr	r1, .L21
+ 217 0018 0948     		ldr	r0, .L21+4
+ 218 001a 1844     		add	r0, r0, r3
+ 219 001c FFF7FEFF 		bl	strSearch
+ 220              	.LVL16:
+ 221              		.loc 1 52 12 view .LVU45
+ 222 0020 0028     		cmp	r0, #0
+ 223 0022 F1DB     		blt	.L17
+  53:App/Src/devices.c ****             devices_printf(&uart_dev[i], "AT^CSN=%d\n", command);
+ 224              		.loc 1 53 13 is_stmt 1 view .LVU46
+ 225 0024 04EB4413 		add	r3, r4, r4, lsl #5
+ 226 0028 2A46     		mov	r2, r5
+ 227 002a 0649     		ldr	r1, .L21+8
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 6
+
+
+ 228 002c 0648     		ldr	r0, .L21+12
+ 229 002e 00EBC300 		add	r0, r0, r3, lsl #3
+ 230 0032 FFF7FEFF 		bl	devices_printf
+ 231              	.LVL17:
+ 232 0036 E7E7     		b	.L17
+ 233              	.L20:
+  54:App/Src/devices.c ****         }
+  55:App/Src/devices.c ****     }
+  56:App/Src/devices.c **** }
+ 234              		.loc 1 56 1 is_stmt 0 view .LVU47
+ 235 0038 38BD     		pop	{r3, r4, r5, pc}
+ 236              	.LVL18:
+ 237              	.L22:
+ 238              		.loc 1 56 1 view .LVU48
+ 239 003a 00BF     		.align	2
+ 240              	.L21:
+ 241 003c 00000000 		.word	.LC0
+ 242 0040 00000000 		.word	g_deviceMessage
+ 243 0044 00000000 		.word	.LC2
+ 244 0048 00000000 		.word	uart_dev
+ 245              		.cfi_endproc
+ 246              	.LFE245:
+ 248              		.section	.rodata.operate_to_devices.str1.4,"aMS",%progbits,1
+ 249              		.align	2
+ 250              	.LC3:
+ 251 0000 41545E4F 		.ascii	"AT^OPERATE=%d\012\000"
+ 251      50455241 
+ 251      54453D25 
+ 251      640A00
+ 252 000f 00       		.align	2
+ 253              	.LC4:
+ 254 0010 41545E56 		.ascii	"AT^VERSION?\012\000"
+ 254      45525349 
+ 254      4F4E3F0A 
+ 254      00
+ 255 001d 000000   		.align	2
+ 256              	.LC5:
+ 257 0020 41545E42 		.ascii	"AT^BSN?\012\000"
+ 257      534E3F0A 
+ 257      00
+ 258 0029 000000   		.align	2
+ 259              	.LC6:
+ 260 002c 41545E47 		.ascii	"AT^GETCSN\012\000"
+ 260      45544353 
+ 260      4E0A00
+ 261              		.section	.text.operate_to_devices,"ax",%progbits
+ 262              		.align	1
+ 263              		.global	operate_to_devices
+ 264              		.syntax unified
+ 265              		.thumb
+ 266              		.thumb_func
+ 268              	operate_to_devices:
+ 269              	.LVL19:
+ 270              	.LFB246:
+  57:App/Src/devices.c **** 
+  58:App/Src/devices.c **** 
+  59:App/Src/devices.c **** void operate_to_devices(uint8_t command)
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 7
+
+
+  60:App/Src/devices.c **** {
+ 271              		.loc 1 60 1 is_stmt 1 view -0
+ 272              		.cfi_startproc
+ 273              		@ args = 0, pretend = 0, frame = 0
+ 274              		@ frame_needed = 0, uses_anonymous_args = 0
+ 275              		.loc 1 60 1 is_stmt 0 view .LVU50
+ 276 0000 38B5     		push	{r3, r4, r5, lr}
+ 277              	.LCFI3:
+ 278              		.cfi_def_cfa_offset 16
+ 279              		.cfi_offset 3, -16
+ 280              		.cfi_offset 4, -12
+ 281              		.cfi_offset 5, -8
+ 282              		.cfi_offset 14, -4
+ 283 0002 0546     		mov	r5, r0
+  61:App/Src/devices.c ****     int i;
+ 284              		.loc 1 61 5 is_stmt 1 view .LVU51
+  62:App/Src/devices.c ****     for (i = 0; i < MAX_DEVICES_CHANNEL; i++) {
+ 285              		.loc 1 62 5 view .LVU52
+ 286              	.LVL20:
+ 287              		.loc 1 62 12 is_stmt 0 view .LVU53
+ 288 0004 0024     		movs	r4, #0
+ 289              		.loc 1 62 5 view .LVU54
+ 290 0006 09E0     		b	.L24
+ 291              	.LVL21:
+ 292              	.L32:
+  63:App/Src/devices.c ****         if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+  64:App/Src/devices.c ****             switch (command) {
+  65:App/Src/devices.c ****                 case OPERATE_FREE_MODE: 
+  66:App/Src/devices.c ****                 break;
+  67:App/Src/devices.c **** 	            case OPERATE_READ_FLASH:
+  68:App/Src/devices.c ****                 case OPERATE_ERASE_FLASH:
+  69:App/Src/devices.c ****                     devices_printf(&uart_dev[i], "AT^OPERATE=%d\n", command);
+ 293              		.loc 1 69 21 is_stmt 1 view .LVU55
+ 294 0008 04EB4413 		add	r3, r4, r4, lsl #5
+ 295 000c 2A46     		mov	r2, r5
+ 296 000e 4049     		ldr	r1, .L36
+ 297 0010 4048     		ldr	r0, .L36+4
+ 298 0012 00EBC300 		add	r0, r0, r3, lsl #3
+ 299 0016 FFF7FEFF 		bl	devices_printf
+ 300              	.LVL22:
+  70:App/Src/devices.c ****                 break;
+ 301              		.loc 1 70 17 view .LVU56
+ 302              	.L25:
+  62:App/Src/devices.c ****     for (i = 0; i < MAX_DEVICES_CHANNEL; i++) {
+ 303              		.loc 1 62 42 discriminator 2 view .LVU57
+  62:App/Src/devices.c ****     for (i = 0; i < MAX_DEVICES_CHANNEL; i++) {
+ 304              		.loc 1 62 43 is_stmt 0 discriminator 2 view .LVU58
+ 305 001a 0134     		adds	r4, r4, #1
+ 306              	.LVL23:
+ 307              	.L24:
+  62:App/Src/devices.c ****     for (i = 0; i < MAX_DEVICES_CHANNEL; i++) {
+ 308              		.loc 1 62 17 is_stmt 1 discriminator 1 view .LVU59
+  62:App/Src/devices.c ****     for (i = 0; i < MAX_DEVICES_CHANNEL; i++) {
+ 309              		.loc 1 62 5 is_stmt 0 discriminator 1 view .LVU60
+ 310 001c 092C     		cmp	r4, #9
+ 311 001e 76DC     		bgt	.L35
+  63:App/Src/devices.c ****         if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 8
+
+
+ 312              		.loc 1 63 9 is_stmt 1 view .LVU61
+  63:App/Src/devices.c ****         if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+ 313              		.loc 1 63 41 is_stmt 0 view .LVU62
+ 314 0020 C4EBC403 		rsb	r3, r4, r4, lsl #3
+ 315 0024 DB00     		lsls	r3, r3, #3
+ 316 0026 1033     		adds	r3, r3, #16
+  63:App/Src/devices.c ****         if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+ 317              		.loc 1 63 13 view .LVU63
+ 318 0028 3B49     		ldr	r1, .L36+8
+ 319 002a 3C48     		ldr	r0, .L36+12
+ 320 002c 1844     		add	r0, r0, r3
+ 321 002e FFF7FEFF 		bl	strSearch
+ 322              	.LVL24:
+  63:App/Src/devices.c ****         if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+ 323              		.loc 1 63 12 view .LVU64
+ 324 0032 0028     		cmp	r0, #0
+ 325 0034 F1DB     		blt	.L25
+  64:App/Src/devices.c ****                 case OPERATE_FREE_MODE: 
+ 326              		.loc 1 64 13 is_stmt 1 view .LVU65
+ 327 0036 6B1E     		subs	r3, r5, #1
+ 328 0038 1A2B     		cmp	r3, #26
+ 329 003a EED8     		bhi	.L25
+ 330 003c 01A2     		adr	r2, .L27
+ 331 003e 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 332 0042 00BF     		.p2align 2
+ 333              	.L27:
+ 334 0044 09000000 		.word	.L32+1
+ 335 0048 09000000 		.word	.L32+1
+ 336 004c B1000000 		.word	.L31+1
+ 337 0050 C3000000 		.word	.L30+1
+ 338 0054 D5000000 		.word	.L29+1
+ 339 0058 D5000000 		.word	.L29+1
+ 340 005c D5000000 		.word	.L29+1
+ 341 0060 D5000000 		.word	.L29+1
+ 342 0064 D5000000 		.word	.L29+1
+ 343 0068 D5000000 		.word	.L29+1
+ 344 006c D5000000 		.word	.L29+1
+ 345 0070 D5000000 		.word	.L29+1
+ 346 0074 D5000000 		.word	.L29+1
+ 347 0078 D5000000 		.word	.L29+1
+ 348 007c 1B000000 		.word	.L25+1
+ 349 0080 E9000000 		.word	.L28+1
+ 350 0084 FB000000 		.word	.L26+1
+ 351 0088 FB000000 		.word	.L26+1
+ 352 008c FB000000 		.word	.L26+1
+ 353 0090 FB000000 		.word	.L26+1
+ 354 0094 FB000000 		.word	.L26+1
+ 355 0098 FB000000 		.word	.L26+1
+ 356 009c FB000000 		.word	.L26+1
+ 357 00a0 FB000000 		.word	.L26+1
+ 358 00a4 FB000000 		.word	.L26+1
+ 359 00a8 FB000000 		.word	.L26+1
+ 360 00ac FB000000 		.word	.L26+1
+ 361              		.p2align 1
+ 362              	.L31:
+  71:App/Src/devices.c ****                 case OPERATE_READ_VERSION:
+  72:App/Src/devices.c ****                     devices_printf(&uart_dev[i], "AT^VERSION?\n");// 插队1个命令
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 9
+
+
+ 363              		.loc 1 72 21 view .LVU66
+ 364 00b0 04EB4413 		add	r3, r4, r4, lsl #5
+ 365 00b4 1A49     		ldr	r1, .L36+16
+ 366 00b6 1748     		ldr	r0, .L36+4
+ 367 00b8 00EBC300 		add	r0, r0, r3, lsl #3
+ 368 00bc FFF7FEFF 		bl	devices_printf
+ 369              	.LVL25:
+  73:App/Src/devices.c ****                 break;
+ 370              		.loc 1 73 17 view .LVU67
+ 371 00c0 ABE7     		b	.L25
+ 372              	.L30:
+  74:App/Src/devices.c ****                 case OPERATE_READ_BSN:
+  75:App/Src/devices.c ****                     devices_printf(&uart_dev[i], "AT^BSN?\n");// 插队1个命令
+ 373              		.loc 1 75 21 view .LVU68
+ 374 00c2 04EB4413 		add	r3, r4, r4, lsl #5
+ 375 00c6 1749     		ldr	r1, .L36+20
+ 376 00c8 1248     		ldr	r0, .L36+4
+ 377 00ca 00EBC300 		add	r0, r0, r3, lsl #3
+ 378 00ce FFF7FEFF 		bl	devices_printf
+ 379              	.LVL26:
+  76:App/Src/devices.c ****                 break;
+ 380              		.loc 1 76 17 view .LVU69
+ 381 00d2 A2E7     		b	.L25
+ 382              	.L29:
+  77:App/Src/devices.c ****                 case OPERATE_IIC_TEST:
+  78:App/Src/devices.c ****                 case OPERATE_READ_TEMP:
+  79:App/Src/devices.c ****                 case OPERATE_CONNECT:
+  80:App/Src/devices.c ****                 case OPERATE_SET_CONFIG9:
+  81:App/Src/devices.c ****                 case OPERATE_SHOW_CONFIG9:
+  82:App/Src/devices.c ****                 case OPERATE_CAPADJUST_ADD:
+  83:App/Src/devices.c ****                 case OPERATE_CAPADJUST_COVER:
+  84:App/Src/devices.c ****                 case OPERATE_CAPADJUST_RESULT:
+  85:App/Src/devices.c ****                 case OPERATE_CALCULATE:
+  86:App/Src/devices.c ****                 case OPERATE_CALCUL_RESULT:
+  87:App/Src/devices.c ****                     devices_printf(&uart_dev[i], "AT^OPERATE=%d\n", command - 2);
+ 383              		.loc 1 87 21 view .LVU70
+ 384 00d4 04EB4413 		add	r3, r4, r4, lsl #5
+ 385 00d8 AA1E     		subs	r2, r5, #2
+ 386 00da 0D49     		ldr	r1, .L36
+ 387 00dc 0D48     		ldr	r0, .L36+4
+ 388 00de 00EBC300 		add	r0, r0, r3, lsl #3
+ 389 00e2 FFF7FEFF 		bl	devices_printf
+ 390              	.LVL27:
+  88:App/Src/devices.c ****                 break;
+ 391              		.loc 1 88 17 view .LVU71
+ 392 00e6 98E7     		b	.L25
+ 393              	.L28:
+  89:App/Src/devices.c ****                 case OPERATE_SET_ID://2024.7.18新增             // 插队1个命令
+  90:App/Src/devices.c ****                 break;
+  91:App/Src/devices.c ****                 case OPERATE_READ_CHIPID:
+  92:App/Src/devices.c ****                     devices_printf(&uart_dev[i], "AT^GETCSN\n");// 插队1个命令
+ 394              		.loc 1 92 21 view .LVU72
+ 395 00e8 04EB4413 		add	r3, r4, r4, lsl #5
+ 396 00ec 0E49     		ldr	r1, .L36+24
+ 397 00ee 0948     		ldr	r0, .L36+4
+ 398 00f0 00EBC300 		add	r0, r0, r3, lsl #3
+ 399 00f4 FFF7FEFF 		bl	devices_printf
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 10
+
+
+ 400              	.LVL28:
+  93:App/Src/devices.c ****                 break;
+ 401              		.loc 1 93 17 view .LVU73
+ 402 00f8 8FE7     		b	.L25
+ 403              	.L26:
+  94:App/Src/devices.c ****                 case OPERATE_DOWNLOAD:
+  95:App/Src/devices.c ****                 case OPERATE_LOAD_RESULT:
+  96:App/Src/devices.c ****                 case OPERATE_COLD_SYNC:
+  97:App/Src/devices.c ****                 case OPERATE_COLD_ERROR:
+  98:App/Src/devices.c ****                 case OPERATE_HOT_SYNC:
+  99:App/Src/devices.c ****                 case OPERATE_HOT_ERROR:
+ 100:App/Src/devices.c ****                 case OPERATE_MACHINE_TEST:
+ 101:App/Src/devices.c ****                 case OPERATE_MACHINE_WRITE:
+ 102:App/Src/devices.c ****                 case OPERATE_MACHINE_COVER://and write
+ 103:App/Src/devices.c ****                 case OPERATE_MACHINE_RESULT:
+ 104:App/Src/devices.c ****                 case OPERATE_TAKE_OUT_MESSAGE:
+ 105:App/Src/devices.c ****                     devices_printf(&uart_dev[i], "AT^OPERATE=%d\n", command - 4);
+ 404              		.loc 1 105 21 view .LVU74
+ 405 00fa 04EB4413 		add	r3, r4, r4, lsl #5
+ 406 00fe 2A1F     		subs	r2, r5, #4
+ 407 0100 0349     		ldr	r1, .L36
+ 408 0102 0448     		ldr	r0, .L36+4
+ 409 0104 00EBC300 		add	r0, r0, r3, lsl #3
+ 410 0108 FFF7FEFF 		bl	devices_printf
+ 411              	.LVL29:
+ 106:App/Src/devices.c ****                 break;
+ 412              		.loc 1 106 17 view .LVU75
+ 413 010c 85E7     		b	.L25
+ 414              	.L35:
+ 107:App/Src/devices.c ****                 default: break;
+ 108:App/Src/devices.c ****             }
+ 109:App/Src/devices.c ****         }
+ 110:App/Src/devices.c ****     }
+ 111:App/Src/devices.c **** }
+ 415              		.loc 1 111 1 is_stmt 0 view .LVU76
+ 416 010e 38BD     		pop	{r3, r4, r5, pc}
+ 417              	.LVL30:
+ 418              	.L37:
+ 419              		.loc 1 111 1 view .LVU77
+ 420              		.align	2
+ 421              	.L36:
+ 422 0110 00000000 		.word	.LC3
+ 423 0114 00000000 		.word	uart_dev
+ 424 0118 00000000 		.word	.LC0
+ 425 011c 00000000 		.word	g_deviceMessage
+ 426 0120 10000000 		.word	.LC4
+ 427 0124 20000000 		.word	.LC5
+ 428 0128 2C000000 		.word	.LC6
+ 429              		.cfi_endproc
+ 430              	.LFE246:
+ 432              		.section	.rodata.DeviceMessageHandle.str1.4,"aMS",%progbits,1
+ 433              		.align	2
+ 434              	.LC7:
+ 435 0000 636F6E6E 		.ascii	"connect OK\000"
+ 435      65637420 
+ 435      4F4B00
+ 436 000b 00       		.align	2
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 11
+
+
+ 437              	.LC8:
+ 438 000c 74656D70 		.ascii	"temp:\000"
+ 438      3A00
+ 439 0012 0000     		.align	2
+ 440              	.LC9:
+ 441 0014 73796E63 		.ascii	"sync time OK\000"
+ 441      2074696D 
+ 441      65204F4B 
+ 441      00
+ 442 0021 000000   		.align	2
+ 443              	.LC10:
+ 444 0024 CDACB2BD 		.ascii	"\315\254\262\275\312\261\274\344 %d\267\326\000"
+ 444      CAB1BCE4 
+ 444      202564B7 
+ 444      D600
+ 445 0032 0000     		.align	2
+ 446              	.LC11:
+ 447 0034 0A00     		.ascii	"\012\000"
+ 448              		.section	.text.DeviceMessageHandle,"ax",%progbits
+ 449              		.align	1
+ 450              		.global	DeviceMessageHandle
+ 451              		.syntax unified
+ 452              		.thumb
+ 453              		.thumb_func
+ 455              	DeviceMessageHandle:
+ 456              	.LVL31:
+ 457              	.LFB247:
+ 112:App/Src/devices.c **** 
+ 113:App/Src/devices.c **** //单通道的接收处理函数
+ 114:App/Src/devices.c **** void DeviceMessageHandle(uint8_t channel, char* str)
+ 115:App/Src/devices.c **** {
+ 458              		.loc 1 115 1 is_stmt 1 view -0
+ 459              		.cfi_startproc
+ 460              		@ args = 0, pretend = 0, frame = 8
+ 461              		@ frame_needed = 0, uses_anonymous_args = 0
+ 462              		.loc 1 115 1 is_stmt 0 view .LVU79
+ 463 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 464              	.LCFI4:
+ 465              		.cfi_def_cfa_offset 24
+ 466              		.cfi_offset 4, -24
+ 467              		.cfi_offset 5, -20
+ 468              		.cfi_offset 6, -16
+ 469              		.cfi_offset 7, -12
+ 470              		.cfi_offset 8, -8
+ 471              		.cfi_offset 14, -4
+ 472 0004 82B0     		sub	sp, sp, #8
+ 473              	.LCFI5:
+ 474              		.cfi_def_cfa_offset 32
+ 475 0006 0546     		mov	r5, r0
+ 476 0008 0C46     		mov	r4, r1
+ 116:App/Src/devices.c ****     int num;
+ 477              		.loc 1 116 5 is_stmt 1 view .LVU80
+ 117:App/Src/devices.c ****     float sysTemp = 0;
+ 478              		.loc 1 117 5 view .LVU81
+ 479              		.loc 1 117 11 is_stmt 0 view .LVU82
+ 480 000a 0023     		movs	r3, #0
+ 481 000c 0193     		str	r3, [sp, #4]	@ float
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 12
+
+
+ 118:App/Src/devices.c ****     int convert = 0;
+ 482              		.loc 1 118 5 is_stmt 1 view .LVU83
+ 483              		.loc 1 118 9 is_stmt 0 view .LVU84
+ 484 000e 0023     		movs	r3, #0
+ 485 0010 0093     		str	r3, [sp]
+ 119:App/Src/devices.c ****     int messageEnd = 0;
+ 486              		.loc 1 119 5 is_stmt 1 view .LVU85
+ 487              	.LVL32:
+ 120:App/Src/devices.c **** 
+ 121:App/Src/devices.c ****     g_rxTick[channel] = HAL_GetTick();
+ 488              		.loc 1 121 5 view .LVU86
+ 489              		.loc 1 121 25 is_stmt 0 view .LVU87
+ 490 0012 FFF7FEFF 		bl	HAL_GetTick
+ 491              	.LVL33:
+ 492              		.loc 1 121 23 view .LVU88
+ 493 0016 6A4B     		ldr	r3, .L56
+ 494 0018 43F82500 		str	r0, [r3, r5, lsl #2]
+ 122:App/Src/devices.c ****     num = strSearch(str, "connect OK");
+ 495              		.loc 1 122 5 is_stmt 1 view .LVU89
+ 496              		.loc 1 122 11 is_stmt 0 view .LVU90
+ 497 001c 6949     		ldr	r1, .L56+4
+ 498 001e 2046     		mov	r0, r4
+ 499 0020 FFF7FEFF 		bl	strSearch
+ 500              	.LVL34:
+ 123:App/Src/devices.c ****     if (num >= 0) {
+ 501              		.loc 1 123 5 is_stmt 1 view .LVU91
+ 502              		.loc 1 123 8 is_stmt 0 view .LVU92
+ 503 0024 0028     		cmp	r0, #0
+ 504 0026 27DA     		bge	.L49
+ 505              	.LVL35:
+ 506              	.L39:
+ 124:App/Src/devices.c ****         g_deviceMessage[channel].board = channel;
+ 125:App/Src/devices.c ****         num = strSearch(str, "temp:");
+ 126:App/Src/devices.c ****         CharToFloat(str, num + 5, &sysTemp);
+ 127:App/Src/devices.c ****         g_deviceMessage[channel].systemTemp = sysTemp;
+ 128:App/Src/devices.c ****         memset(g_deviceMessage[channel].state, 0, 20);
+ 129:App/Src/devices.c ****         strcpy(g_deviceMessage[channel].state, "已连接");
+ 130:App/Src/devices.c ****         // g_txFlag[channel] = DEVICE_NO_TX;
+ 131:App/Src/devices.c ****     }
+ 132:App/Src/devices.c ****     num = strSearch(str, "sync time OK");
+ 507              		.loc 1 132 5 is_stmt 1 view .LVU93
+ 508              		.loc 1 132 11 is_stmt 0 view .LVU94
+ 509 0028 6749     		ldr	r1, .L56+8
+ 510 002a 2046     		mov	r0, r4
+ 511 002c FFF7FEFF 		bl	strSearch
+ 512              	.LVL36:
+ 133:App/Src/devices.c ****     if (num >= 0) {
+ 513              		.loc 1 133 5 is_stmt 1 view .LVU95
+ 514              		.loc 1 133 8 is_stmt 0 view .LVU96
+ 515 0030 0028     		cmp	r0, #0
+ 516 0032 48DA     		bge	.L50
+ 517              	.LVL37:
+ 518              	.L40:
+ 134:App/Src/devices.c ****         memset(g_deviceMessage[channel].message, 0, 20);
+ 135:App/Src/devices.c ****         snprintf(g_deviceMessage[channel].message, 20, "同步时间 %d分", g_systemTime.min);
+ 136:App/Src/devices.c ****         g_syncState[channel] = 2;
+ 137:App/Src/devices.c ****     }
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 13
+
+
+ 138:App/Src/devices.c ****     
+ 139:App/Src/devices.c ****     num = strSearch(str, DeviceKeyWord[1]);
+ 519              		.loc 1 139 5 is_stmt 1 view .LVU97
+ 520              		.loc 1 139 11 is_stmt 0 view .LVU98
+ 521 0034 6549     		ldr	r1, .L56+12
+ 522 0036 2046     		mov	r0, r4
+ 523 0038 FFF7FEFF 		bl	strSearch
+ 524              	.LVL38:
+ 140:App/Src/devices.c ****     if (num >= 0) {
+ 525              		.loc 1 140 5 is_stmt 1 view .LVU99
+ 526              		.loc 1 140 8 is_stmt 0 view .LVU100
+ 527 003c 0028     		cmp	r0, #0
+ 528              		.loc 1 140 8 view .LVU101
+ 529 003e 59DA     		bge	.L51
+ 530              	.LVL39:
+ 531              	.L41:
+ 141:App/Src/devices.c ****         CharToFloat(str, num + g_lengthKeyWord[1], &sysTemp);
+ 142:App/Src/devices.c ****         g_deviceMessage[channel].systemTemp = sysTemp;
+ 143:App/Src/devices.c ****     }
+ 144:App/Src/devices.c ****     num = strSearch(str, DeviceKeyWord[2]);
+ 532              		.loc 1 144 5 is_stmt 1 view .LVU102
+ 533              		.loc 1 144 11 is_stmt 0 view .LVU103
+ 534 0040 6349     		ldr	r1, .L56+16
+ 535 0042 2046     		mov	r0, r4
+ 536 0044 FFF7FEFF 		bl	strSearch
+ 537              	.LVL40:
+ 145:App/Src/devices.c ****     if (num >= 0) {
+ 538              		.loc 1 145 5 is_stmt 1 view .LVU104
+ 539              		.loc 1 145 8 is_stmt 0 view .LVU105
+ 540 0048 0028     		cmp	r0, #0
+ 541              		.loc 1 145 8 view .LVU106
+ 542 004a 63DA     		bge	.L52
+ 543              	.LVL41:
+ 544              	.L42:
+ 146:App/Src/devices.c ****         CharToInt(str, num + g_lengthKeyWord[2], &convert);
+ 147:App/Src/devices.c ****         g_deviceMessage[channel].okNumber = convert;
+ 148:App/Src/devices.c ****     }
+ 149:App/Src/devices.c ****     num = strSearch(str, DeviceKeyWord[3]);
+ 545              		.loc 1 149 5 is_stmt 1 view .LVU107
+ 546              		.loc 1 149 11 is_stmt 0 view .LVU108
+ 547 004c 6149     		ldr	r1, .L56+20
+ 548 004e 2046     		mov	r0, r4
+ 549 0050 FFF7FEFF 		bl	strSearch
+ 550              	.LVL42:
+ 150:App/Src/devices.c ****     if (num >= 0) {
+ 551              		.loc 1 150 5 is_stmt 1 view .LVU109
+ 552              		.loc 1 150 8 is_stmt 0 view .LVU110
+ 553 0054 0028     		cmp	r0, #0
+ 554              		.loc 1 150 8 view .LVU111
+ 555 0056 6DDA     		bge	.L53
+ 556              	.LVL43:
+ 557              	.L43:
+ 151:App/Src/devices.c ****         CharToInt(str, num + g_lengthKeyWord[3], &convert);
+ 152:App/Src/devices.c ****         g_deviceMessage[channel].chipName = convert;
+ 153:App/Src/devices.c ****     }
+ 154:App/Src/devices.c ****     num = strSearch(str, DeviceKeyWord[4]);
+ 558              		.loc 1 154 5 is_stmt 1 view .LVU112
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 14
+
+
+ 559              		.loc 1 154 11 is_stmt 0 view .LVU113
+ 560 0058 5F49     		ldr	r1, .L56+24
+ 561 005a 2046     		mov	r0, r4
+ 562 005c FFF7FEFF 		bl	strSearch
+ 563              	.LVL44:
+ 155:App/Src/devices.c ****     if (num >= 0) {
+ 564              		.loc 1 155 5 is_stmt 1 view .LVU114
+ 565              		.loc 1 155 8 is_stmt 0 view .LVU115
+ 566 0060 0028     		cmp	r0, #0
+ 567              		.loc 1 155 8 view .LVU116
+ 568 0062 77DA     		bge	.L54
+ 569              	.LVL45:
+ 570              	.L44:
+ 156:App/Src/devices.c ****         CharToInt(str, num + g_lengthKeyWord[4], &convert);
+ 157:App/Src/devices.c ****         g_deviceMessage[channel].chipTemp = convert;
+ 158:App/Src/devices.c ****     }
+ 159:App/Src/devices.c ****     num = strSearch(str, DeviceKeyWord[6]);
+ 571              		.loc 1 159 5 is_stmt 1 view .LVU117
+ 572              		.loc 1 159 11 is_stmt 0 view .LVU118
+ 573 0064 5D49     		ldr	r1, .L56+28
+ 574 0066 2046     		mov	r0, r4
+ 575 0068 FFF7FEFF 		bl	strSearch
+ 576              	.LVL46:
+ 160:App/Src/devices.c ****     if (num >= 0) {
+ 577              		.loc 1 160 5 is_stmt 1 view .LVU119
+ 578              		.loc 1 160 8 is_stmt 0 view .LVU120
+ 579 006c 061E     		subs	r6, r0, #0
+ 580 006e 80F28180 		bge	.L55
+ 581              	.LVL47:
+ 582              	.L38:
+ 161:App/Src/devices.c ****         memset(g_deviceMessage[channel].message, 0, 20);
+ 162:App/Src/devices.c ****         // messageEnd = strSearch(str + num, "\n") - num - g_lengthKeyWord[6];
+ 163:App/Src/devices.c ****         messageEnd = strSearch(str, "\n") - num - g_lengthKeyWord[6];
+ 164:App/Src/devices.c ****         if (messageEnd > 19) {
+ 165:App/Src/devices.c ****             messageEnd = 19;
+ 166:App/Src/devices.c ****         }
+ 167:App/Src/devices.c ****         strncpy(g_deviceMessage[channel].message, str + num + g_lengthKeyWord[6], messageEnd);
+ 168:App/Src/devices.c ****         g_deviceMessage[channel].message[19] = '\0';
+ 169:App/Src/devices.c ****     }
+ 170:App/Src/devices.c **** }
+ 583              		.loc 1 170 1 view .LVU121
+ 584 0072 02B0     		add	sp, sp, #8
+ 585              	.LCFI6:
+ 586              		.cfi_remember_state
+ 587              		.cfi_def_cfa_offset 24
+ 588              		@ sp needed
+ 589 0074 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 590              	.LVL48:
+ 591              	.L49:
+ 592              	.LCFI7:
+ 593              		.cfi_restore_state
+ 124:App/Src/devices.c ****         num = strSearch(str, "temp:");
+ 594              		.loc 1 124 9 is_stmt 1 view .LVU122
+ 124:App/Src/devices.c ****         num = strSearch(str, "temp:");
+ 595              		.loc 1 124 40 is_stmt 0 view .LVU123
+ 596 0078 594F     		ldr	r7, .L56+32
+ 597 007a EE00     		lsls	r6, r5, #3
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 15
+
+
+ 598 007c C5EBC503 		rsb	r3, r5, r5, lsl #3
+ 599 0080 07EBC308 		add	r8, r7, r3, lsl #3
+ 600 0084 07F83350 		strb	r5, [r7, r3, lsl #3]
+ 125:App/Src/devices.c ****         CharToFloat(str, num + 5, &sysTemp);
+ 601              		.loc 1 125 9 is_stmt 1 view .LVU124
+ 125:App/Src/devices.c ****         CharToFloat(str, num + 5, &sysTemp);
+ 602              		.loc 1 125 15 is_stmt 0 view .LVU125
+ 603 0088 5649     		ldr	r1, .L56+36
+ 604 008a 2046     		mov	r0, r4
+ 605              	.LVL49:
+ 125:App/Src/devices.c ****         CharToFloat(str, num + 5, &sysTemp);
+ 606              		.loc 1 125 15 view .LVU126
+ 607 008c FFF7FEFF 		bl	strSearch
+ 608              	.LVL50:
+ 126:App/Src/devices.c ****         g_deviceMessage[channel].systemTemp = sysTemp;
+ 609              		.loc 1 126 9 is_stmt 1 view .LVU127
+ 610 0090 411D     		adds	r1, r0, #5
+ 611 0092 01AA     		add	r2, sp, #4
+ 612 0094 C9B2     		uxtb	r1, r1
+ 613 0096 2046     		mov	r0, r4
+ 614              	.LVL51:
+ 126:App/Src/devices.c ****         g_deviceMessage[channel].systemTemp = sysTemp;
+ 615              		.loc 1 126 9 is_stmt 0 view .LVU128
+ 616 0098 FFF7FEFF 		bl	CharToFloat
+ 617              	.LVL52:
+ 127:App/Src/devices.c ****         memset(g_deviceMessage[channel].state, 0, 20);
+ 618              		.loc 1 127 9 is_stmt 1 view .LVU129
+ 127:App/Src/devices.c ****         memset(g_deviceMessage[channel].state, 0, 20);
+ 619              		.loc 1 127 45 is_stmt 0 view .LVU130
+ 620 009c 019B     		ldr	r3, [sp, #4]	@ float
+ 621 009e C8F80430 		str	r3, [r8, #4]	@ float
+ 128:App/Src/devices.c ****         strcpy(g_deviceMessage[channel].state, "已连接");
+ 622              		.loc 1 128 9 is_stmt 1 view .LVU131
+ 128:App/Src/devices.c ****         strcpy(g_deviceMessage[channel].state, "已连接");
+ 623              		.loc 1 128 40 is_stmt 0 view .LVU132
+ 624 00a2 731B     		subs	r3, r6, r5
+ 625 00a4 DB00     		lsls	r3, r3, #3
+ 626 00a6 1033     		adds	r3, r3, #16
+ 627 00a8 DA19     		adds	r2, r3, r7
+ 128:App/Src/devices.c ****         strcpy(g_deviceMessage[channel].state, "已连接");
+ 628              		.loc 1 128 9 view .LVU133
+ 629 00aa 0021     		movs	r1, #0
+ 630 00ac D951     		str	r1, [r3, r7]	@ unaligned
+ 631 00ae 5160     		str	r1, [r2, #4]	@ unaligned
+ 632 00b0 9160     		str	r1, [r2, #8]	@ unaligned
+ 633 00b2 D160     		str	r1, [r2, #12]	@ unaligned
+ 634 00b4 1161     		str	r1, [r2, #16]	@ unaligned
+ 129:App/Src/devices.c ****         // g_txFlag[channel] = DEVICE_NO_TX;
+ 635              		.loc 1 129 9 is_stmt 1 view .LVU134
+ 636 00b6 4C49     		ldr	r1, .L56+40
+ 637 00b8 0868     		ldr	r0, [r1]
+ 638 00ba D851     		str	r0, [r3, r7]	@ unaligned
+ 639 00bc 8888     		ldrh	r0, [r1, #4]	@ unaligned
+ 640 00be 8B79     		ldrb	r3, [r1, #6]	@ zero_extendqisi2
+ 641 00c0 9080     		strh	r0, [r2, #4]	@ unaligned
+ 642 00c2 9371     		strb	r3, [r2, #6]
+ 643 00c4 B0E7     		b	.L39
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 16
+
+
+ 644              	.LVL53:
+ 645              	.L50:
+ 134:App/Src/devices.c ****         snprintf(g_deviceMessage[channel].message, 20, "同步时间 %d分", g_systemTime.min);
+ 646              		.loc 1 134 9 view .LVU135
+ 134:App/Src/devices.c ****         snprintf(g_deviceMessage[channel].message, 20, "同步时间 %d分", g_systemTime.min);
+ 647              		.loc 1 134 40 is_stmt 0 view .LVU136
+ 648 00c6 C5EBC500 		rsb	r0, r5, r5, lsl #3
+ 649              	.LVL54:
+ 134:App/Src/devices.c ****         snprintf(g_deviceMessage[channel].message, 20, "同步时间 %d分", g_systemTime.min);
+ 650              		.loc 1 134 40 view .LVU137
+ 651 00ca C000     		lsls	r0, r0, #3
+ 652 00cc 2030     		adds	r0, r0, #32
+ 653 00ce 444B     		ldr	r3, .L56+32
+ 654 00d0 1844     		add	r0, r0, r3
+ 134:App/Src/devices.c ****         snprintf(g_deviceMessage[channel].message, 20, "同步时间 %d分", g_systemTime.min);
+ 655              		.loc 1 134 9 view .LVU138
+ 656 00d2 0023     		movs	r3, #0
+ 657 00d4 4360     		str	r3, [r0, #4]	@ unaligned
+ 658 00d6 8360     		str	r3, [r0, #8]	@ unaligned
+ 659 00d8 C360     		str	r3, [r0, #12]	@ unaligned
+ 660 00da 0361     		str	r3, [r0, #16]	@ unaligned
+ 661 00dc 4361     		str	r3, [r0, #20]	@ unaligned
+ 135:App/Src/devices.c ****         g_syncState[channel] = 2;
+ 662              		.loc 1 135 9 is_stmt 1 view .LVU139
+ 663 00de 434B     		ldr	r3, .L56+44
+ 664 00e0 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 665 00e2 434A     		ldr	r2, .L56+48
+ 666 00e4 1421     		movs	r1, #20
+ 667 00e6 0430     		adds	r0, r0, #4
+ 668 00e8 FFF7FEFF 		bl	snprintf
+ 669              	.LVL55:
+ 136:App/Src/devices.c ****     }
+ 670              		.loc 1 136 9 view .LVU140
+ 136:App/Src/devices.c ****     }
+ 671              		.loc 1 136 30 is_stmt 0 view .LVU141
+ 672 00ec 414B     		ldr	r3, .L56+52
+ 673 00ee 0222     		movs	r2, #2
+ 674 00f0 5A55     		strb	r2, [r3, r5]
+ 675 00f2 9FE7     		b	.L40
+ 676              	.LVL56:
+ 677              	.L51:
+ 141:App/Src/devices.c ****         g_deviceMessage[channel].systemTemp = sysTemp;
+ 678              		.loc 1 141 9 is_stmt 1 view .LVU142
+ 141:App/Src/devices.c ****         g_deviceMessage[channel].systemTemp = sysTemp;
+ 679              		.loc 1 141 47 is_stmt 0 view .LVU143
+ 680 00f4 404B     		ldr	r3, .L56+56
+ 681 00f6 5978     		ldrb	r1, [r3, #1]	@ zero_extendqisi2
+ 141:App/Src/devices.c ****         g_deviceMessage[channel].systemTemp = sysTemp;
+ 682              		.loc 1 141 9 view .LVU144
+ 683 00f8 0144     		add	r1, r1, r0
+ 684 00fa 01AA     		add	r2, sp, #4
+ 685 00fc C9B2     		uxtb	r1, r1
+ 686 00fe 2046     		mov	r0, r4
+ 687              	.LVL57:
+ 141:App/Src/devices.c ****         g_deviceMessage[channel].systemTemp = sysTemp;
+ 688              		.loc 1 141 9 view .LVU145
+ 689 0100 FFF7FEFF 		bl	CharToFloat
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 17
+
+
+ 690              	.LVL58:
+ 142:App/Src/devices.c ****     }
+ 691              		.loc 1 142 9 is_stmt 1 view .LVU146
+ 142:App/Src/devices.c ****     }
+ 692              		.loc 1 142 45 is_stmt 0 view .LVU147
+ 693 0104 C5EBC503 		rsb	r3, r5, r5, lsl #3
+ 694 0108 354A     		ldr	r2, .L56+32
+ 695 010a 02EBC303 		add	r3, r2, r3, lsl #3
+ 696 010e 019A     		ldr	r2, [sp, #4]	@ float
+ 697 0110 5A60     		str	r2, [r3, #4]	@ float
+ 698 0112 95E7     		b	.L41
+ 699              	.LVL59:
+ 700              	.L52:
+ 146:App/Src/devices.c ****         g_deviceMessage[channel].okNumber = convert;
+ 701              		.loc 1 146 9 is_stmt 1 view .LVU148
+ 146:App/Src/devices.c ****         g_deviceMessage[channel].okNumber = convert;
+ 702              		.loc 1 146 45 is_stmt 0 view .LVU149
+ 703 0114 384B     		ldr	r3, .L56+56
+ 704 0116 9978     		ldrb	r1, [r3, #2]	@ zero_extendqisi2
+ 146:App/Src/devices.c ****         g_deviceMessage[channel].okNumber = convert;
+ 705              		.loc 1 146 9 view .LVU150
+ 706 0118 0144     		add	r1, r1, r0
+ 707 011a 6A46     		mov	r2, sp
+ 708 011c C9B2     		uxtb	r1, r1
+ 709 011e 2046     		mov	r0, r4
+ 710              	.LVL60:
+ 146:App/Src/devices.c ****         g_deviceMessage[channel].okNumber = convert;
+ 711              		.loc 1 146 9 view .LVU151
+ 712 0120 FFF7FEFF 		bl	CharToInt
+ 713              	.LVL61:
+ 147:App/Src/devices.c ****     }
+ 714              		.loc 1 147 9 is_stmt 1 view .LVU152
+ 147:App/Src/devices.c ****     }
+ 715              		.loc 1 147 43 is_stmt 0 view .LVU153
+ 716 0124 C5EBC503 		rsb	r3, r5, r5, lsl #3
+ 717 0128 2D4A     		ldr	r2, .L56+32
+ 718 012a 02EBC303 		add	r3, r2, r3, lsl #3
+ 719 012e 009A     		ldr	r2, [sp]
+ 720 0130 1A72     		strb	r2, [r3, #8]
+ 721 0132 8BE7     		b	.L42
+ 722              	.LVL62:
+ 723              	.L53:
+ 151:App/Src/devices.c ****         g_deviceMessage[channel].chipName = convert;
+ 724              		.loc 1 151 9 is_stmt 1 view .LVU154
+ 151:App/Src/devices.c ****         g_deviceMessage[channel].chipName = convert;
+ 725              		.loc 1 151 45 is_stmt 0 view .LVU155
+ 726 0134 304B     		ldr	r3, .L56+56
+ 727 0136 D978     		ldrb	r1, [r3, #3]	@ zero_extendqisi2
+ 151:App/Src/devices.c ****         g_deviceMessage[channel].chipName = convert;
+ 728              		.loc 1 151 9 view .LVU156
+ 729 0138 0144     		add	r1, r1, r0
+ 730 013a 6A46     		mov	r2, sp
+ 731 013c C9B2     		uxtb	r1, r1
+ 732 013e 2046     		mov	r0, r4
+ 733              	.LVL63:
+ 151:App/Src/devices.c ****         g_deviceMessage[channel].chipName = convert;
+ 734              		.loc 1 151 9 view .LVU157
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 18
+
+
+ 735 0140 FFF7FEFF 		bl	CharToInt
+ 736              	.LVL64:
+ 152:App/Src/devices.c ****     }
+ 737              		.loc 1 152 9 is_stmt 1 view .LVU158
+ 152:App/Src/devices.c ****     }
+ 738              		.loc 1 152 43 is_stmt 0 view .LVU159
+ 739 0144 C5EBC503 		rsb	r3, r5, r5, lsl #3
+ 740 0148 254A     		ldr	r2, .L56+32
+ 741 014a 02EBC303 		add	r3, r2, r3, lsl #3
+ 742 014e 009A     		ldr	r2, [sp]
+ 743 0150 5A72     		strb	r2, [r3, #9]
+ 744 0152 81E7     		b	.L43
+ 745              	.LVL65:
+ 746              	.L54:
+ 156:App/Src/devices.c ****         g_deviceMessage[channel].chipTemp = convert;
+ 747              		.loc 1 156 9 is_stmt 1 view .LVU160
+ 156:App/Src/devices.c ****         g_deviceMessage[channel].chipTemp = convert;
+ 748              		.loc 1 156 45 is_stmt 0 view .LVU161
+ 749 0154 284B     		ldr	r3, .L56+56
+ 750 0156 1979     		ldrb	r1, [r3, #4]	@ zero_extendqisi2
+ 156:App/Src/devices.c ****         g_deviceMessage[channel].chipTemp = convert;
+ 751              		.loc 1 156 9 view .LVU162
+ 752 0158 0144     		add	r1, r1, r0
+ 753 015a 6A46     		mov	r2, sp
+ 754 015c C9B2     		uxtb	r1, r1
+ 755 015e 2046     		mov	r0, r4
+ 756              	.LVL66:
+ 156:App/Src/devices.c ****         g_deviceMessage[channel].chipTemp = convert;
+ 757              		.loc 1 156 9 view .LVU163
+ 758 0160 FFF7FEFF 		bl	CharToInt
+ 759              	.LVL67:
+ 157:App/Src/devices.c ****     }
+ 760              		.loc 1 157 9 is_stmt 1 view .LVU164
+ 157:App/Src/devices.c ****     }
+ 761              		.loc 1 157 43 is_stmt 0 view .LVU165
+ 762 0164 C5EBC503 		rsb	r3, r5, r5, lsl #3
+ 763 0168 1D4A     		ldr	r2, .L56+32
+ 764 016a 02EBC303 		add	r3, r2, r3, lsl #3
+ 765 016e 009A     		ldr	r2, [sp]
+ 766 0170 DA60     		str	r2, [r3, #12]
+ 767 0172 77E7     		b	.L44
+ 768              	.LVL68:
+ 769              	.L55:
+ 161:App/Src/devices.c ****         // messageEnd = strSearch(str + num, "\n") - num - g_lengthKeyWord[6];
+ 770              		.loc 1 161 9 is_stmt 1 view .LVU166
+ 161:App/Src/devices.c ****         // messageEnd = strSearch(str + num, "\n") - num - g_lengthKeyWord[6];
+ 771              		.loc 1 161 40 is_stmt 0 view .LVU167
+ 772 0174 C5EBC503 		rsb	r3, r5, r5, lsl #3
+ 773 0178 DB00     		lsls	r3, r3, #3
+ 774 017a 2033     		adds	r3, r3, #32
+ 775 017c 184A     		ldr	r2, .L56+32
+ 776 017e 1344     		add	r3, r3, r2
+ 777 0180 1F1D     		adds	r7, r3, #4
+ 161:App/Src/devices.c ****         // messageEnd = strSearch(str + num, "\n") - num - g_lengthKeyWord[6];
+ 778              		.loc 1 161 9 view .LVU168
+ 779 0182 0022     		movs	r2, #0
+ 780 0184 5A60     		str	r2, [r3, #4]	@ unaligned
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 19
+
+
+ 781 0186 9A60     		str	r2, [r3, #8]	@ unaligned
+ 782 0188 DA60     		str	r2, [r3, #12]	@ unaligned
+ 783 018a 1A61     		str	r2, [r3, #16]	@ unaligned
+ 784 018c 5A61     		str	r2, [r3, #20]	@ unaligned
+ 163:App/Src/devices.c ****         if (messageEnd > 19) {
+ 785              		.loc 1 163 9 is_stmt 1 view .LVU169
+ 163:App/Src/devices.c ****         if (messageEnd > 19) {
+ 786              		.loc 1 163 22 is_stmt 0 view .LVU170
+ 787 018e 1B49     		ldr	r1, .L56+60
+ 788 0190 2046     		mov	r0, r4
+ 789              	.LVL69:
+ 163:App/Src/devices.c ****         if (messageEnd > 19) {
+ 790              		.loc 1 163 22 view .LVU171
+ 791 0192 FFF7FEFF 		bl	strSearch
+ 792              	.LVL70:
+ 163:App/Src/devices.c ****         if (messageEnd > 19) {
+ 793              		.loc 1 163 43 view .LVU172
+ 794 0196 821B     		subs	r2, r0, r6
+ 163:App/Src/devices.c ****         if (messageEnd > 19) {
+ 795              		.loc 1 163 66 view .LVU173
+ 796 0198 174B     		ldr	r3, .L56+56
+ 797 019a 9979     		ldrb	r1, [r3, #6]	@ zero_extendqisi2
+ 163:App/Src/devices.c ****         if (messageEnd > 19) {
+ 798              		.loc 1 163 20 view .LVU174
+ 799 019c 521A     		subs	r2, r2, r1
+ 800              	.LVL71:
+ 164:App/Src/devices.c ****             messageEnd = 19;
+ 801              		.loc 1 164 9 is_stmt 1 view .LVU175
+ 164:App/Src/devices.c ****             messageEnd = 19;
+ 802              		.loc 1 164 12 is_stmt 0 view .LVU176
+ 803 019e 132A     		cmp	r2, #19
+ 804 01a0 00DD     		ble	.L46
+ 165:App/Src/devices.c ****         }
+ 805              		.loc 1 165 24 view .LVU177
+ 806 01a2 1322     		movs	r2, #19
+ 807              	.LVL72:
+ 808              	.L46:
+ 167:App/Src/devices.c ****         g_deviceMessage[channel].message[19] = '\0';
+ 809              		.loc 1 167 9 is_stmt 1 view .LVU178
+ 167:App/Src/devices.c ****         g_deviceMessage[channel].message[19] = '\0';
+ 810              		.loc 1 167 61 is_stmt 0 view .LVU179
+ 811 01a4 3144     		add	r1, r1, r6
+ 167:App/Src/devices.c ****         g_deviceMessage[channel].message[19] = '\0';
+ 812              		.loc 1 167 9 view .LVU180
+ 813 01a6 2144     		add	r1, r1, r4
+ 814 01a8 3846     		mov	r0, r7
+ 815 01aa FFF7FEFF 		bl	strncpy
+ 816              	.LVL73:
+ 168:App/Src/devices.c ****     }
+ 817              		.loc 1 168 9 is_stmt 1 view .LVU181
+ 168:App/Src/devices.c ****     }
+ 818              		.loc 1 168 46 is_stmt 0 view .LVU182
+ 819 01ae C5EBC505 		rsb	r5, r5, r5, lsl #3
+ 820 01b2 0B48     		ldr	r0, .L56+32
+ 821 01b4 00EBC505 		add	r5, r0, r5, lsl #3
+ 822 01b8 0023     		movs	r3, #0
+ 823 01ba 85F83730 		strb	r3, [r5, #55]
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 20
+
+
+ 824              		.loc 1 170 1 view .LVU183
+ 825 01be 58E7     		b	.L38
+ 826              	.L57:
+ 827              		.align	2
+ 828              	.L56:
+ 829 01c0 00000000 		.word	.LANCHOR2
+ 830 01c4 00000000 		.word	.LC7
+ 831 01c8 14000000 		.word	.LC9
+ 832 01cc 0F000000 		.word	.LANCHOR0+15
+ 833 01d0 1E000000 		.word	.LANCHOR0+30
+ 834 01d4 2D000000 		.word	.LANCHOR0+45
+ 835 01d8 3C000000 		.word	.LANCHOR0+60
+ 836 01dc 5A000000 		.word	.LANCHOR0+90
+ 837 01e0 00000000 		.word	g_deviceMessage
+ 838 01e4 0C000000 		.word	.LC8
+ 839 01e8 00000000 		.word	.LC0
+ 840 01ec 00000000 		.word	g_systemTime
+ 841 01f0 24000000 		.word	.LC10
+ 842 01f4 00000000 		.word	.LANCHOR3
+ 843 01f8 00000000 		.word	.LANCHOR1
+ 844 01fc 34000000 		.word	.LC11
+ 845              		.cfi_endproc
+ 846              	.LFE247:
+ 848              		.section	.text.CheckDeviceList,"ax",%progbits
+ 849              		.align	1
+ 850              		.global	CheckDeviceList
+ 851              		.syntax unified
+ 852              		.thumb
+ 853              		.thumb_func
+ 855              	CheckDeviceList:
+ 856              	.LFB248:
+ 171:App/Src/devices.c **** 
+ 172:App/Src/devices.c **** void CheckDeviceList(void)
+ 173:App/Src/devices.c **** {
+ 857              		.loc 1 173 1 is_stmt 1 view -0
+ 858              		.cfi_startproc
+ 859              		@ args = 0, pretend = 0, frame = 0
+ 860              		@ frame_needed = 0, uses_anonymous_args = 0
+ 861 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 862              	.LCFI8:
+ 863              		.cfi_def_cfa_offset 24
+ 864              		.cfi_offset 3, -24
+ 865              		.cfi_offset 4, -20
+ 866              		.cfi_offset 5, -16
+ 867              		.cfi_offset 6, -12
+ 868              		.cfi_offset 7, -8
+ 869              		.cfi_offset 14, -4
+ 174:App/Src/devices.c ****     static uint16_t count[MAX_DEVICES_CHANNEL] = {0};
+ 870              		.loc 1 174 5 view .LVU185
+ 175:App/Src/devices.c ****     static uint16_t lastLength[MAX_DEVICES_CHANNEL] = {0};
+ 871              		.loc 1 175 5 view .LVU186
+ 176:App/Src/devices.c ****     int i;
+ 872              		.loc 1 176 5 view .LVU187
+ 177:App/Src/devices.c ****     for (i = 0; i < MAX_DEVICES_CHANNEL; i++) {
+ 873              		.loc 1 177 5 view .LVU188
+ 874              	.LVL74:
+ 875              		.loc 1 177 12 is_stmt 0 view .LVU189
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 21
+
+
+ 876 0002 0024     		movs	r4, #0
+ 877              		.loc 1 177 5 view .LVU190
+ 878 0004 24E0     		b	.L59
+ 879              	.LVL75:
+ 880              	.L61:
+ 178:App/Src/devices.c ****         if (uart_dev[i].rx_length == 0) {
+ 179:App/Src/devices.c ****             continue;
+ 180:App/Src/devices.c ****         }
+ 181:App/Src/devices.c ****         if (uart_dev[i].rx_length > lastLength[i]) {
+ 182:App/Src/devices.c ****             lastLength[i] = uart_dev[i].rx_length;
+ 183:App/Src/devices.c ****             count[i] = 0;
+ 184:App/Src/devices.c ****         } else {
+ 185:App/Src/devices.c ****             count[i]++;
+ 881              		.loc 1 185 13 is_stmt 1 view .LVU191
+ 882              		.loc 1 185 18 is_stmt 0 view .LVU192
+ 883 0006 254A     		ldr	r2, .L67
+ 884 0008 32F81430 		ldrh	r3, [r2, r4, lsl #1]
+ 885              		.loc 1 185 21 view .LVU193
+ 886 000c 0133     		adds	r3, r3, #1
+ 887 000e 22F81430 		strh	r3, [r2, r4, lsl #1]	@ movhi
+ 888 0012 33E0     		b	.L62
+ 889              	.L63:
+ 186:App/Src/devices.c ****         }
+ 187:App/Src/devices.c ****         if (count[i] >= SOFT_UART_TICK_CLEAR || uart_dev[i].rx_flag == 1) {
+ 188:App/Src/devices.c ****             DeviceMessageHandle(i, (char*)uart_dev[i].rx_buffer);//根据不同的场景处理设备消息的函数
+ 890              		.loc 1 188 13 is_stmt 1 view .LVU194
+ 891              		.loc 1 188 43 is_stmt 0 view .LVU195
+ 892 0014 6601     		lsls	r6, r4, #5
+ 893 0016 04EB4413 		add	r3, r4, r4, lsl #5
+ 894 001a DD00     		lsls	r5, r3, #3
+ 895 001c 8035     		adds	r5, r5, #128
+ 896 001e 204F     		ldr	r7, .L67+4
+ 897 0020 3D44     		add	r5, r5, r7
+ 898 0022 0735     		adds	r5, r5, #7
+ 899              		.loc 1 188 13 view .LVU196
+ 900 0024 2946     		mov	r1, r5
+ 901 0026 E0B2     		uxtb	r0, r4
+ 902 0028 FFF7FEFF 		bl	DeviceMessageHandle
+ 903              	.LVL76:
+ 189:App/Src/devices.c ****             memset(uart_dev[i].rx_buffer, 0, SOFT_UART_RECEICE_LONG);
+ 904              		.loc 1 189 13 is_stmt 1 view .LVU197
+ 905 002c 8022     		movs	r2, #128
+ 906 002e 0021     		movs	r1, #0
+ 907 0030 2846     		mov	r0, r5
+ 908 0032 FFF7FEFF 		bl	memset
+ 909              	.LVL77:
+ 190:App/Src/devices.c ****             uart_dev[i].rx_length = 0;
+ 910              		.loc 1 190 13 view .LVU198
+ 911              		.loc 1 190 35 is_stmt 0 view .LVU199
+ 912 0036 3319     		adds	r3, r6, r4
+ 913 0038 DA00     		lsls	r2, r3, #3
+ 914 003a 1744     		add	r7, r7, r2
+ 915 003c 0023     		movs	r3, #0
+ 916 003e BB80     		strh	r3, [r7, #4]	@ movhi
+ 191:App/Src/devices.c ****             uart_dev[i].rx_flag = 0;
+ 917              		.loc 1 191 13 is_stmt 1 view .LVU200
+ 918              		.loc 1 191 33 is_stmt 0 view .LVU201
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 22
+
+
+ 919 0040 BB71     		strb	r3, [r7, #6]
+ 192:App/Src/devices.c ****             count[i] = 0;
+ 920              		.loc 1 192 13 is_stmt 1 view .LVU202
+ 921              		.loc 1 192 22 is_stmt 0 view .LVU203
+ 922 0042 164A     		ldr	r2, .L67
+ 923 0044 22F81430 		strh	r3, [r2, r4, lsl #1]	@ movhi
+ 193:App/Src/devices.c ****             lastLength[i] = 0;
+ 924              		.loc 1 193 13 is_stmt 1 view .LVU204
+ 925              		.loc 1 193 27 is_stmt 0 view .LVU205
+ 926 0048 164A     		ldr	r2, .L67+8
+ 927 004a 22F81430 		strh	r3, [r2, r4, lsl #1]	@ movhi
+ 928              	.L60:
+ 177:App/Src/devices.c ****         if (uart_dev[i].rx_length == 0) {
+ 929              		.loc 1 177 42 is_stmt 1 discriminator 2 view .LVU206
+ 177:App/Src/devices.c ****         if (uart_dev[i].rx_length == 0) {
+ 930              		.loc 1 177 43 is_stmt 0 discriminator 2 view .LVU207
+ 931 004e 0134     		adds	r4, r4, #1
+ 932              	.LVL78:
+ 933              	.L59:
+ 177:App/Src/devices.c ****         if (uart_dev[i].rx_length == 0) {
+ 934              		.loc 1 177 17 is_stmt 1 discriminator 1 view .LVU208
+ 177:App/Src/devices.c ****         if (uart_dev[i].rx_length == 0) {
+ 935              		.loc 1 177 5 is_stmt 0 discriminator 1 view .LVU209
+ 936 0050 092C     		cmp	r4, #9
+ 937 0052 21DC     		bgt	.L66
+ 178:App/Src/devices.c ****             continue;
+ 938              		.loc 1 178 9 is_stmt 1 view .LVU210
+ 178:App/Src/devices.c ****             continue;
+ 939              		.loc 1 178 24 is_stmt 0 view .LVU211
+ 940 0054 04EB4413 		add	r3, r4, r4, lsl #5
+ 941 0058 DA00     		lsls	r2, r3, #3
+ 942 005a 114B     		ldr	r3, .L67+4
+ 943 005c 1344     		add	r3, r3, r2
+ 944 005e 9B88     		ldrh	r3, [r3, #4]
+ 178:App/Src/devices.c ****             continue;
+ 945              		.loc 1 178 12 view .LVU212
+ 946 0060 002B     		cmp	r3, #0
+ 947 0062 F4D0     		beq	.L60
+ 181:App/Src/devices.c ****             lastLength[i] = uart_dev[i].rx_length;
+ 948              		.loc 1 181 9 is_stmt 1 view .LVU213
+ 181:App/Src/devices.c ****             lastLength[i] = uart_dev[i].rx_length;
+ 949              		.loc 1 181 47 is_stmt 0 view .LVU214
+ 950 0064 0F4A     		ldr	r2, .L67+8
+ 951 0066 32F81420 		ldrh	r2, [r2, r4, lsl #1]
+ 181:App/Src/devices.c ****             lastLength[i] = uart_dev[i].rx_length;
+ 952              		.loc 1 181 12 view .LVU215
+ 953 006a 9342     		cmp	r3, r2
+ 954 006c CBD9     		bls	.L61
+ 182:App/Src/devices.c ****             count[i] = 0;
+ 955              		.loc 1 182 13 is_stmt 1 view .LVU216
+ 182:App/Src/devices.c ****             count[i] = 0;
+ 956              		.loc 1 182 27 is_stmt 0 view .LVU217
+ 957 006e 0D4A     		ldr	r2, .L67+8
+ 958 0070 22F81430 		strh	r3, [r2, r4, lsl #1]	@ movhi
+ 183:App/Src/devices.c ****         } else {
+ 959              		.loc 1 183 13 is_stmt 1 view .LVU218
+ 183:App/Src/devices.c ****         } else {
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 23
+
+
+ 960              		.loc 1 183 22 is_stmt 0 view .LVU219
+ 961 0074 094B     		ldr	r3, .L67
+ 962 0076 0022     		movs	r2, #0
+ 963 0078 23F81420 		strh	r2, [r3, r4, lsl #1]	@ movhi
+ 964              	.L62:
+ 187:App/Src/devices.c ****             DeviceMessageHandle(i, (char*)uart_dev[i].rx_buffer);//根据不同的场景处理设备消息的函数
+ 965              		.loc 1 187 9 is_stmt 1 view .LVU220
+ 187:App/Src/devices.c ****             DeviceMessageHandle(i, (char*)uart_dev[i].rx_buffer);//根据不同的场景处理设备消息的函数
+ 966              		.loc 1 187 18 is_stmt 0 view .LVU221
+ 967 007c 074B     		ldr	r3, .L67
+ 968 007e 33F81430 		ldrh	r3, [r3, r4, lsl #1]
+ 187:App/Src/devices.c ****             DeviceMessageHandle(i, (char*)uart_dev[i].rx_buffer);//根据不同的场景处理设备消息的函数
+ 969              		.loc 1 187 12 view .LVU222
+ 970 0082 092B     		cmp	r3, #9
+ 971 0084 C6D8     		bhi	.L63
+ 187:App/Src/devices.c ****             DeviceMessageHandle(i, (char*)uart_dev[i].rx_buffer);//根据不同的场景处理设备消息的函数
+ 972              		.loc 1 187 60 discriminator 1 view .LVU223
+ 973 0086 04EB4413 		add	r3, r4, r4, lsl #5
+ 974 008a DA00     		lsls	r2, r3, #3
+ 975 008c 044B     		ldr	r3, .L67+4
+ 976 008e 1344     		add	r3, r3, r2
+ 977 0090 9B79     		ldrb	r3, [r3, #6]	@ zero_extendqisi2
+ 187:App/Src/devices.c ****             DeviceMessageHandle(i, (char*)uart_dev[i].rx_buffer);//根据不同的场景处理设备消息的函数
+ 978              		.loc 1 187 46 discriminator 1 view .LVU224
+ 979 0092 012B     		cmp	r3, #1
+ 980 0094 DBD1     		bne	.L60
+ 981 0096 BDE7     		b	.L63
+ 982              	.L66:
+ 194:App/Src/devices.c ****         }
+ 195:App/Src/devices.c ****     }
+ 196:App/Src/devices.c **** }
+ 983              		.loc 1 196 1 view .LVU225
+ 984 0098 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 985              	.LVL79:
+ 986              	.L68:
+ 987              		.loc 1 196 1 view .LVU226
+ 988 009a 00BF     		.align	2
+ 989              	.L67:
+ 990 009c 00000000 		.word	.LANCHOR5
+ 991 00a0 00000000 		.word	uart_dev
+ 992 00a4 00000000 		.word	.LANCHOR4
+ 993              		.cfi_endproc
+ 994              	.LFE248:
+ 996              		.section	.rodata.CheckDeviceTime.str1.4,"aMS",%progbits,1
+ 997              		.align	2
+ 998              	.LC12:
+ 999 0000 CDA8B5C0 		.ascii	"\315\250\265\300[%d]\267\242\306\360\315\254\262\275"
+ 999      5B25645D 
+ 999      B7A2C6F0 
+ 999      CDACB2BD 
+ 1000 0010 CAB1BCE4 		.ascii	"\312\261\274\344\012\000"
+ 1000      0A00
+ 1001 0016 0000     		.align	2
+ 1002              	.LC13:
+ 1003 0018 41545E52 		.ascii	"AT^REALTIME=year:%d,mon:%d,day:%d,hour:%d,min:%d,se"
+ 1003      45414C54 
+ 1003      494D453D 
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 24
+
+
+ 1003      79656172 
+ 1003      3A25642C 
+ 1004 004b 633A2564 		.ascii	"c:%d\012\000"
+ 1004      0A00
+ 1005              		.section	.text.CheckDeviceTime,"ax",%progbits
+ 1006              		.align	1
+ 1007              		.global	CheckDeviceTime
+ 1008              		.syntax unified
+ 1009              		.thumb
+ 1010              		.thumb_func
+ 1012              	CheckDeviceTime:
+ 1013              	.LFB249:
+ 197:App/Src/devices.c **** 
+ 198:App/Src/devices.c **** void CheckDeviceTime(void)
+ 199:App/Src/devices.c **** {
+ 1014              		.loc 1 199 1 is_stmt 1 view -0
+ 1015              		.cfi_startproc
+ 1016              		@ args = 0, pretend = 0, frame = 0
+ 1017              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1018 0000 70B5     		push	{r4, r5, r6, lr}
+ 1019              	.LCFI9:
+ 1020              		.cfi_def_cfa_offset 16
+ 1021              		.cfi_offset 4, -16
+ 1022              		.cfi_offset 5, -12
+ 1023              		.cfi_offset 6, -8
+ 1024              		.cfi_offset 14, -4
+ 1025 0002 84B0     		sub	sp, sp, #16
+ 1026              	.LCFI10:
+ 1027              		.cfi_def_cfa_offset 32
+ 200:App/Src/devices.c ****     static uint32_t lastTick[MAX_DEVICES_CHANNEL] = {0};
+ 1028              		.loc 1 200 5 view .LVU228
+ 201:App/Src/devices.c ****     int i;
+ 1029              		.loc 1 201 5 view .LVU229
+ 202:App/Src/devices.c ****     
+ 203:App/Src/devices.c ****     for (i = 0; i < MAX_DEVICES_CHANNEL; i++) {
+ 1030              		.loc 1 203 5 view .LVU230
+ 1031              	.LVL80:
+ 1032              		.loc 1 203 12 is_stmt 0 view .LVU231
+ 1033 0004 0024     		movs	r4, #0
+ 1034              		.loc 1 203 5 view .LVU232
+ 1035 0006 2CE0     		b	.L70
+ 1036              	.LVL81:
+ 1037              	.L78:
+ 204:App/Src/devices.c ****         if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+ 205:App/Src/devices.c ****             if (g_syncState[i] == 0 || (g_syncState[i] == 1 && (HAL_GetTick() >= lastTick[i] + 4000
+ 1038              		.loc 1 205 65 discriminator 2 view .LVU233
+ 1039 0008 FFF7FEFF 		bl	HAL_GetTick
+ 1040              	.LVL82:
+ 1041              		.loc 1 205 90 discriminator 2 view .LVU234
+ 1042 000c 274B     		ldr	r3, .L79
+ 1043 000e 53F82430 		ldr	r3, [r3, r4, lsl #2]
+ 1044              		.loc 1 205 94 discriminator 2 view .LVU235
+ 1045 0012 03F57A63 		add	r3, r3, #4000
+ 1046              		.loc 1 205 61 discriminator 2 view .LVU236
+ 1047 0016 9842     		cmp	r0, r3
+ 1048 0018 36D3     		bcc	.L73
+ 1049              	.L72:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 25
+
+
+ 206:App/Src/devices.c ****                 UsbPrintf("通道[%d]发起同步时间\n", i);
+ 1050              		.loc 1 206 17 is_stmt 1 view .LVU237
+ 1051 001a 2146     		mov	r1, r4
+ 1052 001c 2448     		ldr	r0, .L79+4
+ 1053 001e FFF7FEFF 		bl	UsbPrintf
+ 1054              	.LVL83:
+ 207:App/Src/devices.c ****                 lastTick[i] = HAL_GetTick();
+ 1055              		.loc 1 207 17 view .LVU238
+ 1056              		.loc 1 207 31 is_stmt 0 view .LVU239
+ 1057 0022 FFF7FEFF 		bl	HAL_GetTick
+ 1058              	.LVL84:
+ 1059              		.loc 1 207 29 view .LVU240
+ 1060 0026 214B     		ldr	r3, .L79
+ 1061 0028 43F82400 		str	r0, [r3, r4, lsl #2]
+ 208:App/Src/devices.c ****                 g_syncState[i] = 1;
+ 1062              		.loc 1 208 17 is_stmt 1 view .LVU241
+ 1063              		.loc 1 208 32 is_stmt 0 view .LVU242
+ 1064 002c 214B     		ldr	r3, .L79+8
+ 1065 002e 0122     		movs	r2, #1
+ 1066 0030 1A55     		strb	r2, [r3, r4]
+ 209:App/Src/devices.c ****                 devices_printf(&uart_dev[i], "AT^REALTIME=year:%d,mon:%d,day:%d,hour:%d,min:%d,sec:
+ 1067              		.loc 1 209 17 is_stmt 1 view .LVU243
+ 210:App/Src/devices.c ****                     g_systemTime.year, g_systemTime.mon, g_systemTime.day, g_systemTime.hour, g_sys
+ 1068              		.loc 1 210 33 is_stmt 0 view .LVU244
+ 1069 0032 214A     		ldr	r2, .L79+12
+ 1070              		.loc 1 210 70 view .LVU245
+ 1071 0034 9378     		ldrb	r3, [r2, #2]	@ zero_extendqisi2
+ 1072              		.loc 1 210 88 view .LVU246
+ 1073 0036 D178     		ldrb	r1, [r2, #3]	@ zero_extendqisi2
+ 1074              		.loc 1 210 107 view .LVU247
+ 1075 0038 1579     		ldrb	r5, [r2, #4]	@ zero_extendqisi2
+ 1076              		.loc 1 210 125 view .LVU248
+ 1077 003a 5679     		ldrb	r6, [r2, #5]	@ zero_extendqisi2
+ 209:App/Src/devices.c ****                 devices_printf(&uart_dev[i], "AT^REALTIME=year:%d,mon:%d,day:%d,hour:%d,min:%d,sec:
+ 1078              		.loc 1 209 17 view .LVU249
+ 1079 003c 04EB4410 		add	r0, r4, r4, lsl #5
+ 1080 0040 0396     		str	r6, [sp, #12]
+ 1081 0042 0295     		str	r5, [sp, #8]
+ 1082 0044 0191     		str	r1, [sp, #4]
+ 1083 0046 0093     		str	r3, [sp]
+ 1084 0048 5378     		ldrb	r3, [r2, #1]	@ zero_extendqisi2
+ 1085 004a 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 1086 004c 1B49     		ldr	r1, .L79+16
+ 1087 004e 1C4D     		ldr	r5, .L79+20
+ 1088 0050 05EBC000 		add	r0, r5, r0, lsl #3
+ 1089 0054 FFF7FEFF 		bl	devices_printf
+ 1090              	.LVL85:
+ 1091 0058 02E0     		b	.L74
+ 1092              	.L71:
+ 211:App/Src/devices.c ****             }
+ 212:App/Src/devices.c ****         } else {
+ 213:App/Src/devices.c ****             g_syncState[i] = 0;
+ 1093              		.loc 1 213 13 is_stmt 1 view .LVU250
+ 1094              		.loc 1 213 28 is_stmt 0 view .LVU251
+ 1095 005a 164B     		ldr	r3, .L79+8
+ 1096 005c 0022     		movs	r2, #0
+ 1097 005e 1A55     		strb	r2, [r3, r4]
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 26
+
+
+ 1098              	.L74:
+ 203:App/Src/devices.c ****         if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+ 1099              		.loc 1 203 42 is_stmt 1 discriminator 2 view .LVU252
+ 203:App/Src/devices.c ****         if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+ 1100              		.loc 1 203 43 is_stmt 0 discriminator 2 view .LVU253
+ 1101 0060 0134     		adds	r4, r4, #1
+ 1102              	.LVL86:
+ 1103              	.L70:
+ 203:App/Src/devices.c ****         if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+ 1104              		.loc 1 203 17 is_stmt 1 discriminator 1 view .LVU254
+ 203:App/Src/devices.c ****         if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+ 1105              		.loc 1 203 5 is_stmt 0 discriminator 1 view .LVU255
+ 1106 0062 092C     		cmp	r4, #9
+ 1107 0064 20DC     		bgt	.L77
+ 204:App/Src/devices.c ****             if (g_syncState[i] == 0 || (g_syncState[i] == 1 && (HAL_GetTick() >= lastTick[i] + 4000
+ 1108              		.loc 1 204 9 is_stmt 1 view .LVU256
+ 204:App/Src/devices.c ****             if (g_syncState[i] == 0 || (g_syncState[i] == 1 && (HAL_GetTick() >= lastTick[i] + 4000
+ 1109              		.loc 1 204 41 is_stmt 0 view .LVU257
+ 1110 0066 C4EBC403 		rsb	r3, r4, r4, lsl #3
+ 1111 006a DB00     		lsls	r3, r3, #3
+ 1112 006c 1033     		adds	r3, r3, #16
+ 204:App/Src/devices.c ****             if (g_syncState[i] == 0 || (g_syncState[i] == 1 && (HAL_GetTick() >= lastTick[i] + 4000
+ 1113              		.loc 1 204 13 view .LVU258
+ 1114 006e 1549     		ldr	r1, .L79+24
+ 1115 0070 1548     		ldr	r0, .L79+28
+ 1116 0072 1844     		add	r0, r0, r3
+ 1117 0074 FFF7FEFF 		bl	strSearch
+ 1118              	.LVL87:
+ 204:App/Src/devices.c ****             if (g_syncState[i] == 0 || (g_syncState[i] == 1 && (HAL_GetTick() >= lastTick[i] + 4000
+ 1119              		.loc 1 204 12 view .LVU259
+ 1120 0078 0028     		cmp	r0, #0
+ 1121 007a EEDB     		blt	.L71
+ 205:App/Src/devices.c ****                 UsbPrintf("通道[%d]发起同步时间\n", i);
+ 1122              		.loc 1 205 13 is_stmt 1 view .LVU260
+ 205:App/Src/devices.c ****                 UsbPrintf("通道[%d]发起同步时间\n", i);
+ 1123              		.loc 1 205 28 is_stmt 0 view .LVU261
+ 1124 007c 0D4B     		ldr	r3, .L79+8
+ 1125 007e 1B5D     		ldrb	r3, [r3, r4]	@ zero_extendqisi2
+ 205:App/Src/devices.c ****                 UsbPrintf("通道[%d]发起同步时间\n", i);
+ 1126              		.loc 1 205 16 view .LVU262
+ 1127 0080 002B     		cmp	r3, #0
+ 1128 0082 CAD0     		beq	.L72
+ 205:App/Src/devices.c ****                 UsbPrintf("通道[%d]发起同步时间\n", i);
+ 1129              		.loc 1 205 37 discriminator 1 view .LVU263
+ 1130 0084 012B     		cmp	r3, #1
+ 1131 0086 BFD0     		beq	.L78
+ 1132              	.L73:
+ 205:App/Src/devices.c ****                 UsbPrintf("通道[%d]发起同步时间\n", i);
+ 1133              		.loc 1 205 120 discriminator 4 view .LVU264
+ 1134 0088 0A4B     		ldr	r3, .L79+8
+ 1135 008a 1B5D     		ldrb	r3, [r3, r4]	@ zero_extendqisi2
+ 205:App/Src/devices.c ****                 UsbPrintf("通道[%d]发起同步时间\n", i);
+ 1136              		.loc 1 205 104 discriminator 4 view .LVU265
+ 1137 008c 022B     		cmp	r3, #2
+ 1138 008e E7D1     		bne	.L74
+ 205:App/Src/devices.c ****                 UsbPrintf("通道[%d]发起同步时间\n", i);
+ 1139              		.loc 1 205 133 discriminator 5 view .LVU266
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 27
+
+
+ 1140 0090 FFF7FEFF 		bl	HAL_GetTick
+ 1141              	.LVL88:
+ 205:App/Src/devices.c ****                 UsbPrintf("通道[%d]发起同步时间\n", i);
+ 1142              		.loc 1 205 158 discriminator 5 view .LVU267
+ 1143 0094 054B     		ldr	r3, .L79
+ 1144 0096 53F82430 		ldr	r3, [r3, r4, lsl #2]
+ 205:App/Src/devices.c ****                 UsbPrintf("通道[%d]发起同步时间\n", i);
+ 1145              		.loc 1 205 162 discriminator 5 view .LVU268
+ 1146 009a 03F51223 		add	r3, r3, #598016
+ 1147 009e 03F5F863 		add	r3, r3, #1984
+ 205:App/Src/devices.c ****                 UsbPrintf("通道[%d]发起同步时间\n", i);
+ 1148              		.loc 1 205 129 discriminator 5 view .LVU269
+ 1149 00a2 9842     		cmp	r0, r3
+ 1150 00a4 DCD3     		bcc	.L74
+ 1151 00a6 B8E7     		b	.L72
+ 1152              	.L77:
+ 214:App/Src/devices.c ****         }
+ 215:App/Src/devices.c ****     }
+ 216:App/Src/devices.c **** }
+ 1153              		.loc 1 216 1 view .LVU270
+ 1154 00a8 04B0     		add	sp, sp, #16
+ 1155              	.LCFI11:
+ 1156              		.cfi_def_cfa_offset 16
+ 1157              		@ sp needed
+ 1158 00aa 70BD     		pop	{r4, r5, r6, pc}
+ 1159              	.LVL89:
+ 1160              	.L80:
+ 1161              		.loc 1 216 1 view .LVU271
+ 1162              		.align	2
+ 1163              	.L79:
+ 1164 00ac 00000000 		.word	.LANCHOR6
+ 1165 00b0 00000000 		.word	.LC12
+ 1166 00b4 00000000 		.word	.LANCHOR3
+ 1167 00b8 00000000 		.word	g_systemTime
+ 1168 00bc 18000000 		.word	.LC13
+ 1169 00c0 00000000 		.word	uart_dev
+ 1170 00c4 00000000 		.word	.LC0
+ 1171 00c8 00000000 		.word	g_deviceMessage
+ 1172              		.cfi_endproc
+ 1173              	.LFE249:
+ 1175              		.section	.rodata.CheckDeviceHeart.str1.4,"aMS",%progbits,1
+ 1176              		.align	2
+ 1177              	.LC14:
+ 1178 0000 63686563 		.ascii	"check %d disconnect\012\000"
+ 1178      6B202564 
+ 1178      20646973 
+ 1178      636F6E6E 
+ 1178      6563740A 
+ 1179 0015 000000   		.align	2
+ 1180              	.LC15:
+ 1181 0018 CEB4C1AC 		.ascii	"\316\264\301\254\275\323\000"
+ 1181      BDD300
+ 1182              		.section	.text.CheckDeviceHeart,"ax",%progbits
+ 1183              		.align	1
+ 1184              		.global	CheckDeviceHeart
+ 1185              		.syntax unified
+ 1186              		.thumb
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 28
+
+
+ 1187              		.thumb_func
+ 1189              	CheckDeviceHeart:
+ 1190              	.LFB250:
+ 217:App/Src/devices.c **** 
+ 218:App/Src/devices.c **** void  CheckDeviceHeart(void)
+ 219:App/Src/devices.c **** {
+ 1191              		.loc 1 219 1 is_stmt 1 view -0
+ 1192              		.cfi_startproc
+ 1193              		@ args = 0, pretend = 0, frame = 0
+ 1194              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1195 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 1196              	.LCFI12:
+ 1197              		.cfi_def_cfa_offset 24
+ 1198              		.cfi_offset 3, -24
+ 1199              		.cfi_offset 4, -20
+ 1200              		.cfi_offset 5, -16
+ 1201              		.cfi_offset 6, -12
+ 1202              		.cfi_offset 7, -8
+ 1203              		.cfi_offset 14, -4
+ 220:App/Src/devices.c ****     int i;
+ 1204              		.loc 1 220 5 view .LVU273
+ 221:App/Src/devices.c ****     static uint32_t lastTick[MAX_DEVICES_CHANNEL] = {0};
+ 1205              		.loc 1 221 5 view .LVU274
+ 222:App/Src/devices.c **** 
+ 223:App/Src/devices.c ****     for (i = 0; i < MAX_DEVICES_CHANNEL; i++) {
+ 1206              		.loc 1 223 5 view .LVU275
+ 1207              	.LVL90:
+ 1208              		.loc 1 223 12 is_stmt 0 view .LVU276
+ 1209 0002 0024     		movs	r4, #0
+ 1210              		.loc 1 223 5 view .LVU277
+ 1211 0004 00E0     		b	.L82
+ 1212              	.LVL91:
+ 1213              	.L83:
+ 1214              		.loc 1 223 42 is_stmt 1 discriminator 2 view .LVU278
+ 1215              		.loc 1 223 43 is_stmt 0 discriminator 2 view .LVU279
+ 1216 0006 0134     		adds	r4, r4, #1
+ 1217              	.LVL92:
+ 1218              	.L82:
+ 1219              		.loc 1 223 17 is_stmt 1 discriminator 1 view .LVU280
+ 1220              		.loc 1 223 5 is_stmt 0 discriminator 1 view .LVU281
+ 1221 0008 092C     		cmp	r4, #9
+ 1222 000a 44DC     		bgt	.L86
+ 224:App/Src/devices.c ****         if (HAL_GetTick() < lastTick[i] + 4000) {
+ 1223              		.loc 1 224 9 is_stmt 1 view .LVU282
+ 1224              		.loc 1 224 13 is_stmt 0 view .LVU283
+ 1225 000c FFF7FEFF 		bl	HAL_GetTick
+ 1226              	.LVL93:
+ 1227              		.loc 1 224 37 view .LVU284
+ 1228 0010 214B     		ldr	r3, .L87
+ 1229 0012 53F82430 		ldr	r3, [r3, r4, lsl #2]
+ 1230              		.loc 1 224 41 view .LVU285
+ 1231 0016 03F57A63 		add	r3, r3, #4000
+ 1232              		.loc 1 224 12 view .LVU286
+ 1233 001a 9842     		cmp	r0, r3
+ 1234 001c F3D3     		bcc	.L83
+ 225:App/Src/devices.c ****             continue;
+ 226:App/Src/devices.c ****         }
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 29
+
+
+ 227:App/Src/devices.c ****         lastTick[i] = HAL_GetTick();
+ 1235              		.loc 1 227 9 is_stmt 1 view .LVU287
+ 1236              		.loc 1 227 23 is_stmt 0 view .LVU288
+ 1237 001e FFF7FEFF 		bl	HAL_GetTick
+ 1238              	.LVL94:
+ 1239              		.loc 1 227 21 view .LVU289
+ 1240 0022 1D4B     		ldr	r3, .L87
+ 1241 0024 43F82400 		str	r0, [r3, r4, lsl #2]
+ 228:App/Src/devices.c ****         if ((HAL_GetTick() > g_rxTick[i] + 5000)) {
+ 1242              		.loc 1 228 9 is_stmt 1 view .LVU290
+ 1243              		.loc 1 228 14 is_stmt 0 view .LVU291
+ 1244 0028 FFF7FEFF 		bl	HAL_GetTick
+ 1245              	.LVL95:
+ 1246              		.loc 1 228 38 view .LVU292
+ 1247 002c 1B4B     		ldr	r3, .L87+4
+ 1248 002e 53F82430 		ldr	r3, [r3, r4, lsl #2]
+ 1249              		.loc 1 228 42 view .LVU293
+ 1250 0032 03F59C53 		add	r3, r3, #4992
+ 1251 0036 0833     		adds	r3, r3, #8
+ 1252              		.loc 1 228 12 view .LVU294
+ 1253 0038 9842     		cmp	r0, r3
+ 1254 003a E4D9     		bls	.L83
+ 229:App/Src/devices.c ****             if (strSearch(g_deviceMessage[i].state, "已连接") >= 0) {
+ 1255              		.loc 1 229 13 is_stmt 1 view .LVU295
+ 1256              		.loc 1 229 45 is_stmt 0 view .LVU296
+ 1257 003c C4EBC405 		rsb	r5, r4, r4, lsl #3
+ 1258 0040 ED00     		lsls	r5, r5, #3
+ 1259 0042 1035     		adds	r5, r5, #16
+ 1260 0044 164F     		ldr	r7, .L87+8
+ 1261 0046 EE19     		adds	r6, r5, r7
+ 1262              		.loc 1 229 17 view .LVU297
+ 1263 0048 1649     		ldr	r1, .L87+12
+ 1264 004a 3046     		mov	r0, r6
+ 1265 004c FFF7FEFF 		bl	strSearch
+ 1266              	.LVL96:
+ 1267              		.loc 1 229 16 view .LVU298
+ 1268 0050 0028     		cmp	r0, #0
+ 1269 0052 D8DB     		blt	.L83
+ 230:App/Src/devices.c ****                 UsbPrintf("check %d disconnect\n", i);
+ 1270              		.loc 1 230 17 is_stmt 1 view .LVU299
+ 1271 0054 2146     		mov	r1, r4
+ 1272 0056 1448     		ldr	r0, .L87+16
+ 1273 0058 FFF7FEFF 		bl	UsbPrintf
+ 1274              	.LVL97:
+ 231:App/Src/devices.c ****                 memset(g_deviceMessage[i].state, 0, 20);
+ 1275              		.loc 1 231 17 view .LVU300
+ 1276 005c 0022     		movs	r2, #0
+ 1277 005e EA51     		str	r2, [r5, r7]	@ unaligned
+ 1278 0060 7260     		str	r2, [r6, #4]	@ unaligned
+ 1279 0062 B260     		str	r2, [r6, #8]	@ unaligned
+ 1280 0064 F260     		str	r2, [r6, #12]	@ unaligned
+ 1281 0066 3261     		str	r2, [r6, #16]	@ unaligned
+ 232:App/Src/devices.c ****                 strcpy(g_deviceMessage[i].state, "未连接");
+ 1282              		.loc 1 232 17 view .LVU301
+ 1283 0068 104B     		ldr	r3, .L87+20
+ 1284 006a 1868     		ldr	r0, [r3]
+ 1285 006c E851     		str	r0, [r5, r7]	@ unaligned
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 30
+
+
+ 1286 006e 9988     		ldrh	r1, [r3, #4]	@ unaligned
+ 1287 0070 9B79     		ldrb	r3, [r3, #6]	@ zero_extendqisi2
+ 1288 0072 B180     		strh	r1, [r6, #4]	@ unaligned
+ 1289 0074 B371     		strb	r3, [r6, #6]
+ 233:App/Src/devices.c ****                 memset(g_deviceMessage[i].message, 0, 20);
+ 1290              		.loc 1 233 17 view .LVU302
+ 1291              		.loc 1 233 42 is_stmt 0 view .LVU303
+ 1292 0076 C4EBC403 		rsb	r3, r4, r4, lsl #3
+ 1293 007a DB00     		lsls	r3, r3, #3
+ 1294 007c 2033     		adds	r3, r3, #32
+ 1295 007e 3B44     		add	r3, r3, r7
+ 1296              		.loc 1 233 17 view .LVU304
+ 1297 0080 5A60     		str	r2, [r3, #4]	@ unaligned
+ 1298 0082 9A60     		str	r2, [r3, #8]	@ unaligned
+ 1299 0084 DA60     		str	r2, [r3, #12]	@ unaligned
+ 1300 0086 1A61     		str	r2, [r3, #16]	@ unaligned
+ 1301 0088 5A61     		str	r2, [r3, #20]	@ unaligned
+ 234:App/Src/devices.c ****                 g_rxTick[i] = HAL_GetTick();
+ 1302              		.loc 1 234 17 is_stmt 1 view .LVU305
+ 1303              		.loc 1 234 31 is_stmt 0 view .LVU306
+ 1304 008a FFF7FEFF 		bl	HAL_GetTick
+ 1305              	.LVL98:
+ 1306              		.loc 1 234 29 view .LVU307
+ 1307 008e 034B     		ldr	r3, .L87+4
+ 1308 0090 43F82400 		str	r0, [r3, r4, lsl #2]
+ 1309 0094 B7E7     		b	.L83
+ 1310              	.L86:
+ 235:App/Src/devices.c ****             }
+ 236:App/Src/devices.c ****         }
+ 237:App/Src/devices.c ****         // devices_printf(&uart_dev[i], "AT^CONNECT?\n");
+ 238:App/Src/devices.c ****     }
+ 239:App/Src/devices.c **** } 
+ 1311              		.loc 1 239 1 view .LVU308
+ 1312 0096 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 1313              	.LVL99:
+ 1314              	.L88:
+ 1315              		.loc 1 239 1 view .LVU309
+ 1316              		.align	2
+ 1317              	.L87:
+ 1318 0098 00000000 		.word	.LANCHOR7
+ 1319 009c 00000000 		.word	.LANCHOR2
+ 1320 00a0 00000000 		.word	g_deviceMessage
+ 1321 00a4 00000000 		.word	.LC0
+ 1322 00a8 00000000 		.word	.LC14
+ 1323 00ac 18000000 		.word	.LC15
+ 1324              		.cfi_endproc
+ 1325              	.LFE250:
+ 1327              		.section	.text.StartDevicesTask,"ax",%progbits
+ 1328              		.align	1
+ 1329              		.global	StartDevicesTask
+ 1330              		.syntax unified
+ 1331              		.thumb
+ 1332              		.thumb_func
+ 1334              	StartDevicesTask:
+ 1335              	.LVL100:
+ 1336              	.LFB251:
+ 240:App/Src/devices.c **** 
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 31
+
+
+ 241:App/Src/devices.c **** void StartDevicesTask(void const * argument)
+ 242:App/Src/devices.c **** {
+ 1337              		.loc 1 242 1 is_stmt 1 view -0
+ 1338              		.cfi_startproc
+ 1339              		@ Volatile: function does not return.
+ 1340              		@ args = 0, pretend = 0, frame = 0
+ 1341              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1342              		.loc 1 242 1 is_stmt 0 view .LVU311
+ 1343 0000 08B5     		push	{r3, lr}
+ 1344              	.LCFI13:
+ 1345              		.cfi_def_cfa_offset 8
+ 1346              		.cfi_offset 3, -8
+ 1347              		.cfi_offset 14, -4
+ 243:App/Src/devices.c ****     init_key_word_length();
+ 1348              		.loc 1 243 5 is_stmt 1 view .LVU312
+ 1349 0002 FFF7FEFF 		bl	init_key_word_length
+ 1350              	.LVL101:
+ 1351              	.L90:
+ 244:App/Src/devices.c ****     while (1) {
+ 1352              		.loc 1 244 5 discriminator 1 view .LVU313
+ 245:App/Src/devices.c ****         osDelay(4);
+ 1353              		.loc 1 245 9 discriminator 1 view .LVU314
+ 1354 0006 0420     		movs	r0, #4
+ 1355 0008 FFF7FEFF 		bl	osDelay
+ 1356              	.LVL102:
+ 246:App/Src/devices.c ****         // LedDeviceTest();
+ 247:App/Src/devices.c ****         CheckDeviceList();
+ 1357              		.loc 1 247 9 discriminator 1 view .LVU315
+ 1358 000c FFF7FEFF 		bl	CheckDeviceList
+ 1359              	.LVL103:
+ 248:App/Src/devices.c ****         CheckDeviceHeart();
+ 1360              		.loc 1 248 9 discriminator 1 view .LVU316
+ 1361 0010 FFF7FEFF 		bl	CheckDeviceHeart
+ 1362              	.LVL104:
+ 249:App/Src/devices.c ****         osDelay(1);
+ 1363              		.loc 1 249 9 discriminator 1 view .LVU317
+ 1364 0014 0120     		movs	r0, #1
+ 1365 0016 FFF7FEFF 		bl	osDelay
+ 1366              	.LVL105:
+ 250:App/Src/devices.c ****         CheckDeviceTime();
+ 1367              		.loc 1 250 9 discriminator 1 view .LVU318
+ 1368 001a FFF7FEFF 		bl	CheckDeviceTime
+ 1369              	.LVL106:
+ 244:App/Src/devices.c ****         osDelay(4);
+ 1370              		.loc 1 244 11 discriminator 1 view .LVU319
+ 1371 001e F2E7     		b	.L90
+ 1372              		.cfi_endproc
+ 1373              	.LFE251:
+ 1375              		.global	g_syncState
+ 1376              		.global	g_lengthKeyWord
+ 1377              		.global	DeviceKeyWord
+ 1378              		.global	g_rxTick
+ 1379              		.section	.bss.count.2,"aw",%nobits
+ 1380              		.align	2
+ 1381              		.set	.LANCHOR5,. + 0
+ 1384              	count.2:
+ 1385 0000 00000000 		.space	20
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 32
+
+
+ 1385      00000000 
+ 1385      00000000 
+ 1385      00000000 
+ 1385      00000000 
+ 1386              		.section	.bss.g_lengthKeyWord,"aw",%nobits
+ 1387              		.align	2
+ 1388              		.set	.LANCHOR1,. + 0
+ 1391              	g_lengthKeyWord:
+ 1392 0000 00000000 		.space	7
+ 1392      000000
+ 1393              		.section	.bss.g_rxTick,"aw",%nobits
+ 1394              		.align	2
+ 1395              		.set	.LANCHOR2,. + 0
+ 1398              	g_rxTick:
+ 1399 0000 00000000 		.space	40
+ 1399      00000000 
+ 1399      00000000 
+ 1399      00000000 
+ 1399      00000000 
+ 1400              		.section	.bss.g_syncState,"aw",%nobits
+ 1401              		.align	2
+ 1402              		.set	.LANCHOR3,. + 0
+ 1405              	g_syncState:
+ 1406 0000 00000000 		.space	10
+ 1406      00000000 
+ 1406      0000
+ 1407              		.section	.bss.lastLength.3,"aw",%nobits
+ 1408              		.align	2
+ 1409              		.set	.LANCHOR4,. + 0
+ 1412              	lastLength.3:
+ 1413 0000 00000000 		.space	20
+ 1413      00000000 
+ 1413      00000000 
+ 1413      00000000 
+ 1413      00000000 
+ 1414              		.section	.bss.lastTick.0,"aw",%nobits
+ 1415              		.align	2
+ 1416              		.set	.LANCHOR7,. + 0
+ 1419              	lastTick.0:
+ 1420 0000 00000000 		.space	40
+ 1420      00000000 
+ 1420      00000000 
+ 1420      00000000 
+ 1420      00000000 
+ 1421              		.section	.bss.lastTick.1,"aw",%nobits
+ 1422              		.align	2
+ 1423              		.set	.LANCHOR6,. + 0
+ 1426              	lastTick.1:
+ 1427 0000 00000000 		.space	40
+ 1427      00000000 
+ 1427      00000000 
+ 1427      00000000 
+ 1427      00000000 
+ 1428              		.section	.data.DeviceKeyWord,"aw"
+ 1429              		.align	2
+ 1430              		.set	.LANCHOR0,. + 0
+ 1433              	DeviceKeyWord:
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 33
+
+
+ 1434 0000 626F6172 		.ascii	"board:\000"
+ 1434      643A00
+ 1435 0007 00000000 		.space	8
+ 1435      00000000 
+ 1436 000f 73797374 		.ascii	"systemTemp:\000"
+ 1436      656D5465 
+ 1436      6D703A00 
+ 1437 001b 000000   		.space	3
+ 1438 001e 6F6B4E75 		.ascii	"okNumber:\000"
+ 1438      6D626572 
+ 1438      3A00
+ 1439 0028 00000000 		.space	5
+ 1439      00
+ 1440 002d 63686970 		.ascii	"chipName:\000"
+ 1440      4E616D65 
+ 1440      3A00
+ 1441 0037 00000000 		.space	5
+ 1441      00
+ 1442 003c 63686970 		.ascii	"chipTemp:\000"
+ 1442      54656D70 
+ 1442      3A00
+ 1443 0046 00000000 		.space	5
+ 1443      00
+ 1444 004b 73746174 		.ascii	"state:\000"
+ 1444      653A00
+ 1445 0052 00000000 		.space	8
+ 1445      00000000 
+ 1446 005a 6D657373 		.ascii	"message:\000"
+ 1446      6167653A 
+ 1446      00
+ 1447 0063 00000000 		.space	6
+ 1447      0000
+ 1448              		.text
+ 1449              	.Letext0:
+ 1450              		.file 2 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_default_
+ 1451              		.file 3 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 1452              		.file 4 "Device/Inc/soft_uart.h"
+ 1453              		.file 5 "Device/Inc/lcd_driver.h"
+ 1454              		.file 6 "Device/Inc/sd2506.h"
+ 1455              		.file 7 "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h"
+ 1456              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 1457              		.file 9 "Device/Inc/user_tool.h"
+ 1458              		.file 10 "Core/Inc/main.h"
+ 1459              		.file 11 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\stdio.h"
+ 1460              		.file 12 "e:\\stm32-gcc\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\string.h"
+ 1461              		.file 13 "App/Inc/devices.h"
+ 1462              		.file 14 "<built-in>"
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 34
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 devices.c
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:20     .text.init_key_word_length:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:26     .text.init_key_word_length:00000000 init_key_word_length
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:74     .text.init_key_word_length:00000020 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:80     .rodata.selete_vddmode_devices.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:87     .text.selete_vddmode_devices:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:93     .text.selete_vddmode_devices:00000000 selete_vddmode_devices
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:158    .text.selete_vddmode_devices:0000003c $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:166    .rodata.set_chipid_devices.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:170    .text.set_chipid_devices:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:176    .text.set_chipid_devices:00000000 set_chipid_devices
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:241    .text.set_chipid_devices:0000003c $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:249    .rodata.operate_to_devices.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:262    .text.operate_to_devices:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:268    .text.operate_to_devices:00000000 operate_to_devices
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:334    .text.operate_to_devices:00000044 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:361    .text.operate_to_devices:000000b0 $t
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:422    .text.operate_to_devices:00000110 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:433    .rodata.DeviceMessageHandle.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:449    .text.DeviceMessageHandle:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:455    .text.DeviceMessageHandle:00000000 DeviceMessageHandle
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:829    .text.DeviceMessageHandle:000001c0 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:849    .text.CheckDeviceList:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:855    .text.CheckDeviceList:00000000 CheckDeviceList
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:990    .text.CheckDeviceList:0000009c $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:997    .rodata.CheckDeviceTime.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1006   .text.CheckDeviceTime:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1012   .text.CheckDeviceTime:00000000 CheckDeviceTime
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1164   .text.CheckDeviceTime:000000ac $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1176   .rodata.CheckDeviceHeart.str1.4:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1183   .text.CheckDeviceHeart:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1189   .text.CheckDeviceHeart:00000000 CheckDeviceHeart
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1318   .text.CheckDeviceHeart:00000098 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1328   .text.StartDevicesTask:00000000 $t
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1334   .text.StartDevicesTask:00000000 StartDevicesTask
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1405   .bss.g_syncState:00000000 g_syncState
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1391   .bss.g_lengthKeyWord:00000000 g_lengthKeyWord
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1433   .data.DeviceKeyWord:00000000 DeviceKeyWord
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1398   .bss.g_rxTick:00000000 g_rxTick
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1380   .bss.count.2:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1384   .bss.count.2:00000000 count.2
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1387   .bss.g_lengthKeyWord:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1394   .bss.g_rxTick:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1401   .bss.g_syncState:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1408   .bss.lastLength.3:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1412   .bss.lastLength.3:00000000 lastLength.3
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1415   .bss.lastTick.0:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1419   .bss.lastTick.0:00000000 lastTick.0
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1422   .bss.lastTick.1:00000000 $d
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1426   .bss.lastTick.1:00000000 lastTick.1
+C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s:1429   .data.DeviceKeyWord:00000000 $d
+
+UNDEFINED SYMBOLS
+strlen
+strSearch
+devices_printf
+ARM GAS  C:\Users\86158\AppData\Local\Temp\ccM2RSiv.s 			page 35
+
+
+g_deviceMessage
+uart_dev
+HAL_GetTick
+CharToFloat
+snprintf
+CharToInt
+strncpy
+g_systemTime
+memset
+UsbPrintf
+osDelay
