@@ -1,0 +1,309 @@
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccMpU6Zk.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"Product_Test.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.SD8840_SecCountDown,"ax",%progbits
+  16              		.align	1
+  17              		.global	SD8840_SecCountDown
+  18              		.arch armv7-m
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.fpu softvfp
+  24              	SD8840_SecCountDown:
+  25              	.LFB32:
+  26              		.file 1 "./Hardware/device/Product_Test.c"
+   1:./Hardware/device/Product_Test.c **** #include "Product_Test.h"
+   2:./Hardware/device/Product_Test.c **** 
+   3:./Hardware/device/Product_Test.c **** 
+   4:./Hardware/device/Product_Test.c **** 
+   5:./Hardware/device/Product_Test.c **** void SD8840_SecCountDown(void)
+   6:./Hardware/device/Product_Test.c **** {
+  27              		.loc 1 6 1
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 8
+  30              		@ frame_needed = 1, uses_anonymous_args = 0
+  31 0000 80B5     		push	{r7, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 82B0     		sub	sp, sp, #8
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 16
+  39 0004 00AF     		add	r7, sp, #0
+  40              	.LCFI2:
+  41              		.cfi_def_cfa_register 7
+   7:./Hardware/device/Product_Test.c **** 	uint8_t buf,buf1;
+   8:./Hardware/device/Product_Test.c **** 	//选择1Hz INT中断输出
+   9:./Hardware/device/Product_Test.c **** 	buf=0x02;
+  42              		.loc 1 9 5
+  43 0006 0223     		movs	r3, #2
+  44 0008 FB71     		strb	r3, [r7, #7]
+  10:./Hardware/device/Product_Test.c **** 	spi_write_multi_bytes(0x0D,&buf,1);
+  45              		.loc 1 10 2
+  46 000a FB1D     		adds	r3, r7, #7
+  47 000c 0122     		movs	r2, #1
+  48 000e 1946     		mov	r1, r3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccMpU6Zk.s 			page 2
+
+
+  49 0010 0D20     		movs	r0, #13
+  50 0012 FFF7FEFF 		bl	spi_write_multi_bytes
+  11:./Hardware/device/Product_Test.c **** 	//清除倒计时标志位
+  12:./Hardware/device/Product_Test.c **** 	buf=0x00;
+  51              		.loc 1 12 5
+  52 0016 0023     		movs	r3, #0
+  53 0018 FB71     		strb	r3, [r7, #7]
+  13:./Hardware/device/Product_Test.c **** 	spi_write_multi_bytes(0x0E,&buf,1);
+  54              		.loc 1 13 2
+  55 001a FB1D     		adds	r3, r7, #7
+  56 001c 0122     		movs	r2, #1
+  57 001e 1946     		mov	r1, r3
+  58 0020 0E20     		movs	r0, #14
+  59 0022 FFF7FEFF 		bl	spi_write_multi_bytes
+  14:./Hardware/device/Product_Test.c **** 	//设置倒计时计数值:1s
+  15:./Hardware/device/Product_Test.c **** 	buf=0x01;
+  60              		.loc 1 15 5
+  61 0026 0123     		movs	r3, #1
+  62 0028 FB71     		strb	r3, [r7, #7]
+  16:./Hardware/device/Product_Test.c **** 	spi_write_multi_bytes(0x0B,&buf,1);
+  63              		.loc 1 16 2
+  64 002a FB1D     		adds	r3, r7, #7
+  65 002c 0122     		movs	r2, #1
+  66 002e 1946     		mov	r1, r3
+  67 0030 0B20     		movs	r0, #11
+  68 0032 FFF7FEFF 		bl	spi_write_multi_bytes
+  17:./Hardware/device/Product_Test.c **** 	//允许INT输出
+  18:./Hardware/device/Product_Test.c **** 	buf=0x10;
+  69              		.loc 1 18 5
+  70 0036 1023     		movs	r3, #16
+  71 0038 FB71     		strb	r3, [r7, #7]
+  19:./Hardware/device/Product_Test.c **** 	spi_write_multi_bytes(0x0F,&buf,1);
+  72              		.loc 1 19 2
+  73 003a FB1D     		adds	r3, r7, #7
+  74 003c 0122     		movs	r2, #1
+  75 003e 1946     		mov	r1, r3
+  76 0040 0F20     		movs	r0, #15
+  77 0042 FFF7FEFF 		bl	spi_write_multi_bytes
+  20:./Hardware/device/Product_Test.c **** 	//回读CTR1位并置DE位为1
+  21:./Hardware/device/Product_Test.c **** 	spi_read_multi_bytes(0x0D,&buf1,1);
+  78              		.loc 1 21 2
+  79 0046 BB1D     		adds	r3, r7, #6
+  80 0048 0122     		movs	r2, #1
+  81 004a 1946     		mov	r1, r3
+  82 004c 0D20     		movs	r0, #13
+  83 004e FFF7FEFF 		bl	spi_read_multi_bytes
+  22:./Hardware/device/Product_Test.c **** 	buf = buf1 | 0x10;
+  84              		.loc 1 22 6
+  85 0052 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+  86 0054 43F01003 		orr	r3, r3, #16
+  87 0058 DBB2     		uxtb	r3, r3
+  88 005a FB71     		strb	r3, [r7, #7]
+  23:./Hardware/device/Product_Test.c **** 	//启动倒计时
+  24:./Hardware/device/Product_Test.c **** 	spi_write_multi_bytes(0x0D,&buf,1);
+  89              		.loc 1 24 2
+  90 005c FB1D     		adds	r3, r7, #7
+  91 005e 0122     		movs	r2, #1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccMpU6Zk.s 			page 3
+
+
+  92 0060 1946     		mov	r1, r3
+  93 0062 0D20     		movs	r0, #13
+  94 0064 FFF7FEFF 		bl	spi_write_multi_bytes
+  25:./Hardware/device/Product_Test.c **** 	
+  26:./Hardware/device/Product_Test.c **** }
+  95              		.loc 1 26 1
+  96 0068 00BF     		nop
+  97 006a 0837     		adds	r7, r7, #8
+  98              	.LCFI3:
+  99              		.cfi_def_cfa_offset 8
+ 100 006c BD46     		mov	sp, r7
+ 101              	.LCFI4:
+ 102              		.cfi_def_cfa_register 13
+ 103              		@ sp needed
+ 104 006e 80BD     		pop	{r7, pc}
+ 105              		.cfi_endproc
+ 106              	.LFE32:
+ 108              		.section	.rodata
+ 109              		.align	2
+ 110              	.LC0:
+ 111 0000 2564C4EA 		.ascii	"%d\304\352%d\324\302%d\310\325 \320\307\306\332%d %"
+ 111      2564D4C2 
+ 111      2564C8D5 
+ 111      20D0C7C6 
+ 111      DA256420 
+ 112 0015 64CAB125 		.ascii	"d\312\261%d\267\326%d\303\353\012\000"
+ 112      64B7D625 
+ 112      64C3EB0A 
+ 112      00
+ 113              		.section	.text.SD8840_PrintfTime,"ax",%progbits
+ 114              		.align	1
+ 115              		.global	SD8840_PrintfTime
+ 116              		.syntax unified
+ 117              		.thumb
+ 118              		.thumb_func
+ 119              		.fpu softvfp
+ 121              	SD8840_PrintfTime:
+ 122              	.LFB33:
+  27:./Hardware/device/Product_Test.c **** 
+  28:./Hardware/device/Product_Test.c **** 
+  29:./Hardware/device/Product_Test.c **** spi_exit_code SD8840_PrintfTime(void)
+  30:./Hardware/device/Product_Test.c **** {
+ 123              		.loc 1 30 1
+ 124              		.cfi_startproc
+ 125              		@ args = 0, pretend = 0, frame = 16
+ 126              		@ frame_needed = 1, uses_anonymous_args = 0
+ 127 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 128              	.LCFI5:
+ 129              		.cfi_def_cfa_offset 20
+ 130              		.cfi_offset 4, -20
+ 131              		.cfi_offset 5, -16
+ 132              		.cfi_offset 6, -12
+ 133              		.cfi_offset 7, -8
+ 134              		.cfi_offset 14, -4
+ 135 0002 89B0     		sub	sp, sp, #36
+ 136              	.LCFI6:
+ 137              		.cfi_def_cfa_offset 56
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccMpU6Zk.s 			page 4
+
+
+ 138 0004 04AF     		add	r7, sp, #16
+ 139              	.LCFI7:
+ 140              		.cfi_def_cfa 7, 40
+  31:./Hardware/device/Product_Test.c **** 	uint8_t i;
+  32:./Hardware/device/Product_Test.c **** 	uint8_t spi_time_buf[7];
+  33:./Hardware/device/Product_Test.c **** 	uint8_t spi_show_time[7];
+  34:./Hardware/device/Product_Test.c **** 	spi_read_multi_bytes(0x00,spi_time_buf,7);
+ 141              		.loc 1 34 2
+ 142 0006 07F10803 		add	r3, r7, #8
+ 143 000a 0722     		movs	r2, #7
+ 144 000c 1946     		mov	r1, r3
+ 145 000e 0020     		movs	r0, #0
+ 146 0010 FFF7FEFF 		bl	spi_read_multi_bytes
+  35:./Hardware/device/Product_Test.c **** 	for(i=0;i<7;i++)
+ 147              		.loc 1 35 7
+ 148 0014 0023     		movs	r3, #0
+ 149 0016 FB73     		strb	r3, [r7, #15]
+ 150              		.loc 1 35 2
+ 151 0018 13E0     		b	.L3
+ 152              	.L4:
+  36:./Hardware/device/Product_Test.c **** 	{
+  37:./Hardware/device/Product_Test.c **** 		spi_show_time[i]=bcd_to_dec(spi_time_buf[i]);
+ 153              		.loc 1 37 20 discriminator 3
+ 154 001a FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 155 001c 07F11002 		add	r2, r7, #16
+ 156 0020 1344     		add	r3, r3, r2
+ 157 0022 13F8083C 		ldrb	r3, [r3, #-8]	@ zero_extendqisi2
+ 158              		.loc 1 37 16 discriminator 3
+ 159 0026 FC7B     		ldrb	r4, [r7, #15]	@ zero_extendqisi2
+ 160              		.loc 1 37 20 discriminator 3
+ 161 0028 1846     		mov	r0, r3
+ 162 002a FFF7FEFF 		bl	bcd_to_dec
+ 163 002e 0346     		mov	r3, r0
+ 164 0030 1A46     		mov	r2, r3
+ 165              		.loc 1 37 19 discriminator 3
+ 166 0032 07F11003 		add	r3, r7, #16
+ 167 0036 2344     		add	r3, r3, r4
+ 168 0038 03F8102C 		strb	r2, [r3, #-16]
+  35:./Hardware/device/Product_Test.c **** 	for(i=0;i<7;i++)
+ 169              		.loc 1 35 15 discriminator 3
+ 170 003c FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 171 003e 0133     		adds	r3, r3, #1
+ 172 0040 FB73     		strb	r3, [r7, #15]
+ 173              	.L3:
+  35:./Hardware/device/Product_Test.c **** 	for(i=0;i<7;i++)
+ 174              		.loc 1 35 2 discriminator 1
+ 175 0042 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 176 0044 062B     		cmp	r3, #6
+ 177 0046 E8D9     		bls	.L4
+  38:./Hardware/device/Product_Test.c **** 	}
+  39:./Hardware/device/Product_Test.c **** 	Usart_Printf("%d年%d月%d日 星期%d %d时%d分%d秒\n",spi_show_time[6],spi_show_time[5],spi_show_time[
+ 178              		.loc 1 39 65
+ 179 0048 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 180              		.loc 1 39 2
+ 181 004a 1C46     		mov	r4, r3
+ 182              		.loc 1 39 82
+ 183 004c 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccMpU6Zk.s 			page 5
+
+
+ 184              		.loc 1 39 2
+ 185 004e 1D46     		mov	r5, r3
+ 186              		.loc 1 39 99
+ 187 0050 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 188              		.loc 1 39 2
+ 189 0052 1E46     		mov	r6, r3
+ 190              		.loc 1 39 116
+ 191 0054 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 192              		.loc 1 39 133
+ 193 0056 BA78     		ldrb	r2, [r7, #2]	@ zero_extendqisi2
+ 194              		.loc 1 39 150
+ 195 0058 7978     		ldrb	r1, [r7, #1]	@ zero_extendqisi2
+ 196              		.loc 1 39 167
+ 197 005a 3878     		ldrb	r0, [r7]	@ zero_extendqisi2
+ 198              		.loc 1 39 2
+ 199 005c 0390     		str	r0, [sp, #12]
+ 200 005e 0291     		str	r1, [sp, #8]
+ 201 0060 0192     		str	r2, [sp, #4]
+ 202 0062 0093     		str	r3, [sp]
+ 203 0064 3346     		mov	r3, r6
+ 204 0066 2A46     		mov	r2, r5
+ 205 0068 2146     		mov	r1, r4
+ 206 006a 0448     		ldr	r0, .L6
+ 207 006c FFF7FEFF 		bl	Usart_Printf
+  40:./Hardware/device/Product_Test.c **** 	return SPI_OK;
+ 208              		.loc 1 40 9
+ 209 0070 0023     		movs	r3, #0
+  41:./Hardware/device/Product_Test.c **** }
+ 210              		.loc 1 41 1
+ 211 0072 1846     		mov	r0, r3
+ 212 0074 1437     		adds	r7, r7, #20
+ 213              	.LCFI8:
+ 214              		.cfi_def_cfa_offset 20
+ 215 0076 BD46     		mov	sp, r7
+ 216              	.LCFI9:
+ 217              		.cfi_def_cfa_register 13
+ 218              		@ sp needed
+ 219 0078 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 220              	.L7:
+ 221 007a 00BF     		.align	2
+ 222              	.L6:
+ 223 007c 00000000 		.word	.LC0
+ 224              		.cfi_endproc
+ 225              	.LFE33:
+ 227              		.text
+ 228              	.Letext0:
+ 229              		.file 2 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 230              		.file 3 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 231              		.file 4 "./Hardware/device/spi.h"
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccMpU6Zk.s 			page 6
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 Product_Test.c
+C:\Users\86134\AppData\Local\Temp\ccMpU6Zk.s:16     .text.SD8840_SecCountDown:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccMpU6Zk.s:24     .text.SD8840_SecCountDown:00000000 SD8840_SecCountDown
+C:\Users\86134\AppData\Local\Temp\ccMpU6Zk.s:109    .rodata:00000000 $d
+C:\Users\86134\AppData\Local\Temp\ccMpU6Zk.s:114    .text.SD8840_PrintfTime:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccMpU6Zk.s:121    .text.SD8840_PrintfTime:00000000 SD8840_PrintfTime
+C:\Users\86134\AppData\Local\Temp\ccMpU6Zk.s:223    .text.SD8840_PrintfTime:0000007c $d
+
+UNDEFINED SYMBOLS
+spi_write_multi_bytes
+spi_read_multi_bytes
+bcd_to_dec
+Usart_Printf

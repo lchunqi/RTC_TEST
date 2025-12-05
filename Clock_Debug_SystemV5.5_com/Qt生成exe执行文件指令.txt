@@ -1,0 +1,2 @@
+1、windeployqt 命令 + .exe文件名操作(需要切换到.exe文件路径)或者直接windeployqt + .exe文件绝对路径
+2、使用Inno Setup Compiler打包软件时候，选择打包文件路径时选择根目录，会自动把根目录下的文件全部添加压缩

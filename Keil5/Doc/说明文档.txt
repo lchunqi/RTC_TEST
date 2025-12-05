@@ -1,0 +1,116 @@
+评估板V6.4使用说明
+
+功能界面：
+1，型号选择，上电即进入芯片型号选择界面，配合按键使用选择需要读取的RTC型号即可
+2，输出频率，使用按键选择频率输出即可
+3，自主走时和对比走时，自主走时RTC信息显示更加全面，对比走时仅进行测试型号和标准模块走时对比
+4，时间复制，在对比走时界面下，长按“+”按键0.5s或1s后松开，即可将标准模块时间复制到测试型号上
+5，打开充电功能，在对比走时界面下，长按“-”按键0.5s或1s后松开，测试型号旁出现电池图标，即可打开测试型号充电功能
+
+串口功能：
+1，串口功能一定要在非走时界面和非频率输出界面下使用
+2，配合时钟调试上位机使用，能查看测试型号所有寄存器内容，以及对寄存器的修改，使用时钟调试上位机可以完整的应用RTC的全部功能
+3，配合串口调试助手使用
+--使用SSCOM，波特率19200，勾上加回车换行，在发送区输入@help发送，即可出现全部串口辅助指令，选择需要的指令执行即可
+--使用友善串口调试，波特率19200，发送设置 ASCII，接收设置 ASCII，在发送区输入@help后按下回车(Enter--友善串口调试没有自动加回车换行操作需要手动添加)再发送，即可出现全部串口辅助指令，选择需要的指令执行即可
+
+
+	switch (sdxx_state) 
+	{  
+        case RTC_Series_Display:  
+			// 显示时间  
+			sd2xxx_time_show();
+			Updata_Display();
+            
+            if (Key_back == 0) 
+			{  
+              sdxx_state = RTC_Series_WaitBack; // 切换状态  
+            }
+        break;  
+
+        case RTC_Series_WaitBack:  
+            if (Key_back != 0) 
+			{  
+                sdxx_state = RTC_Series_Display; // 重置状态  
+                return; // 返回菜单  
+            }  
+        break;  
+    }
+
+
+  static uint8_t key_state = 0;
+
+	switch (sdxx_std_state) 
+	{
+		  case RTC_and_std_Display:  
+			// 显示时间  
+			sd3xxx_and_std();
+			Updata_Display();
+		  
+			if(Key_up == 0)
+			{
+				Delay_ms(10); 
+				if(Key_up == 0)
+				{
+					sd2xxx_time_copy();
+				}
+			}
+			
+			if(Key_down == 0) 
+			{
+				Delay_ms(10);
+				if(Key_down == 0)
+				{
+					if (key_state == 0) 
+					{	
+						sd3xxx_charge_on(); // 执行sdxxx_charge_on()函数
+						key_state = 1; // 更新按键状态为已按下
+					} else 
+					{
+						sd3xxx_charge_off(); // 执行sdxxx_charge_off()函数
+						key_state = 0; // 更新按键状态为未按下
+					}
+				}
+			}
+		  
+			if (Key_back == 0) 
+			{  
+				sdxx_std_state = RTC_and_std_WaitBack; // 切换状态  
+			}
+			
+		  break;  
+
+		  case RTC_and_std_WaitBack:  
+			if (Key_back != 0) 
+			{  
+				  sdxx_std_state = RTC_and_std_Display; // 重置状态 
+				  return; // 返回菜单  
+			  }  
+		  break;  
+	  }
+
+
+
+
+    switch (sdxx_freq_state)   
+    {  
+        case RTC_Freq_Display:  
+            // 显示频率   
+            rtc_f32768(IIC_TEST);  
+            Updata_Display();  
+		
+            if (Key_back == 0)   
+            {  
+                sdxx_freq_state = RTC_Freq_WaitBack; // 切换状态  
+                rtc_f32768_off(IIC_TEST);  // 停止频率显示  
+            } 
+            break;  
+
+        case RTC_Freq_WaitBack:  
+            if (Key_back != 0)   
+            {  
+                sdxx_freq_state = RTC_Freq_Display; // 重置状态   
+                return; // 返回菜单  
+            }
+            break;  
+    }

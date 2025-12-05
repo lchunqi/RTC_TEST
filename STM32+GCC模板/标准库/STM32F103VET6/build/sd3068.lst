@@ -1,0 +1,3890 @@
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"sd3068.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.rtc_f32768,"ax",%progbits
+  16              		.align	1
+  17              		.global	rtc_f32768
+  18              		.arch armv7-m
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.fpu softvfp
+  24              	rtc_f32768:
+  25              	.LFB32:
+  26              		.file 1 "./Hardware/device/sd3068.c"
+   1:./Hardware/device/sd3068.c **** #include "sd3068.h"
+   2:./Hardware/device/sd3068.c **** 
+   3:./Hardware/device/sd3068.c **** 
+   4:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f32768(i2c_device_bus IIC_x)
+   5:./Hardware/device/sd3068.c **** {
+  27              		.loc 1 5 1
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 16
+  30              		@ frame_needed = 1, uses_anonymous_args = 0
+  31 0000 80B5     		push	{r7, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 84B0     		sub	sp, sp, #16
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 24
+  39 0004 00AF     		add	r7, sp, #0
+  40              	.LCFI2:
+  41              		.cfi_def_cfa_register 7
+  42 0006 0346     		mov	r3, r0
+  43 0008 FB71     		strb	r3, [r7, #7]
+   6:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+  44              		.loc 1 6 11
+  45 000a A123     		movs	r3, #161
+  46 000c FB73     		strb	r3, [r7, #15]
+   7:./Hardware/device/sd3068.c **** 	
+   8:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+  47              		.loc 1 8 6
+  48 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+  49 0010 1846     		mov	r0, r3
+  50 0012 FFF7FEFF 		bl	RTC_WriteOn
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 2
+
+
+  51 0016 0346     		mov	r3, r0
+  52              		.loc 1 8 5
+  53 0018 062B     		cmp	r3, #6
+  54 001a 01D0     		beq	.L2
+   9:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+  55              		.loc 1 9 12
+  56 001c 0823     		movs	r3, #8
+  57 001e 23E0     		b	.L7
+  58              	.L2:
+  10:./Hardware/device/sd3068.c **** 		
+  11:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+  59              		.loc 1 11 6
+  60 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+  61 0022 07F10F01 		add	r1, r7, #15
+  62 0026 0122     		movs	r2, #1
+  63 0028 1020     		movs	r0, #16
+  64 002a FFF7FEFF 		bl	RTC_write_addr
+  65 002e 0346     		mov	r3, r0
+  66              		.loc 1 11 5
+  67 0030 062B     		cmp	r3, #6
+  68 0032 01D0     		beq	.L4
+  12:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+  69              		.loc 1 12 12
+  70 0034 0823     		movs	r3, #8
+  71 0036 17E0     		b	.L7
+  72              	.L4:
+  13:./Hardware/device/sd3068.c **** 		
+  14:./Hardware/device/sd3068.c **** 			buf=0x01;
+  73              		.loc 1 14 7
+  74 0038 0123     		movs	r3, #1
+  75 003a FB73     		strb	r3, [r7, #15]
+  15:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+  76              		.loc 1 15 6
+  77 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+  78 003e 07F10F01 		add	r1, r7, #15
+  79 0042 0122     		movs	r2, #1
+  80 0044 1120     		movs	r0, #17
+  81 0046 FFF7FEFF 		bl	RTC_write_addr
+  82 004a 0346     		mov	r3, r0
+  83              		.loc 1 15 5
+  84 004c 062B     		cmp	r3, #6
+  85 004e 01D0     		beq	.L5
+  16:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+  86              		.loc 1 16 12
+  87 0050 0823     		movs	r3, #8
+  88 0052 09E0     		b	.L7
+  89              	.L5:
+  17:./Hardware/device/sd3068.c **** 
+  18:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+  90              		.loc 1 18 6
+  91 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+  92 0056 1846     		mov	r0, r3
+  93 0058 FFF7FEFF 		bl	RTC_WriteOff
+  94 005c 0346     		mov	r3, r0
+  95              		.loc 1 18 5
+  96 005e 062B     		cmp	r3, #6
+  97 0060 01D0     		beq	.L6
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 3
+
+
+  19:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+  98              		.loc 1 19 12
+  99 0062 0823     		movs	r3, #8
+ 100 0064 00E0     		b	.L7
+ 101              	.L6:
+  20:./Hardware/device/sd3068.c **** 		
+  21:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 102              		.loc 1 21 10
+ 103 0066 0623     		movs	r3, #6
+ 104              	.L7:
+  22:./Hardware/device/sd3068.c **** 
+  23:./Hardware/device/sd3068.c **** }
+ 105              		.loc 1 23 1 discriminator 1
+ 106 0068 1846     		mov	r0, r3
+ 107 006a 1037     		adds	r7, r7, #16
+ 108              	.LCFI3:
+ 109              		.cfi_def_cfa_offset 8
+ 110 006c BD46     		mov	sp, r7
+ 111              	.LCFI4:
+ 112              		.cfi_def_cfa_register 13
+ 113              		@ sp needed
+ 114 006e 80BD     		pop	{r7, pc}
+ 115              		.cfi_endproc
+ 116              	.LFE32:
+ 118              		.section	.text.rtc_f4096,"ax",%progbits
+ 119              		.align	1
+ 120              		.global	rtc_f4096
+ 121              		.syntax unified
+ 122              		.thumb
+ 123              		.thumb_func
+ 124              		.fpu softvfp
+ 126              	rtc_f4096:
+ 127              	.LFB33:
+  24:./Hardware/device/sd3068.c **** 
+  25:./Hardware/device/sd3068.c **** 
+  26:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f4096(i2c_device_bus IIC_x)
+  27:./Hardware/device/sd3068.c **** {
+ 128              		.loc 1 27 1
+ 129              		.cfi_startproc
+ 130              		@ args = 0, pretend = 0, frame = 16
+ 131              		@ frame_needed = 1, uses_anonymous_args = 0
+ 132 0000 80B5     		push	{r7, lr}
+ 133              	.LCFI5:
+ 134              		.cfi_def_cfa_offset 8
+ 135              		.cfi_offset 7, -8
+ 136              		.cfi_offset 14, -4
+ 137 0002 84B0     		sub	sp, sp, #16
+ 138              	.LCFI6:
+ 139              		.cfi_def_cfa_offset 24
+ 140 0004 00AF     		add	r7, sp, #0
+ 141              	.LCFI7:
+ 142              		.cfi_def_cfa_register 7
+ 143 0006 0346     		mov	r3, r0
+ 144 0008 FB71     		strb	r3, [r7, #7]
+  28:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 145              		.loc 1 28 11
+ 146 000a A123     		movs	r3, #161
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 4
+
+
+ 147 000c FB73     		strb	r3, [r7, #15]
+  29:./Hardware/device/sd3068.c **** 	
+  30:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 148              		.loc 1 30 6
+ 149 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 150 0010 1846     		mov	r0, r3
+ 151 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 152 0016 0346     		mov	r3, r0
+ 153              		.loc 1 30 5
+ 154 0018 062B     		cmp	r3, #6
+ 155 001a 01D0     		beq	.L9
+  31:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 156              		.loc 1 31 12
+ 157 001c 0823     		movs	r3, #8
+ 158 001e 23E0     		b	.L14
+ 159              	.L9:
+  32:./Hardware/device/sd3068.c **** 		
+  33:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 160              		.loc 1 33 6
+ 161 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 162 0022 07F10F01 		add	r1, r7, #15
+ 163 0026 0122     		movs	r2, #1
+ 164 0028 1020     		movs	r0, #16
+ 165 002a FFF7FEFF 		bl	RTC_write_addr
+ 166 002e 0346     		mov	r3, r0
+ 167              		.loc 1 33 5
+ 168 0030 062B     		cmp	r3, #6
+ 169 0032 01D0     		beq	.L11
+  34:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 170              		.loc 1 34 12
+ 171 0034 0823     		movs	r3, #8
+ 172 0036 17E0     		b	.L14
+ 173              	.L11:
+  35:./Hardware/device/sd3068.c **** 		
+  36:./Hardware/device/sd3068.c **** 			buf=0x02;
+ 174              		.loc 1 36 7
+ 175 0038 0223     		movs	r3, #2
+ 176 003a FB73     		strb	r3, [r7, #15]
+  37:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 177              		.loc 1 37 6
+ 178 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 179 003e 07F10F01 		add	r1, r7, #15
+ 180 0042 0122     		movs	r2, #1
+ 181 0044 1120     		movs	r0, #17
+ 182 0046 FFF7FEFF 		bl	RTC_write_addr
+ 183 004a 0346     		mov	r3, r0
+ 184              		.loc 1 37 5
+ 185 004c 062B     		cmp	r3, #6
+ 186 004e 01D0     		beq	.L12
+  38:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 187              		.loc 1 38 12
+ 188 0050 0823     		movs	r3, #8
+ 189 0052 09E0     		b	.L14
+ 190              	.L12:
+  39:./Hardware/device/sd3068.c **** 		
+  40:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 191              		.loc 1 40 6
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 5
+
+
+ 192 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 193 0056 1846     		mov	r0, r3
+ 194 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 195 005c 0346     		mov	r3, r0
+ 196              		.loc 1 40 5
+ 197 005e 062B     		cmp	r3, #6
+ 198 0060 01D0     		beq	.L13
+  41:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 199              		.loc 1 41 12
+ 200 0062 0823     		movs	r3, #8
+ 201 0064 00E0     		b	.L14
+ 202              	.L13:
+  42:./Hardware/device/sd3068.c **** 		
+  43:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 203              		.loc 1 43 10
+ 204 0066 0623     		movs	r3, #6
+ 205              	.L14:
+  44:./Hardware/device/sd3068.c **** 
+  45:./Hardware/device/sd3068.c **** }
+ 206              		.loc 1 45 1 discriminator 1
+ 207 0068 1846     		mov	r0, r3
+ 208 006a 1037     		adds	r7, r7, #16
+ 209              	.LCFI8:
+ 210              		.cfi_def_cfa_offset 8
+ 211 006c BD46     		mov	sp, r7
+ 212              	.LCFI9:
+ 213              		.cfi_def_cfa_register 13
+ 214              		@ sp needed
+ 215 006e 80BD     		pop	{r7, pc}
+ 216              		.cfi_endproc
+ 217              	.LFE33:
+ 219              		.section	.text.rtc_f1024,"ax",%progbits
+ 220              		.align	1
+ 221              		.global	rtc_f1024
+ 222              		.syntax unified
+ 223              		.thumb
+ 224              		.thumb_func
+ 225              		.fpu softvfp
+ 227              	rtc_f1024:
+ 228              	.LFB34:
+  46:./Hardware/device/sd3068.c **** 
+  47:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1024(i2c_device_bus IIC_x)
+  48:./Hardware/device/sd3068.c **** {
+ 229              		.loc 1 48 1
+ 230              		.cfi_startproc
+ 231              		@ args = 0, pretend = 0, frame = 16
+ 232              		@ frame_needed = 1, uses_anonymous_args = 0
+ 233 0000 80B5     		push	{r7, lr}
+ 234              	.LCFI10:
+ 235              		.cfi_def_cfa_offset 8
+ 236              		.cfi_offset 7, -8
+ 237              		.cfi_offset 14, -4
+ 238 0002 84B0     		sub	sp, sp, #16
+ 239              	.LCFI11:
+ 240              		.cfi_def_cfa_offset 24
+ 241 0004 00AF     		add	r7, sp, #0
+ 242              	.LCFI12:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 6
+
+
+ 243              		.cfi_def_cfa_register 7
+ 244 0006 0346     		mov	r3, r0
+ 245 0008 FB71     		strb	r3, [r7, #7]
+  49:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 246              		.loc 1 49 11
+ 247 000a A123     		movs	r3, #161
+ 248 000c FB73     		strb	r3, [r7, #15]
+  50:./Hardware/device/sd3068.c **** 	
+  51:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 249              		.loc 1 51 6
+ 250 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 251 0010 1846     		mov	r0, r3
+ 252 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 253 0016 0346     		mov	r3, r0
+ 254              		.loc 1 51 5
+ 255 0018 062B     		cmp	r3, #6
+ 256 001a 01D0     		beq	.L16
+  52:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 257              		.loc 1 52 12
+ 258 001c 0823     		movs	r3, #8
+ 259 001e 23E0     		b	.L21
+ 260              	.L16:
+  53:./Hardware/device/sd3068.c **** 		
+  54:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 261              		.loc 1 54 6
+ 262 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 263 0022 07F10F01 		add	r1, r7, #15
+ 264 0026 0122     		movs	r2, #1
+ 265 0028 1020     		movs	r0, #16
+ 266 002a FFF7FEFF 		bl	RTC_write_addr
+ 267 002e 0346     		mov	r3, r0
+ 268              		.loc 1 54 5
+ 269 0030 062B     		cmp	r3, #6
+ 270 0032 01D0     		beq	.L18
+  55:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 271              		.loc 1 55 12
+ 272 0034 0823     		movs	r3, #8
+ 273 0036 17E0     		b	.L21
+ 274              	.L18:
+  56:./Hardware/device/sd3068.c **** 		
+  57:./Hardware/device/sd3068.c **** 			buf=0x03;
+ 275              		.loc 1 57 7
+ 276 0038 0323     		movs	r3, #3
+ 277 003a FB73     		strb	r3, [r7, #15]
+  58:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 278              		.loc 1 58 6
+ 279 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 280 003e 07F10F01 		add	r1, r7, #15
+ 281 0042 0122     		movs	r2, #1
+ 282 0044 1120     		movs	r0, #17
+ 283 0046 FFF7FEFF 		bl	RTC_write_addr
+ 284 004a 0346     		mov	r3, r0
+ 285              		.loc 1 58 5
+ 286 004c 062B     		cmp	r3, #6
+ 287 004e 01D0     		beq	.L19
+  59:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 288              		.loc 1 59 12
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 7
+
+
+ 289 0050 0823     		movs	r3, #8
+ 290 0052 09E0     		b	.L21
+ 291              	.L19:
+  60:./Hardware/device/sd3068.c **** 
+  61:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 292              		.loc 1 61 6
+ 293 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 294 0056 1846     		mov	r0, r3
+ 295 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 296 005c 0346     		mov	r3, r0
+ 297              		.loc 1 61 5
+ 298 005e 062B     		cmp	r3, #6
+ 299 0060 01D0     		beq	.L20
+  62:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 300              		.loc 1 62 12
+ 301 0062 0823     		movs	r3, #8
+ 302 0064 00E0     		b	.L21
+ 303              	.L20:
+  63:./Hardware/device/sd3068.c **** 		
+  64:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 304              		.loc 1 64 10
+ 305 0066 0623     		movs	r3, #6
+ 306              	.L21:
+  65:./Hardware/device/sd3068.c **** 
+  66:./Hardware/device/sd3068.c **** }
+ 307              		.loc 1 66 1 discriminator 1
+ 308 0068 1846     		mov	r0, r3
+ 309 006a 1037     		adds	r7, r7, #16
+ 310              	.LCFI13:
+ 311              		.cfi_def_cfa_offset 8
+ 312 006c BD46     		mov	sp, r7
+ 313              	.LCFI14:
+ 314              		.cfi_def_cfa_register 13
+ 315              		@ sp needed
+ 316 006e 80BD     		pop	{r7, pc}
+ 317              		.cfi_endproc
+ 318              	.LFE34:
+ 320              		.section	.text.rtc_f64,"ax",%progbits
+ 321              		.align	1
+ 322              		.global	rtc_f64
+ 323              		.syntax unified
+ 324              		.thumb
+ 325              		.thumb_func
+ 326              		.fpu softvfp
+ 328              	rtc_f64:
+ 329              	.LFB35:
+  67:./Hardware/device/sd3068.c **** 
+  68:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f64(i2c_device_bus IIC_x)
+  69:./Hardware/device/sd3068.c **** {
+ 330              		.loc 1 69 1
+ 331              		.cfi_startproc
+ 332              		@ args = 0, pretend = 0, frame = 16
+ 333              		@ frame_needed = 1, uses_anonymous_args = 0
+ 334 0000 80B5     		push	{r7, lr}
+ 335              	.LCFI15:
+ 336              		.cfi_def_cfa_offset 8
+ 337              		.cfi_offset 7, -8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 8
+
+
+ 338              		.cfi_offset 14, -4
+ 339 0002 84B0     		sub	sp, sp, #16
+ 340              	.LCFI16:
+ 341              		.cfi_def_cfa_offset 24
+ 342 0004 00AF     		add	r7, sp, #0
+ 343              	.LCFI17:
+ 344              		.cfi_def_cfa_register 7
+ 345 0006 0346     		mov	r3, r0
+ 346 0008 FB71     		strb	r3, [r7, #7]
+  70:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 347              		.loc 1 70 11
+ 348 000a A123     		movs	r3, #161
+ 349 000c FB73     		strb	r3, [r7, #15]
+  71:./Hardware/device/sd3068.c **** 	
+  72:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 350              		.loc 1 72 6
+ 351 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 352 0010 1846     		mov	r0, r3
+ 353 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 354 0016 0346     		mov	r3, r0
+ 355              		.loc 1 72 5
+ 356 0018 062B     		cmp	r3, #6
+ 357 001a 01D0     		beq	.L23
+  73:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 358              		.loc 1 73 12
+ 359 001c 0823     		movs	r3, #8
+ 360 001e 23E0     		b	.L28
+ 361              	.L23:
+  74:./Hardware/device/sd3068.c **** 		
+  75:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 362              		.loc 1 75 6
+ 363 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 364 0022 07F10F01 		add	r1, r7, #15
+ 365 0026 0122     		movs	r2, #1
+ 366 0028 1020     		movs	r0, #16
+ 367 002a FFF7FEFF 		bl	RTC_write_addr
+ 368 002e 0346     		mov	r3, r0
+ 369              		.loc 1 75 5
+ 370 0030 062B     		cmp	r3, #6
+ 371 0032 01D0     		beq	.L25
+  76:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 372              		.loc 1 76 12
+ 373 0034 0823     		movs	r3, #8
+ 374 0036 17E0     		b	.L28
+ 375              	.L25:
+  77:./Hardware/device/sd3068.c **** 		
+  78:./Hardware/device/sd3068.c **** 			buf=0x04;
+ 376              		.loc 1 78 7
+ 377 0038 0423     		movs	r3, #4
+ 378 003a FB73     		strb	r3, [r7, #15]
+  79:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 379              		.loc 1 79 6
+ 380 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 381 003e 07F10F01 		add	r1, r7, #15
+ 382 0042 0122     		movs	r2, #1
+ 383 0044 1120     		movs	r0, #17
+ 384 0046 FFF7FEFF 		bl	RTC_write_addr
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 9
+
+
+ 385 004a 0346     		mov	r3, r0
+ 386              		.loc 1 79 5
+ 387 004c 062B     		cmp	r3, #6
+ 388 004e 01D0     		beq	.L26
+  80:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 389              		.loc 1 80 12
+ 390 0050 0823     		movs	r3, #8
+ 391 0052 09E0     		b	.L28
+ 392              	.L26:
+  81:./Hardware/device/sd3068.c **** 
+  82:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 393              		.loc 1 82 6
+ 394 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 395 0056 1846     		mov	r0, r3
+ 396 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 397 005c 0346     		mov	r3, r0
+ 398              		.loc 1 82 5
+ 399 005e 062B     		cmp	r3, #6
+ 400 0060 01D0     		beq	.L27
+  83:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 401              		.loc 1 83 12
+ 402 0062 0823     		movs	r3, #8
+ 403 0064 00E0     		b	.L28
+ 404              	.L27:
+  84:./Hardware/device/sd3068.c **** 		
+  85:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 405              		.loc 1 85 10
+ 406 0066 0623     		movs	r3, #6
+ 407              	.L28:
+  86:./Hardware/device/sd3068.c **** 
+  87:./Hardware/device/sd3068.c **** }
+ 408              		.loc 1 87 1 discriminator 1
+ 409 0068 1846     		mov	r0, r3
+ 410 006a 1037     		adds	r7, r7, #16
+ 411              	.LCFI18:
+ 412              		.cfi_def_cfa_offset 8
+ 413 006c BD46     		mov	sp, r7
+ 414              	.LCFI19:
+ 415              		.cfi_def_cfa_register 13
+ 416              		@ sp needed
+ 417 006e 80BD     		pop	{r7, pc}
+ 418              		.cfi_endproc
+ 419              	.LFE35:
+ 421              		.section	.text.rtc_f32,"ax",%progbits
+ 422              		.align	1
+ 423              		.global	rtc_f32
+ 424              		.syntax unified
+ 425              		.thumb
+ 426              		.thumb_func
+ 427              		.fpu softvfp
+ 429              	rtc_f32:
+ 430              	.LFB36:
+  88:./Hardware/device/sd3068.c **** 
+  89:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f32(i2c_device_bus IIC_x)
+  90:./Hardware/device/sd3068.c **** {
+ 431              		.loc 1 90 1
+ 432              		.cfi_startproc
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 10
+
+
+ 433              		@ args = 0, pretend = 0, frame = 16
+ 434              		@ frame_needed = 1, uses_anonymous_args = 0
+ 435 0000 80B5     		push	{r7, lr}
+ 436              	.LCFI20:
+ 437              		.cfi_def_cfa_offset 8
+ 438              		.cfi_offset 7, -8
+ 439              		.cfi_offset 14, -4
+ 440 0002 84B0     		sub	sp, sp, #16
+ 441              	.LCFI21:
+ 442              		.cfi_def_cfa_offset 24
+ 443 0004 00AF     		add	r7, sp, #0
+ 444              	.LCFI22:
+ 445              		.cfi_def_cfa_register 7
+ 446 0006 0346     		mov	r3, r0
+ 447 0008 FB71     		strb	r3, [r7, #7]
+  91:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 448              		.loc 1 91 11
+ 449 000a A123     		movs	r3, #161
+ 450 000c FB73     		strb	r3, [r7, #15]
+  92:./Hardware/device/sd3068.c **** 	
+  93:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 451              		.loc 1 93 6
+ 452 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 453 0010 1846     		mov	r0, r3
+ 454 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 455 0016 0346     		mov	r3, r0
+ 456              		.loc 1 93 5
+ 457 0018 062B     		cmp	r3, #6
+ 458 001a 01D0     		beq	.L30
+  94:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 459              		.loc 1 94 12
+ 460 001c 0823     		movs	r3, #8
+ 461 001e 23E0     		b	.L35
+ 462              	.L30:
+  95:./Hardware/device/sd3068.c **** 		
+  96:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 463              		.loc 1 96 6
+ 464 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 465 0022 07F10F01 		add	r1, r7, #15
+ 466 0026 0122     		movs	r2, #1
+ 467 0028 1020     		movs	r0, #16
+ 468 002a FFF7FEFF 		bl	RTC_write_addr
+ 469 002e 0346     		mov	r3, r0
+ 470              		.loc 1 96 5
+ 471 0030 062B     		cmp	r3, #6
+ 472 0032 01D0     		beq	.L32
+  97:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 473              		.loc 1 97 12
+ 474 0034 0823     		movs	r3, #8
+ 475 0036 17E0     		b	.L35
+ 476              	.L32:
+  98:./Hardware/device/sd3068.c **** 		
+  99:./Hardware/device/sd3068.c **** 			buf=0x05;
+ 477              		.loc 1 99 7
+ 478 0038 0523     		movs	r3, #5
+ 479 003a FB73     		strb	r3, [r7, #15]
+ 100:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 11
+
+
+ 480              		.loc 1 100 6
+ 481 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 482 003e 07F10F01 		add	r1, r7, #15
+ 483 0042 0122     		movs	r2, #1
+ 484 0044 1120     		movs	r0, #17
+ 485 0046 FFF7FEFF 		bl	RTC_write_addr
+ 486 004a 0346     		mov	r3, r0
+ 487              		.loc 1 100 5
+ 488 004c 062B     		cmp	r3, #6
+ 489 004e 01D0     		beq	.L33
+ 101:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 490              		.loc 1 101 12
+ 491 0050 0823     		movs	r3, #8
+ 492 0052 09E0     		b	.L35
+ 493              	.L33:
+ 102:./Hardware/device/sd3068.c **** 
+ 103:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 494              		.loc 1 103 6
+ 495 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 496 0056 1846     		mov	r0, r3
+ 497 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 498 005c 0346     		mov	r3, r0
+ 499              		.loc 1 103 5
+ 500 005e 062B     		cmp	r3, #6
+ 501 0060 01D0     		beq	.L34
+ 104:./Hardware/device/sd3068.c **** 				return RTC_FAIL;		
+ 502              		.loc 1 104 12
+ 503 0062 0823     		movs	r3, #8
+ 504 0064 00E0     		b	.L35
+ 505              	.L34:
+ 105:./Hardware/device/sd3068.c **** 		
+ 106:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 506              		.loc 1 106 10
+ 507 0066 0623     		movs	r3, #6
+ 508              	.L35:
+ 107:./Hardware/device/sd3068.c **** 
+ 108:./Hardware/device/sd3068.c **** }
+ 509              		.loc 1 108 1 discriminator 1
+ 510 0068 1846     		mov	r0, r3
+ 511 006a 1037     		adds	r7, r7, #16
+ 512              	.LCFI23:
+ 513              		.cfi_def_cfa_offset 8
+ 514 006c BD46     		mov	sp, r7
+ 515              	.LCFI24:
+ 516              		.cfi_def_cfa_register 13
+ 517              		@ sp needed
+ 518 006e 80BD     		pop	{r7, pc}
+ 519              		.cfi_endproc
+ 520              	.LFE36:
+ 522              		.section	.text.rtc_f16,"ax",%progbits
+ 523              		.align	1
+ 524              		.global	rtc_f16
+ 525              		.syntax unified
+ 526              		.thumb
+ 527              		.thumb_func
+ 528              		.fpu softvfp
+ 530              	rtc_f16:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 12
+
+
+ 531              	.LFB37:
+ 109:./Hardware/device/sd3068.c **** 
+ 110:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f16(i2c_device_bus IIC_x)
+ 111:./Hardware/device/sd3068.c **** {
+ 532              		.loc 1 111 1
+ 533              		.cfi_startproc
+ 534              		@ args = 0, pretend = 0, frame = 16
+ 535              		@ frame_needed = 1, uses_anonymous_args = 0
+ 536 0000 80B5     		push	{r7, lr}
+ 537              	.LCFI25:
+ 538              		.cfi_def_cfa_offset 8
+ 539              		.cfi_offset 7, -8
+ 540              		.cfi_offset 14, -4
+ 541 0002 84B0     		sub	sp, sp, #16
+ 542              	.LCFI26:
+ 543              		.cfi_def_cfa_offset 24
+ 544 0004 00AF     		add	r7, sp, #0
+ 545              	.LCFI27:
+ 546              		.cfi_def_cfa_register 7
+ 547 0006 0346     		mov	r3, r0
+ 548 0008 FB71     		strb	r3, [r7, #7]
+ 112:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 549              		.loc 1 112 11
+ 550 000a A123     		movs	r3, #161
+ 551 000c FB73     		strb	r3, [r7, #15]
+ 113:./Hardware/device/sd3068.c **** 	
+ 114:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 552              		.loc 1 114 6
+ 553 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 554 0010 1846     		mov	r0, r3
+ 555 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 556 0016 0346     		mov	r3, r0
+ 557              		.loc 1 114 5
+ 558 0018 062B     		cmp	r3, #6
+ 559 001a 01D0     		beq	.L37
+ 115:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 560              		.loc 1 115 12
+ 561 001c 0823     		movs	r3, #8
+ 562 001e 23E0     		b	.L42
+ 563              	.L37:
+ 116:./Hardware/device/sd3068.c **** 		
+ 117:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 564              		.loc 1 117 6
+ 565 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 566 0022 07F10F01 		add	r1, r7, #15
+ 567 0026 0122     		movs	r2, #1
+ 568 0028 1020     		movs	r0, #16
+ 569 002a FFF7FEFF 		bl	RTC_write_addr
+ 570 002e 0346     		mov	r3, r0
+ 571              		.loc 1 117 5
+ 572 0030 062B     		cmp	r3, #6
+ 573 0032 01D0     		beq	.L39
+ 118:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 574              		.loc 1 118 12
+ 575 0034 0823     		movs	r3, #8
+ 576 0036 17E0     		b	.L42
+ 577              	.L39:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 13
+
+
+ 119:./Hardware/device/sd3068.c **** 		
+ 120:./Hardware/device/sd3068.c **** 			buf=0x06;
+ 578              		.loc 1 120 7
+ 579 0038 0623     		movs	r3, #6
+ 580 003a FB73     		strb	r3, [r7, #15]
+ 121:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 581              		.loc 1 121 6
+ 582 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 583 003e 07F10F01 		add	r1, r7, #15
+ 584 0042 0122     		movs	r2, #1
+ 585 0044 1120     		movs	r0, #17
+ 586 0046 FFF7FEFF 		bl	RTC_write_addr
+ 587 004a 0346     		mov	r3, r0
+ 588              		.loc 1 121 5
+ 589 004c 062B     		cmp	r3, #6
+ 590 004e 01D0     		beq	.L40
+ 122:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 591              		.loc 1 122 12
+ 592 0050 0823     		movs	r3, #8
+ 593 0052 09E0     		b	.L42
+ 594              	.L40:
+ 123:./Hardware/device/sd3068.c **** 		
+ 124:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 595              		.loc 1 124 6
+ 596 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 597 0056 1846     		mov	r0, r3
+ 598 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 599 005c 0346     		mov	r3, r0
+ 600              		.loc 1 124 5
+ 601 005e 062B     		cmp	r3, #6
+ 602 0060 01D0     		beq	.L41
+ 125:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 603              		.loc 1 125 12
+ 604 0062 0823     		movs	r3, #8
+ 605 0064 00E0     		b	.L42
+ 606              	.L41:
+ 126:./Hardware/device/sd3068.c **** 		
+ 127:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 607              		.loc 1 127 10
+ 608 0066 0623     		movs	r3, #6
+ 609              	.L42:
+ 128:./Hardware/device/sd3068.c **** 
+ 129:./Hardware/device/sd3068.c **** }
+ 610              		.loc 1 129 1 discriminator 1
+ 611 0068 1846     		mov	r0, r3
+ 612 006a 1037     		adds	r7, r7, #16
+ 613              	.LCFI28:
+ 614              		.cfi_def_cfa_offset 8
+ 615 006c BD46     		mov	sp, r7
+ 616              	.LCFI29:
+ 617              		.cfi_def_cfa_register 13
+ 618              		@ sp needed
+ 619 006e 80BD     		pop	{r7, pc}
+ 620              		.cfi_endproc
+ 621              	.LFE37:
+ 623              		.section	.text.rtc_f8,"ax",%progbits
+ 624              		.align	1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 14
+
+
+ 625              		.global	rtc_f8
+ 626              		.syntax unified
+ 627              		.thumb
+ 628              		.thumb_func
+ 629              		.fpu softvfp
+ 631              	rtc_f8:
+ 632              	.LFB38:
+ 130:./Hardware/device/sd3068.c **** 
+ 131:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f8(i2c_device_bus IIC_x)
+ 132:./Hardware/device/sd3068.c **** {
+ 633              		.loc 1 132 1
+ 634              		.cfi_startproc
+ 635              		@ args = 0, pretend = 0, frame = 16
+ 636              		@ frame_needed = 1, uses_anonymous_args = 0
+ 637 0000 80B5     		push	{r7, lr}
+ 638              	.LCFI30:
+ 639              		.cfi_def_cfa_offset 8
+ 640              		.cfi_offset 7, -8
+ 641              		.cfi_offset 14, -4
+ 642 0002 84B0     		sub	sp, sp, #16
+ 643              	.LCFI31:
+ 644              		.cfi_def_cfa_offset 24
+ 645 0004 00AF     		add	r7, sp, #0
+ 646              	.LCFI32:
+ 647              		.cfi_def_cfa_register 7
+ 648 0006 0346     		mov	r3, r0
+ 649 0008 FB71     		strb	r3, [r7, #7]
+ 133:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 650              		.loc 1 133 11
+ 651 000a A123     		movs	r3, #161
+ 652 000c FB73     		strb	r3, [r7, #15]
+ 134:./Hardware/device/sd3068.c **** 	
+ 135:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 653              		.loc 1 135 6
+ 654 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 655 0010 1846     		mov	r0, r3
+ 656 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 657 0016 0346     		mov	r3, r0
+ 658              		.loc 1 135 5
+ 659 0018 062B     		cmp	r3, #6
+ 660 001a 01D0     		beq	.L44
+ 136:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 661              		.loc 1 136 12
+ 662 001c 0823     		movs	r3, #8
+ 663 001e 23E0     		b	.L49
+ 664              	.L44:
+ 137:./Hardware/device/sd3068.c **** 		
+ 138:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 665              		.loc 1 138 6
+ 666 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 667 0022 07F10F01 		add	r1, r7, #15
+ 668 0026 0122     		movs	r2, #1
+ 669 0028 1020     		movs	r0, #16
+ 670 002a FFF7FEFF 		bl	RTC_write_addr
+ 671 002e 0346     		mov	r3, r0
+ 672              		.loc 1 138 5
+ 673 0030 062B     		cmp	r3, #6
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 15
+
+
+ 674 0032 01D0     		beq	.L46
+ 139:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 675              		.loc 1 139 12
+ 676 0034 0823     		movs	r3, #8
+ 677 0036 17E0     		b	.L49
+ 678              	.L46:
+ 140:./Hardware/device/sd3068.c **** 		
+ 141:./Hardware/device/sd3068.c **** 			buf=0x07;
+ 679              		.loc 1 141 7
+ 680 0038 0723     		movs	r3, #7
+ 681 003a FB73     		strb	r3, [r7, #15]
+ 142:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 682              		.loc 1 142 6
+ 683 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 684 003e 07F10F01 		add	r1, r7, #15
+ 685 0042 0122     		movs	r2, #1
+ 686 0044 1120     		movs	r0, #17
+ 687 0046 FFF7FEFF 		bl	RTC_write_addr
+ 688 004a 0346     		mov	r3, r0
+ 689              		.loc 1 142 5
+ 690 004c 062B     		cmp	r3, #6
+ 691 004e 01D0     		beq	.L47
+ 143:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 692              		.loc 1 143 12
+ 693 0050 0823     		movs	r3, #8
+ 694 0052 09E0     		b	.L49
+ 695              	.L47:
+ 144:./Hardware/device/sd3068.c **** 		
+ 145:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 696              		.loc 1 145 6
+ 697 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 698 0056 1846     		mov	r0, r3
+ 699 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 700 005c 0346     		mov	r3, r0
+ 701              		.loc 1 145 5
+ 702 005e 062B     		cmp	r3, #6
+ 703 0060 01D0     		beq	.L48
+ 146:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 704              		.loc 1 146 12
+ 705 0062 0823     		movs	r3, #8
+ 706 0064 00E0     		b	.L49
+ 707              	.L48:
+ 147:./Hardware/device/sd3068.c **** 		
+ 148:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 708              		.loc 1 148 10
+ 709 0066 0623     		movs	r3, #6
+ 710              	.L49:
+ 149:./Hardware/device/sd3068.c **** 
+ 150:./Hardware/device/sd3068.c **** }
+ 711              		.loc 1 150 1 discriminator 1
+ 712 0068 1846     		mov	r0, r3
+ 713 006a 1037     		adds	r7, r7, #16
+ 714              	.LCFI33:
+ 715              		.cfi_def_cfa_offset 8
+ 716 006c BD46     		mov	sp, r7
+ 717              	.LCFI34:
+ 718              		.cfi_def_cfa_register 13
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 16
+
+
+ 719              		@ sp needed
+ 720 006e 80BD     		pop	{r7, pc}
+ 721              		.cfi_endproc
+ 722              	.LFE38:
+ 724              		.section	.text.rtc_f4,"ax",%progbits
+ 725              		.align	1
+ 726              		.global	rtc_f4
+ 727              		.syntax unified
+ 728              		.thumb
+ 729              		.thumb_func
+ 730              		.fpu softvfp
+ 732              	rtc_f4:
+ 733              	.LFB39:
+ 151:./Hardware/device/sd3068.c **** 
+ 152:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f4(i2c_device_bus IIC_x)
+ 153:./Hardware/device/sd3068.c **** {
+ 734              		.loc 1 153 1
+ 735              		.cfi_startproc
+ 736              		@ args = 0, pretend = 0, frame = 16
+ 737              		@ frame_needed = 1, uses_anonymous_args = 0
+ 738 0000 80B5     		push	{r7, lr}
+ 739              	.LCFI35:
+ 740              		.cfi_def_cfa_offset 8
+ 741              		.cfi_offset 7, -8
+ 742              		.cfi_offset 14, -4
+ 743 0002 84B0     		sub	sp, sp, #16
+ 744              	.LCFI36:
+ 745              		.cfi_def_cfa_offset 24
+ 746 0004 00AF     		add	r7, sp, #0
+ 747              	.LCFI37:
+ 748              		.cfi_def_cfa_register 7
+ 749 0006 0346     		mov	r3, r0
+ 750 0008 FB71     		strb	r3, [r7, #7]
+ 154:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 751              		.loc 1 154 11
+ 752 000a A123     		movs	r3, #161
+ 753 000c FB73     		strb	r3, [r7, #15]
+ 155:./Hardware/device/sd3068.c **** 	
+ 156:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 754              		.loc 1 156 6
+ 755 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 756 0010 1846     		mov	r0, r3
+ 757 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 758 0016 0346     		mov	r3, r0
+ 759              		.loc 1 156 5
+ 760 0018 062B     		cmp	r3, #6
+ 761 001a 01D0     		beq	.L51
+ 157:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 762              		.loc 1 157 12
+ 763 001c 0823     		movs	r3, #8
+ 764 001e 23E0     		b	.L56
+ 765              	.L51:
+ 158:./Hardware/device/sd3068.c **** 		
+ 159:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 766              		.loc 1 159 6
+ 767 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 768 0022 07F10F01 		add	r1, r7, #15
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 17
+
+
+ 769 0026 0122     		movs	r2, #1
+ 770 0028 1020     		movs	r0, #16
+ 771 002a FFF7FEFF 		bl	RTC_write_addr
+ 772 002e 0346     		mov	r3, r0
+ 773              		.loc 1 159 5
+ 774 0030 062B     		cmp	r3, #6
+ 775 0032 01D0     		beq	.L53
+ 160:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 776              		.loc 1 160 12
+ 777 0034 0823     		movs	r3, #8
+ 778 0036 17E0     		b	.L56
+ 779              	.L53:
+ 161:./Hardware/device/sd3068.c **** 		
+ 162:./Hardware/device/sd3068.c **** 			buf=0x08;
+ 780              		.loc 1 162 7
+ 781 0038 0823     		movs	r3, #8
+ 782 003a FB73     		strb	r3, [r7, #15]
+ 163:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 783              		.loc 1 163 6
+ 784 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 785 003e 07F10F01 		add	r1, r7, #15
+ 786 0042 0122     		movs	r2, #1
+ 787 0044 1120     		movs	r0, #17
+ 788 0046 FFF7FEFF 		bl	RTC_write_addr
+ 789 004a 0346     		mov	r3, r0
+ 790              		.loc 1 163 5
+ 791 004c 062B     		cmp	r3, #6
+ 792 004e 01D0     		beq	.L54
+ 164:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 793              		.loc 1 164 12
+ 794 0050 0823     		movs	r3, #8
+ 795 0052 09E0     		b	.L56
+ 796              	.L54:
+ 165:./Hardware/device/sd3068.c **** 		
+ 166:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 797              		.loc 1 166 6
+ 798 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 799 0056 1846     		mov	r0, r3
+ 800 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 801 005c 0346     		mov	r3, r0
+ 802              		.loc 1 166 5
+ 803 005e 062B     		cmp	r3, #6
+ 804 0060 01D0     		beq	.L55
+ 167:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 805              		.loc 1 167 12
+ 806 0062 0823     		movs	r3, #8
+ 807 0064 00E0     		b	.L56
+ 808              	.L55:
+ 168:./Hardware/device/sd3068.c **** 		
+ 169:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 809              		.loc 1 169 10
+ 810 0066 0623     		movs	r3, #6
+ 811              	.L56:
+ 170:./Hardware/device/sd3068.c **** 
+ 171:./Hardware/device/sd3068.c **** }
+ 812              		.loc 1 171 1 discriminator 1
+ 813 0068 1846     		mov	r0, r3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 18
+
+
+ 814 006a 1037     		adds	r7, r7, #16
+ 815              	.LCFI38:
+ 816              		.cfi_def_cfa_offset 8
+ 817 006c BD46     		mov	sp, r7
+ 818              	.LCFI39:
+ 819              		.cfi_def_cfa_register 13
+ 820              		@ sp needed
+ 821 006e 80BD     		pop	{r7, pc}
+ 822              		.cfi_endproc
+ 823              	.LFE39:
+ 825              		.section	.text.rtc_f2,"ax",%progbits
+ 826              		.align	1
+ 827              		.global	rtc_f2
+ 828              		.syntax unified
+ 829              		.thumb
+ 830              		.thumb_func
+ 831              		.fpu softvfp
+ 833              	rtc_f2:
+ 834              	.LFB40:
+ 172:./Hardware/device/sd3068.c **** 
+ 173:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f2(i2c_device_bus IIC_x)
+ 174:./Hardware/device/sd3068.c **** {
+ 835              		.loc 1 174 1
+ 836              		.cfi_startproc
+ 837              		@ args = 0, pretend = 0, frame = 16
+ 838              		@ frame_needed = 1, uses_anonymous_args = 0
+ 839 0000 80B5     		push	{r7, lr}
+ 840              	.LCFI40:
+ 841              		.cfi_def_cfa_offset 8
+ 842              		.cfi_offset 7, -8
+ 843              		.cfi_offset 14, -4
+ 844 0002 84B0     		sub	sp, sp, #16
+ 845              	.LCFI41:
+ 846              		.cfi_def_cfa_offset 24
+ 847 0004 00AF     		add	r7, sp, #0
+ 848              	.LCFI42:
+ 849              		.cfi_def_cfa_register 7
+ 850 0006 0346     		mov	r3, r0
+ 851 0008 FB71     		strb	r3, [r7, #7]
+ 175:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 852              		.loc 1 175 11
+ 853 000a A123     		movs	r3, #161
+ 854 000c FB73     		strb	r3, [r7, #15]
+ 176:./Hardware/device/sd3068.c **** 	
+ 177:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 855              		.loc 1 177 6
+ 856 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 857 0010 1846     		mov	r0, r3
+ 858 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 859 0016 0346     		mov	r3, r0
+ 860              		.loc 1 177 5
+ 861 0018 062B     		cmp	r3, #6
+ 862 001a 01D0     		beq	.L58
+ 178:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 863              		.loc 1 178 12
+ 864 001c 0823     		movs	r3, #8
+ 865 001e 23E0     		b	.L63
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 19
+
+
+ 866              	.L58:
+ 179:./Hardware/device/sd3068.c **** 		
+ 180:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 867              		.loc 1 180 6
+ 868 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 869 0022 07F10F01 		add	r1, r7, #15
+ 870 0026 0122     		movs	r2, #1
+ 871 0028 1020     		movs	r0, #16
+ 872 002a FFF7FEFF 		bl	RTC_write_addr
+ 873 002e 0346     		mov	r3, r0
+ 874              		.loc 1 180 5
+ 875 0030 062B     		cmp	r3, #6
+ 876 0032 01D0     		beq	.L60
+ 181:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 877              		.loc 1 181 12
+ 878 0034 0823     		movs	r3, #8
+ 879 0036 17E0     		b	.L63
+ 880              	.L60:
+ 182:./Hardware/device/sd3068.c **** 		
+ 183:./Hardware/device/sd3068.c **** 			buf=0x09;
+ 881              		.loc 1 183 7
+ 882 0038 0923     		movs	r3, #9
+ 883 003a FB73     		strb	r3, [r7, #15]
+ 184:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 884              		.loc 1 184 6
+ 885 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 886 003e 07F10F01 		add	r1, r7, #15
+ 887 0042 0122     		movs	r2, #1
+ 888 0044 1120     		movs	r0, #17
+ 889 0046 FFF7FEFF 		bl	RTC_write_addr
+ 890 004a 0346     		mov	r3, r0
+ 891              		.loc 1 184 5
+ 892 004c 062B     		cmp	r3, #6
+ 893 004e 01D0     		beq	.L61
+ 185:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 894              		.loc 1 185 12
+ 895 0050 0823     		movs	r3, #8
+ 896 0052 09E0     		b	.L63
+ 897              	.L61:
+ 186:./Hardware/device/sd3068.c **** 		
+ 187:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 898              		.loc 1 187 6
+ 899 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 900 0056 1846     		mov	r0, r3
+ 901 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 902 005c 0346     		mov	r3, r0
+ 903              		.loc 1 187 5
+ 904 005e 062B     		cmp	r3, #6
+ 905 0060 01D0     		beq	.L62
+ 188:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 906              		.loc 1 188 12
+ 907 0062 0823     		movs	r3, #8
+ 908 0064 00E0     		b	.L63
+ 909              	.L62:
+ 189:./Hardware/device/sd3068.c **** 		
+ 190:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 910              		.loc 1 190 10
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 20
+
+
+ 911 0066 0623     		movs	r3, #6
+ 912              	.L63:
+ 191:./Hardware/device/sd3068.c **** 
+ 192:./Hardware/device/sd3068.c **** }
+ 913              		.loc 1 192 1 discriminator 1
+ 914 0068 1846     		mov	r0, r3
+ 915 006a 1037     		adds	r7, r7, #16
+ 916              	.LCFI43:
+ 917              		.cfi_def_cfa_offset 8
+ 918 006c BD46     		mov	sp, r7
+ 919              	.LCFI44:
+ 920              		.cfi_def_cfa_register 13
+ 921              		@ sp needed
+ 922 006e 80BD     		pop	{r7, pc}
+ 923              		.cfi_endproc
+ 924              	.LFE40:
+ 926              		.section	.text.rtc_f1,"ax",%progbits
+ 927              		.align	1
+ 928              		.global	rtc_f1
+ 929              		.syntax unified
+ 930              		.thumb
+ 931              		.thumb_func
+ 932              		.fpu softvfp
+ 934              	rtc_f1:
+ 935              	.LFB41:
+ 193:./Hardware/device/sd3068.c **** 
+ 194:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1(i2c_device_bus IIC_x)
+ 195:./Hardware/device/sd3068.c **** {
+ 936              		.loc 1 195 1
+ 937              		.cfi_startproc
+ 938              		@ args = 0, pretend = 0, frame = 16
+ 939              		@ frame_needed = 1, uses_anonymous_args = 0
+ 940 0000 80B5     		push	{r7, lr}
+ 941              	.LCFI45:
+ 942              		.cfi_def_cfa_offset 8
+ 943              		.cfi_offset 7, -8
+ 944              		.cfi_offset 14, -4
+ 945 0002 84B0     		sub	sp, sp, #16
+ 946              	.LCFI46:
+ 947              		.cfi_def_cfa_offset 24
+ 948 0004 00AF     		add	r7, sp, #0
+ 949              	.LCFI47:
+ 950              		.cfi_def_cfa_register 7
+ 951 0006 0346     		mov	r3, r0
+ 952 0008 FB71     		strb	r3, [r7, #7]
+ 196:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 953              		.loc 1 196 11
+ 954 000a A123     		movs	r3, #161
+ 955 000c FB73     		strb	r3, [r7, #15]
+ 197:./Hardware/device/sd3068.c **** 	
+ 198:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 956              		.loc 1 198 6
+ 957 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 958 0010 1846     		mov	r0, r3
+ 959 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 960 0016 0346     		mov	r3, r0
+ 961              		.loc 1 198 5
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 21
+
+
+ 962 0018 062B     		cmp	r3, #6
+ 963 001a 01D0     		beq	.L65
+ 199:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 964              		.loc 1 199 12
+ 965 001c 0823     		movs	r3, #8
+ 966 001e 23E0     		b	.L70
+ 967              	.L65:
+ 200:./Hardware/device/sd3068.c **** 		
+ 201:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 968              		.loc 1 201 6
+ 969 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 970 0022 07F10F01 		add	r1, r7, #15
+ 971 0026 0122     		movs	r2, #1
+ 972 0028 1020     		movs	r0, #16
+ 973 002a FFF7FEFF 		bl	RTC_write_addr
+ 974 002e 0346     		mov	r3, r0
+ 975              		.loc 1 201 5
+ 976 0030 062B     		cmp	r3, #6
+ 977 0032 01D0     		beq	.L67
+ 202:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 978              		.loc 1 202 12
+ 979 0034 0823     		movs	r3, #8
+ 980 0036 17E0     		b	.L70
+ 981              	.L67:
+ 203:./Hardware/device/sd3068.c **** 		
+ 204:./Hardware/device/sd3068.c **** 			buf=0x0A;
+ 982              		.loc 1 204 7
+ 983 0038 0A23     		movs	r3, #10
+ 984 003a FB73     		strb	r3, [r7, #15]
+ 205:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 985              		.loc 1 205 6
+ 986 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 987 003e 07F10F01 		add	r1, r7, #15
+ 988 0042 0122     		movs	r2, #1
+ 989 0044 1120     		movs	r0, #17
+ 990 0046 FFF7FEFF 		bl	RTC_write_addr
+ 991 004a 0346     		mov	r3, r0
+ 992              		.loc 1 205 5
+ 993 004c 062B     		cmp	r3, #6
+ 994 004e 01D0     		beq	.L68
+ 206:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 995              		.loc 1 206 12
+ 996 0050 0823     		movs	r3, #8
+ 997 0052 09E0     		b	.L70
+ 998              	.L68:
+ 207:./Hardware/device/sd3068.c **** 		
+ 208:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 999              		.loc 1 208 6
+ 1000 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1001 0056 1846     		mov	r0, r3
+ 1002 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 1003 005c 0346     		mov	r3, r0
+ 1004              		.loc 1 208 5
+ 1005 005e 062B     		cmp	r3, #6
+ 1006 0060 01D0     		beq	.L69
+ 209:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1007              		.loc 1 209 12
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 22
+
+
+ 1008 0062 0823     		movs	r3, #8
+ 1009 0064 00E0     		b	.L70
+ 1010              	.L69:
+ 210:./Hardware/device/sd3068.c **** 
+ 211:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 1011              		.loc 1 211 10
+ 1012 0066 0623     		movs	r3, #6
+ 1013              	.L70:
+ 212:./Hardware/device/sd3068.c **** 
+ 213:./Hardware/device/sd3068.c **** }
+ 1014              		.loc 1 213 1 discriminator 1
+ 1015 0068 1846     		mov	r0, r3
+ 1016 006a 1037     		adds	r7, r7, #16
+ 1017              	.LCFI48:
+ 1018              		.cfi_def_cfa_offset 8
+ 1019 006c BD46     		mov	sp, r7
+ 1020              	.LCFI49:
+ 1021              		.cfi_def_cfa_register 13
+ 1022              		@ sp needed
+ 1023 006e 80BD     		pop	{r7, pc}
+ 1024              		.cfi_endproc
+ 1025              	.LFE41:
+ 1027              		.section	.text.rtc_f1_2,"ax",%progbits
+ 1028              		.align	1
+ 1029              		.global	rtc_f1_2
+ 1030              		.syntax unified
+ 1031              		.thumb
+ 1032              		.thumb_func
+ 1033              		.fpu softvfp
+ 1035              	rtc_f1_2:
+ 1036              	.LFB42:
+ 214:./Hardware/device/sd3068.c **** 
+ 215:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1_2(i2c_device_bus IIC_x)
+ 216:./Hardware/device/sd3068.c **** {
+ 1037              		.loc 1 216 1
+ 1038              		.cfi_startproc
+ 1039              		@ args = 0, pretend = 0, frame = 16
+ 1040              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1041 0000 80B5     		push	{r7, lr}
+ 1042              	.LCFI50:
+ 1043              		.cfi_def_cfa_offset 8
+ 1044              		.cfi_offset 7, -8
+ 1045              		.cfi_offset 14, -4
+ 1046 0002 84B0     		sub	sp, sp, #16
+ 1047              	.LCFI51:
+ 1048              		.cfi_def_cfa_offset 24
+ 1049 0004 00AF     		add	r7, sp, #0
+ 1050              	.LCFI52:
+ 1051              		.cfi_def_cfa_register 7
+ 1052 0006 0346     		mov	r3, r0
+ 1053 0008 FB71     		strb	r3, [r7, #7]
+ 217:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 1054              		.loc 1 217 11
+ 1055 000a A123     		movs	r3, #161
+ 1056 000c FB73     		strb	r3, [r7, #15]
+ 218:./Hardware/device/sd3068.c **** 	
+ 219:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 23
+
+
+ 1057              		.loc 1 219 6
+ 1058 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1059 0010 1846     		mov	r0, r3
+ 1060 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 1061 0016 0346     		mov	r3, r0
+ 1062              		.loc 1 219 5
+ 1063 0018 062B     		cmp	r3, #6
+ 1064 001a 01D0     		beq	.L72
+ 220:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1065              		.loc 1 220 12
+ 1066 001c 0823     		movs	r3, #8
+ 1067 001e 23E0     		b	.L77
+ 1068              	.L72:
+ 221:./Hardware/device/sd3068.c **** 		
+ 222:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 1069              		.loc 1 222 6
+ 1070 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1071 0022 07F10F01 		add	r1, r7, #15
+ 1072 0026 0122     		movs	r2, #1
+ 1073 0028 1020     		movs	r0, #16
+ 1074 002a FFF7FEFF 		bl	RTC_write_addr
+ 1075 002e 0346     		mov	r3, r0
+ 1076              		.loc 1 222 5
+ 1077 0030 062B     		cmp	r3, #6
+ 1078 0032 01D0     		beq	.L74
+ 223:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1079              		.loc 1 223 12
+ 1080 0034 0823     		movs	r3, #8
+ 1081 0036 17E0     		b	.L77
+ 1082              	.L74:
+ 224:./Hardware/device/sd3068.c **** 		
+ 225:./Hardware/device/sd3068.c **** 			buf=0x0B;
+ 1083              		.loc 1 225 7
+ 1084 0038 0B23     		movs	r3, #11
+ 1085 003a FB73     		strb	r3, [r7, #15]
+ 226:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 1086              		.loc 1 226 6
+ 1087 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1088 003e 07F10F01 		add	r1, r7, #15
+ 1089 0042 0122     		movs	r2, #1
+ 1090 0044 1120     		movs	r0, #17
+ 1091 0046 FFF7FEFF 		bl	RTC_write_addr
+ 1092 004a 0346     		mov	r3, r0
+ 1093              		.loc 1 226 5
+ 1094 004c 062B     		cmp	r3, #6
+ 1095 004e 01D0     		beq	.L75
+ 227:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1096              		.loc 1 227 12
+ 1097 0050 0823     		movs	r3, #8
+ 1098 0052 09E0     		b	.L77
+ 1099              	.L75:
+ 228:./Hardware/device/sd3068.c **** 		
+ 229:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 1100              		.loc 1 229 6
+ 1101 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1102 0056 1846     		mov	r0, r3
+ 1103 0058 FFF7FEFF 		bl	RTC_WriteOff
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 24
+
+
+ 1104 005c 0346     		mov	r3, r0
+ 1105              		.loc 1 229 5
+ 1106 005e 062B     		cmp	r3, #6
+ 1107 0060 01D0     		beq	.L76
+ 230:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1108              		.loc 1 230 12
+ 1109 0062 0823     		movs	r3, #8
+ 1110 0064 00E0     		b	.L77
+ 1111              	.L76:
+ 231:./Hardware/device/sd3068.c **** 		
+ 232:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 1112              		.loc 1 232 10
+ 1113 0066 0623     		movs	r3, #6
+ 1114              	.L77:
+ 233:./Hardware/device/sd3068.c **** 
+ 234:./Hardware/device/sd3068.c **** }
+ 1115              		.loc 1 234 1 discriminator 1
+ 1116 0068 1846     		mov	r0, r3
+ 1117 006a 1037     		adds	r7, r7, #16
+ 1118              	.LCFI53:
+ 1119              		.cfi_def_cfa_offset 8
+ 1120 006c BD46     		mov	sp, r7
+ 1121              	.LCFI54:
+ 1122              		.cfi_def_cfa_register 13
+ 1123              		@ sp needed
+ 1124 006e 80BD     		pop	{r7, pc}
+ 1125              		.cfi_endproc
+ 1126              	.LFE42:
+ 1128              		.section	.text.rtc_f1_4,"ax",%progbits
+ 1129              		.align	1
+ 1130              		.global	rtc_f1_4
+ 1131              		.syntax unified
+ 1132              		.thumb
+ 1133              		.thumb_func
+ 1134              		.fpu softvfp
+ 1136              	rtc_f1_4:
+ 1137              	.LFB43:
+ 235:./Hardware/device/sd3068.c **** 
+ 236:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1_4(i2c_device_bus IIC_x)
+ 237:./Hardware/device/sd3068.c **** {
+ 1138              		.loc 1 237 1
+ 1139              		.cfi_startproc
+ 1140              		@ args = 0, pretend = 0, frame = 16
+ 1141              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1142 0000 80B5     		push	{r7, lr}
+ 1143              	.LCFI55:
+ 1144              		.cfi_def_cfa_offset 8
+ 1145              		.cfi_offset 7, -8
+ 1146              		.cfi_offset 14, -4
+ 1147 0002 84B0     		sub	sp, sp, #16
+ 1148              	.LCFI56:
+ 1149              		.cfi_def_cfa_offset 24
+ 1150 0004 00AF     		add	r7, sp, #0
+ 1151              	.LCFI57:
+ 1152              		.cfi_def_cfa_register 7
+ 1153 0006 0346     		mov	r3, r0
+ 1154 0008 FB71     		strb	r3, [r7, #7]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 25
+
+
+ 238:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 1155              		.loc 1 238 11
+ 1156 000a A123     		movs	r3, #161
+ 1157 000c FB73     		strb	r3, [r7, #15]
+ 239:./Hardware/device/sd3068.c **** 	
+ 240:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 1158              		.loc 1 240 6
+ 1159 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1160 0010 1846     		mov	r0, r3
+ 1161 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 1162 0016 0346     		mov	r3, r0
+ 1163              		.loc 1 240 5
+ 1164 0018 062B     		cmp	r3, #6
+ 1165 001a 01D0     		beq	.L79
+ 241:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1166              		.loc 1 241 12
+ 1167 001c 0823     		movs	r3, #8
+ 1168 001e 23E0     		b	.L84
+ 1169              	.L79:
+ 242:./Hardware/device/sd3068.c **** 		
+ 243:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 1170              		.loc 1 243 6
+ 1171 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1172 0022 07F10F01 		add	r1, r7, #15
+ 1173 0026 0122     		movs	r2, #1
+ 1174 0028 1020     		movs	r0, #16
+ 1175 002a FFF7FEFF 		bl	RTC_write_addr
+ 1176 002e 0346     		mov	r3, r0
+ 1177              		.loc 1 243 5
+ 1178 0030 062B     		cmp	r3, #6
+ 1179 0032 01D0     		beq	.L81
+ 244:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1180              		.loc 1 244 12
+ 1181 0034 0823     		movs	r3, #8
+ 1182 0036 17E0     		b	.L84
+ 1183              	.L81:
+ 245:./Hardware/device/sd3068.c **** 		
+ 246:./Hardware/device/sd3068.c **** 			buf=0x0C;
+ 1184              		.loc 1 246 7
+ 1185 0038 0C23     		movs	r3, #12
+ 1186 003a FB73     		strb	r3, [r7, #15]
+ 247:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 1187              		.loc 1 247 6
+ 1188 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1189 003e 07F10F01 		add	r1, r7, #15
+ 1190 0042 0122     		movs	r2, #1
+ 1191 0044 1120     		movs	r0, #17
+ 1192 0046 FFF7FEFF 		bl	RTC_write_addr
+ 1193 004a 0346     		mov	r3, r0
+ 1194              		.loc 1 247 5
+ 1195 004c 062B     		cmp	r3, #6
+ 1196 004e 01D0     		beq	.L82
+ 248:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1197              		.loc 1 248 12
+ 1198 0050 0823     		movs	r3, #8
+ 1199 0052 09E0     		b	.L84
+ 1200              	.L82:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 26
+
+
+ 249:./Hardware/device/sd3068.c **** 		
+ 250:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 1201              		.loc 1 250 6
+ 1202 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1203 0056 1846     		mov	r0, r3
+ 1204 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 1205 005c 0346     		mov	r3, r0
+ 1206              		.loc 1 250 5
+ 1207 005e 062B     		cmp	r3, #6
+ 1208 0060 01D0     		beq	.L83
+ 251:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1209              		.loc 1 251 12
+ 1210 0062 0823     		movs	r3, #8
+ 1211 0064 00E0     		b	.L84
+ 1212              	.L83:
+ 252:./Hardware/device/sd3068.c **** 		
+ 253:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 1213              		.loc 1 253 10
+ 1214 0066 0623     		movs	r3, #6
+ 1215              	.L84:
+ 254:./Hardware/device/sd3068.c **** 
+ 255:./Hardware/device/sd3068.c **** }
+ 1216              		.loc 1 255 1 discriminator 1
+ 1217 0068 1846     		mov	r0, r3
+ 1218 006a 1037     		adds	r7, r7, #16
+ 1219              	.LCFI58:
+ 1220              		.cfi_def_cfa_offset 8
+ 1221 006c BD46     		mov	sp, r7
+ 1222              	.LCFI59:
+ 1223              		.cfi_def_cfa_register 13
+ 1224              		@ sp needed
+ 1225 006e 80BD     		pop	{r7, pc}
+ 1226              		.cfi_endproc
+ 1227              	.LFE43:
+ 1229              		.section	.text.rtc_f1_8,"ax",%progbits
+ 1230              		.align	1
+ 1231              		.global	rtc_f1_8
+ 1232              		.syntax unified
+ 1233              		.thumb
+ 1234              		.thumb_func
+ 1235              		.fpu softvfp
+ 1237              	rtc_f1_8:
+ 1238              	.LFB44:
+ 256:./Hardware/device/sd3068.c **** 
+ 257:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1_8(i2c_device_bus IIC_x)
+ 258:./Hardware/device/sd3068.c **** {
+ 1239              		.loc 1 258 1
+ 1240              		.cfi_startproc
+ 1241              		@ args = 0, pretend = 0, frame = 16
+ 1242              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1243 0000 80B5     		push	{r7, lr}
+ 1244              	.LCFI60:
+ 1245              		.cfi_def_cfa_offset 8
+ 1246              		.cfi_offset 7, -8
+ 1247              		.cfi_offset 14, -4
+ 1248 0002 84B0     		sub	sp, sp, #16
+ 1249              	.LCFI61:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 27
+
+
+ 1250              		.cfi_def_cfa_offset 24
+ 1251 0004 00AF     		add	r7, sp, #0
+ 1252              	.LCFI62:
+ 1253              		.cfi_def_cfa_register 7
+ 1254 0006 0346     		mov	r3, r0
+ 1255 0008 FB71     		strb	r3, [r7, #7]
+ 259:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 1256              		.loc 1 259 11
+ 1257 000a A123     		movs	r3, #161
+ 1258 000c FB73     		strb	r3, [r7, #15]
+ 260:./Hardware/device/sd3068.c **** 	
+ 261:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 1259              		.loc 1 261 6
+ 1260 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1261 0010 1846     		mov	r0, r3
+ 1262 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 1263 0016 0346     		mov	r3, r0
+ 1264              		.loc 1 261 5
+ 1265 0018 062B     		cmp	r3, #6
+ 1266 001a 01D0     		beq	.L86
+ 262:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1267              		.loc 1 262 12
+ 1268 001c 0823     		movs	r3, #8
+ 1269 001e 23E0     		b	.L91
+ 1270              	.L86:
+ 263:./Hardware/device/sd3068.c **** 		
+ 264:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 1271              		.loc 1 264 6
+ 1272 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1273 0022 07F10F01 		add	r1, r7, #15
+ 1274 0026 0122     		movs	r2, #1
+ 1275 0028 1020     		movs	r0, #16
+ 1276 002a FFF7FEFF 		bl	RTC_write_addr
+ 1277 002e 0346     		mov	r3, r0
+ 1278              		.loc 1 264 5
+ 1279 0030 062B     		cmp	r3, #6
+ 1280 0032 01D0     		beq	.L88
+ 265:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1281              		.loc 1 265 12
+ 1282 0034 0823     		movs	r3, #8
+ 1283 0036 17E0     		b	.L91
+ 1284              	.L88:
+ 266:./Hardware/device/sd3068.c **** 		
+ 267:./Hardware/device/sd3068.c **** 			buf=0x0D;
+ 1285              		.loc 1 267 7
+ 1286 0038 0D23     		movs	r3, #13
+ 1287 003a FB73     		strb	r3, [r7, #15]
+ 268:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 1288              		.loc 1 268 6
+ 1289 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1290 003e 07F10F01 		add	r1, r7, #15
+ 1291 0042 0122     		movs	r2, #1
+ 1292 0044 1120     		movs	r0, #17
+ 1293 0046 FFF7FEFF 		bl	RTC_write_addr
+ 1294 004a 0346     		mov	r3, r0
+ 1295              		.loc 1 268 5
+ 1296 004c 062B     		cmp	r3, #6
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 28
+
+
+ 1297 004e 01D0     		beq	.L89
+ 269:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1298              		.loc 1 269 12
+ 1299 0050 0823     		movs	r3, #8
+ 1300 0052 09E0     		b	.L91
+ 1301              	.L89:
+ 270:./Hardware/device/sd3068.c **** 		
+ 271:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 1302              		.loc 1 271 6
+ 1303 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1304 0056 1846     		mov	r0, r3
+ 1305 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 1306 005c 0346     		mov	r3, r0
+ 1307              		.loc 1 271 5
+ 1308 005e 062B     		cmp	r3, #6
+ 1309 0060 01D0     		beq	.L90
+ 272:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1310              		.loc 1 272 12
+ 1311 0062 0823     		movs	r3, #8
+ 1312 0064 00E0     		b	.L91
+ 1313              	.L90:
+ 273:./Hardware/device/sd3068.c **** 		
+ 274:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 1314              		.loc 1 274 10
+ 1315 0066 0623     		movs	r3, #6
+ 1316              	.L91:
+ 275:./Hardware/device/sd3068.c **** 
+ 276:./Hardware/device/sd3068.c **** }
+ 1317              		.loc 1 276 1 discriminator 1
+ 1318 0068 1846     		mov	r0, r3
+ 1319 006a 1037     		adds	r7, r7, #16
+ 1320              	.LCFI63:
+ 1321              		.cfi_def_cfa_offset 8
+ 1322 006c BD46     		mov	sp, r7
+ 1323              	.LCFI64:
+ 1324              		.cfi_def_cfa_register 13
+ 1325              		@ sp needed
+ 1326 006e 80BD     		pop	{r7, pc}
+ 1327              		.cfi_endproc
+ 1328              	.LFE44:
+ 1330              		.section	.text.rtc_f1_16,"ax",%progbits
+ 1331              		.align	1
+ 1332              		.global	rtc_f1_16
+ 1333              		.syntax unified
+ 1334              		.thumb
+ 1335              		.thumb_func
+ 1336              		.fpu softvfp
+ 1338              	rtc_f1_16:
+ 1339              	.LFB45:
+ 277:./Hardware/device/sd3068.c **** 
+ 278:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1_16(i2c_device_bus IIC_x)
+ 279:./Hardware/device/sd3068.c **** {
+ 1340              		.loc 1 279 1
+ 1341              		.cfi_startproc
+ 1342              		@ args = 0, pretend = 0, frame = 16
+ 1343              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1344 0000 80B5     		push	{r7, lr}
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 29
+
+
+ 1345              	.LCFI65:
+ 1346              		.cfi_def_cfa_offset 8
+ 1347              		.cfi_offset 7, -8
+ 1348              		.cfi_offset 14, -4
+ 1349 0002 84B0     		sub	sp, sp, #16
+ 1350              	.LCFI66:
+ 1351              		.cfi_def_cfa_offset 24
+ 1352 0004 00AF     		add	r7, sp, #0
+ 1353              	.LCFI67:
+ 1354              		.cfi_def_cfa_register 7
+ 1355 0006 0346     		mov	r3, r0
+ 1356 0008 FB71     		strb	r3, [r7, #7]
+ 280:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 1357              		.loc 1 280 11
+ 1358 000a A123     		movs	r3, #161
+ 1359 000c FB73     		strb	r3, [r7, #15]
+ 281:./Hardware/device/sd3068.c **** 	
+ 282:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 1360              		.loc 1 282 6
+ 1361 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1362 0010 1846     		mov	r0, r3
+ 1363 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 1364 0016 0346     		mov	r3, r0
+ 1365              		.loc 1 282 5
+ 1366 0018 062B     		cmp	r3, #6
+ 1367 001a 01D0     		beq	.L93
+ 283:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1368              		.loc 1 283 12
+ 1369 001c 0823     		movs	r3, #8
+ 1370 001e 23E0     		b	.L98
+ 1371              	.L93:
+ 284:./Hardware/device/sd3068.c **** 		
+ 285:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 1372              		.loc 1 285 6
+ 1373 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1374 0022 07F10F01 		add	r1, r7, #15
+ 1375 0026 0122     		movs	r2, #1
+ 1376 0028 1020     		movs	r0, #16
+ 1377 002a FFF7FEFF 		bl	RTC_write_addr
+ 1378 002e 0346     		mov	r3, r0
+ 1379              		.loc 1 285 5
+ 1380 0030 062B     		cmp	r3, #6
+ 1381 0032 01D0     		beq	.L95
+ 286:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1382              		.loc 1 286 12
+ 1383 0034 0823     		movs	r3, #8
+ 1384 0036 17E0     		b	.L98
+ 1385              	.L95:
+ 287:./Hardware/device/sd3068.c **** 		
+ 288:./Hardware/device/sd3068.c **** 			buf=0x0E;
+ 1386              		.loc 1 288 7
+ 1387 0038 0E23     		movs	r3, #14
+ 1388 003a FB73     		strb	r3, [r7, #15]
+ 289:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 1389              		.loc 1 289 6
+ 1390 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1391 003e 07F10F01 		add	r1, r7, #15
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 30
+
+
+ 1392 0042 0122     		movs	r2, #1
+ 1393 0044 1120     		movs	r0, #17
+ 1394 0046 FFF7FEFF 		bl	RTC_write_addr
+ 1395 004a 0346     		mov	r3, r0
+ 1396              		.loc 1 289 5
+ 1397 004c 062B     		cmp	r3, #6
+ 1398 004e 01D0     		beq	.L96
+ 290:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1399              		.loc 1 290 12
+ 1400 0050 0823     		movs	r3, #8
+ 1401 0052 09E0     		b	.L98
+ 1402              	.L96:
+ 291:./Hardware/device/sd3068.c **** 		
+ 292:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 1403              		.loc 1 292 6
+ 1404 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1405 0056 1846     		mov	r0, r3
+ 1406 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 1407 005c 0346     		mov	r3, r0
+ 1408              		.loc 1 292 5
+ 1409 005e 062B     		cmp	r3, #6
+ 1410 0060 01D0     		beq	.L97
+ 293:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1411              		.loc 1 293 12
+ 1412 0062 0823     		movs	r3, #8
+ 1413 0064 00E0     		b	.L98
+ 1414              	.L97:
+ 294:./Hardware/device/sd3068.c **** 		
+ 295:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 1415              		.loc 1 295 10
+ 1416 0066 0623     		movs	r3, #6
+ 1417              	.L98:
+ 296:./Hardware/device/sd3068.c **** 
+ 297:./Hardware/device/sd3068.c **** }
+ 1418              		.loc 1 297 1 discriminator 1
+ 1419 0068 1846     		mov	r0, r3
+ 1420 006a 1037     		adds	r7, r7, #16
+ 1421              	.LCFI68:
+ 1422              		.cfi_def_cfa_offset 8
+ 1423 006c BD46     		mov	sp, r7
+ 1424              	.LCFI69:
+ 1425              		.cfi_def_cfa_register 13
+ 1426              		@ sp needed
+ 1427 006e 80BD     		pop	{r7, pc}
+ 1428              		.cfi_endproc
+ 1429              	.LFE45:
+ 1431              		.section	.text.rtc_f1s,"ax",%progbits
+ 1432              		.align	1
+ 1433              		.global	rtc_f1s
+ 1434              		.syntax unified
+ 1435              		.thumb
+ 1436              		.thumb_func
+ 1437              		.fpu softvfp
+ 1439              	rtc_f1s:
+ 1440              	.LFB46:
+ 298:./Hardware/device/sd3068.c **** 
+ 299:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1s(i2c_device_bus IIC_x)
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 31
+
+
+ 300:./Hardware/device/sd3068.c **** {
+ 1441              		.loc 1 300 1
+ 1442              		.cfi_startproc
+ 1443              		@ args = 0, pretend = 0, frame = 16
+ 1444              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1445 0000 80B5     		push	{r7, lr}
+ 1446              	.LCFI70:
+ 1447              		.cfi_def_cfa_offset 8
+ 1448              		.cfi_offset 7, -8
+ 1449              		.cfi_offset 14, -4
+ 1450 0002 84B0     		sub	sp, sp, #16
+ 1451              	.LCFI71:
+ 1452              		.cfi_def_cfa_offset 24
+ 1453 0004 00AF     		add	r7, sp, #0
+ 1454              	.LCFI72:
+ 1455              		.cfi_def_cfa_register 7
+ 1456 0006 0346     		mov	r3, r0
+ 1457 0008 FB71     		strb	r3, [r7, #7]
+ 301:./Hardware/device/sd3068.c **** 		uint8_t buf=0xA1;
+ 1458              		.loc 1 301 11
+ 1459 000a A123     		movs	r3, #161
+ 1460 000c FB73     		strb	r3, [r7, #15]
+ 302:./Hardware/device/sd3068.c **** 	
+ 303:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 1461              		.loc 1 303 6
+ 1462 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1463 0010 1846     		mov	r0, r3
+ 1464 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 1465 0016 0346     		mov	r3, r0
+ 1466              		.loc 1 303 5
+ 1467 0018 062B     		cmp	r3, #6
+ 1468 001a 01D0     		beq	.L100
+ 304:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1469              		.loc 1 304 12
+ 1470 001c 0823     		movs	r3, #8
+ 1471 001e 23E0     		b	.L105
+ 1472              	.L100:
+ 305:./Hardware/device/sd3068.c **** 		
+ 306:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 1473              		.loc 1 306 6
+ 1474 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1475 0022 07F10F01 		add	r1, r7, #15
+ 1476 0026 0122     		movs	r2, #1
+ 1477 0028 1020     		movs	r0, #16
+ 1478 002a FFF7FEFF 		bl	RTC_write_addr
+ 1479 002e 0346     		mov	r3, r0
+ 1480              		.loc 1 306 5
+ 1481 0030 062B     		cmp	r3, #6
+ 1482 0032 01D0     		beq	.L102
+ 307:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1483              		.loc 1 307 12
+ 1484 0034 0823     		movs	r3, #8
+ 1485 0036 17E0     		b	.L105
+ 1486              	.L102:
+ 308:./Hardware/device/sd3068.c **** 		
+ 309:./Hardware/device/sd3068.c **** 			buf=0x0F;
+ 1487              		.loc 1 309 7
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 32
+
+
+ 1488 0038 0F23     		movs	r3, #15
+ 1489 003a FB73     		strb	r3, [r7, #15]
+ 310:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 1490              		.loc 1 310 6
+ 1491 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1492 003e 07F10F01 		add	r1, r7, #15
+ 1493 0042 0122     		movs	r2, #1
+ 1494 0044 1120     		movs	r0, #17
+ 1495 0046 FFF7FEFF 		bl	RTC_write_addr
+ 1496 004a 0346     		mov	r3, r0
+ 1497              		.loc 1 310 5
+ 1498 004c 062B     		cmp	r3, #6
+ 1499 004e 01D0     		beq	.L103
+ 311:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1500              		.loc 1 311 12
+ 1501 0050 0823     		movs	r3, #8
+ 1502 0052 09E0     		b	.L105
+ 1503              	.L103:
+ 312:./Hardware/device/sd3068.c **** 		
+ 313:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 1504              		.loc 1 313 6
+ 1505 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1506 0056 1846     		mov	r0, r3
+ 1507 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 1508 005c 0346     		mov	r3, r0
+ 1509              		.loc 1 313 5
+ 1510 005e 062B     		cmp	r3, #6
+ 1511 0060 01D0     		beq	.L104
+ 314:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1512              		.loc 1 314 12
+ 1513 0062 0823     		movs	r3, #8
+ 1514 0064 00E0     		b	.L105
+ 1515              	.L104:
+ 315:./Hardware/device/sd3068.c **** 		
+ 316:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 1516              		.loc 1 316 10
+ 1517 0066 0623     		movs	r3, #6
+ 1518              	.L105:
+ 317:./Hardware/device/sd3068.c **** 
+ 318:./Hardware/device/sd3068.c **** }
+ 1519              		.loc 1 318 1 discriminator 1
+ 1520 0068 1846     		mov	r0, r3
+ 1521 006a 1037     		adds	r7, r7, #16
+ 1522              	.LCFI73:
+ 1523              		.cfi_def_cfa_offset 8
+ 1524 006c BD46     		mov	sp, r7
+ 1525              	.LCFI74:
+ 1526              		.cfi_def_cfa_register 13
+ 1527              		@ sp needed
+ 1528 006e 80BD     		pop	{r7, pc}
+ 1529              		.cfi_endproc
+ 1530              	.LFE46:
+ 1532              		.section	.text.rtc_f4096_off,"ax",%progbits
+ 1533              		.align	1
+ 1534              		.global	rtc_f4096_off
+ 1535              		.syntax unified
+ 1536              		.thumb
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 33
+
+
+ 1537              		.thumb_func
+ 1538              		.fpu softvfp
+ 1540              	rtc_f4096_off:
+ 1541              	.LFB47:
+ 319:./Hardware/device/sd3068.c **** 
+ 320:./Hardware/device/sd3068.c **** 
+ 321:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f4096_off(i2c_device_bus IIC_x)
+ 322:./Hardware/device/sd3068.c **** {
+ 1542              		.loc 1 322 1
+ 1543              		.cfi_startproc
+ 1544              		@ args = 0, pretend = 0, frame = 16
+ 1545              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1546 0000 80B5     		push	{r7, lr}
+ 1547              	.LCFI75:
+ 1548              		.cfi_def_cfa_offset 8
+ 1549              		.cfi_offset 7, -8
+ 1550              		.cfi_offset 14, -4
+ 1551 0002 84B0     		sub	sp, sp, #16
+ 1552              	.LCFI76:
+ 1553              		.cfi_def_cfa_offset 24
+ 1554 0004 00AF     		add	r7, sp, #0
+ 1555              	.LCFI77:
+ 1556              		.cfi_def_cfa_register 7
+ 1557 0006 0346     		mov	r3, r0
+ 1558 0008 FB71     		strb	r3, [r7, #7]
+ 323:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 1559              		.loc 1 323 11
+ 1560 000a 8023     		movs	r3, #128
+ 1561 000c FB73     		strb	r3, [r7, #15]
+ 324:./Hardware/device/sd3068.c **** 	
+ 325:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 1562              		.loc 1 325 6
+ 1563 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1564 0010 1846     		mov	r0, r3
+ 1565 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 1566 0016 0346     		mov	r3, r0
+ 1567              		.loc 1 325 5
+ 1568 0018 062B     		cmp	r3, #6
+ 1569 001a 01D0     		beq	.L107
+ 326:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1570              		.loc 1 326 12
+ 1571 001c 0823     		movs	r3, #8
+ 1572 001e 23E0     		b	.L112
+ 1573              	.L107:
+ 327:./Hardware/device/sd3068.c **** 		
+ 328:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 1574              		.loc 1 328 6
+ 1575 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1576 0022 07F10F01 		add	r1, r7, #15
+ 1577 0026 0122     		movs	r2, #1
+ 1578 0028 1020     		movs	r0, #16
+ 1579 002a FFF7FEFF 		bl	RTC_write_addr
+ 1580 002e 0346     		mov	r3, r0
+ 1581              		.loc 1 328 5
+ 1582 0030 062B     		cmp	r3, #6
+ 1583 0032 01D0     		beq	.L109
+ 329:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 34
+
+
+ 1584              		.loc 1 329 12
+ 1585 0034 0823     		movs	r3, #8
+ 1586 0036 17E0     		b	.L112
+ 1587              	.L109:
+ 330:./Hardware/device/sd3068.c **** 		
+ 331:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 1588              		.loc 1 331 7
+ 1589 0038 0023     		movs	r3, #0
+ 1590 003a FB73     		strb	r3, [r7, #15]
+ 332:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 1591              		.loc 1 332 6
+ 1592 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1593 003e 07F10F01 		add	r1, r7, #15
+ 1594 0042 0122     		movs	r2, #1
+ 1595 0044 1120     		movs	r0, #17
+ 1596 0046 FFF7FEFF 		bl	RTC_write_addr
+ 1597 004a 0346     		mov	r3, r0
+ 1598              		.loc 1 332 5
+ 1599 004c 062B     		cmp	r3, #6
+ 1600 004e 01D0     		beq	.L110
+ 333:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1601              		.loc 1 333 12
+ 1602 0050 0823     		movs	r3, #8
+ 1603 0052 09E0     		b	.L112
+ 1604              	.L110:
+ 334:./Hardware/device/sd3068.c **** 		
+ 335:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 1605              		.loc 1 335 6
+ 1606 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1607 0056 1846     		mov	r0, r3
+ 1608 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 1609 005c 0346     		mov	r3, r0
+ 1610              		.loc 1 335 5
+ 1611 005e 062B     		cmp	r3, #6
+ 1612 0060 01D0     		beq	.L111
+ 336:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1613              		.loc 1 336 12
+ 1614 0062 0823     		movs	r3, #8
+ 1615 0064 00E0     		b	.L112
+ 1616              	.L111:
+ 337:./Hardware/device/sd3068.c **** 		
+ 338:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 1617              		.loc 1 338 10
+ 1618 0066 0623     		movs	r3, #6
+ 1619              	.L112:
+ 339:./Hardware/device/sd3068.c **** 
+ 340:./Hardware/device/sd3068.c **** }
+ 1620              		.loc 1 340 1 discriminator 1
+ 1621 0068 1846     		mov	r0, r3
+ 1622 006a 1037     		adds	r7, r7, #16
+ 1623              	.LCFI78:
+ 1624              		.cfi_def_cfa_offset 8
+ 1625 006c BD46     		mov	sp, r7
+ 1626              	.LCFI79:
+ 1627              		.cfi_def_cfa_register 13
+ 1628              		@ sp needed
+ 1629 006e 80BD     		pop	{r7, pc}
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 35
+
+
+ 1630              		.cfi_endproc
+ 1631              	.LFE47:
+ 1633              		.section	.text.rtc_f1_off,"ax",%progbits
+ 1634              		.align	1
+ 1635              		.global	rtc_f1_off
+ 1636              		.syntax unified
+ 1637              		.thumb
+ 1638              		.thumb_func
+ 1639              		.fpu softvfp
+ 1641              	rtc_f1_off:
+ 1642              	.LFB48:
+ 341:./Hardware/device/sd3068.c **** 
+ 342:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1_off(i2c_device_bus IIC_x)
+ 343:./Hardware/device/sd3068.c **** {
+ 1643              		.loc 1 343 1
+ 1644              		.cfi_startproc
+ 1645              		@ args = 0, pretend = 0, frame = 16
+ 1646              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1647 0000 80B5     		push	{r7, lr}
+ 1648              	.LCFI80:
+ 1649              		.cfi_def_cfa_offset 8
+ 1650              		.cfi_offset 7, -8
+ 1651              		.cfi_offset 14, -4
+ 1652 0002 84B0     		sub	sp, sp, #16
+ 1653              	.LCFI81:
+ 1654              		.cfi_def_cfa_offset 24
+ 1655 0004 00AF     		add	r7, sp, #0
+ 1656              	.LCFI82:
+ 1657              		.cfi_def_cfa_register 7
+ 1658 0006 0346     		mov	r3, r0
+ 1659 0008 FB71     		strb	r3, [r7, #7]
+ 344:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 1660              		.loc 1 344 11
+ 1661 000a 8023     		movs	r3, #128
+ 1662 000c FB73     		strb	r3, [r7, #15]
+ 345:./Hardware/device/sd3068.c **** 	
+ 346:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 1663              		.loc 1 346 6
+ 1664 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1665 0010 1846     		mov	r0, r3
+ 1666 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 1667 0016 0346     		mov	r3, r0
+ 1668              		.loc 1 346 5
+ 1669 0018 062B     		cmp	r3, #6
+ 1670 001a 01D0     		beq	.L114
+ 347:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1671              		.loc 1 347 12
+ 1672 001c 0823     		movs	r3, #8
+ 1673 001e 23E0     		b	.L119
+ 1674              	.L114:
+ 348:./Hardware/device/sd3068.c **** 		
+ 349:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 1675              		.loc 1 349 6
+ 1676 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1677 0022 07F10F01 		add	r1, r7, #15
+ 1678 0026 0122     		movs	r2, #1
+ 1679 0028 1020     		movs	r0, #16
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 36
+
+
+ 1680 002a FFF7FEFF 		bl	RTC_write_addr
+ 1681 002e 0346     		mov	r3, r0
+ 1682              		.loc 1 349 5
+ 1683 0030 062B     		cmp	r3, #6
+ 1684 0032 01D0     		beq	.L116
+ 350:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1685              		.loc 1 350 12
+ 1686 0034 0823     		movs	r3, #8
+ 1687 0036 17E0     		b	.L119
+ 1688              	.L116:
+ 351:./Hardware/device/sd3068.c **** 		
+ 352:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 1689              		.loc 1 352 7
+ 1690 0038 0023     		movs	r3, #0
+ 1691 003a FB73     		strb	r3, [r7, #15]
+ 353:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 1692              		.loc 1 353 6
+ 1693 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1694 003e 07F10F01 		add	r1, r7, #15
+ 1695 0042 0122     		movs	r2, #1
+ 1696 0044 1120     		movs	r0, #17
+ 1697 0046 FFF7FEFF 		bl	RTC_write_addr
+ 1698 004a 0346     		mov	r3, r0
+ 1699              		.loc 1 353 5
+ 1700 004c 062B     		cmp	r3, #6
+ 1701 004e 01D0     		beq	.L117
+ 354:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1702              		.loc 1 354 12
+ 1703 0050 0823     		movs	r3, #8
+ 1704 0052 09E0     		b	.L119
+ 1705              	.L117:
+ 355:./Hardware/device/sd3068.c **** 		
+ 356:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 1706              		.loc 1 356 6
+ 1707 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1708 0056 1846     		mov	r0, r3
+ 1709 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 1710 005c 0346     		mov	r3, r0
+ 1711              		.loc 1 356 5
+ 1712 005e 062B     		cmp	r3, #6
+ 1713 0060 01D0     		beq	.L118
+ 357:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1714              		.loc 1 357 12
+ 1715 0062 0823     		movs	r3, #8
+ 1716 0064 00E0     		b	.L119
+ 1717              	.L118:
+ 358:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 1718              		.loc 1 358 10
+ 1719 0066 0623     		movs	r3, #6
+ 1720              	.L119:
+ 359:./Hardware/device/sd3068.c **** 
+ 360:./Hardware/device/sd3068.c **** }
+ 1721              		.loc 1 360 1 discriminator 1
+ 1722 0068 1846     		mov	r0, r3
+ 1723 006a 1037     		adds	r7, r7, #16
+ 1724              	.LCFI83:
+ 1725              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 37
+
+
+ 1726 006c BD46     		mov	sp, r7
+ 1727              	.LCFI84:
+ 1728              		.cfi_def_cfa_register 13
+ 1729              		@ sp needed
+ 1730 006e 80BD     		pop	{r7, pc}
+ 1731              		.cfi_endproc
+ 1732              	.LFE48:
+ 1734              		.section	.text.rtc_f1s_off,"ax",%progbits
+ 1735              		.align	1
+ 1736              		.global	rtc_f1s_off
+ 1737              		.syntax unified
+ 1738              		.thumb
+ 1739              		.thumb_func
+ 1740              		.fpu softvfp
+ 1742              	rtc_f1s_off:
+ 1743              	.LFB49:
+ 361:./Hardware/device/sd3068.c **** 
+ 362:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1s_off(i2c_device_bus IIC_x)
+ 363:./Hardware/device/sd3068.c **** {
+ 1744              		.loc 1 363 1
+ 1745              		.cfi_startproc
+ 1746              		@ args = 0, pretend = 0, frame = 16
+ 1747              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1748 0000 80B5     		push	{r7, lr}
+ 1749              	.LCFI85:
+ 1750              		.cfi_def_cfa_offset 8
+ 1751              		.cfi_offset 7, -8
+ 1752              		.cfi_offset 14, -4
+ 1753 0002 84B0     		sub	sp, sp, #16
+ 1754              	.LCFI86:
+ 1755              		.cfi_def_cfa_offset 24
+ 1756 0004 00AF     		add	r7, sp, #0
+ 1757              	.LCFI87:
+ 1758              		.cfi_def_cfa_register 7
+ 1759 0006 0346     		mov	r3, r0
+ 1760 0008 FB71     		strb	r3, [r7, #7]
+ 364:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 1761              		.loc 1 364 11
+ 1762 000a 8023     		movs	r3, #128
+ 1763 000c FB73     		strb	r3, [r7, #15]
+ 365:./Hardware/device/sd3068.c **** 	
+ 366:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 1764              		.loc 1 366 6
+ 1765 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1766 0010 1846     		mov	r0, r3
+ 1767 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 1768 0016 0346     		mov	r3, r0
+ 1769              		.loc 1 366 5
+ 1770 0018 062B     		cmp	r3, #6
+ 1771 001a 01D0     		beq	.L121
+ 367:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1772              		.loc 1 367 12
+ 1773 001c 0823     		movs	r3, #8
+ 1774 001e 23E0     		b	.L126
+ 1775              	.L121:
+ 368:./Hardware/device/sd3068.c **** 		
+ 369:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 38
+
+
+ 1776              		.loc 1 369 6
+ 1777 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1778 0022 07F10F01 		add	r1, r7, #15
+ 1779 0026 0122     		movs	r2, #1
+ 1780 0028 1020     		movs	r0, #16
+ 1781 002a FFF7FEFF 		bl	RTC_write_addr
+ 1782 002e 0346     		mov	r3, r0
+ 1783              		.loc 1 369 5
+ 1784 0030 062B     		cmp	r3, #6
+ 1785 0032 01D0     		beq	.L123
+ 370:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1786              		.loc 1 370 12
+ 1787 0034 0823     		movs	r3, #8
+ 1788 0036 17E0     		b	.L126
+ 1789              	.L123:
+ 371:./Hardware/device/sd3068.c **** 		
+ 372:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 1790              		.loc 1 372 7
+ 1791 0038 0023     		movs	r3, #0
+ 1792 003a FB73     		strb	r3, [r7, #15]
+ 373:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 1793              		.loc 1 373 6
+ 1794 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1795 003e 07F10F01 		add	r1, r7, #15
+ 1796 0042 0122     		movs	r2, #1
+ 1797 0044 1120     		movs	r0, #17
+ 1798 0046 FFF7FEFF 		bl	RTC_write_addr
+ 1799 004a 0346     		mov	r3, r0
+ 1800              		.loc 1 373 5
+ 1801 004c 062B     		cmp	r3, #6
+ 1802 004e 01D0     		beq	.L124
+ 374:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1803              		.loc 1 374 12
+ 1804 0050 0823     		movs	r3, #8
+ 1805 0052 09E0     		b	.L126
+ 1806              	.L124:
+ 375:./Hardware/device/sd3068.c **** 		
+ 376:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 1807              		.loc 1 376 6
+ 1808 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1809 0056 1846     		mov	r0, r3
+ 1810 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 1811 005c 0346     		mov	r3, r0
+ 1812              		.loc 1 376 5
+ 1813 005e 062B     		cmp	r3, #6
+ 1814 0060 01D0     		beq	.L125
+ 377:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1815              		.loc 1 377 12
+ 1816 0062 0823     		movs	r3, #8
+ 1817 0064 00E0     		b	.L126
+ 1818              	.L125:
+ 378:./Hardware/device/sd3068.c **** 		
+ 379:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 1819              		.loc 1 379 10
+ 1820 0066 0623     		movs	r3, #6
+ 1821              	.L126:
+ 380:./Hardware/device/sd3068.c **** 
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 39
+
+
+ 381:./Hardware/device/sd3068.c **** }
+ 1822              		.loc 1 381 1 discriminator 1
+ 1823 0068 1846     		mov	r0, r3
+ 1824 006a 1037     		adds	r7, r7, #16
+ 1825              	.LCFI88:
+ 1826              		.cfi_def_cfa_offset 8
+ 1827 006c BD46     		mov	sp, r7
+ 1828              	.LCFI89:
+ 1829              		.cfi_def_cfa_register 13
+ 1830              		@ sp needed
+ 1831 006e 80BD     		pop	{r7, pc}
+ 1832              		.cfi_endproc
+ 1833              	.LFE49:
+ 1835              		.section	.text.rtc_f1024_off,"ax",%progbits
+ 1836              		.align	1
+ 1837              		.global	rtc_f1024_off
+ 1838              		.syntax unified
+ 1839              		.thumb
+ 1840              		.thumb_func
+ 1841              		.fpu softvfp
+ 1843              	rtc_f1024_off:
+ 1844              	.LFB50:
+ 382:./Hardware/device/sd3068.c **** 
+ 383:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1024_off(i2c_device_bus IIC_x)
+ 384:./Hardware/device/sd3068.c **** {
+ 1845              		.loc 1 384 1
+ 1846              		.cfi_startproc
+ 1847              		@ args = 0, pretend = 0, frame = 16
+ 1848              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1849 0000 80B5     		push	{r7, lr}
+ 1850              	.LCFI90:
+ 1851              		.cfi_def_cfa_offset 8
+ 1852              		.cfi_offset 7, -8
+ 1853              		.cfi_offset 14, -4
+ 1854 0002 84B0     		sub	sp, sp, #16
+ 1855              	.LCFI91:
+ 1856              		.cfi_def_cfa_offset 24
+ 1857 0004 00AF     		add	r7, sp, #0
+ 1858              	.LCFI92:
+ 1859              		.cfi_def_cfa_register 7
+ 1860 0006 0346     		mov	r3, r0
+ 1861 0008 FB71     		strb	r3, [r7, #7]
+ 385:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 1862              		.loc 1 385 11
+ 1863 000a 8023     		movs	r3, #128
+ 1864 000c FB73     		strb	r3, [r7, #15]
+ 386:./Hardware/device/sd3068.c **** 	
+ 387:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 1865              		.loc 1 387 6
+ 1866 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1867 0010 1846     		mov	r0, r3
+ 1868 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 1869 0016 0346     		mov	r3, r0
+ 1870              		.loc 1 387 5
+ 1871 0018 062B     		cmp	r3, #6
+ 1872 001a 01D0     		beq	.L128
+ 388:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 40
+
+
+ 1873              		.loc 1 388 12
+ 1874 001c 0823     		movs	r3, #8
+ 1875 001e 23E0     		b	.L133
+ 1876              	.L128:
+ 389:./Hardware/device/sd3068.c **** 		
+ 390:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 1877              		.loc 1 390 6
+ 1878 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1879 0022 07F10F01 		add	r1, r7, #15
+ 1880 0026 0122     		movs	r2, #1
+ 1881 0028 1020     		movs	r0, #16
+ 1882 002a FFF7FEFF 		bl	RTC_write_addr
+ 1883 002e 0346     		mov	r3, r0
+ 1884              		.loc 1 390 5
+ 1885 0030 062B     		cmp	r3, #6
+ 1886 0032 01D0     		beq	.L130
+ 391:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1887              		.loc 1 391 12
+ 1888 0034 0823     		movs	r3, #8
+ 1889 0036 17E0     		b	.L133
+ 1890              	.L130:
+ 392:./Hardware/device/sd3068.c **** 		
+ 393:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 1891              		.loc 1 393 7
+ 1892 0038 0023     		movs	r3, #0
+ 1893 003a FB73     		strb	r3, [r7, #15]
+ 394:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 1894              		.loc 1 394 6
+ 1895 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1896 003e 07F10F01 		add	r1, r7, #15
+ 1897 0042 0122     		movs	r2, #1
+ 1898 0044 1120     		movs	r0, #17
+ 1899 0046 FFF7FEFF 		bl	RTC_write_addr
+ 1900 004a 0346     		mov	r3, r0
+ 1901              		.loc 1 394 5
+ 1902 004c 062B     		cmp	r3, #6
+ 1903 004e 01D0     		beq	.L131
+ 395:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1904              		.loc 1 395 12
+ 1905 0050 0823     		movs	r3, #8
+ 1906 0052 09E0     		b	.L133
+ 1907              	.L131:
+ 396:./Hardware/device/sd3068.c **** 		
+ 397:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 1908              		.loc 1 397 6
+ 1909 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1910 0056 1846     		mov	r0, r3
+ 1911 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 1912 005c 0346     		mov	r3, r0
+ 1913              		.loc 1 397 5
+ 1914 005e 062B     		cmp	r3, #6
+ 1915 0060 01D0     		beq	.L132
+ 398:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1916              		.loc 1 398 12
+ 1917 0062 0823     		movs	r3, #8
+ 1918 0064 00E0     		b	.L133
+ 1919              	.L132:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 41
+
+
+ 399:./Hardware/device/sd3068.c **** 		
+ 400:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 1920              		.loc 1 400 10
+ 1921 0066 0623     		movs	r3, #6
+ 1922              	.L133:
+ 401:./Hardware/device/sd3068.c **** 
+ 402:./Hardware/device/sd3068.c **** }
+ 1923              		.loc 1 402 1 discriminator 1
+ 1924 0068 1846     		mov	r0, r3
+ 1925 006a 1037     		adds	r7, r7, #16
+ 1926              	.LCFI93:
+ 1927              		.cfi_def_cfa_offset 8
+ 1928 006c BD46     		mov	sp, r7
+ 1929              	.LCFI94:
+ 1930              		.cfi_def_cfa_register 13
+ 1931              		@ sp needed
+ 1932 006e 80BD     		pop	{r7, pc}
+ 1933              		.cfi_endproc
+ 1934              	.LFE50:
+ 1936              		.section	.text.rtc_f64_off,"ax",%progbits
+ 1937              		.align	1
+ 1938              		.global	rtc_f64_off
+ 1939              		.syntax unified
+ 1940              		.thumb
+ 1941              		.thumb_func
+ 1942              		.fpu softvfp
+ 1944              	rtc_f64_off:
+ 1945              	.LFB51:
+ 403:./Hardware/device/sd3068.c **** 
+ 404:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f64_off(i2c_device_bus IIC_x)
+ 405:./Hardware/device/sd3068.c **** {
+ 1946              		.loc 1 405 1
+ 1947              		.cfi_startproc
+ 1948              		@ args = 0, pretend = 0, frame = 16
+ 1949              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1950 0000 80B5     		push	{r7, lr}
+ 1951              	.LCFI95:
+ 1952              		.cfi_def_cfa_offset 8
+ 1953              		.cfi_offset 7, -8
+ 1954              		.cfi_offset 14, -4
+ 1955 0002 84B0     		sub	sp, sp, #16
+ 1956              	.LCFI96:
+ 1957              		.cfi_def_cfa_offset 24
+ 1958 0004 00AF     		add	r7, sp, #0
+ 1959              	.LCFI97:
+ 1960              		.cfi_def_cfa_register 7
+ 1961 0006 0346     		mov	r3, r0
+ 1962 0008 FB71     		strb	r3, [r7, #7]
+ 406:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 1963              		.loc 1 406 11
+ 1964 000a 8023     		movs	r3, #128
+ 1965 000c FB73     		strb	r3, [r7, #15]
+ 407:./Hardware/device/sd3068.c **** 	
+ 408:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 1966              		.loc 1 408 6
+ 1967 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1968 0010 1846     		mov	r0, r3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 42
+
+
+ 1969 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 1970 0016 0346     		mov	r3, r0
+ 1971              		.loc 1 408 5
+ 1972 0018 062B     		cmp	r3, #6
+ 1973 001a 01D0     		beq	.L135
+ 409:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1974              		.loc 1 409 12
+ 1975 001c 0823     		movs	r3, #8
+ 1976 001e 23E0     		b	.L140
+ 1977              	.L135:
+ 410:./Hardware/device/sd3068.c **** 		
+ 411:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 1978              		.loc 1 411 6
+ 1979 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1980 0022 07F10F01 		add	r1, r7, #15
+ 1981 0026 0122     		movs	r2, #1
+ 1982 0028 1020     		movs	r0, #16
+ 1983 002a FFF7FEFF 		bl	RTC_write_addr
+ 1984 002e 0346     		mov	r3, r0
+ 1985              		.loc 1 411 5
+ 1986 0030 062B     		cmp	r3, #6
+ 1987 0032 01D0     		beq	.L137
+ 412:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 1988              		.loc 1 412 12
+ 1989 0034 0823     		movs	r3, #8
+ 1990 0036 17E0     		b	.L140
+ 1991              	.L137:
+ 413:./Hardware/device/sd3068.c **** 		
+ 414:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 1992              		.loc 1 414 7
+ 1993 0038 0023     		movs	r3, #0
+ 1994 003a FB73     		strb	r3, [r7, #15]
+ 415:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 1995              		.loc 1 415 6
+ 1996 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1997 003e 07F10F01 		add	r1, r7, #15
+ 1998 0042 0122     		movs	r2, #1
+ 1999 0044 1120     		movs	r0, #17
+ 2000 0046 FFF7FEFF 		bl	RTC_write_addr
+ 2001 004a 0346     		mov	r3, r0
+ 2002              		.loc 1 415 5
+ 2003 004c 062B     		cmp	r3, #6
+ 2004 004e 01D0     		beq	.L138
+ 416:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2005              		.loc 1 416 12
+ 2006 0050 0823     		movs	r3, #8
+ 2007 0052 09E0     		b	.L140
+ 2008              	.L138:
+ 417:./Hardware/device/sd3068.c **** 		
+ 418:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 2009              		.loc 1 418 6
+ 2010 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2011 0056 1846     		mov	r0, r3
+ 2012 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 2013 005c 0346     		mov	r3, r0
+ 2014              		.loc 1 418 5
+ 2015 005e 062B     		cmp	r3, #6
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 43
+
+
+ 2016 0060 01D0     		beq	.L139
+ 419:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2017              		.loc 1 419 12
+ 2018 0062 0823     		movs	r3, #8
+ 2019 0064 00E0     		b	.L140
+ 2020              	.L139:
+ 420:./Hardware/device/sd3068.c **** 		
+ 421:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 2021              		.loc 1 421 10
+ 2022 0066 0623     		movs	r3, #6
+ 2023              	.L140:
+ 422:./Hardware/device/sd3068.c **** 
+ 423:./Hardware/device/sd3068.c **** }
+ 2024              		.loc 1 423 1 discriminator 1
+ 2025 0068 1846     		mov	r0, r3
+ 2026 006a 1037     		adds	r7, r7, #16
+ 2027              	.LCFI98:
+ 2028              		.cfi_def_cfa_offset 8
+ 2029 006c BD46     		mov	sp, r7
+ 2030              	.LCFI99:
+ 2031              		.cfi_def_cfa_register 13
+ 2032              		@ sp needed
+ 2033 006e 80BD     		pop	{r7, pc}
+ 2034              		.cfi_endproc
+ 2035              	.LFE51:
+ 2037              		.section	.text.rtc_f32_off,"ax",%progbits
+ 2038              		.align	1
+ 2039              		.global	rtc_f32_off
+ 2040              		.syntax unified
+ 2041              		.thumb
+ 2042              		.thumb_func
+ 2043              		.fpu softvfp
+ 2045              	rtc_f32_off:
+ 2046              	.LFB52:
+ 424:./Hardware/device/sd3068.c **** 
+ 425:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f32_off(i2c_device_bus IIC_x)
+ 426:./Hardware/device/sd3068.c **** {
+ 2047              		.loc 1 426 1
+ 2048              		.cfi_startproc
+ 2049              		@ args = 0, pretend = 0, frame = 16
+ 2050              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2051 0000 80B5     		push	{r7, lr}
+ 2052              	.LCFI100:
+ 2053              		.cfi_def_cfa_offset 8
+ 2054              		.cfi_offset 7, -8
+ 2055              		.cfi_offset 14, -4
+ 2056 0002 84B0     		sub	sp, sp, #16
+ 2057              	.LCFI101:
+ 2058              		.cfi_def_cfa_offset 24
+ 2059 0004 00AF     		add	r7, sp, #0
+ 2060              	.LCFI102:
+ 2061              		.cfi_def_cfa_register 7
+ 2062 0006 0346     		mov	r3, r0
+ 2063 0008 FB71     		strb	r3, [r7, #7]
+ 427:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 2064              		.loc 1 427 11
+ 2065 000a 8023     		movs	r3, #128
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 44
+
+
+ 2066 000c FB73     		strb	r3, [r7, #15]
+ 428:./Hardware/device/sd3068.c **** 	
+ 429:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 2067              		.loc 1 429 6
+ 2068 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2069 0010 1846     		mov	r0, r3
+ 2070 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 2071 0016 0346     		mov	r3, r0
+ 2072              		.loc 1 429 5
+ 2073 0018 062B     		cmp	r3, #6
+ 2074 001a 01D0     		beq	.L142
+ 430:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2075              		.loc 1 430 12
+ 2076 001c 0823     		movs	r3, #8
+ 2077 001e 23E0     		b	.L147
+ 2078              	.L142:
+ 431:./Hardware/device/sd3068.c **** 		
+ 432:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 2079              		.loc 1 432 6
+ 2080 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2081 0022 07F10F01 		add	r1, r7, #15
+ 2082 0026 0122     		movs	r2, #1
+ 2083 0028 1020     		movs	r0, #16
+ 2084 002a FFF7FEFF 		bl	RTC_write_addr
+ 2085 002e 0346     		mov	r3, r0
+ 2086              		.loc 1 432 5
+ 2087 0030 062B     		cmp	r3, #6
+ 2088 0032 01D0     		beq	.L144
+ 433:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2089              		.loc 1 433 12
+ 2090 0034 0823     		movs	r3, #8
+ 2091 0036 17E0     		b	.L147
+ 2092              	.L144:
+ 434:./Hardware/device/sd3068.c **** 		
+ 435:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 2093              		.loc 1 435 7
+ 2094 0038 0023     		movs	r3, #0
+ 2095 003a FB73     		strb	r3, [r7, #15]
+ 436:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 2096              		.loc 1 436 6
+ 2097 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2098 003e 07F10F01 		add	r1, r7, #15
+ 2099 0042 0122     		movs	r2, #1
+ 2100 0044 1120     		movs	r0, #17
+ 2101 0046 FFF7FEFF 		bl	RTC_write_addr
+ 2102 004a 0346     		mov	r3, r0
+ 2103              		.loc 1 436 5
+ 2104 004c 062B     		cmp	r3, #6
+ 2105 004e 01D0     		beq	.L145
+ 437:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2106              		.loc 1 437 12
+ 2107 0050 0823     		movs	r3, #8
+ 2108 0052 09E0     		b	.L147
+ 2109              	.L145:
+ 438:./Hardware/device/sd3068.c **** 		
+ 439:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 2110              		.loc 1 439 6
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 45
+
+
+ 2111 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2112 0056 1846     		mov	r0, r3
+ 2113 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 2114 005c 0346     		mov	r3, r0
+ 2115              		.loc 1 439 5
+ 2116 005e 062B     		cmp	r3, #6
+ 2117 0060 01D0     		beq	.L146
+ 440:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2118              		.loc 1 440 12
+ 2119 0062 0823     		movs	r3, #8
+ 2120 0064 00E0     		b	.L147
+ 2121              	.L146:
+ 441:./Hardware/device/sd3068.c **** 		
+ 442:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 2122              		.loc 1 442 10
+ 2123 0066 0623     		movs	r3, #6
+ 2124              	.L147:
+ 443:./Hardware/device/sd3068.c **** 
+ 444:./Hardware/device/sd3068.c **** }
+ 2125              		.loc 1 444 1 discriminator 1
+ 2126 0068 1846     		mov	r0, r3
+ 2127 006a 1037     		adds	r7, r7, #16
+ 2128              	.LCFI103:
+ 2129              		.cfi_def_cfa_offset 8
+ 2130 006c BD46     		mov	sp, r7
+ 2131              	.LCFI104:
+ 2132              		.cfi_def_cfa_register 13
+ 2133              		@ sp needed
+ 2134 006e 80BD     		pop	{r7, pc}
+ 2135              		.cfi_endproc
+ 2136              	.LFE52:
+ 2138              		.section	.text.rtc_f16_off,"ax",%progbits
+ 2139              		.align	1
+ 2140              		.global	rtc_f16_off
+ 2141              		.syntax unified
+ 2142              		.thumb
+ 2143              		.thumb_func
+ 2144              		.fpu softvfp
+ 2146              	rtc_f16_off:
+ 2147              	.LFB53:
+ 445:./Hardware/device/sd3068.c **** 
+ 446:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f16_off(i2c_device_bus IIC_x)
+ 447:./Hardware/device/sd3068.c **** {
+ 2148              		.loc 1 447 1
+ 2149              		.cfi_startproc
+ 2150              		@ args = 0, pretend = 0, frame = 16
+ 2151              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2152 0000 80B5     		push	{r7, lr}
+ 2153              	.LCFI105:
+ 2154              		.cfi_def_cfa_offset 8
+ 2155              		.cfi_offset 7, -8
+ 2156              		.cfi_offset 14, -4
+ 2157 0002 84B0     		sub	sp, sp, #16
+ 2158              	.LCFI106:
+ 2159              		.cfi_def_cfa_offset 24
+ 2160 0004 00AF     		add	r7, sp, #0
+ 2161              	.LCFI107:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 46
+
+
+ 2162              		.cfi_def_cfa_register 7
+ 2163 0006 0346     		mov	r3, r0
+ 2164 0008 FB71     		strb	r3, [r7, #7]
+ 448:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 2165              		.loc 1 448 11
+ 2166 000a 8023     		movs	r3, #128
+ 2167 000c FB73     		strb	r3, [r7, #15]
+ 449:./Hardware/device/sd3068.c **** 	
+ 450:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 2168              		.loc 1 450 6
+ 2169 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2170 0010 1846     		mov	r0, r3
+ 2171 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 2172 0016 0346     		mov	r3, r0
+ 2173              		.loc 1 450 5
+ 2174 0018 062B     		cmp	r3, #6
+ 2175 001a 01D0     		beq	.L149
+ 451:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2176              		.loc 1 451 12
+ 2177 001c 0823     		movs	r3, #8
+ 2178 001e 23E0     		b	.L154
+ 2179              	.L149:
+ 452:./Hardware/device/sd3068.c **** 		
+ 453:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 2180              		.loc 1 453 6
+ 2181 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2182 0022 07F10F01 		add	r1, r7, #15
+ 2183 0026 0122     		movs	r2, #1
+ 2184 0028 1020     		movs	r0, #16
+ 2185 002a FFF7FEFF 		bl	RTC_write_addr
+ 2186 002e 0346     		mov	r3, r0
+ 2187              		.loc 1 453 5
+ 2188 0030 062B     		cmp	r3, #6
+ 2189 0032 01D0     		beq	.L151
+ 454:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2190              		.loc 1 454 12
+ 2191 0034 0823     		movs	r3, #8
+ 2192 0036 17E0     		b	.L154
+ 2193              	.L151:
+ 455:./Hardware/device/sd3068.c **** 		
+ 456:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 2194              		.loc 1 456 7
+ 2195 0038 0023     		movs	r3, #0
+ 2196 003a FB73     		strb	r3, [r7, #15]
+ 457:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 2197              		.loc 1 457 6
+ 2198 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2199 003e 07F10F01 		add	r1, r7, #15
+ 2200 0042 0122     		movs	r2, #1
+ 2201 0044 1120     		movs	r0, #17
+ 2202 0046 FFF7FEFF 		bl	RTC_write_addr
+ 2203 004a 0346     		mov	r3, r0
+ 2204              		.loc 1 457 5
+ 2205 004c 062B     		cmp	r3, #6
+ 2206 004e 01D0     		beq	.L152
+ 458:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2207              		.loc 1 458 12
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 47
+
+
+ 2208 0050 0823     		movs	r3, #8
+ 2209 0052 09E0     		b	.L154
+ 2210              	.L152:
+ 459:./Hardware/device/sd3068.c **** 		
+ 460:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 2211              		.loc 1 460 6
+ 2212 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2213 0056 1846     		mov	r0, r3
+ 2214 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 2215 005c 0346     		mov	r3, r0
+ 2216              		.loc 1 460 5
+ 2217 005e 062B     		cmp	r3, #6
+ 2218 0060 01D0     		beq	.L153
+ 461:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2219              		.loc 1 461 12
+ 2220 0062 0823     		movs	r3, #8
+ 2221 0064 00E0     		b	.L154
+ 2222              	.L153:
+ 462:./Hardware/device/sd3068.c **** 		
+ 463:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 2223              		.loc 1 463 10
+ 2224 0066 0623     		movs	r3, #6
+ 2225              	.L154:
+ 464:./Hardware/device/sd3068.c **** 
+ 465:./Hardware/device/sd3068.c **** }
+ 2226              		.loc 1 465 1 discriminator 1
+ 2227 0068 1846     		mov	r0, r3
+ 2228 006a 1037     		adds	r7, r7, #16
+ 2229              	.LCFI108:
+ 2230              		.cfi_def_cfa_offset 8
+ 2231 006c BD46     		mov	sp, r7
+ 2232              	.LCFI109:
+ 2233              		.cfi_def_cfa_register 13
+ 2234              		@ sp needed
+ 2235 006e 80BD     		pop	{r7, pc}
+ 2236              		.cfi_endproc
+ 2237              	.LFE53:
+ 2239              		.section	.text.rtc_f8_off,"ax",%progbits
+ 2240              		.align	1
+ 2241              		.global	rtc_f8_off
+ 2242              		.syntax unified
+ 2243              		.thumb
+ 2244              		.thumb_func
+ 2245              		.fpu softvfp
+ 2247              	rtc_f8_off:
+ 2248              	.LFB54:
+ 466:./Hardware/device/sd3068.c **** 
+ 467:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f8_off(i2c_device_bus IIC_x)
+ 468:./Hardware/device/sd3068.c **** {
+ 2249              		.loc 1 468 1
+ 2250              		.cfi_startproc
+ 2251              		@ args = 0, pretend = 0, frame = 16
+ 2252              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2253 0000 80B5     		push	{r7, lr}
+ 2254              	.LCFI110:
+ 2255              		.cfi_def_cfa_offset 8
+ 2256              		.cfi_offset 7, -8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 48
+
+
+ 2257              		.cfi_offset 14, -4
+ 2258 0002 84B0     		sub	sp, sp, #16
+ 2259              	.LCFI111:
+ 2260              		.cfi_def_cfa_offset 24
+ 2261 0004 00AF     		add	r7, sp, #0
+ 2262              	.LCFI112:
+ 2263              		.cfi_def_cfa_register 7
+ 2264 0006 0346     		mov	r3, r0
+ 2265 0008 FB71     		strb	r3, [r7, #7]
+ 469:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 2266              		.loc 1 469 11
+ 2267 000a 8023     		movs	r3, #128
+ 2268 000c FB73     		strb	r3, [r7, #15]
+ 470:./Hardware/device/sd3068.c **** 	
+ 471:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 2269              		.loc 1 471 6
+ 2270 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2271 0010 1846     		mov	r0, r3
+ 2272 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 2273 0016 0346     		mov	r3, r0
+ 2274              		.loc 1 471 5
+ 2275 0018 062B     		cmp	r3, #6
+ 2276 001a 01D0     		beq	.L156
+ 472:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2277              		.loc 1 472 12
+ 2278 001c 0823     		movs	r3, #8
+ 2279 001e 23E0     		b	.L161
+ 2280              	.L156:
+ 473:./Hardware/device/sd3068.c **** 		
+ 474:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 2281              		.loc 1 474 6
+ 2282 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2283 0022 07F10F01 		add	r1, r7, #15
+ 2284 0026 0122     		movs	r2, #1
+ 2285 0028 1020     		movs	r0, #16
+ 2286 002a FFF7FEFF 		bl	RTC_write_addr
+ 2287 002e 0346     		mov	r3, r0
+ 2288              		.loc 1 474 5
+ 2289 0030 062B     		cmp	r3, #6
+ 2290 0032 01D0     		beq	.L158
+ 475:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2291              		.loc 1 475 12
+ 2292 0034 0823     		movs	r3, #8
+ 2293 0036 17E0     		b	.L161
+ 2294              	.L158:
+ 476:./Hardware/device/sd3068.c **** 		
+ 477:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 2295              		.loc 1 477 7
+ 2296 0038 0023     		movs	r3, #0
+ 2297 003a FB73     		strb	r3, [r7, #15]
+ 478:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 2298              		.loc 1 478 6
+ 2299 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2300 003e 07F10F01 		add	r1, r7, #15
+ 2301 0042 0122     		movs	r2, #1
+ 2302 0044 1120     		movs	r0, #17
+ 2303 0046 FFF7FEFF 		bl	RTC_write_addr
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 49
+
+
+ 2304 004a 0346     		mov	r3, r0
+ 2305              		.loc 1 478 5
+ 2306 004c 062B     		cmp	r3, #6
+ 2307 004e 01D0     		beq	.L159
+ 479:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2308              		.loc 1 479 12
+ 2309 0050 0823     		movs	r3, #8
+ 2310 0052 09E0     		b	.L161
+ 2311              	.L159:
+ 480:./Hardware/device/sd3068.c **** 		
+ 481:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 2312              		.loc 1 481 6
+ 2313 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2314 0056 1846     		mov	r0, r3
+ 2315 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 2316 005c 0346     		mov	r3, r0
+ 2317              		.loc 1 481 5
+ 2318 005e 062B     		cmp	r3, #6
+ 2319 0060 01D0     		beq	.L160
+ 482:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2320              		.loc 1 482 12
+ 2321 0062 0823     		movs	r3, #8
+ 2322 0064 00E0     		b	.L161
+ 2323              	.L160:
+ 483:./Hardware/device/sd3068.c **** 		
+ 484:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 2324              		.loc 1 484 10
+ 2325 0066 0623     		movs	r3, #6
+ 2326              	.L161:
+ 485:./Hardware/device/sd3068.c **** 
+ 486:./Hardware/device/sd3068.c **** }
+ 2327              		.loc 1 486 1 discriminator 1
+ 2328 0068 1846     		mov	r0, r3
+ 2329 006a 1037     		adds	r7, r7, #16
+ 2330              	.LCFI113:
+ 2331              		.cfi_def_cfa_offset 8
+ 2332 006c BD46     		mov	sp, r7
+ 2333              	.LCFI114:
+ 2334              		.cfi_def_cfa_register 13
+ 2335              		@ sp needed
+ 2336 006e 80BD     		pop	{r7, pc}
+ 2337              		.cfi_endproc
+ 2338              	.LFE54:
+ 2340              		.section	.text.rtc_f4_off,"ax",%progbits
+ 2341              		.align	1
+ 2342              		.global	rtc_f4_off
+ 2343              		.syntax unified
+ 2344              		.thumb
+ 2345              		.thumb_func
+ 2346              		.fpu softvfp
+ 2348              	rtc_f4_off:
+ 2349              	.LFB55:
+ 487:./Hardware/device/sd3068.c **** 
+ 488:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f4_off(i2c_device_bus IIC_x)
+ 489:./Hardware/device/sd3068.c **** {
+ 2350              		.loc 1 489 1
+ 2351              		.cfi_startproc
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 50
+
+
+ 2352              		@ args = 0, pretend = 0, frame = 16
+ 2353              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2354 0000 80B5     		push	{r7, lr}
+ 2355              	.LCFI115:
+ 2356              		.cfi_def_cfa_offset 8
+ 2357              		.cfi_offset 7, -8
+ 2358              		.cfi_offset 14, -4
+ 2359 0002 84B0     		sub	sp, sp, #16
+ 2360              	.LCFI116:
+ 2361              		.cfi_def_cfa_offset 24
+ 2362 0004 00AF     		add	r7, sp, #0
+ 2363              	.LCFI117:
+ 2364              		.cfi_def_cfa_register 7
+ 2365 0006 0346     		mov	r3, r0
+ 2366 0008 FB71     		strb	r3, [r7, #7]
+ 490:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 2367              		.loc 1 490 11
+ 2368 000a 8023     		movs	r3, #128
+ 2369 000c FB73     		strb	r3, [r7, #15]
+ 491:./Hardware/device/sd3068.c **** 	
+ 492:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 2370              		.loc 1 492 6
+ 2371 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2372 0010 1846     		mov	r0, r3
+ 2373 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 2374 0016 0346     		mov	r3, r0
+ 2375              		.loc 1 492 5
+ 2376 0018 062B     		cmp	r3, #6
+ 2377 001a 01D0     		beq	.L163
+ 493:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2378              		.loc 1 493 12
+ 2379 001c 0823     		movs	r3, #8
+ 2380 001e 23E0     		b	.L168
+ 2381              	.L163:
+ 494:./Hardware/device/sd3068.c **** 		
+ 495:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 2382              		.loc 1 495 6
+ 2383 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2384 0022 07F10F01 		add	r1, r7, #15
+ 2385 0026 0122     		movs	r2, #1
+ 2386 0028 1020     		movs	r0, #16
+ 2387 002a FFF7FEFF 		bl	RTC_write_addr
+ 2388 002e 0346     		mov	r3, r0
+ 2389              		.loc 1 495 5
+ 2390 0030 062B     		cmp	r3, #6
+ 2391 0032 01D0     		beq	.L165
+ 496:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2392              		.loc 1 496 12
+ 2393 0034 0823     		movs	r3, #8
+ 2394 0036 17E0     		b	.L168
+ 2395              	.L165:
+ 497:./Hardware/device/sd3068.c **** 		
+ 498:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 2396              		.loc 1 498 7
+ 2397 0038 0023     		movs	r3, #0
+ 2398 003a FB73     		strb	r3, [r7, #15]
+ 499:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 51
+
+
+ 2399              		.loc 1 499 6
+ 2400 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2401 003e 07F10F01 		add	r1, r7, #15
+ 2402 0042 0122     		movs	r2, #1
+ 2403 0044 1120     		movs	r0, #17
+ 2404 0046 FFF7FEFF 		bl	RTC_write_addr
+ 2405 004a 0346     		mov	r3, r0
+ 2406              		.loc 1 499 5
+ 2407 004c 062B     		cmp	r3, #6
+ 2408 004e 01D0     		beq	.L166
+ 500:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2409              		.loc 1 500 12
+ 2410 0050 0823     		movs	r3, #8
+ 2411 0052 09E0     		b	.L168
+ 2412              	.L166:
+ 501:./Hardware/device/sd3068.c **** 		
+ 502:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 2413              		.loc 1 502 6
+ 2414 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2415 0056 1846     		mov	r0, r3
+ 2416 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 2417 005c 0346     		mov	r3, r0
+ 2418              		.loc 1 502 5
+ 2419 005e 062B     		cmp	r3, #6
+ 2420 0060 01D0     		beq	.L167
+ 503:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2421              		.loc 1 503 12
+ 2422 0062 0823     		movs	r3, #8
+ 2423 0064 00E0     		b	.L168
+ 2424              	.L167:
+ 504:./Hardware/device/sd3068.c **** 		
+ 505:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 2425              		.loc 1 505 10
+ 2426 0066 0623     		movs	r3, #6
+ 2427              	.L168:
+ 506:./Hardware/device/sd3068.c **** 
+ 507:./Hardware/device/sd3068.c **** }
+ 2428              		.loc 1 507 1 discriminator 1
+ 2429 0068 1846     		mov	r0, r3
+ 2430 006a 1037     		adds	r7, r7, #16
+ 2431              	.LCFI118:
+ 2432              		.cfi_def_cfa_offset 8
+ 2433 006c BD46     		mov	sp, r7
+ 2434              	.LCFI119:
+ 2435              		.cfi_def_cfa_register 13
+ 2436              		@ sp needed
+ 2437 006e 80BD     		pop	{r7, pc}
+ 2438              		.cfi_endproc
+ 2439              	.LFE55:
+ 2441              		.section	.text.rtc_f2_off,"ax",%progbits
+ 2442              		.align	1
+ 2443              		.global	rtc_f2_off
+ 2444              		.syntax unified
+ 2445              		.thumb
+ 2446              		.thumb_func
+ 2447              		.fpu softvfp
+ 2449              	rtc_f2_off:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 52
+
+
+ 2450              	.LFB56:
+ 508:./Hardware/device/sd3068.c **** 
+ 509:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f2_off(i2c_device_bus IIC_x)
+ 510:./Hardware/device/sd3068.c **** {
+ 2451              		.loc 1 510 1
+ 2452              		.cfi_startproc
+ 2453              		@ args = 0, pretend = 0, frame = 16
+ 2454              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2455 0000 80B5     		push	{r7, lr}
+ 2456              	.LCFI120:
+ 2457              		.cfi_def_cfa_offset 8
+ 2458              		.cfi_offset 7, -8
+ 2459              		.cfi_offset 14, -4
+ 2460 0002 84B0     		sub	sp, sp, #16
+ 2461              	.LCFI121:
+ 2462              		.cfi_def_cfa_offset 24
+ 2463 0004 00AF     		add	r7, sp, #0
+ 2464              	.LCFI122:
+ 2465              		.cfi_def_cfa_register 7
+ 2466 0006 0346     		mov	r3, r0
+ 2467 0008 FB71     		strb	r3, [r7, #7]
+ 511:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 2468              		.loc 1 511 11
+ 2469 000a 8023     		movs	r3, #128
+ 2470 000c FB73     		strb	r3, [r7, #15]
+ 512:./Hardware/device/sd3068.c **** 	
+ 513:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 2471              		.loc 1 513 6
+ 2472 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2473 0010 1846     		mov	r0, r3
+ 2474 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 2475 0016 0346     		mov	r3, r0
+ 2476              		.loc 1 513 5
+ 2477 0018 062B     		cmp	r3, #6
+ 2478 001a 01D0     		beq	.L170
+ 514:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2479              		.loc 1 514 12
+ 2480 001c 0823     		movs	r3, #8
+ 2481 001e 23E0     		b	.L175
+ 2482              	.L170:
+ 515:./Hardware/device/sd3068.c **** 		
+ 516:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 2483              		.loc 1 516 6
+ 2484 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2485 0022 07F10F01 		add	r1, r7, #15
+ 2486 0026 0122     		movs	r2, #1
+ 2487 0028 1020     		movs	r0, #16
+ 2488 002a FFF7FEFF 		bl	RTC_write_addr
+ 2489 002e 0346     		mov	r3, r0
+ 2490              		.loc 1 516 5
+ 2491 0030 062B     		cmp	r3, #6
+ 2492 0032 01D0     		beq	.L172
+ 517:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2493              		.loc 1 517 12
+ 2494 0034 0823     		movs	r3, #8
+ 2495 0036 17E0     		b	.L175
+ 2496              	.L172:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 53
+
+
+ 518:./Hardware/device/sd3068.c **** 		
+ 519:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 2497              		.loc 1 519 7
+ 2498 0038 0023     		movs	r3, #0
+ 2499 003a FB73     		strb	r3, [r7, #15]
+ 520:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 2500              		.loc 1 520 6
+ 2501 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2502 003e 07F10F01 		add	r1, r7, #15
+ 2503 0042 0122     		movs	r2, #1
+ 2504 0044 1120     		movs	r0, #17
+ 2505 0046 FFF7FEFF 		bl	RTC_write_addr
+ 2506 004a 0346     		mov	r3, r0
+ 2507              		.loc 1 520 5
+ 2508 004c 062B     		cmp	r3, #6
+ 2509 004e 01D0     		beq	.L173
+ 521:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2510              		.loc 1 521 12
+ 2511 0050 0823     		movs	r3, #8
+ 2512 0052 09E0     		b	.L175
+ 2513              	.L173:
+ 522:./Hardware/device/sd3068.c **** 		
+ 523:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 2514              		.loc 1 523 6
+ 2515 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2516 0056 1846     		mov	r0, r3
+ 2517 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 2518 005c 0346     		mov	r3, r0
+ 2519              		.loc 1 523 5
+ 2520 005e 062B     		cmp	r3, #6
+ 2521 0060 01D0     		beq	.L174
+ 524:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2522              		.loc 1 524 12
+ 2523 0062 0823     		movs	r3, #8
+ 2524 0064 00E0     		b	.L175
+ 2525              	.L174:
+ 525:./Hardware/device/sd3068.c **** 		
+ 526:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 2526              		.loc 1 526 10
+ 2527 0066 0623     		movs	r3, #6
+ 2528              	.L175:
+ 527:./Hardware/device/sd3068.c **** 
+ 528:./Hardware/device/sd3068.c **** }
+ 2529              		.loc 1 528 1 discriminator 1
+ 2530 0068 1846     		mov	r0, r3
+ 2531 006a 1037     		adds	r7, r7, #16
+ 2532              	.LCFI123:
+ 2533              		.cfi_def_cfa_offset 8
+ 2534 006c BD46     		mov	sp, r7
+ 2535              	.LCFI124:
+ 2536              		.cfi_def_cfa_register 13
+ 2537              		@ sp needed
+ 2538 006e 80BD     		pop	{r7, pc}
+ 2539              		.cfi_endproc
+ 2540              	.LFE56:
+ 2542              		.section	.text.rtc_f1_2_off,"ax",%progbits
+ 2543              		.align	1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 54
+
+
+ 2544              		.global	rtc_f1_2_off
+ 2545              		.syntax unified
+ 2546              		.thumb
+ 2547              		.thumb_func
+ 2548              		.fpu softvfp
+ 2550              	rtc_f1_2_off:
+ 2551              	.LFB57:
+ 529:./Hardware/device/sd3068.c **** 
+ 530:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1_2_off(i2c_device_bus IIC_x)
+ 531:./Hardware/device/sd3068.c **** {
+ 2552              		.loc 1 531 1
+ 2553              		.cfi_startproc
+ 2554              		@ args = 0, pretend = 0, frame = 16
+ 2555              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2556 0000 80B5     		push	{r7, lr}
+ 2557              	.LCFI125:
+ 2558              		.cfi_def_cfa_offset 8
+ 2559              		.cfi_offset 7, -8
+ 2560              		.cfi_offset 14, -4
+ 2561 0002 84B0     		sub	sp, sp, #16
+ 2562              	.LCFI126:
+ 2563              		.cfi_def_cfa_offset 24
+ 2564 0004 00AF     		add	r7, sp, #0
+ 2565              	.LCFI127:
+ 2566              		.cfi_def_cfa_register 7
+ 2567 0006 0346     		mov	r3, r0
+ 2568 0008 FB71     		strb	r3, [r7, #7]
+ 532:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 2569              		.loc 1 532 11
+ 2570 000a 8023     		movs	r3, #128
+ 2571 000c FB73     		strb	r3, [r7, #15]
+ 533:./Hardware/device/sd3068.c **** 	
+ 534:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 2572              		.loc 1 534 6
+ 2573 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2574 0010 1846     		mov	r0, r3
+ 2575 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 2576 0016 0346     		mov	r3, r0
+ 2577              		.loc 1 534 5
+ 2578 0018 062B     		cmp	r3, #6
+ 2579 001a 01D0     		beq	.L177
+ 535:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2580              		.loc 1 535 12
+ 2581 001c 0823     		movs	r3, #8
+ 2582 001e 23E0     		b	.L182
+ 2583              	.L177:
+ 536:./Hardware/device/sd3068.c **** 		
+ 537:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 2584              		.loc 1 537 6
+ 2585 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2586 0022 07F10F01 		add	r1, r7, #15
+ 2587 0026 0122     		movs	r2, #1
+ 2588 0028 1020     		movs	r0, #16
+ 2589 002a FFF7FEFF 		bl	RTC_write_addr
+ 2590 002e 0346     		mov	r3, r0
+ 2591              		.loc 1 537 5
+ 2592 0030 062B     		cmp	r3, #6
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 55
+
+
+ 2593 0032 01D0     		beq	.L179
+ 538:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2594              		.loc 1 538 12
+ 2595 0034 0823     		movs	r3, #8
+ 2596 0036 17E0     		b	.L182
+ 2597              	.L179:
+ 539:./Hardware/device/sd3068.c **** 		
+ 540:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 2598              		.loc 1 540 7
+ 2599 0038 0023     		movs	r3, #0
+ 2600 003a FB73     		strb	r3, [r7, #15]
+ 541:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 2601              		.loc 1 541 6
+ 2602 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2603 003e 07F10F01 		add	r1, r7, #15
+ 2604 0042 0122     		movs	r2, #1
+ 2605 0044 1120     		movs	r0, #17
+ 2606 0046 FFF7FEFF 		bl	RTC_write_addr
+ 2607 004a 0346     		mov	r3, r0
+ 2608              		.loc 1 541 5
+ 2609 004c 062B     		cmp	r3, #6
+ 2610 004e 01D0     		beq	.L180
+ 542:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2611              		.loc 1 542 12
+ 2612 0050 0823     		movs	r3, #8
+ 2613 0052 09E0     		b	.L182
+ 2614              	.L180:
+ 543:./Hardware/device/sd3068.c **** 		
+ 544:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 2615              		.loc 1 544 6
+ 2616 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2617 0056 1846     		mov	r0, r3
+ 2618 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 2619 005c 0346     		mov	r3, r0
+ 2620              		.loc 1 544 5
+ 2621 005e 062B     		cmp	r3, #6
+ 2622 0060 01D0     		beq	.L181
+ 545:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2623              		.loc 1 545 12
+ 2624 0062 0823     		movs	r3, #8
+ 2625 0064 00E0     		b	.L182
+ 2626              	.L181:
+ 546:./Hardware/device/sd3068.c **** 		
+ 547:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 2627              		.loc 1 547 10
+ 2628 0066 0623     		movs	r3, #6
+ 2629              	.L182:
+ 548:./Hardware/device/sd3068.c **** 
+ 549:./Hardware/device/sd3068.c **** }
+ 2630              		.loc 1 549 1 discriminator 1
+ 2631 0068 1846     		mov	r0, r3
+ 2632 006a 1037     		adds	r7, r7, #16
+ 2633              	.LCFI128:
+ 2634              		.cfi_def_cfa_offset 8
+ 2635 006c BD46     		mov	sp, r7
+ 2636              	.LCFI129:
+ 2637              		.cfi_def_cfa_register 13
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 56
+
+
+ 2638              		@ sp needed
+ 2639 006e 80BD     		pop	{r7, pc}
+ 2640              		.cfi_endproc
+ 2641              	.LFE57:
+ 2643              		.section	.text.rtc_f1_4_off,"ax",%progbits
+ 2644              		.align	1
+ 2645              		.global	rtc_f1_4_off
+ 2646              		.syntax unified
+ 2647              		.thumb
+ 2648              		.thumb_func
+ 2649              		.fpu softvfp
+ 2651              	rtc_f1_4_off:
+ 2652              	.LFB58:
+ 550:./Hardware/device/sd3068.c **** 
+ 551:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1_4_off(i2c_device_bus IIC_x)
+ 552:./Hardware/device/sd3068.c **** {
+ 2653              		.loc 1 552 1
+ 2654              		.cfi_startproc
+ 2655              		@ args = 0, pretend = 0, frame = 16
+ 2656              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2657 0000 80B5     		push	{r7, lr}
+ 2658              	.LCFI130:
+ 2659              		.cfi_def_cfa_offset 8
+ 2660              		.cfi_offset 7, -8
+ 2661              		.cfi_offset 14, -4
+ 2662 0002 84B0     		sub	sp, sp, #16
+ 2663              	.LCFI131:
+ 2664              		.cfi_def_cfa_offset 24
+ 2665 0004 00AF     		add	r7, sp, #0
+ 2666              	.LCFI132:
+ 2667              		.cfi_def_cfa_register 7
+ 2668 0006 0346     		mov	r3, r0
+ 2669 0008 FB71     		strb	r3, [r7, #7]
+ 553:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 2670              		.loc 1 553 11
+ 2671 000a 8023     		movs	r3, #128
+ 2672 000c FB73     		strb	r3, [r7, #15]
+ 554:./Hardware/device/sd3068.c **** 	
+ 555:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 2673              		.loc 1 555 6
+ 2674 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2675 0010 1846     		mov	r0, r3
+ 2676 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 2677 0016 0346     		mov	r3, r0
+ 2678              		.loc 1 555 5
+ 2679 0018 062B     		cmp	r3, #6
+ 2680 001a 01D0     		beq	.L184
+ 556:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2681              		.loc 1 556 12
+ 2682 001c 0823     		movs	r3, #8
+ 2683 001e 23E0     		b	.L189
+ 2684              	.L184:
+ 557:./Hardware/device/sd3068.c **** 		
+ 558:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 2685              		.loc 1 558 6
+ 2686 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2687 0022 07F10F01 		add	r1, r7, #15
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 57
+
+
+ 2688 0026 0122     		movs	r2, #1
+ 2689 0028 1020     		movs	r0, #16
+ 2690 002a FFF7FEFF 		bl	RTC_write_addr
+ 2691 002e 0346     		mov	r3, r0
+ 2692              		.loc 1 558 5
+ 2693 0030 062B     		cmp	r3, #6
+ 2694 0032 01D0     		beq	.L186
+ 559:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2695              		.loc 1 559 12
+ 2696 0034 0823     		movs	r3, #8
+ 2697 0036 17E0     		b	.L189
+ 2698              	.L186:
+ 560:./Hardware/device/sd3068.c **** 		
+ 561:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 2699              		.loc 1 561 7
+ 2700 0038 0023     		movs	r3, #0
+ 2701 003a FB73     		strb	r3, [r7, #15]
+ 562:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 2702              		.loc 1 562 6
+ 2703 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2704 003e 07F10F01 		add	r1, r7, #15
+ 2705 0042 0122     		movs	r2, #1
+ 2706 0044 1120     		movs	r0, #17
+ 2707 0046 FFF7FEFF 		bl	RTC_write_addr
+ 2708 004a 0346     		mov	r3, r0
+ 2709              		.loc 1 562 5
+ 2710 004c 062B     		cmp	r3, #6
+ 2711 004e 01D0     		beq	.L187
+ 563:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2712              		.loc 1 563 12
+ 2713 0050 0823     		movs	r3, #8
+ 2714 0052 09E0     		b	.L189
+ 2715              	.L187:
+ 564:./Hardware/device/sd3068.c **** 		
+ 565:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 2716              		.loc 1 565 6
+ 2717 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2718 0056 1846     		mov	r0, r3
+ 2719 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 2720 005c 0346     		mov	r3, r0
+ 2721              		.loc 1 565 5
+ 2722 005e 062B     		cmp	r3, #6
+ 2723 0060 01D0     		beq	.L188
+ 566:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2724              		.loc 1 566 12
+ 2725 0062 0823     		movs	r3, #8
+ 2726 0064 00E0     		b	.L189
+ 2727              	.L188:
+ 567:./Hardware/device/sd3068.c **** 		
+ 568:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 2728              		.loc 1 568 10
+ 2729 0066 0623     		movs	r3, #6
+ 2730              	.L189:
+ 569:./Hardware/device/sd3068.c **** 
+ 570:./Hardware/device/sd3068.c **** }
+ 2731              		.loc 1 570 1 discriminator 1
+ 2732 0068 1846     		mov	r0, r3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 58
+
+
+ 2733 006a 1037     		adds	r7, r7, #16
+ 2734              	.LCFI133:
+ 2735              		.cfi_def_cfa_offset 8
+ 2736 006c BD46     		mov	sp, r7
+ 2737              	.LCFI134:
+ 2738              		.cfi_def_cfa_register 13
+ 2739              		@ sp needed
+ 2740 006e 80BD     		pop	{r7, pc}
+ 2741              		.cfi_endproc
+ 2742              	.LFE58:
+ 2744              		.section	.text.rtc_f1_8_off,"ax",%progbits
+ 2745              		.align	1
+ 2746              		.global	rtc_f1_8_off
+ 2747              		.syntax unified
+ 2748              		.thumb
+ 2749              		.thumb_func
+ 2750              		.fpu softvfp
+ 2752              	rtc_f1_8_off:
+ 2753              	.LFB59:
+ 571:./Hardware/device/sd3068.c **** 
+ 572:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1_8_off(i2c_device_bus IIC_x)
+ 573:./Hardware/device/sd3068.c **** {
+ 2754              		.loc 1 573 1
+ 2755              		.cfi_startproc
+ 2756              		@ args = 0, pretend = 0, frame = 16
+ 2757              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2758 0000 80B5     		push	{r7, lr}
+ 2759              	.LCFI135:
+ 2760              		.cfi_def_cfa_offset 8
+ 2761              		.cfi_offset 7, -8
+ 2762              		.cfi_offset 14, -4
+ 2763 0002 84B0     		sub	sp, sp, #16
+ 2764              	.LCFI136:
+ 2765              		.cfi_def_cfa_offset 24
+ 2766 0004 00AF     		add	r7, sp, #0
+ 2767              	.LCFI137:
+ 2768              		.cfi_def_cfa_register 7
+ 2769 0006 0346     		mov	r3, r0
+ 2770 0008 FB71     		strb	r3, [r7, #7]
+ 574:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 2771              		.loc 1 574 11
+ 2772 000a 8023     		movs	r3, #128
+ 2773 000c FB73     		strb	r3, [r7, #15]
+ 575:./Hardware/device/sd3068.c **** 	
+ 576:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 2774              		.loc 1 576 6
+ 2775 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2776 0010 1846     		mov	r0, r3
+ 2777 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 2778 0016 0346     		mov	r3, r0
+ 2779              		.loc 1 576 5
+ 2780 0018 062B     		cmp	r3, #6
+ 2781 001a 01D0     		beq	.L191
+ 577:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2782              		.loc 1 577 12
+ 2783 001c 0823     		movs	r3, #8
+ 2784 001e 23E0     		b	.L196
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 59
+
+
+ 2785              	.L191:
+ 578:./Hardware/device/sd3068.c **** 		
+ 579:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 2786              		.loc 1 579 6
+ 2787 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2788 0022 07F10F01 		add	r1, r7, #15
+ 2789 0026 0122     		movs	r2, #1
+ 2790 0028 1020     		movs	r0, #16
+ 2791 002a FFF7FEFF 		bl	RTC_write_addr
+ 2792 002e 0346     		mov	r3, r0
+ 2793              		.loc 1 579 5
+ 2794 0030 062B     		cmp	r3, #6
+ 2795 0032 01D0     		beq	.L193
+ 580:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2796              		.loc 1 580 12
+ 2797 0034 0823     		movs	r3, #8
+ 2798 0036 17E0     		b	.L196
+ 2799              	.L193:
+ 581:./Hardware/device/sd3068.c **** 		
+ 582:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 2800              		.loc 1 582 7
+ 2801 0038 0023     		movs	r3, #0
+ 2802 003a FB73     		strb	r3, [r7, #15]
+ 583:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 2803              		.loc 1 583 6
+ 2804 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2805 003e 07F10F01 		add	r1, r7, #15
+ 2806 0042 0122     		movs	r2, #1
+ 2807 0044 1120     		movs	r0, #17
+ 2808 0046 FFF7FEFF 		bl	RTC_write_addr
+ 2809 004a 0346     		mov	r3, r0
+ 2810              		.loc 1 583 5
+ 2811 004c 062B     		cmp	r3, #6
+ 2812 004e 01D0     		beq	.L194
+ 584:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2813              		.loc 1 584 12
+ 2814 0050 0823     		movs	r3, #8
+ 2815 0052 09E0     		b	.L196
+ 2816              	.L194:
+ 585:./Hardware/device/sd3068.c **** 		
+ 586:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 2817              		.loc 1 586 6
+ 2818 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2819 0056 1846     		mov	r0, r3
+ 2820 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 2821 005c 0346     		mov	r3, r0
+ 2822              		.loc 1 586 5
+ 2823 005e 062B     		cmp	r3, #6
+ 2824 0060 01D0     		beq	.L195
+ 587:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2825              		.loc 1 587 12
+ 2826 0062 0823     		movs	r3, #8
+ 2827 0064 00E0     		b	.L196
+ 2828              	.L195:
+ 588:./Hardware/device/sd3068.c **** 		
+ 589:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 2829              		.loc 1 589 10
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 60
+
+
+ 2830 0066 0623     		movs	r3, #6
+ 2831              	.L196:
+ 590:./Hardware/device/sd3068.c **** 
+ 591:./Hardware/device/sd3068.c **** }
+ 2832              		.loc 1 591 1 discriminator 1
+ 2833 0068 1846     		mov	r0, r3
+ 2834 006a 1037     		adds	r7, r7, #16
+ 2835              	.LCFI138:
+ 2836              		.cfi_def_cfa_offset 8
+ 2837 006c BD46     		mov	sp, r7
+ 2838              	.LCFI139:
+ 2839              		.cfi_def_cfa_register 13
+ 2840              		@ sp needed
+ 2841 006e 80BD     		pop	{r7, pc}
+ 2842              		.cfi_endproc
+ 2843              	.LFE59:
+ 2845              		.section	.text.rtc_f1_16_off,"ax",%progbits
+ 2846              		.align	1
+ 2847              		.global	rtc_f1_16_off
+ 2848              		.syntax unified
+ 2849              		.thumb
+ 2850              		.thumb_func
+ 2851              		.fpu softvfp
+ 2853              	rtc_f1_16_off:
+ 2854              	.LFB60:
+ 592:./Hardware/device/sd3068.c **** 
+ 593:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f1_16_off(i2c_device_bus IIC_x)
+ 594:./Hardware/device/sd3068.c **** {
+ 2855              		.loc 1 594 1
+ 2856              		.cfi_startproc
+ 2857              		@ args = 0, pretend = 0, frame = 16
+ 2858              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2859 0000 80B5     		push	{r7, lr}
+ 2860              	.LCFI140:
+ 2861              		.cfi_def_cfa_offset 8
+ 2862              		.cfi_offset 7, -8
+ 2863              		.cfi_offset 14, -4
+ 2864 0002 84B0     		sub	sp, sp, #16
+ 2865              	.LCFI141:
+ 2866              		.cfi_def_cfa_offset 24
+ 2867 0004 00AF     		add	r7, sp, #0
+ 2868              	.LCFI142:
+ 2869              		.cfi_def_cfa_register 7
+ 2870 0006 0346     		mov	r3, r0
+ 2871 0008 FB71     		strb	r3, [r7, #7]
+ 595:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 2872              		.loc 1 595 11
+ 2873 000a 8023     		movs	r3, #128
+ 2874 000c FB73     		strb	r3, [r7, #15]
+ 596:./Hardware/device/sd3068.c **** 	
+ 597:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ 2875              		.loc 1 597 6
+ 2876 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2877 0010 1846     		mov	r0, r3
+ 2878 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 2879 0016 0346     		mov	r3, r0
+ 2880              		.loc 1 597 5
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 61
+
+
+ 2881 0018 062B     		cmp	r3, #6
+ 2882 001a 01D0     		beq	.L198
+ 598:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2883              		.loc 1 598 12
+ 2884 001c 0823     		movs	r3, #8
+ 2885 001e 23E0     		b	.L203
+ 2886              	.L198:
+ 599:./Hardware/device/sd3068.c **** 		
+ 600:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 2887              		.loc 1 600 6
+ 2888 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2889 0022 07F10F01 		add	r1, r7, #15
+ 2890 0026 0122     		movs	r2, #1
+ 2891 0028 1020     		movs	r0, #16
+ 2892 002a FFF7FEFF 		bl	RTC_write_addr
+ 2893 002e 0346     		mov	r3, r0
+ 2894              		.loc 1 600 5
+ 2895 0030 062B     		cmp	r3, #6
+ 2896 0032 01D0     		beq	.L200
+ 601:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2897              		.loc 1 601 12
+ 2898 0034 0823     		movs	r3, #8
+ 2899 0036 17E0     		b	.L203
+ 2900              	.L200:
+ 602:./Hardware/device/sd3068.c **** 		
+ 603:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 2901              		.loc 1 603 7
+ 2902 0038 0023     		movs	r3, #0
+ 2903 003a FB73     		strb	r3, [r7, #15]
+ 604:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 2904              		.loc 1 604 6
+ 2905 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2906 003e 07F10F01 		add	r1, r7, #15
+ 2907 0042 0122     		movs	r2, #1
+ 2908 0044 1120     		movs	r0, #17
+ 2909 0046 FFF7FEFF 		bl	RTC_write_addr
+ 2910 004a 0346     		mov	r3, r0
+ 2911              		.loc 1 604 5
+ 2912 004c 062B     		cmp	r3, #6
+ 2913 004e 01D0     		beq	.L201
+ 605:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2914              		.loc 1 605 12
+ 2915 0050 0823     		movs	r3, #8
+ 2916 0052 09E0     		b	.L203
+ 2917              	.L201:
+ 606:./Hardware/device/sd3068.c **** 		
+ 607:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 2918              		.loc 1 607 6
+ 2919 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2920 0056 1846     		mov	r0, r3
+ 2921 0058 FFF7FEFF 		bl	RTC_WriteOff
+ 2922 005c 0346     		mov	r3, r0
+ 2923              		.loc 1 607 5
+ 2924 005e 062B     		cmp	r3, #6
+ 2925 0060 01D0     		beq	.L202
+ 608:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2926              		.loc 1 608 12
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 62
+
+
+ 2927 0062 0823     		movs	r3, #8
+ 2928 0064 00E0     		b	.L203
+ 2929              	.L202:
+ 609:./Hardware/device/sd3068.c **** 		
+ 610:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 2930              		.loc 1 610 10
+ 2931 0066 0623     		movs	r3, #6
+ 2932              	.L203:
+ 611:./Hardware/device/sd3068.c **** 
+ 612:./Hardware/device/sd3068.c **** }
+ 2933              		.loc 1 612 1 discriminator 1
+ 2934 0068 1846     		mov	r0, r3
+ 2935 006a 1037     		adds	r7, r7, #16
+ 2936              	.LCFI143:
+ 2937              		.cfi_def_cfa_offset 8
+ 2938 006c BD46     		mov	sp, r7
+ 2939              	.LCFI144:
+ 2940              		.cfi_def_cfa_register 13
+ 2941              		@ sp needed
+ 2942 006e 80BD     		pop	{r7, pc}
+ 2943              		.cfi_endproc
+ 2944              	.LFE60:
+ 2946              		.section	.text.rtc_f32768_off,"ax",%progbits
+ 2947              		.align	1
+ 2948              		.global	rtc_f32768_off
+ 2949              		.syntax unified
+ 2950              		.thumb
+ 2951              		.thumb_func
+ 2952              		.fpu softvfp
+ 2954              	rtc_f32768_off:
+ 2955              	.LFB61:
+ 613:./Hardware/device/sd3068.c **** 
+ 614:./Hardware/device/sd3068.c **** rtc_exit_code rtc_f32768_off(i2c_device_bus IIC_x)
+ 615:./Hardware/device/sd3068.c **** {
+ 2956              		.loc 1 615 1
+ 2957              		.cfi_startproc
+ 2958              		@ args = 0, pretend = 0, frame = 16
+ 2959              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2960 0000 80B5     		push	{r7, lr}
+ 2961              	.LCFI145:
+ 2962              		.cfi_def_cfa_offset 8
+ 2963              		.cfi_offset 7, -8
+ 2964              		.cfi_offset 14, -4
+ 2965 0002 84B0     		sub	sp, sp, #16
+ 2966              	.LCFI146:
+ 2967              		.cfi_def_cfa_offset 24
+ 2968 0004 00AF     		add	r7, sp, #0
+ 2969              	.LCFI147:
+ 2970              		.cfi_def_cfa_register 7
+ 2971 0006 0346     		mov	r3, r0
+ 2972 0008 FB71     		strb	r3, [r7, #7]
+ 616:./Hardware/device/sd3068.c **** 		uint8_t buf=0x80;
+ 2973              		.loc 1 616 11
+ 2974 000a 8023     		movs	r3, #128
+ 2975 000c FB73     		strb	r3, [r7, #15]
+ 617:./Hardware/device/sd3068.c **** 	
+ 618:./Hardware/device/sd3068.c **** 		if(RTC_WriteOn(IIC_x)!=RTC_OK)
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 63
+
+
+ 2976              		.loc 1 618 6
+ 2977 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2978 0010 1846     		mov	r0, r3
+ 2979 0012 FFF7FEFF 		bl	RTC_WriteOn
+ 2980 0016 0346     		mov	r3, r0
+ 2981              		.loc 1 618 5
+ 2982 0018 062B     		cmp	r3, #6
+ 2983 001a 01D0     		beq	.L205
+ 619:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2984              		.loc 1 619 12
+ 2985 001c 0823     		movs	r3, #8
+ 2986 001e 23E0     		b	.L210
+ 2987              	.L205:
+ 620:./Hardware/device/sd3068.c **** 		
+ 621:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR2,&buf,1,IIC_x)!=RTC_OK)
+ 2988              		.loc 1 621 6
+ 2989 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2990 0022 07F10F01 		add	r1, r7, #15
+ 2991 0026 0122     		movs	r2, #1
+ 2992 0028 1020     		movs	r0, #16
+ 2993 002a FFF7FEFF 		bl	RTC_write_addr
+ 2994 002e 0346     		mov	r3, r0
+ 2995              		.loc 1 621 5
+ 2996 0030 062B     		cmp	r3, #6
+ 2997 0032 01D0     		beq	.L207
+ 622:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 2998              		.loc 1 622 12
+ 2999 0034 0823     		movs	r3, #8
+ 3000 0036 17E0     		b	.L210
+ 3001              	.L207:
+ 623:./Hardware/device/sd3068.c **** 		
+ 624:./Hardware/device/sd3068.c **** 			buf=0x00;
+ 3002              		.loc 1 624 7
+ 3003 0038 0023     		movs	r3, #0
+ 3004 003a FB73     		strb	r3, [r7, #15]
+ 625:./Hardware/device/sd3068.c **** 		if(RTC_write_addr(RTC_CTR3,&buf,1,IIC_x)!=RTC_OK)
+ 3005              		.loc 1 625 6
+ 3006 003c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 3007 003e 07F10F01 		add	r1, r7, #15
+ 3008 0042 0122     		movs	r2, #1
+ 3009 0044 1120     		movs	r0, #17
+ 3010 0046 FFF7FEFF 		bl	RTC_write_addr
+ 3011 004a 0346     		mov	r3, r0
+ 3012              		.loc 1 625 5
+ 3013 004c 062B     		cmp	r3, #6
+ 3014 004e 01D0     		beq	.L208
+ 626:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 3015              		.loc 1 626 12
+ 3016 0050 0823     		movs	r3, #8
+ 3017 0052 09E0     		b	.L210
+ 3018              	.L208:
+ 627:./Hardware/device/sd3068.c **** 		
+ 628:./Hardware/device/sd3068.c **** 		if(RTC_WriteOff(IIC_x)!=RTC_OK)
+ 3019              		.loc 1 628 6
+ 3020 0054 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 3021 0056 1846     		mov	r0, r3
+ 3022 0058 FFF7FEFF 		bl	RTC_WriteOff
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 64
+
+
+ 3023 005c 0346     		mov	r3, r0
+ 3024              		.loc 1 628 5
+ 3025 005e 062B     		cmp	r3, #6
+ 3026 0060 01D0     		beq	.L209
+ 629:./Hardware/device/sd3068.c **** 				return RTC_FAIL;
+ 3027              		.loc 1 629 12
+ 3028 0062 0823     		movs	r3, #8
+ 3029 0064 00E0     		b	.L210
+ 3030              	.L209:
+ 630:./Hardware/device/sd3068.c **** 		
+ 631:./Hardware/device/sd3068.c **** 		return RTC_OK;
+ 3031              		.loc 1 631 10
+ 3032 0066 0623     		movs	r3, #6
+ 3033              	.L210:
+ 632:./Hardware/device/sd3068.c **** 
+ 633:./Hardware/device/sd3068.c **** }
+ 3034              		.loc 1 633 1 discriminator 1
+ 3035 0068 1846     		mov	r0, r3
+ 3036 006a 1037     		adds	r7, r7, #16
+ 3037              	.LCFI148:
+ 3038              		.cfi_def_cfa_offset 8
+ 3039 006c BD46     		mov	sp, r7
+ 3040              	.LCFI149:
+ 3041              		.cfi_def_cfa_register 13
+ 3042              		@ sp needed
+ 3043 006e 80BD     		pop	{r7, pc}
+ 3044              		.cfi_endproc
+ 3045              	.LFE61:
+ 3047              		.text
+ 3048              	.Letext0:
+ 3049              		.file 2 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 3050              		.file 3 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 3051              		.file 4 "./Hardware/device/iic.h"
+ 3052              		.file 5 "./Hardware/device/rtc.h"
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 65
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 sd3068.c
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:16     .text.rtc_f32768:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:24     .text.rtc_f32768:00000000 rtc_f32768
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:119    .text.rtc_f4096:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:126    .text.rtc_f4096:00000000 rtc_f4096
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:220    .text.rtc_f1024:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:227    .text.rtc_f1024:00000000 rtc_f1024
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:321    .text.rtc_f64:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:328    .text.rtc_f64:00000000 rtc_f64
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:422    .text.rtc_f32:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:429    .text.rtc_f32:00000000 rtc_f32
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:523    .text.rtc_f16:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:530    .text.rtc_f16:00000000 rtc_f16
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:624    .text.rtc_f8:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:631    .text.rtc_f8:00000000 rtc_f8
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:725    .text.rtc_f4:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:732    .text.rtc_f4:00000000 rtc_f4
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:826    .text.rtc_f2:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:833    .text.rtc_f2:00000000 rtc_f2
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:927    .text.rtc_f1:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:934    .text.rtc_f1:00000000 rtc_f1
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1028   .text.rtc_f1_2:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1035   .text.rtc_f1_2:00000000 rtc_f1_2
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1129   .text.rtc_f1_4:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1136   .text.rtc_f1_4:00000000 rtc_f1_4
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1230   .text.rtc_f1_8:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1237   .text.rtc_f1_8:00000000 rtc_f1_8
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1331   .text.rtc_f1_16:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1338   .text.rtc_f1_16:00000000 rtc_f1_16
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1432   .text.rtc_f1s:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1439   .text.rtc_f1s:00000000 rtc_f1s
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1533   .text.rtc_f4096_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1540   .text.rtc_f4096_off:00000000 rtc_f4096_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1634   .text.rtc_f1_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1641   .text.rtc_f1_off:00000000 rtc_f1_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1735   .text.rtc_f1s_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1742   .text.rtc_f1s_off:00000000 rtc_f1s_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1836   .text.rtc_f1024_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1843   .text.rtc_f1024_off:00000000 rtc_f1024_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1937   .text.rtc_f64_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:1944   .text.rtc_f64_off:00000000 rtc_f64_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2038   .text.rtc_f32_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2045   .text.rtc_f32_off:00000000 rtc_f32_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2139   .text.rtc_f16_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2146   .text.rtc_f16_off:00000000 rtc_f16_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2240   .text.rtc_f8_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2247   .text.rtc_f8_off:00000000 rtc_f8_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2341   .text.rtc_f4_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2348   .text.rtc_f4_off:00000000 rtc_f4_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2442   .text.rtc_f2_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2449   .text.rtc_f2_off:00000000 rtc_f2_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2543   .text.rtc_f1_2_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2550   .text.rtc_f1_2_off:00000000 rtc_f1_2_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2644   .text.rtc_f1_4_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2651   .text.rtc_f1_4_off:00000000 rtc_f1_4_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2745   .text.rtc_f1_8_off:00000000 $t
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s 			page 66
+
+
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2752   .text.rtc_f1_8_off:00000000 rtc_f1_8_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2846   .text.rtc_f1_16_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2853   .text.rtc_f1_16_off:00000000 rtc_f1_16_off
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2947   .text.rtc_f32768_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccjnfnUC.s:2954   .text.rtc_f32768_off:00000000 rtc_f32768_off
+
+UNDEFINED SYMBOLS
+RTC_WriteOn
+RTC_write_addr
+RTC_WriteOff

@@ -1,0 +1,4 @@
+1、git init   
+2、git add .    //另外git add +文件名字
+3、git commit -m "提交描述"
+4、git push -u origin master 

@@ -1,0 +1,3254 @@
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"sd8810.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.global	sd8810_temp
+  16              		.section	.bss.sd8810_temp,"aw",%nobits
+  19              	sd8810_temp:
+  20 0000 00       		.space	1
+  21              		.section	.text.SD8810_read_addr,"ax",%progbits
+  22              		.align	1
+  23              		.global	SD8810_read_addr
+  24              		.arch armv7-m
+  25              		.syntax unified
+  26              		.thumb
+  27              		.thumb_func
+  28              		.fpu softvfp
+  30              	SD8810_read_addr:
+  31              	.LFB32:
+  32              		.file 1 "./Hardware/device/sd8810.c"
+   1:./Hardware/device/sd8810.c **** #include "sd8810.h"
+   2:./Hardware/device/sd8810.c **** 
+   3:./Hardware/device/sd8810.c **** uint8_t  sd8810_temp;
+   4:./Hardware/device/sd8810.c **** 
+   5:./Hardware/device/sd8810.c **** 
+   6:./Hardware/device/sd8810.c **** //rtc¶Áaddr
+   7:./Hardware/device/sd8810.c **** rtc_exit_code SD8810_read_addr(uint8_t reg_addr, uint8_t *read_buf, uint8_t length, i2c_device_bus 
+   8:./Hardware/device/sd8810.c **** {
+  33              		.loc 1 8 1
+  34              		.cfi_startproc
+  35              		@ args = 0, pretend = 0, frame = 8
+  36              		@ frame_needed = 1, uses_anonymous_args = 0
+  37 0000 80B5     		push	{r7, lr}
+  38              	.LCFI0:
+  39              		.cfi_def_cfa_offset 8
+  40              		.cfi_offset 7, -8
+  41              		.cfi_offset 14, -4
+  42 0002 84B0     		sub	sp, sp, #16
+  43              	.LCFI1:
+  44              		.cfi_def_cfa_offset 24
+  45 0004 02AF     		add	r7, sp, #8
+  46              	.LCFI2:
+  47              		.cfi_def_cfa 7, 16
+  48 0006 3960     		str	r1, [r7]
+  49 0008 1146     		mov	r1, r2
+  50 000a 1A46     		mov	r2, r3
+  51 000c 0346     		mov	r3, r0
+  52 000e FB71     		strb	r3, [r7, #7]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 2
+
+
+  53 0010 0B46     		mov	r3, r1
+  54 0012 BB71     		strb	r3, [r7, #6]
+  55 0014 1346     		mov	r3, r2
+  56 0016 7B71     		strb	r3, [r7, #5]
+   9:./Hardware/device/sd8810.c **** 	if(IIC_read_multiple_bytes(0x64,reg_addr,read_buf,length,bus)!=IIC_OK)
+  57              		.loc 1 9 5
+  58 0018 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+  59 001a F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+  60 001c 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+  61 001e 0093     		str	r3, [sp]
+  62 0020 1346     		mov	r3, r2
+  63 0022 3A68     		ldr	r2, [r7]
+  64 0024 6420     		movs	r0, #100
+  65 0026 FFF7FEFF 		bl	IIC_read_multiple_bytes
+  66 002a 0346     		mov	r3, r0
+  67              		.loc 1 9 4
+  68 002c 022B     		cmp	r3, #2
+  69 002e 01D0     		beq	.L2
+  10:./Hardware/device/sd8810.c **** 	{
+  11:./Hardware/device/sd8810.c **** 		return RTC_NOACK;
+  70              		.loc 1 11 10
+  71 0030 0723     		movs	r3, #7
+  72 0032 00E0     		b	.L3
+  73              	.L2:
+  12:./Hardware/device/sd8810.c **** 	}
+  13:./Hardware/device/sd8810.c **** 	return RTC_OK;
+  74              		.loc 1 13 9
+  75 0034 0623     		movs	r3, #6
+  76              	.L3:
+  14:./Hardware/device/sd8810.c **** }
+  77              		.loc 1 14 1
+  78 0036 1846     		mov	r0, r3
+  79 0038 0837     		adds	r7, r7, #8
+  80              	.LCFI3:
+  81              		.cfi_def_cfa_offset 8
+  82 003a BD46     		mov	sp, r7
+  83              	.LCFI4:
+  84              		.cfi_def_cfa_register 13
+  85              		@ sp needed
+  86 003c 80BD     		pop	{r7, pc}
+  87              		.cfi_endproc
+  88              	.LFE32:
+  90              		.section	.text.SD8810_write_addr,"ax",%progbits
+  91              		.align	1
+  92              		.global	SD8810_write_addr
+  93              		.syntax unified
+  94              		.thumb
+  95              		.thumb_func
+  96              		.fpu softvfp
+  98              	SD8810_write_addr:
+  99              	.LFB33:
+  15:./Hardware/device/sd8810.c **** 
+  16:./Hardware/device/sd8810.c **** //rtcÐ´addr
+  17:./Hardware/device/sd8810.c **** rtc_exit_code SD8810_write_addr(uint8_t reg_addr, uint8_t *write_buf, uint8_t length, i2c_device_bu
+  18:./Hardware/device/sd8810.c **** {
+ 100              		.loc 1 18 1
+ 101              		.cfi_startproc
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 3
+
+
+ 102              		@ args = 0, pretend = 0, frame = 8
+ 103              		@ frame_needed = 1, uses_anonymous_args = 0
+ 104 0000 80B5     		push	{r7, lr}
+ 105              	.LCFI5:
+ 106              		.cfi_def_cfa_offset 8
+ 107              		.cfi_offset 7, -8
+ 108              		.cfi_offset 14, -4
+ 109 0002 84B0     		sub	sp, sp, #16
+ 110              	.LCFI6:
+ 111              		.cfi_def_cfa_offset 24
+ 112 0004 02AF     		add	r7, sp, #8
+ 113              	.LCFI7:
+ 114              		.cfi_def_cfa 7, 16
+ 115 0006 3960     		str	r1, [r7]
+ 116 0008 1146     		mov	r1, r2
+ 117 000a 1A46     		mov	r2, r3
+ 118 000c 0346     		mov	r3, r0
+ 119 000e FB71     		strb	r3, [r7, #7]
+ 120 0010 0B46     		mov	r3, r1
+ 121 0012 BB71     		strb	r3, [r7, #6]
+ 122 0014 1346     		mov	r3, r2
+ 123 0016 7B71     		strb	r3, [r7, #5]
+  19:./Hardware/device/sd8810.c **** 	if(IIC_write_multiple_bytes(0x64,reg_addr,write_buf,length,bus)!=IIC_OK)
+ 124              		.loc 1 19 5
+ 125 0018 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 126 001a F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 127 001c 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 128 001e 0093     		str	r3, [sp]
+ 129 0020 1346     		mov	r3, r2
+ 130 0022 3A68     		ldr	r2, [r7]
+ 131 0024 6420     		movs	r0, #100
+ 132 0026 FFF7FEFF 		bl	IIC_write_multiple_bytes
+ 133 002a 0346     		mov	r3, r0
+ 134              		.loc 1 19 4
+ 135 002c 022B     		cmp	r3, #2
+ 136 002e 01D0     		beq	.L5
+  20:./Hardware/device/sd8810.c **** 	{
+  21:./Hardware/device/sd8810.c **** 		return RTC_NOACK;
+ 137              		.loc 1 21 10
+ 138 0030 0723     		movs	r3, #7
+ 139 0032 00E0     		b	.L6
+ 140              	.L5:
+  22:./Hardware/device/sd8810.c **** 	}
+  23:./Hardware/device/sd8810.c **** 	return RTC_OK;
+ 141              		.loc 1 23 9
+ 142 0034 0623     		movs	r3, #6
+ 143              	.L6:
+  24:./Hardware/device/sd8810.c **** }
+ 144              		.loc 1 24 1
+ 145 0036 1846     		mov	r0, r3
+ 146 0038 0837     		adds	r7, r7, #8
+ 147              	.LCFI8:
+ 148              		.cfi_def_cfa_offset 8
+ 149 003a BD46     		mov	sp, r7
+ 150              	.LCFI9:
+ 151              		.cfi_def_cfa_register 13
+ 152              		@ sp needed
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 4
+
+
+ 153 003c 80BD     		pop	{r7, pc}
+ 154              		.cfi_endproc
+ 155              	.LFE33:
+ 157              		.section	.text.SD8810_ReadTimeDate,"ax",%progbits
+ 158              		.align	1
+ 159              		.global	SD8810_ReadTimeDate
+ 160              		.syntax unified
+ 161              		.thumb
+ 162              		.thumb_func
+ 163              		.fpu softvfp
+ 165              	SD8810_ReadTimeDate:
+ 166              	.LFB34:
+  25:./Hardware/device/sd8810.c **** 
+  26:./Hardware/device/sd8810.c **** 
+  27:./Hardware/device/sd8810.c **** rtc_exit_code SD8810_ReadTimeDate(rtc_time *time, i2c_device_bus IIC_x)
+  28:./Hardware/device/sd8810.c **** {
+ 167              		.loc 1 28 1
+ 168              		.cfi_startproc
+ 169              		@ args = 0, pretend = 0, frame = 16
+ 170              		@ frame_needed = 1, uses_anonymous_args = 0
+ 171 0000 80B5     		push	{r7, lr}
+ 172              	.LCFI10:
+ 173              		.cfi_def_cfa_offset 8
+ 174              		.cfi_offset 7, -8
+ 175              		.cfi_offset 14, -4
+ 176 0002 84B0     		sub	sp, sp, #16
+ 177              	.LCFI11:
+ 178              		.cfi_def_cfa_offset 24
+ 179 0004 00AF     		add	r7, sp, #0
+ 180              	.LCFI12:
+ 181              		.cfi_def_cfa_register 7
+ 182 0006 7860     		str	r0, [r7, #4]
+ 183 0008 0B46     		mov	r3, r1
+ 184 000a FB70     		strb	r3, [r7, #3]
+  29:./Hardware/device/sd8810.c **** 	uint8_t buf[7];
+  30:./Hardware/device/sd8810.c **** 
+  31:./Hardware/device/sd8810.c **** 	if(SD8810_read_addr(0x10,buf,7,IIC_x)!=RTC_OK)
+ 185              		.loc 1 31 5
+ 186 000c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 187 000e 07F10801 		add	r1, r7, #8
+ 188 0012 0722     		movs	r2, #7
+ 189 0014 1020     		movs	r0, #16
+ 190 0016 FFF7FEFF 		bl	SD8810_read_addr
+ 191 001a 0346     		mov	r3, r0
+ 192              		.loc 1 31 4
+ 193 001c 062B     		cmp	r3, #6
+ 194 001e 01D0     		beq	.L8
+  32:./Hardware/device/sd8810.c **** 	{
+  33:./Hardware/device/sd8810.c **** 		return RTC_FAIL;
+ 195              		.loc 1 33 10
+ 196 0020 0823     		movs	r3, #8
+ 197 0022 38E0     		b	.L10
+ 198              	.L8:
+  34:./Hardware/device/sd8810.c **** 	}
+  35:./Hardware/device/sd8810.c **** 	
+  36:./Hardware/device/sd8810.c **** 	time->second=bcd_to_dec(buf[0]);
+ 199              		.loc 1 36 15
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 5
+
+
+ 200 0024 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 201 0026 1846     		mov	r0, r3
+ 202 0028 FFF7FEFF 		bl	bcd_to_dec
+ 203 002c 0346     		mov	r3, r0
+ 204 002e 1A46     		mov	r2, r3
+ 205              		.loc 1 36 14
+ 206 0030 7B68     		ldr	r3, [r7, #4]
+ 207 0032 1A70     		strb	r2, [r3]
+  37:./Hardware/device/sd8810.c **** 	time->minute=bcd_to_dec(buf[1]);
+ 208              		.loc 1 37 15
+ 209 0034 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 210 0036 1846     		mov	r0, r3
+ 211 0038 FFF7FEFF 		bl	bcd_to_dec
+ 212 003c 0346     		mov	r3, r0
+ 213 003e 1A46     		mov	r2, r3
+ 214              		.loc 1 37 14
+ 215 0040 7B68     		ldr	r3, [r7, #4]
+ 216 0042 5A70     		strb	r2, [r3, #1]
+  38:./Hardware/device/sd8810.c **** 	time->hour=bcd_to_dec(buf[2]);
+ 217              		.loc 1 38 13
+ 218 0044 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 219 0046 1846     		mov	r0, r3
+ 220 0048 FFF7FEFF 		bl	bcd_to_dec
+ 221 004c 0346     		mov	r3, r0
+ 222 004e 1A46     		mov	r2, r3
+ 223              		.loc 1 38 12
+ 224 0050 7B68     		ldr	r3, [r7, #4]
+ 225 0052 9A70     		strb	r2, [r3, #2]
+  39:./Hardware/device/sd8810.c **** 	time->week=bcd_to_dec(buf[3]);	
+ 226              		.loc 1 39 13
+ 227 0054 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 228 0056 1846     		mov	r0, r3
+ 229 0058 FFF7FEFF 		bl	bcd_to_dec
+ 230 005c 0346     		mov	r3, r0
+ 231 005e 1A46     		mov	r2, r3
+ 232              		.loc 1 39 12
+ 233 0060 7B68     		ldr	r3, [r7, #4]
+ 234 0062 DA70     		strb	r2, [r3, #3]
+  40:./Hardware/device/sd8810.c **** 	time->day=bcd_to_dec(buf[4]);
+ 235              		.loc 1 40 12
+ 236 0064 3B7B     		ldrb	r3, [r7, #12]	@ zero_extendqisi2
+ 237 0066 1846     		mov	r0, r3
+ 238 0068 FFF7FEFF 		bl	bcd_to_dec
+ 239 006c 0346     		mov	r3, r0
+ 240 006e 1A46     		mov	r2, r3
+ 241              		.loc 1 40 11
+ 242 0070 7B68     		ldr	r3, [r7, #4]
+ 243 0072 1A71     		strb	r2, [r3, #4]
+  41:./Hardware/device/sd8810.c **** 	time->month=bcd_to_dec(buf[5]);	
+ 244              		.loc 1 41 14
+ 245 0074 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 246 0076 1846     		mov	r0, r3
+ 247 0078 FFF7FEFF 		bl	bcd_to_dec
+ 248 007c 0346     		mov	r3, r0
+ 249 007e 1A46     		mov	r2, r3
+ 250              		.loc 1 41 13
+ 251 0080 7B68     		ldr	r3, [r7, #4]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 6
+
+
+ 252 0082 5A71     		strb	r2, [r3, #5]
+  42:./Hardware/device/sd8810.c **** 	time->year=bcd_to_dec(buf[6]);
+ 253              		.loc 1 42 13
+ 254 0084 BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 255 0086 1846     		mov	r0, r3
+ 256 0088 FFF7FEFF 		bl	bcd_to_dec
+ 257 008c 0346     		mov	r3, r0
+ 258 008e 1A46     		mov	r2, r3
+ 259              		.loc 1 42 12
+ 260 0090 7B68     		ldr	r3, [r7, #4]
+ 261 0092 9A71     		strb	r2, [r3, #6]
+  43:./Hardware/device/sd8810.c **** 		
+  44:./Hardware/device/sd8810.c **** 	return RTC_OK;
+ 262              		.loc 1 44 9
+ 263 0094 0623     		movs	r3, #6
+ 264              	.L10:
+  45:./Hardware/device/sd8810.c **** 
+  46:./Hardware/device/sd8810.c **** }
+ 265              		.loc 1 46 1 discriminator 1
+ 266 0096 1846     		mov	r0, r3
+ 267 0098 1037     		adds	r7, r7, #16
+ 268              	.LCFI13:
+ 269              		.cfi_def_cfa_offset 8
+ 270 009a BD46     		mov	sp, r7
+ 271              	.LCFI14:
+ 272              		.cfi_def_cfa_register 13
+ 273              		@ sp needed
+ 274 009c 80BD     		pop	{r7, pc}
+ 275              		.cfi_endproc
+ 276              	.LFE34:
+ 278              		.section	.text.SD8810_WriteTimeDate,"ax",%progbits
+ 279              		.align	1
+ 280              		.global	SD8810_WriteTimeDate
+ 281              		.syntax unified
+ 282              		.thumb
+ 283              		.thumb_func
+ 284              		.fpu softvfp
+ 286              	SD8810_WriteTimeDate:
+ 287              	.LFB35:
+  47:./Hardware/device/sd8810.c **** 
+  48:./Hardware/device/sd8810.c **** rtc_exit_code SD8810_WriteTimeDate(rtc_time *time, i2c_device_bus IIC_x)
+  49:./Hardware/device/sd8810.c **** {
+ 288              		.loc 1 49 1
+ 289              		.cfi_startproc
+ 290              		@ args = 0, pretend = 0, frame = 16
+ 291              		@ frame_needed = 1, uses_anonymous_args = 0
+ 292 0000 80B5     		push	{r7, lr}
+ 293              	.LCFI15:
+ 294              		.cfi_def_cfa_offset 8
+ 295              		.cfi_offset 7, -8
+ 296              		.cfi_offset 14, -4
+ 297 0002 84B0     		sub	sp, sp, #16
+ 298              	.LCFI16:
+ 299              		.cfi_def_cfa_offset 24
+ 300 0004 00AF     		add	r7, sp, #0
+ 301              	.LCFI17:
+ 302              		.cfi_def_cfa_register 7
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 7
+
+
+ 303 0006 7860     		str	r0, [r7, #4]
+ 304 0008 0B46     		mov	r3, r1
+ 305 000a FB70     		strb	r3, [r7, #3]
+  50:./Hardware/device/sd8810.c **** 	uint8_t buf[7];
+  51:./Hardware/device/sd8810.c **** 
+  52:./Hardware/device/sd8810.c **** 	buf[0]=dec_to_bcd(time->second);
+ 306              		.loc 1 52 9
+ 307 000c 7B68     		ldr	r3, [r7, #4]
+ 308 000e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 309 0010 1846     		mov	r0, r3
+ 310 0012 FFF7FEFF 		bl	dec_to_bcd
+ 311 0016 0346     		mov	r3, r0
+ 312              		.loc 1 52 8
+ 313 0018 3B72     		strb	r3, [r7, #8]
+  53:./Hardware/device/sd8810.c **** 	buf[1]=dec_to_bcd(time->minute);
+ 314              		.loc 1 53 9
+ 315 001a 7B68     		ldr	r3, [r7, #4]
+ 316 001c 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 317 001e 1846     		mov	r0, r3
+ 318 0020 FFF7FEFF 		bl	dec_to_bcd
+ 319 0024 0346     		mov	r3, r0
+ 320              		.loc 1 53 8
+ 321 0026 7B72     		strb	r3, [r7, #9]
+  54:./Hardware/device/sd8810.c **** 	buf[2]=dec_to_bcd(time->hour);
+ 322              		.loc 1 54 9
+ 323 0028 7B68     		ldr	r3, [r7, #4]
+ 324 002a 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 325 002c 1846     		mov	r0, r3
+ 326 002e FFF7FEFF 		bl	dec_to_bcd
+ 327 0032 0346     		mov	r3, r0
+ 328              		.loc 1 54 8
+ 329 0034 BB72     		strb	r3, [r7, #10]
+  55:./Hardware/device/sd8810.c **** 	buf[3]=dec_to_bcd(time->week);
+ 330              		.loc 1 55 9
+ 331 0036 7B68     		ldr	r3, [r7, #4]
+ 332 0038 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 333 003a 1846     		mov	r0, r3
+ 334 003c FFF7FEFF 		bl	dec_to_bcd
+ 335 0040 0346     		mov	r3, r0
+ 336              		.loc 1 55 8
+ 337 0042 FB72     		strb	r3, [r7, #11]
+  56:./Hardware/device/sd8810.c **** 	buf[4]=dec_to_bcd(time->day);
+ 338              		.loc 1 56 9
+ 339 0044 7B68     		ldr	r3, [r7, #4]
+ 340 0046 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 341 0048 1846     		mov	r0, r3
+ 342 004a FFF7FEFF 		bl	dec_to_bcd
+ 343 004e 0346     		mov	r3, r0
+ 344              		.loc 1 56 8
+ 345 0050 3B73     		strb	r3, [r7, #12]
+  57:./Hardware/device/sd8810.c **** 	buf[5]=dec_to_bcd(time->month);
+ 346              		.loc 1 57 9
+ 347 0052 7B68     		ldr	r3, [r7, #4]
+ 348 0054 5B79     		ldrb	r3, [r3, #5]	@ zero_extendqisi2
+ 349 0056 1846     		mov	r0, r3
+ 350 0058 FFF7FEFF 		bl	dec_to_bcd
+ 351 005c 0346     		mov	r3, r0
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 8
+
+
+ 352              		.loc 1 57 8
+ 353 005e 7B73     		strb	r3, [r7, #13]
+  58:./Hardware/device/sd8810.c **** 	buf[6]=dec_to_bcd(time->year);
+ 354              		.loc 1 58 9
+ 355 0060 7B68     		ldr	r3, [r7, #4]
+ 356 0062 9B79     		ldrb	r3, [r3, #6]	@ zero_extendqisi2
+ 357 0064 1846     		mov	r0, r3
+ 358 0066 FFF7FEFF 		bl	dec_to_bcd
+ 359 006a 0346     		mov	r3, r0
+ 360              		.loc 1 58 8
+ 361 006c BB73     		strb	r3, [r7, #14]
+  59:./Hardware/device/sd8810.c **** 
+  60:./Hardware/device/sd8810.c **** 	if(SD8810_write_addr(0x10,buf,7,IIC_x)!=RTC_OK)
+ 362              		.loc 1 60 5
+ 363 006e FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 364 0070 07F10801 		add	r1, r7, #8
+ 365 0074 0722     		movs	r2, #7
+ 366 0076 1020     		movs	r0, #16
+ 367 0078 FFF7FEFF 		bl	SD8810_write_addr
+ 368 007c 0346     		mov	r3, r0
+ 369              		.loc 1 60 4
+ 370 007e 062B     		cmp	r3, #6
+ 371 0080 01D0     		beq	.L12
+  61:./Hardware/device/sd8810.c **** 	{
+  62:./Hardware/device/sd8810.c **** 		return RTC_FAIL;
+ 372              		.loc 1 62 10
+ 373 0082 0823     		movs	r3, #8
+ 374 0084 00E0     		b	.L14
+ 375              	.L12:
+  63:./Hardware/device/sd8810.c **** 	}
+  64:./Hardware/device/sd8810.c **** 	
+  65:./Hardware/device/sd8810.c **** 	return RTC_OK;
+ 376              		.loc 1 65 9
+ 377 0086 0623     		movs	r3, #6
+ 378              	.L14:
+  66:./Hardware/device/sd8810.c **** 	
+  67:./Hardware/device/sd8810.c **** }
+ 379              		.loc 1 67 1 discriminator 1
+ 380 0088 1846     		mov	r0, r3
+ 381 008a 1037     		adds	r7, r7, #16
+ 382              	.LCFI18:
+ 383              		.cfi_def_cfa_offset 8
+ 384 008c BD46     		mov	sp, r7
+ 385              	.LCFI19:
+ 386              		.cfi_def_cfa_register 13
+ 387              		@ sp needed
+ 388 008e 80BD     		pop	{r7, pc}
+ 389              		.cfi_endproc
+ 390              	.LFE35:
+ 392              		.section	.text.sd8810_idbuff,"ax",%progbits
+ 393              		.align	1
+ 394              		.global	sd8810_idbuff
+ 395              		.syntax unified
+ 396              		.thumb
+ 397              		.thumb_func
+ 398              		.fpu softvfp
+ 400              	sd8810_idbuff:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 9
+
+
+ 401              	.LFB36:
+  68:./Hardware/device/sd8810.c **** 
+  69:./Hardware/device/sd8810.c **** //¶ÁÈ¡Ð¾Æ¬idÂë
+  70:./Hardware/device/sd8810.c **** uint8_t sd8810_idbuff(uint8_t *Data, i2c_device_bus IIC_x)
+  71:./Hardware/device/sd8810.c **** {
+ 402              		.loc 1 71 1
+ 403              		.cfi_startproc
+ 404              		@ args = 0, pretend = 0, frame = 8
+ 405              		@ frame_needed = 1, uses_anonymous_args = 0
+ 406 0000 80B5     		push	{r7, lr}
+ 407              	.LCFI20:
+ 408              		.cfi_def_cfa_offset 8
+ 409              		.cfi_offset 7, -8
+ 410              		.cfi_offset 14, -4
+ 411 0002 84B0     		sub	sp, sp, #16
+ 412              	.LCFI21:
+ 413              		.cfi_def_cfa_offset 24
+ 414 0004 02AF     		add	r7, sp, #8
+ 415              	.LCFI22:
+ 416              		.cfi_def_cfa 7, 16
+ 417 0006 7860     		str	r0, [r7, #4]
+ 418 0008 0B46     		mov	r3, r1
+ 419 000a FB70     		strb	r3, [r7, #3]
+  72:./Hardware/device/sd8810.c **** 	if(IIC_read_multiple_bytes(0x64,0xB2,Data,8,IIC_x)!=IIC_OK)
+ 420              		.loc 1 72 5
+ 421 000c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 422 000e 0093     		str	r3, [sp]
+ 423 0010 0823     		movs	r3, #8
+ 424 0012 7A68     		ldr	r2, [r7, #4]
+ 425 0014 B221     		movs	r1, #178
+ 426 0016 6420     		movs	r0, #100
+ 427 0018 FFF7FEFF 		bl	IIC_read_multiple_bytes
+ 428 001c 0346     		mov	r3, r0
+ 429              		.loc 1 72 4
+ 430 001e 022B     		cmp	r3, #2
+ 431 0020 01D0     		beq	.L16
+  73:./Hardware/device/sd8810.c **** 		return SLAVE_NO_ACK;
+ 432              		.loc 1 73 10
+ 433 0022 0523     		movs	r3, #5
+ 434 0024 00E0     		b	.L17
+ 435              	.L16:
+  74:./Hardware/device/sd8810.c **** 
+  75:./Hardware/device/sd8810.c **** 	return TRUE;
+ 436              		.loc 1 75 9
+ 437 0026 0123     		movs	r3, #1
+ 438              	.L17:
+  76:./Hardware/device/sd8810.c **** }
+ 439              		.loc 1 76 1
+ 440 0028 1846     		mov	r0, r3
+ 441 002a 0837     		adds	r7, r7, #8
+ 442              	.LCFI23:
+ 443              		.cfi_def_cfa_offset 8
+ 444 002c BD46     		mov	sp, r7
+ 445              	.LCFI24:
+ 446              		.cfi_def_cfa_register 13
+ 447              		@ sp needed
+ 448 002e 80BD     		pop	{r7, pc}
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 10
+
+
+ 449              		.cfi_endproc
+ 450              	.LFE36:
+ 452              		.section	.text.sd8810_ReadTemp,"ax",%progbits
+ 453              		.align	1
+ 454              		.global	sd8810_ReadTemp
+ 455              		.syntax unified
+ 456              		.thumb
+ 457              		.thumb_func
+ 458              		.fpu softvfp
+ 460              	sd8810_ReadTemp:
+ 461              	.LFB37:
+  77:./Hardware/device/sd8810.c **** 
+  78:./Hardware/device/sd8810.c **** 
+  79:./Hardware/device/sd8810.c **** uint8_t sd8810_ReadTemp(i2c_device_bus IIC_x)
+  80:./Hardware/device/sd8810.c **** {
+ 462              		.loc 1 80 1
+ 463              		.cfi_startproc
+ 464              		@ args = 0, pretend = 0, frame = 16
+ 465              		@ frame_needed = 1, uses_anonymous_args = 0
+ 466 0000 80B5     		push	{r7, lr}
+ 467              	.LCFI25:
+ 468              		.cfi_def_cfa_offset 8
+ 469              		.cfi_offset 7, -8
+ 470              		.cfi_offset 14, -4
+ 471 0002 84B0     		sub	sp, sp, #16
+ 472              	.LCFI26:
+ 473              		.cfi_def_cfa_offset 24
+ 474 0004 00AF     		add	r7, sp, #0
+ 475              	.LCFI27:
+ 476              		.cfi_def_cfa_register 7
+ 477 0006 0346     		mov	r3, r0
+ 478 0008 FB71     		strb	r3, [r7, #7]
+  81:./Hardware/device/sd8810.c **** 	uint8_t	Temp1;
+  82:./Hardware/device/sd8810.c **** 	
+  83:./Hardware/device/sd8810.c **** 	uint8_t buf = 0x10;
+ 479              		.loc 1 83 10
+ 480 000a 1023     		movs	r3, #16
+ 481 000c BB73     		strb	r3, [r7, #14]
+  84:./Hardware/device/sd8810.c **** 	if(SD8810_write_addr(0x57,&buf,1,IIC_x)!=RTC_OK)
+ 482              		.loc 1 84 5
+ 483 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 484 0010 07F10E01 		add	r1, r7, #14
+ 485 0014 0122     		movs	r2, #1
+ 486 0016 5720     		movs	r0, #87
+ 487 0018 FFF7FEFF 		bl	SD8810_write_addr
+ 488 001c 0346     		mov	r3, r0
+ 489              		.loc 1 84 4
+ 490 001e 062B     		cmp	r3, #6
+ 491 0020 01D0     		beq	.L19
+  85:./Hardware/device/sd8810.c **** 		return RTC_NOACK;		
+ 492              		.loc 1 85 10
+ 493 0022 0723     		movs	r3, #7
+ 494 0024 30E0     		b	.L23
+ 495              	.L19:
+  86:./Hardware/device/sd8810.c **** 	
+  87:./Hardware/device/sd8810.c **** 	Temp1 = RTC_ReadByte(0x56,IIC_x);
+ 496              		.loc 1 87 10
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 11
+
+
+ 497 0026 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 498 0028 1946     		mov	r1, r3
+ 499 002a 5620     		movs	r0, #86
+ 500 002c FFF7FEFF 		bl	RTC_ReadByte
+ 501 0030 0346     		mov	r3, r0
+ 502 0032 FB73     		strb	r3, [r7, #15]
+  88:./Hardware/device/sd8810.c **** 	
+  89:./Hardware/device/sd8810.c **** 	if(Temp1 & 0x80)
+ 503              		.loc 1 89 5
+ 504 0034 97F90F30 		ldrsb	r3, [r7, #15]
+ 505              		.loc 1 89 4
+ 506 0038 002B     		cmp	r3, #0
+ 507 003a 17DA     		bge	.L21
+  90:./Hardware/device/sd8810.c **** 	{
+  91:./Hardware/device/sd8810.c **** 		Temp1 = (~Temp1+1)&0xFF;
+ 508              		.loc 1 91 9
+ 509 003c FB7B     		ldrb	r3, [r7, #15]
+ 510 003e 5B42     		rsbs	r3, r3, #0
+ 511 0040 FB73     		strb	r3, [r7, #15]
+  92:./Hardware/device/sd8810.c **** 		sd8810_temp = Temp1;
+ 512              		.loc 1 92 15
+ 513 0042 134A     		ldr	r2, .L24
+ 514 0044 FB7B     		ldrb	r3, [r7, #15]
+ 515 0046 1370     		strb	r3, [r2]
+  93:./Hardware/device/sd8810.c **** 		bcd_to_dec(sd8810_temp);
+ 516              		.loc 1 93 3
+ 517 0048 114B     		ldr	r3, .L24
+ 518 004a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 519 004c 1846     		mov	r0, r3
+ 520 004e FFF7FEFF 		bl	bcd_to_dec
+  94:./Hardware/device/sd8810.c **** 		sd8810_temp = 256-sd8810_temp;
+ 521              		.loc 1 94 20
+ 522 0052 0F4B     		ldr	r3, .L24
+ 523 0054 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 524 0056 5B42     		rsbs	r3, r3, #0
+ 525 0058 DAB2     		uxtb	r2, r3
+ 526              		.loc 1 94 15
+ 527 005a 0D4B     		ldr	r3, .L24
+ 528 005c 1A70     		strb	r2, [r3]
+  95:./Hardware/device/sd8810.c **** 		OLED_ShowChar(30,43,'-',6);
+ 529              		.loc 1 95 3
+ 530 005e 0623     		movs	r3, #6
+ 531 0060 2D22     		movs	r2, #45
+ 532 0062 2B21     		movs	r1, #43
+ 533 0064 1E20     		movs	r0, #30
+ 534 0066 FFF7FEFF 		bl	OLED_ShowChar
+ 535 006a 0BE0     		b	.L22
+ 536              	.L21:
+  96:./Hardware/device/sd8810.c **** 	}else{
+  97:./Hardware/device/sd8810.c **** 		Temp1 = Temp1 & 0x7F;
+ 537              		.loc 1 97 9
+ 538 006c FB7B     		ldrb	r3, [r7, #15]
+ 539 006e 03F07F03 		and	r3, r3, #127
+ 540 0072 FB73     		strb	r3, [r7, #15]
+  98:./Hardware/device/sd8810.c **** 		sd8810_temp = Temp1;
+ 541              		.loc 1 98 15
+ 542 0074 064A     		ldr	r2, .L24
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 12
+
+
+ 543 0076 FB7B     		ldrb	r3, [r7, #15]
+ 544 0078 1370     		strb	r3, [r2]
+  99:./Hardware/device/sd8810.c **** 		bcd_to_dec(sd8810_temp);
+ 545              		.loc 1 99 3
+ 546 007a 054B     		ldr	r3, .L24
+ 547 007c 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 548 007e 1846     		mov	r0, r3
+ 549 0080 FFF7FEFF 		bl	bcd_to_dec
+ 550              	.L22:
+ 100:./Hardware/device/sd8810.c **** 	}
+ 101:./Hardware/device/sd8810.c **** 
+ 102:./Hardware/device/sd8810.c **** 	return sd8810_temp;
+ 551              		.loc 1 102 9
+ 552 0084 024B     		ldr	r3, .L24
+ 553 0086 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 554              	.L23:
+ 103:./Hardware/device/sd8810.c **** 
+ 104:./Hardware/device/sd8810.c **** }
+ 555              		.loc 1 104 1 discriminator 1
+ 556 0088 1846     		mov	r0, r3
+ 557 008a 1037     		adds	r7, r7, #16
+ 558              	.LCFI28:
+ 559              		.cfi_def_cfa_offset 8
+ 560 008c BD46     		mov	sp, r7
+ 561              	.LCFI29:
+ 562              		.cfi_def_cfa_register 13
+ 563              		@ sp needed
+ 564 008e 80BD     		pop	{r7, pc}
+ 565              	.L25:
+ 566              		.align	2
+ 567              	.L24:
+ 568 0090 00000000 		.word	sd8810_temp
+ 569              		.cfi_endproc
+ 570              	.LFE37:
+ 572              		.section	.rodata
+ 573              		.align	2
+ 574              	.LC0:
+ 575 0000 494400   		.ascii	"ID\000"
+ 576 0003 00       		.align	2
+ 577              	.LC1:
+ 578 0004 3A00     		.ascii	":\000"
+ 579              		.section	.text.sd8810_id_show,"ax",%progbits
+ 580              		.align	1
+ 581              		.global	sd8810_id_show
+ 582              		.syntax unified
+ 583              		.thumb
+ 584              		.thumb_func
+ 585              		.fpu softvfp
+ 587              	sd8810_id_show:
+ 588              	.LFB38:
+ 105:./Hardware/device/sd8810.c **** 
+ 106:./Hardware/device/sd8810.c **** 
+ 107:./Hardware/device/sd8810.c **** uint8_t sd8810_id_show(i2c_device_bus IIC_x)
+ 108:./Hardware/device/sd8810.c **** {
+ 589              		.loc 1 108 1
+ 590              		.cfi_startproc
+ 591              		@ args = 0, pretend = 0, frame = 24
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 13
+
+
+ 592              		@ frame_needed = 1, uses_anonymous_args = 0
+ 593 0000 80B5     		push	{r7, lr}
+ 594              	.LCFI30:
+ 595              		.cfi_def_cfa_offset 8
+ 596              		.cfi_offset 7, -8
+ 597              		.cfi_offset 14, -4
+ 598 0002 88B0     		sub	sp, sp, #32
+ 599              	.LCFI31:
+ 600              		.cfi_def_cfa_offset 40
+ 601 0004 02AF     		add	r7, sp, #8
+ 602              	.LCFI32:
+ 603              		.cfi_def_cfa 7, 32
+ 604 0006 0346     		mov	r3, r0
+ 605 0008 FB71     		strb	r3, [r7, #7]
+ 109:./Hardware/device/sd8810.c **** 		uint8_t ifbuff[8];
+ 110:./Hardware/device/sd8810.c **** 				
+ 111:./Hardware/device/sd8810.c **** 		if(sd8810_idbuff(ifbuff,IIC_x)!=TRUE)
+ 606              		.loc 1 111 6
+ 607 000a FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 608 000c 07F10803 		add	r3, r7, #8
+ 609 0010 1146     		mov	r1, r2
+ 610 0012 1846     		mov	r0, r3
+ 611 0014 FFF7FEFF 		bl	sd8810_idbuff
+ 612 0018 0346     		mov	r3, r0
+ 613              		.loc 1 111 5
+ 614 001a 012B     		cmp	r3, #1
+ 615 001c 01D0     		beq	.L27
+ 112:./Hardware/device/sd8810.c **** 			return FALSE;
+ 616              		.loc 1 112 11
+ 617 001e 0023     		movs	r3, #0
+ 618 0020 BCE0     		b	.L29
+ 619              	.L27:
+ 113:./Hardware/device/sd8810.c **** 
+ 114:./Hardware/device/sd8810.c **** 	uint8_t id0 = ((ifbuff[0] & 0xF0) >> 4) * 10 + (ifbuff[0] & 0x0F);
+ 620              		.loc 1 114 24
+ 621 0022 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 622              		.loc 1 114 36
+ 623 0024 1B09     		lsrs	r3, r3, #4
+ 624 0026 DBB2     		uxtb	r3, r3
+ 625              		.loc 1 114 47
+ 626 0028 1A46     		mov	r2, r3
+ 627 002a 9200     		lsls	r2, r2, #2
+ 628 002c 1344     		add	r3, r3, r2
+ 629 002e 5B00     		lsls	r3, r3, #1
+ 630 0030 DAB2     		uxtb	r2, r3
+ 631              		.loc 1 114 56
+ 632 0032 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 633              		.loc 1 114 60
+ 634 0034 03F00F03 		and	r3, r3, #15
+ 635 0038 DBB2     		uxtb	r3, r3
+ 636              		.loc 1 114 10
+ 637 003a 1344     		add	r3, r3, r2
+ 638 003c FB75     		strb	r3, [r7, #23]
+ 115:./Hardware/device/sd8810.c **** 	uint8_t id1 = ((ifbuff[1] & 0xF0) >> 4) * 10 + (ifbuff[1] & 0x0F);
+ 639              		.loc 1 115 24
+ 640 003e 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 641              		.loc 1 115 36
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 14
+
+
+ 642 0040 1B09     		lsrs	r3, r3, #4
+ 643 0042 DBB2     		uxtb	r3, r3
+ 644              		.loc 1 115 47
+ 645 0044 1A46     		mov	r2, r3
+ 646 0046 9200     		lsls	r2, r2, #2
+ 647 0048 1344     		add	r3, r3, r2
+ 648 004a 5B00     		lsls	r3, r3, #1
+ 649 004c DAB2     		uxtb	r2, r3
+ 650              		.loc 1 115 56
+ 651 004e 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 652              		.loc 1 115 60
+ 653 0050 03F00F03 		and	r3, r3, #15
+ 654 0054 DBB2     		uxtb	r3, r3
+ 655              		.loc 1 115 10
+ 656 0056 1344     		add	r3, r3, r2
+ 657 0058 BB75     		strb	r3, [r7, #22]
+ 116:./Hardware/device/sd8810.c **** 	uint8_t id2 = ((ifbuff[2] & 0xF0) >> 4) * 10 + (ifbuff[2] & 0x0F);
+ 658              		.loc 1 116 24
+ 659 005a BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 660              		.loc 1 116 36
+ 661 005c 1B09     		lsrs	r3, r3, #4
+ 662 005e DBB2     		uxtb	r3, r3
+ 663              		.loc 1 116 47
+ 664 0060 1A46     		mov	r2, r3
+ 665 0062 9200     		lsls	r2, r2, #2
+ 666 0064 1344     		add	r3, r3, r2
+ 667 0066 5B00     		lsls	r3, r3, #1
+ 668 0068 DAB2     		uxtb	r2, r3
+ 669              		.loc 1 116 56
+ 670 006a BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 671              		.loc 1 116 60
+ 672 006c 03F00F03 		and	r3, r3, #15
+ 673 0070 DBB2     		uxtb	r3, r3
+ 674              		.loc 1 116 10
+ 675 0072 1344     		add	r3, r3, r2
+ 676 0074 7B75     		strb	r3, [r7, #21]
+ 117:./Hardware/device/sd8810.c **** 	uint8_t id3 = ((ifbuff[3] & 0xF0) >> 4) * 10 + (ifbuff[3] & 0x0F);
+ 677              		.loc 1 117 24
+ 678 0076 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 679              		.loc 1 117 36
+ 680 0078 1B09     		lsrs	r3, r3, #4
+ 681 007a DBB2     		uxtb	r3, r3
+ 682              		.loc 1 117 47
+ 683 007c 1A46     		mov	r2, r3
+ 684 007e 9200     		lsls	r2, r2, #2
+ 685 0080 1344     		add	r3, r3, r2
+ 686 0082 5B00     		lsls	r3, r3, #1
+ 687 0084 DAB2     		uxtb	r2, r3
+ 688              		.loc 1 117 56
+ 689 0086 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 690              		.loc 1 117 60
+ 691 0088 03F00F03 		and	r3, r3, #15
+ 692 008c DBB2     		uxtb	r3, r3
+ 693              		.loc 1 117 10
+ 694 008e 1344     		add	r3, r3, r2
+ 695 0090 3B75     		strb	r3, [r7, #20]
+ 118:./Hardware/device/sd8810.c **** 	uint8_t id4 = ((ifbuff[4] & 0xF0) >> 4) * 10 + (ifbuff[4] & 0x0F);
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 15
+
+
+ 696              		.loc 1 118 24
+ 697 0092 3B7B     		ldrb	r3, [r7, #12]	@ zero_extendqisi2
+ 698              		.loc 1 118 36
+ 699 0094 1B09     		lsrs	r3, r3, #4
+ 700 0096 DBB2     		uxtb	r3, r3
+ 701              		.loc 1 118 47
+ 702 0098 1A46     		mov	r2, r3
+ 703 009a 9200     		lsls	r2, r2, #2
+ 704 009c 1344     		add	r3, r3, r2
+ 705 009e 5B00     		lsls	r3, r3, #1
+ 706 00a0 DAB2     		uxtb	r2, r3
+ 707              		.loc 1 118 56
+ 708 00a2 3B7B     		ldrb	r3, [r7, #12]	@ zero_extendqisi2
+ 709              		.loc 1 118 60
+ 710 00a4 03F00F03 		and	r3, r3, #15
+ 711 00a8 DBB2     		uxtb	r3, r3
+ 712              		.loc 1 118 10
+ 713 00aa 1344     		add	r3, r3, r2
+ 714 00ac FB74     		strb	r3, [r7, #19]
+ 119:./Hardware/device/sd8810.c **** 	uint8_t id5 = ((ifbuff[5] & 0xF0) >> 4) * 10 + (ifbuff[5] & 0x0F);
+ 715              		.loc 1 119 24
+ 716 00ae 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 717              		.loc 1 119 36
+ 718 00b0 1B09     		lsrs	r3, r3, #4
+ 719 00b2 DBB2     		uxtb	r3, r3
+ 720              		.loc 1 119 47
+ 721 00b4 1A46     		mov	r2, r3
+ 722 00b6 9200     		lsls	r2, r2, #2
+ 723 00b8 1344     		add	r3, r3, r2
+ 724 00ba 5B00     		lsls	r3, r3, #1
+ 725 00bc DAB2     		uxtb	r2, r3
+ 726              		.loc 1 119 56
+ 727 00be 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 728              		.loc 1 119 60
+ 729 00c0 03F00F03 		and	r3, r3, #15
+ 730 00c4 DBB2     		uxtb	r3, r3
+ 731              		.loc 1 119 10
+ 732 00c6 1344     		add	r3, r3, r2
+ 733 00c8 BB74     		strb	r3, [r7, #18]
+ 120:./Hardware/device/sd8810.c **** 	uint8_t id6 = ((ifbuff[6] & 0xF0) >> 4) * 10 + (ifbuff[6] & 0x0F);
+ 734              		.loc 1 120 24
+ 735 00ca BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 736              		.loc 1 120 36
+ 737 00cc 1B09     		lsrs	r3, r3, #4
+ 738 00ce DBB2     		uxtb	r3, r3
+ 739              		.loc 1 120 47
+ 740 00d0 1A46     		mov	r2, r3
+ 741 00d2 9200     		lsls	r2, r2, #2
+ 742 00d4 1344     		add	r3, r3, r2
+ 743 00d6 5B00     		lsls	r3, r3, #1
+ 744 00d8 DAB2     		uxtb	r2, r3
+ 745              		.loc 1 120 56
+ 746 00da BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 747              		.loc 1 120 60
+ 748 00dc 03F00F03 		and	r3, r3, #15
+ 749 00e0 DBB2     		uxtb	r3, r3
+ 750              		.loc 1 120 10
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 16
+
+
+ 751 00e2 1344     		add	r3, r3, r2
+ 752 00e4 7B74     		strb	r3, [r7, #17]
+ 121:./Hardware/device/sd8810.c **** 	uint8_t id7 = ((ifbuff[7] & 0xF0) >> 4) * 10 + (ifbuff[7] & 0x0F);
+ 753              		.loc 1 121 24
+ 754 00e6 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 755              		.loc 1 121 36
+ 756 00e8 1B09     		lsrs	r3, r3, #4
+ 757 00ea DBB2     		uxtb	r3, r3
+ 758              		.loc 1 121 47
+ 759 00ec 1A46     		mov	r2, r3
+ 760 00ee 9200     		lsls	r2, r2, #2
+ 761 00f0 1344     		add	r3, r3, r2
+ 762 00f2 5B00     		lsls	r3, r3, #1
+ 763 00f4 DAB2     		uxtb	r2, r3
+ 764              		.loc 1 121 56
+ 765 00f6 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 766              		.loc 1 121 60
+ 767 00f8 03F00F03 		and	r3, r3, #15
+ 768 00fc DBB2     		uxtb	r3, r3
+ 769              		.loc 1 121 10
+ 770 00fe 1344     		add	r3, r3, r2
+ 771 0100 3B74     		strb	r3, [r7, #16]
+ 122:./Hardware/device/sd8810.c **** 
+ 123:./Hardware/device/sd8810.c **** 	OLED_ShowString(0,55,"ID",6);
+ 772              		.loc 1 123 2
+ 773 0102 0623     		movs	r3, #6
+ 774 0104 274A     		ldr	r2, .L30
+ 775 0106 3721     		movs	r1, #55
+ 776 0108 0020     		movs	r0, #0
+ 777 010a FFF7FEFF 		bl	OLED_ShowString
+ 124:./Hardware/device/sd8810.c **** 	OLED_ShowString(12,55,":",6);
+ 778              		.loc 1 124 2
+ 779 010e 0623     		movs	r3, #6
+ 780 0110 254A     		ldr	r2, .L30+4
+ 781 0112 3721     		movs	r1, #55
+ 782 0114 0C20     		movs	r0, #12
+ 783 0116 FFF7FEFF 		bl	OLED_ShowString
+ 125:./Hardware/device/sd8810.c **** 	
+ 126:./Hardware/device/sd8810.c **** 	OLED_ShowNum(17,55,id0,2,6);
+ 784              		.loc 1 126 2
+ 785 011a FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 786 011c 0623     		movs	r3, #6
+ 787 011e 0093     		str	r3, [sp]
+ 788 0120 0223     		movs	r3, #2
+ 789 0122 3721     		movs	r1, #55
+ 790 0124 1120     		movs	r0, #17
+ 791 0126 FFF7FEFF 		bl	OLED_ShowNum
+ 127:./Hardware/device/sd8810.c **** 	OLED_ShowNum(31,55,id1,2,6);
+ 792              		.loc 1 127 2
+ 793 012a BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 794 012c 0623     		movs	r3, #6
+ 795 012e 0093     		str	r3, [sp]
+ 796 0130 0223     		movs	r3, #2
+ 797 0132 3721     		movs	r1, #55
+ 798 0134 1F20     		movs	r0, #31
+ 799 0136 FFF7FEFF 		bl	OLED_ShowNum
+ 128:./Hardware/device/sd8810.c **** 	OLED_ShowNum(45,55,id2,2,6);
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 17
+
+
+ 800              		.loc 1 128 2
+ 801 013a 7A7D     		ldrb	r2, [r7, #21]	@ zero_extendqisi2
+ 802 013c 0623     		movs	r3, #6
+ 803 013e 0093     		str	r3, [sp]
+ 804 0140 0223     		movs	r3, #2
+ 805 0142 3721     		movs	r1, #55
+ 806 0144 2D20     		movs	r0, #45
+ 807 0146 FFF7FEFF 		bl	OLED_ShowNum
+ 129:./Hardware/device/sd8810.c **** 	OLED_ShowNum(60,55,id3,2,6);
+ 808              		.loc 1 129 2
+ 809 014a 3A7D     		ldrb	r2, [r7, #20]	@ zero_extendqisi2
+ 810 014c 0623     		movs	r3, #6
+ 811 014e 0093     		str	r3, [sp]
+ 812 0150 0223     		movs	r3, #2
+ 813 0152 3721     		movs	r1, #55
+ 814 0154 3C20     		movs	r0, #60
+ 815 0156 FFF7FEFF 		bl	OLED_ShowNum
+ 130:./Hardware/device/sd8810.c **** 	OLED_ShowNum(74,55,id4,2,6);
+ 816              		.loc 1 130 2
+ 817 015a FA7C     		ldrb	r2, [r7, #19]	@ zero_extendqisi2
+ 818 015c 0623     		movs	r3, #6
+ 819 015e 0093     		str	r3, [sp]
+ 820 0160 0223     		movs	r3, #2
+ 821 0162 3721     		movs	r1, #55
+ 822 0164 4A20     		movs	r0, #74
+ 823 0166 FFF7FEFF 		bl	OLED_ShowNum
+ 131:./Hardware/device/sd8810.c **** 	OLED_ShowNum(88,55,id5,2,6);
+ 824              		.loc 1 131 2
+ 825 016a BA7C     		ldrb	r2, [r7, #18]	@ zero_extendqisi2
+ 826 016c 0623     		movs	r3, #6
+ 827 016e 0093     		str	r3, [sp]
+ 828 0170 0223     		movs	r3, #2
+ 829 0172 3721     		movs	r1, #55
+ 830 0174 5820     		movs	r0, #88
+ 831 0176 FFF7FEFF 		bl	OLED_ShowNum
+ 132:./Hardware/device/sd8810.c **** 	OLED_ShowNum(102,55,id6,2,6);
+ 832              		.loc 1 132 2
+ 833 017a 7A7C     		ldrb	r2, [r7, #17]	@ zero_extendqisi2
+ 834 017c 0623     		movs	r3, #6
+ 835 017e 0093     		str	r3, [sp]
+ 836 0180 0223     		movs	r3, #2
+ 837 0182 3721     		movs	r1, #55
+ 838 0184 6620     		movs	r0, #102
+ 839 0186 FFF7FEFF 		bl	OLED_ShowNum
+ 133:./Hardware/device/sd8810.c **** 	OLED_ShowNum(116,55,id7,2,6);
+ 840              		.loc 1 133 2
+ 841 018a 3A7C     		ldrb	r2, [r7, #16]	@ zero_extendqisi2
+ 842 018c 0623     		movs	r3, #6
+ 843 018e 0093     		str	r3, [sp]
+ 844 0190 0223     		movs	r3, #2
+ 845 0192 3721     		movs	r1, #55
+ 846 0194 7420     		movs	r0, #116
+ 847 0196 FFF7FEFF 		bl	OLED_ShowNum
+ 134:./Hardware/device/sd8810.c **** 
+ 135:./Hardware/device/sd8810.c **** 		return 0;
+ 848              		.loc 1 135 10
+ 849 019a 0023     		movs	r3, #0
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 18
+
+
+ 850              	.L29:
+ 136:./Hardware/device/sd8810.c **** 
+ 137:./Hardware/device/sd8810.c **** }
+ 851              		.loc 1 137 1 discriminator 1
+ 852 019c 1846     		mov	r0, r3
+ 853 019e 1837     		adds	r7, r7, #24
+ 854              	.LCFI33:
+ 855              		.cfi_def_cfa_offset 8
+ 856 01a0 BD46     		mov	sp, r7
+ 857              	.LCFI34:
+ 858              		.cfi_def_cfa_register 13
+ 859              		@ sp needed
+ 860 01a2 80BD     		pop	{r7, pc}
+ 861              	.L31:
+ 862              		.align	2
+ 863              	.L30:
+ 864 01a4 00000000 		.word	.LC0
+ 865 01a8 04000000 		.word	.LC1
+ 866              		.cfi_endproc
+ 867              	.LFE38:
+ 869              		.section	.text.sd8810_f32768,"ax",%progbits
+ 870              		.align	1
+ 871              		.global	sd8810_f32768
+ 872              		.syntax unified
+ 873              		.thumb
+ 874              		.thumb_func
+ 875              		.fpu softvfp
+ 877              	sd8810_f32768:
+ 878              	.LFB39:
+ 138:./Hardware/device/sd8810.c **** 
+ 139:./Hardware/device/sd8810.c **** rtc_exit_code sd8810_f32768(i2c_device_bus IIC_x)
+ 140:./Hardware/device/sd8810.c **** {	
+ 879              		.loc 1 140 1
+ 880              		.cfi_startproc
+ 881              		@ args = 0, pretend = 0, frame = 16
+ 882              		@ frame_needed = 1, uses_anonymous_args = 0
+ 883 0000 80B5     		push	{r7, lr}
+ 884              	.LCFI35:
+ 885              		.cfi_def_cfa_offset 8
+ 886              		.cfi_offset 7, -8
+ 887              		.cfi_offset 14, -4
+ 888 0002 84B0     		sub	sp, sp, #16
+ 889              	.LCFI36:
+ 890              		.cfi_def_cfa_offset 24
+ 891 0004 00AF     		add	r7, sp, #0
+ 892              	.LCFI37:
+ 893              		.cfi_def_cfa_register 7
+ 894 0006 0346     		mov	r3, r0
+ 895 0008 FB71     		strb	r3, [r7, #7]
+ 141:./Hardware/device/sd8810.c **** 		uint8_t buf=0xC0;
+ 896              		.loc 1 141 11
+ 897 000a C023     		movs	r3, #192
+ 898 000c FB73     		strb	r3, [r7, #15]
+ 142:./Hardware/device/sd8810.c **** 		SD8810_write_addr(0x1D,&buf,1,IIC_x);
+ 899              		.loc 1 142 3
+ 900 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 901 0010 07F10F01 		add	r1, r7, #15
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 19
+
+
+ 902 0014 0122     		movs	r2, #1
+ 903 0016 1D20     		movs	r0, #29
+ 904 0018 FFF7FEFF 		bl	SD8810_write_addr
+ 143:./Hardware/device/sd8810.c **** 	
+ 144:./Hardware/device/sd8810.c **** 		buf=0x00;
+ 905              		.loc 1 144 6
+ 906 001c 0023     		movs	r3, #0
+ 907 001e FB73     		strb	r3, [r7, #15]
+ 145:./Hardware/device/sd8810.c **** 		SD8810_write_addr(0x32,&buf,1,IIC_x);
+ 908              		.loc 1 145 3
+ 909 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 910 0022 07F10F01 		add	r1, r7, #15
+ 911 0026 0122     		movs	r2, #1
+ 912 0028 3220     		movs	r0, #50
+ 913 002a FFF7FEFF 		bl	SD8810_write_addr
+ 146:./Hardware/device/sd8810.c **** 	
+ 147:./Hardware/device/sd8810.c **** 		return RTC_OK;
+ 914              		.loc 1 147 10
+ 915 002e 0623     		movs	r3, #6
+ 148:./Hardware/device/sd8810.c **** 
+ 149:./Hardware/device/sd8810.c **** }
+ 916              		.loc 1 149 1
+ 917 0030 1846     		mov	r0, r3
+ 918 0032 1037     		adds	r7, r7, #16
+ 919              	.LCFI38:
+ 920              		.cfi_def_cfa_offset 8
+ 921 0034 BD46     		mov	sp, r7
+ 922              	.LCFI39:
+ 923              		.cfi_def_cfa_register 13
+ 924              		@ sp needed
+ 925 0036 80BD     		pop	{r7, pc}
+ 926              		.cfi_endproc
+ 927              	.LFE39:
+ 929              		.section	.text.sd8810_f32768_off,"ax",%progbits
+ 930              		.align	1
+ 931              		.global	sd8810_f32768_off
+ 932              		.syntax unified
+ 933              		.thumb
+ 934              		.thumb_func
+ 935              		.fpu softvfp
+ 937              	sd8810_f32768_off:
+ 938              	.LFB40:
+ 150:./Hardware/device/sd8810.c **** 
+ 151:./Hardware/device/sd8810.c **** rtc_exit_code sd8810_f32768_off(i2c_device_bus IIC_x)
+ 152:./Hardware/device/sd8810.c **** {
+ 939              		.loc 1 152 1
+ 940              		.cfi_startproc
+ 941              		@ args = 0, pretend = 0, frame = 16
+ 942              		@ frame_needed = 1, uses_anonymous_args = 0
+ 943 0000 80B5     		push	{r7, lr}
+ 944              	.LCFI40:
+ 945              		.cfi_def_cfa_offset 8
+ 946              		.cfi_offset 7, -8
+ 947              		.cfi_offset 14, -4
+ 948 0002 84B0     		sub	sp, sp, #16
+ 949              	.LCFI41:
+ 950              		.cfi_def_cfa_offset 24
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 20
+
+
+ 951 0004 00AF     		add	r7, sp, #0
+ 952              	.LCFI42:
+ 953              		.cfi_def_cfa_register 7
+ 954 0006 0346     		mov	r3, r0
+ 955 0008 FB71     		strb	r3, [r7, #7]
+ 153:./Hardware/device/sd8810.c **** 		uint8_t buf=0x00;
+ 956              		.loc 1 153 11
+ 957 000a 0023     		movs	r3, #0
+ 958 000c FB73     		strb	r3, [r7, #15]
+ 154:./Hardware/device/sd8810.c **** 		SD8810_write_addr(0x1D,&buf,1,IIC_x);
+ 959              		.loc 1 154 3
+ 960 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 961 0010 07F10F01 		add	r1, r7, #15
+ 962 0014 0122     		movs	r2, #1
+ 963 0016 1D20     		movs	r0, #29
+ 964 0018 FFF7FEFF 		bl	SD8810_write_addr
+ 155:./Hardware/device/sd8810.c **** 	
+ 156:./Hardware/device/sd8810.c **** 		buf=0x00;
+ 965              		.loc 1 156 6
+ 966 001c 0023     		movs	r3, #0
+ 967 001e FB73     		strb	r3, [r7, #15]
+ 157:./Hardware/device/sd8810.c **** 		SD8810_write_addr(0x32,&buf,1,IIC_x);
+ 968              		.loc 1 157 3
+ 969 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 970 0022 07F10F01 		add	r1, r7, #15
+ 971 0026 0122     		movs	r2, #1
+ 972 0028 3220     		movs	r0, #50
+ 973 002a FFF7FEFF 		bl	SD8810_write_addr
+ 158:./Hardware/device/sd8810.c **** 	
+ 159:./Hardware/device/sd8810.c **** 		return RTC_OK;
+ 974              		.loc 1 159 10
+ 975 002e 0623     		movs	r3, #6
+ 160:./Hardware/device/sd8810.c **** }
+ 976              		.loc 1 160 1
+ 977 0030 1846     		mov	r0, r3
+ 978 0032 1037     		adds	r7, r7, #16
+ 979              	.LCFI43:
+ 980              		.cfi_def_cfa_offset 8
+ 981 0034 BD46     		mov	sp, r7
+ 982              	.LCFI44:
+ 983              		.cfi_def_cfa_register 13
+ 984              		@ sp needed
+ 985 0036 80BD     		pop	{r7, pc}
+ 986              		.cfi_endproc
+ 987              	.LFE40:
+ 989              		.section	.text.sd8810_f1024,"ax",%progbits
+ 990              		.align	1
+ 991              		.global	sd8810_f1024
+ 992              		.syntax unified
+ 993              		.thumb
+ 994              		.thumb_func
+ 995              		.fpu softvfp
+ 997              	sd8810_f1024:
+ 998              	.LFB41:
+ 161:./Hardware/device/sd8810.c **** 
+ 162:./Hardware/device/sd8810.c **** rtc_exit_code sd8810_f1024(i2c_device_bus IIC_x)
+ 163:./Hardware/device/sd8810.c **** {	
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 21
+
+
+ 999              		.loc 1 163 1
+ 1000              		.cfi_startproc
+ 1001              		@ args = 0, pretend = 0, frame = 16
+ 1002              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1003 0000 80B5     		push	{r7, lr}
+ 1004              	.LCFI45:
+ 1005              		.cfi_def_cfa_offset 8
+ 1006              		.cfi_offset 7, -8
+ 1007              		.cfi_offset 14, -4
+ 1008 0002 84B0     		sub	sp, sp, #16
+ 1009              	.LCFI46:
+ 1010              		.cfi_def_cfa_offset 24
+ 1011 0004 00AF     		add	r7, sp, #0
+ 1012              	.LCFI47:
+ 1013              		.cfi_def_cfa_register 7
+ 1014 0006 0346     		mov	r3, r0
+ 1015 0008 FB71     		strb	r3, [r7, #7]
+ 164:./Hardware/device/sd8810.c **** 		uint8_t buf=0x80;
+ 1016              		.loc 1 164 11
+ 1017 000a 8023     		movs	r3, #128
+ 1018 000c FB73     		strb	r3, [r7, #15]
+ 165:./Hardware/device/sd8810.c **** 		SD8810_write_addr(0x1D,&buf,1,IIC_x);
+ 1019              		.loc 1 165 3
+ 1020 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1021 0010 07F10F01 		add	r1, r7, #15
+ 1022 0014 0122     		movs	r2, #1
+ 1023 0016 1D20     		movs	r0, #29
+ 1024 0018 FFF7FEFF 		bl	SD8810_write_addr
+ 166:./Hardware/device/sd8810.c **** 	
+ 167:./Hardware/device/sd8810.c **** 		buf=0x00;
+ 1025              		.loc 1 167 6
+ 1026 001c 0023     		movs	r3, #0
+ 1027 001e FB73     		strb	r3, [r7, #15]
+ 168:./Hardware/device/sd8810.c **** 		SD8810_write_addr(0x32,&buf,1,IIC_x);
+ 1028              		.loc 1 168 3
+ 1029 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1030 0022 07F10F01 		add	r1, r7, #15
+ 1031 0026 0122     		movs	r2, #1
+ 1032 0028 3220     		movs	r0, #50
+ 1033 002a FFF7FEFF 		bl	SD8810_write_addr
+ 169:./Hardware/device/sd8810.c **** 	
+ 170:./Hardware/device/sd8810.c **** 		return RTC_OK;
+ 1034              		.loc 1 170 10
+ 1035 002e 0623     		movs	r3, #6
+ 171:./Hardware/device/sd8810.c **** 
+ 172:./Hardware/device/sd8810.c **** }
+ 1036              		.loc 1 172 1
+ 1037 0030 1846     		mov	r0, r3
+ 1038 0032 1037     		adds	r7, r7, #16
+ 1039              	.LCFI48:
+ 1040              		.cfi_def_cfa_offset 8
+ 1041 0034 BD46     		mov	sp, r7
+ 1042              	.LCFI49:
+ 1043              		.cfi_def_cfa_register 13
+ 1044              		@ sp needed
+ 1045 0036 80BD     		pop	{r7, pc}
+ 1046              		.cfi_endproc
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 22
+
+
+ 1047              	.LFE41:
+ 1049              		.section	.text.sd8810_f1024_off,"ax",%progbits
+ 1050              		.align	1
+ 1051              		.global	sd8810_f1024_off
+ 1052              		.syntax unified
+ 1053              		.thumb
+ 1054              		.thumb_func
+ 1055              		.fpu softvfp
+ 1057              	sd8810_f1024_off:
+ 1058              	.LFB42:
+ 173:./Hardware/device/sd8810.c **** 
+ 174:./Hardware/device/sd8810.c **** rtc_exit_code sd8810_f1024_off(i2c_device_bus IIC_x)
+ 175:./Hardware/device/sd8810.c **** {
+ 1059              		.loc 1 175 1
+ 1060              		.cfi_startproc
+ 1061              		@ args = 0, pretend = 0, frame = 16
+ 1062              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1063 0000 80B5     		push	{r7, lr}
+ 1064              	.LCFI50:
+ 1065              		.cfi_def_cfa_offset 8
+ 1066              		.cfi_offset 7, -8
+ 1067              		.cfi_offset 14, -4
+ 1068 0002 84B0     		sub	sp, sp, #16
+ 1069              	.LCFI51:
+ 1070              		.cfi_def_cfa_offset 24
+ 1071 0004 00AF     		add	r7, sp, #0
+ 1072              	.LCFI52:
+ 1073              		.cfi_def_cfa_register 7
+ 1074 0006 0346     		mov	r3, r0
+ 1075 0008 FB71     		strb	r3, [r7, #7]
+ 176:./Hardware/device/sd8810.c **** 		uint8_t buf=0x00;
+ 1076              		.loc 1 176 11
+ 1077 000a 0023     		movs	r3, #0
+ 1078 000c FB73     		strb	r3, [r7, #15]
+ 177:./Hardware/device/sd8810.c **** 		SD8810_write_addr(0x1D,&buf,1,IIC_x);
+ 1079              		.loc 1 177 3
+ 1080 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1081 0010 07F10F01 		add	r1, r7, #15
+ 1082 0014 0122     		movs	r2, #1
+ 1083 0016 1D20     		movs	r0, #29
+ 1084 0018 FFF7FEFF 		bl	SD8810_write_addr
+ 178:./Hardware/device/sd8810.c **** 	
+ 179:./Hardware/device/sd8810.c **** 		buf=0x00;
+ 1085              		.loc 1 179 6
+ 1086 001c 0023     		movs	r3, #0
+ 1087 001e FB73     		strb	r3, [r7, #15]
+ 180:./Hardware/device/sd8810.c **** 		SD8810_write_addr(0x32,&buf,1,IIC_x);
+ 1088              		.loc 1 180 3
+ 1089 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1090 0022 07F10F01 		add	r1, r7, #15
+ 1091 0026 0122     		movs	r2, #1
+ 1092 0028 3220     		movs	r0, #50
+ 1093 002a FFF7FEFF 		bl	SD8810_write_addr
+ 181:./Hardware/device/sd8810.c **** 	
+ 182:./Hardware/device/sd8810.c **** 		return RTC_OK;
+ 1094              		.loc 1 182 10
+ 1095 002e 0623     		movs	r3, #6
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 23
+
+
+ 183:./Hardware/device/sd8810.c **** }
+ 1096              		.loc 1 183 1
+ 1097 0030 1846     		mov	r0, r3
+ 1098 0032 1037     		adds	r7, r7, #16
+ 1099              	.LCFI53:
+ 1100              		.cfi_def_cfa_offset 8
+ 1101 0034 BD46     		mov	sp, r7
+ 1102              	.LCFI54:
+ 1103              		.cfi_def_cfa_register 13
+ 1104              		@ sp needed
+ 1105 0036 80BD     		pop	{r7, pc}
+ 1106              		.cfi_endproc
+ 1107              	.LFE42:
+ 1109              		.section	.text.sd8810_f1,"ax",%progbits
+ 1110              		.align	1
+ 1111              		.global	sd8810_f1
+ 1112              		.syntax unified
+ 1113              		.thumb
+ 1114              		.thumb_func
+ 1115              		.fpu softvfp
+ 1117              	sd8810_f1:
+ 1118              	.LFB43:
+ 184:./Hardware/device/sd8810.c **** 
+ 185:./Hardware/device/sd8810.c **** rtc_exit_code sd8810_f1(i2c_device_bus IIC_x)
+ 186:./Hardware/device/sd8810.c **** {	
+ 1119              		.loc 1 186 1
+ 1120              		.cfi_startproc
+ 1121              		@ args = 0, pretend = 0, frame = 16
+ 1122              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1123 0000 80B5     		push	{r7, lr}
+ 1124              	.LCFI55:
+ 1125              		.cfi_def_cfa_offset 8
+ 1126              		.cfi_offset 7, -8
+ 1127              		.cfi_offset 14, -4
+ 1128 0002 84B0     		sub	sp, sp, #16
+ 1129              	.LCFI56:
+ 1130              		.cfi_def_cfa_offset 24
+ 1131 0004 00AF     		add	r7, sp, #0
+ 1132              	.LCFI57:
+ 1133              		.cfi_def_cfa_register 7
+ 1134 0006 0346     		mov	r3, r0
+ 1135 0008 FB71     		strb	r3, [r7, #7]
+ 187:./Hardware/device/sd8810.c **** 		uint8_t buf=0x40;
+ 1136              		.loc 1 187 11
+ 1137 000a 4023     		movs	r3, #64
+ 1138 000c FB73     		strb	r3, [r7, #15]
+ 188:./Hardware/device/sd8810.c **** 		SD8810_write_addr(0x1D,&buf,1,IIC_x);
+ 1139              		.loc 1 188 3
+ 1140 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1141 0010 07F10F01 		add	r1, r7, #15
+ 1142 0014 0122     		movs	r2, #1
+ 1143 0016 1D20     		movs	r0, #29
+ 1144 0018 FFF7FEFF 		bl	SD8810_write_addr
+ 189:./Hardware/device/sd8810.c **** 	
+ 190:./Hardware/device/sd8810.c **** 		buf=0x00;
+ 1145              		.loc 1 190 6
+ 1146 001c 0023     		movs	r3, #0
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 24
+
+
+ 1147 001e FB73     		strb	r3, [r7, #15]
+ 191:./Hardware/device/sd8810.c **** 		SD8810_write_addr(0x32,&buf,1,IIC_x);
+ 1148              		.loc 1 191 3
+ 1149 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1150 0022 07F10F01 		add	r1, r7, #15
+ 1151 0026 0122     		movs	r2, #1
+ 1152 0028 3220     		movs	r0, #50
+ 1153 002a FFF7FEFF 		bl	SD8810_write_addr
+ 192:./Hardware/device/sd8810.c **** 	
+ 193:./Hardware/device/sd8810.c **** 		return RTC_OK;
+ 1154              		.loc 1 193 10
+ 1155 002e 0623     		movs	r3, #6
+ 194:./Hardware/device/sd8810.c **** 
+ 195:./Hardware/device/sd8810.c **** }
+ 1156              		.loc 1 195 1
+ 1157 0030 1846     		mov	r0, r3
+ 1158 0032 1037     		adds	r7, r7, #16
+ 1159              	.LCFI58:
+ 1160              		.cfi_def_cfa_offset 8
+ 1161 0034 BD46     		mov	sp, r7
+ 1162              	.LCFI59:
+ 1163              		.cfi_def_cfa_register 13
+ 1164              		@ sp needed
+ 1165 0036 80BD     		pop	{r7, pc}
+ 1166              		.cfi_endproc
+ 1167              	.LFE43:
+ 1169              		.section	.text.sd8810_f1_off,"ax",%progbits
+ 1170              		.align	1
+ 1171              		.global	sd8810_f1_off
+ 1172              		.syntax unified
+ 1173              		.thumb
+ 1174              		.thumb_func
+ 1175              		.fpu softvfp
+ 1177              	sd8810_f1_off:
+ 1178              	.LFB44:
+ 196:./Hardware/device/sd8810.c **** 
+ 197:./Hardware/device/sd8810.c **** rtc_exit_code sd8810_f1_off(i2c_device_bus IIC_x)
+ 198:./Hardware/device/sd8810.c **** {
+ 1179              		.loc 1 198 1
+ 1180              		.cfi_startproc
+ 1181              		@ args = 0, pretend = 0, frame = 16
+ 1182              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1183 0000 80B5     		push	{r7, lr}
+ 1184              	.LCFI60:
+ 1185              		.cfi_def_cfa_offset 8
+ 1186              		.cfi_offset 7, -8
+ 1187              		.cfi_offset 14, -4
+ 1188 0002 84B0     		sub	sp, sp, #16
+ 1189              	.LCFI61:
+ 1190              		.cfi_def_cfa_offset 24
+ 1191 0004 00AF     		add	r7, sp, #0
+ 1192              	.LCFI62:
+ 1193              		.cfi_def_cfa_register 7
+ 1194 0006 0346     		mov	r3, r0
+ 1195 0008 FB71     		strb	r3, [r7, #7]
+ 199:./Hardware/device/sd8810.c **** 		uint8_t buf=0x00;
+ 1196              		.loc 1 199 11
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 25
+
+
+ 1197 000a 0023     		movs	r3, #0
+ 1198 000c FB73     		strb	r3, [r7, #15]
+ 200:./Hardware/device/sd8810.c **** 		SD8810_write_addr(0x1D,&buf,1,IIC_x);
+ 1199              		.loc 1 200 3
+ 1200 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1201 0010 07F10F01 		add	r1, r7, #15
+ 1202 0014 0122     		movs	r2, #1
+ 1203 0016 1D20     		movs	r0, #29
+ 1204 0018 FFF7FEFF 		bl	SD8810_write_addr
+ 201:./Hardware/device/sd8810.c **** 	
+ 202:./Hardware/device/sd8810.c **** 		buf=0x00;
+ 1205              		.loc 1 202 6
+ 1206 001c 0023     		movs	r3, #0
+ 1207 001e FB73     		strb	r3, [r7, #15]
+ 203:./Hardware/device/sd8810.c **** 		SD8810_write_addr(0x32,&buf,1,IIC_x);
+ 1208              		.loc 1 203 3
+ 1209 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1210 0022 07F10F01 		add	r1, r7, #15
+ 1211 0026 0122     		movs	r2, #1
+ 1212 0028 3220     		movs	r0, #50
+ 1213 002a FFF7FEFF 		bl	SD8810_write_addr
+ 204:./Hardware/device/sd8810.c **** 	
+ 205:./Hardware/device/sd8810.c **** 		return RTC_OK;
+ 1214              		.loc 1 205 10
+ 1215 002e 0623     		movs	r3, #6
+ 206:./Hardware/device/sd8810.c **** }
+ 1216              		.loc 1 206 1
+ 1217 0030 1846     		mov	r0, r3
+ 1218 0032 1037     		adds	r7, r7, #16
+ 1219              	.LCFI63:
+ 1220              		.cfi_def_cfa_offset 8
+ 1221 0034 BD46     		mov	sp, r7
+ 1222              	.LCFI64:
+ 1223              		.cfi_def_cfa_register 13
+ 1224              		@ sp needed
+ 1225 0036 80BD     		pop	{r7, pc}
+ 1226              		.cfi_endproc
+ 1227              	.LFE44:
+ 1229              		.section	.text.sd8810_and_std,"ax",%progbits
+ 1230              		.align	1
+ 1231              		.global	sd8810_and_std
+ 1232              		.syntax unified
+ 1233              		.thumb
+ 1234              		.thumb_func
+ 1235              		.fpu softvfp
+ 1237              	sd8810_and_std:
+ 1238              	.LFB45:
+ 207:./Hardware/device/sd8810.c **** 
+ 208:./Hardware/device/sd8810.c **** uint8_t sd8810_and_std(void)
+ 209:./Hardware/device/sd8810.c **** {
+ 1239              		.loc 1 209 1
+ 1240              		.cfi_startproc
+ 1241              		@ args = 0, pretend = 0, frame = 24
+ 1242              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1243 0000 80B5     		push	{r7, lr}
+ 1244              	.LCFI65:
+ 1245              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 26
+
+
+ 1246              		.cfi_offset 7, -8
+ 1247              		.cfi_offset 14, -4
+ 1248 0002 88B0     		sub	sp, sp, #32
+ 1249              	.LCFI66:
+ 1250              		.cfi_def_cfa_offset 40
+ 1251 0004 02AF     		add	r7, sp, #8
+ 1252              	.LCFI67:
+ 1253              		.cfi_def_cfa 7, 32
+ 210:./Hardware/device/sd8810.c **** 	uint8_t year_h,year_l;
+ 211:./Hardware/device/sd8810.c **** 	uint8_t month_h,month_l;
+ 212:./Hardware/device/sd8810.c **** 	uint8_t day_h,day_l;
+ 213:./Hardware/device/sd8810.c **** 	uint8_t week;
+ 214:./Hardware/device/sd8810.c **** 	uint8_t hour_h,hour_l;
+ 215:./Hardware/device/sd8810.c **** 	uint8_t minute_h,minute_l;
+ 216:./Hardware/device/sd8810.c **** 	uint8_t second_h,second_l;
+ 217:./Hardware/device/sd8810.c **** 	
+ 218:./Hardware/device/sd8810.c **** 	rtc_time time_buf;
+ 219:./Hardware/device/sd8810.c **** 	
+ 220:./Hardware/device/sd8810.c **** 	sd2405showtime();
+ 1254              		.loc 1 220 2
+ 1255 0006 FFF7FEFF 		bl	sd2405showtime
+ 221:./Hardware/device/sd8810.c **** 	Test_Line();
+ 1256              		.loc 1 221 2
+ 1257 000a FFF7FEFF 		bl	Test_Line
+ 222:./Hardware/device/sd8810.c **** 	
+ 223:./Hardware/device/sd8810.c **** 	if(SD8810_ReadTimeDate(&time_buf,IIC_TEST)!=RTC_FAIL)
+ 1258              		.loc 1 223 5
+ 1259 000e 3B1D     		adds	r3, r7, #4
+ 1260 0010 0021     		movs	r1, #0
+ 1261 0012 1846     		mov	r0, r3
+ 1262 0014 FFF7FEFF 		bl	SD8810_ReadTimeDate
+ 1263 0018 0346     		mov	r3, r0
+ 1264              		.loc 1 223 4
+ 1265 001a 082B     		cmp	r3, #8
+ 1266 001c 00F0F080 		beq	.L45
+ 224:./Hardware/device/sd8810.c **** 	{
+ 225:./Hardware/device/sd8810.c **** 		year_h = time_buf.year / 10;
+ 1267              		.loc 1 225 20
+ 1268 0020 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 1269              		.loc 1 225 10
+ 1270 0022 7B4A     		ldr	r2, .L48
+ 1271 0024 A2FB0323 		umull	r2, r3, r2, r3
+ 1272 0028 DB08     		lsrs	r3, r3, #3
+ 1273 002a FB75     		strb	r3, [r7, #23]
+ 226:./Hardware/device/sd8810.c **** 		year_l = time_buf.year % 10;  //Äê
+ 1274              		.loc 1 226 20
+ 1275 002c BA7A     		ldrb	r2, [r7, #10]	@ zero_extendqisi2
+ 1276              		.loc 1 226 10
+ 1277 002e 784B     		ldr	r3, .L48
+ 1278 0030 A3FB0213 		umull	r1, r3, r3, r2
+ 1279 0034 D908     		lsrs	r1, r3, #3
+ 1280 0036 0B46     		mov	r3, r1
+ 1281 0038 9B00     		lsls	r3, r3, #2
+ 1282 003a 0B44     		add	r3, r3, r1
+ 1283 003c 5B00     		lsls	r3, r3, #1
+ 1284 003e D31A     		subs	r3, r2, r3
+ 1285 0040 BB75     		strb	r3, [r7, #22]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 27
+
+
+ 227:./Hardware/device/sd8810.c **** 
+ 228:./Hardware/device/sd8810.c **** 		month_h = time_buf.month / 10;
+ 1286              		.loc 1 228 21
+ 1287 0042 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 1288              		.loc 1 228 11
+ 1289 0044 724A     		ldr	r2, .L48
+ 1290 0046 A2FB0323 		umull	r2, r3, r2, r3
+ 1291 004a DB08     		lsrs	r3, r3, #3
+ 1292 004c 7B75     		strb	r3, [r7, #21]
+ 229:./Hardware/device/sd8810.c **** 		month_l = time_buf.month % 10;  //ÔÂ
+ 1293              		.loc 1 229 21
+ 1294 004e 7A7A     		ldrb	r2, [r7, #9]	@ zero_extendqisi2
+ 1295              		.loc 1 229 11
+ 1296 0050 6F4B     		ldr	r3, .L48
+ 1297 0052 A3FB0213 		umull	r1, r3, r3, r2
+ 1298 0056 D908     		lsrs	r1, r3, #3
+ 1299 0058 0B46     		mov	r3, r1
+ 1300 005a 9B00     		lsls	r3, r3, #2
+ 1301 005c 0B44     		add	r3, r3, r1
+ 1302 005e 5B00     		lsls	r3, r3, #1
+ 1303 0060 D31A     		subs	r3, r2, r3
+ 1304 0062 3B75     		strb	r3, [r7, #20]
+ 230:./Hardware/device/sd8810.c **** 
+ 231:./Hardware/device/sd8810.c **** 		day_h = time_buf.day / 10;
+ 1305              		.loc 1 231 19
+ 1306 0064 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 1307              		.loc 1 231 9
+ 1308 0066 6A4A     		ldr	r2, .L48
+ 1309 0068 A2FB0323 		umull	r2, r3, r2, r3
+ 1310 006c DB08     		lsrs	r3, r3, #3
+ 1311 006e FB74     		strb	r3, [r7, #19]
+ 232:./Hardware/device/sd8810.c **** 		day_l = time_buf.day % 10;  //ÈÕ
+ 1312              		.loc 1 232 19
+ 1313 0070 3A7A     		ldrb	r2, [r7, #8]	@ zero_extendqisi2
+ 1314              		.loc 1 232 9
+ 1315 0072 674B     		ldr	r3, .L48
+ 1316 0074 A3FB0213 		umull	r1, r3, r3, r2
+ 1317 0078 D908     		lsrs	r1, r3, #3
+ 1318 007a 0B46     		mov	r3, r1
+ 1319 007c 9B00     		lsls	r3, r3, #2
+ 1320 007e 0B44     		add	r3, r3, r1
+ 1321 0080 5B00     		lsls	r3, r3, #1
+ 1322 0082 D31A     		subs	r3, r2, r3
+ 1323 0084 BB74     		strb	r3, [r7, #18]
+ 233:./Hardware/device/sd8810.c **** 
+ 234:./Hardware/device/sd8810.c **** 		week  = time_buf.week;
+ 1324              		.loc 1 234 9
+ 1325 0086 FB79     		ldrb	r3, [r7, #7]
+ 1326 0088 7B74     		strb	r3, [r7, #17]
+ 235:./Hardware/device/sd8810.c **** 
+ 236:./Hardware/device/sd8810.c **** 		hour_h = time_buf.hour / 10;
+ 1327              		.loc 1 236 20
+ 1328 008a BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1329              		.loc 1 236 10
+ 1330 008c 604A     		ldr	r2, .L48
+ 1331 008e A2FB0323 		umull	r2, r3, r2, r3
+ 1332 0092 DB08     		lsrs	r3, r3, #3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 28
+
+
+ 1333 0094 3B74     		strb	r3, [r7, #16]
+ 237:./Hardware/device/sd8810.c **** 		hour_l = time_buf.hour % 10;  //Ê±
+ 1334              		.loc 1 237 20
+ 1335 0096 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 1336              		.loc 1 237 10
+ 1337 0098 5D4B     		ldr	r3, .L48
+ 1338 009a A3FB0213 		umull	r1, r3, r3, r2
+ 1339 009e D908     		lsrs	r1, r3, #3
+ 1340 00a0 0B46     		mov	r3, r1
+ 1341 00a2 9B00     		lsls	r3, r3, #2
+ 1342 00a4 0B44     		add	r3, r3, r1
+ 1343 00a6 5B00     		lsls	r3, r3, #1
+ 1344 00a8 D31A     		subs	r3, r2, r3
+ 1345 00aa FB73     		strb	r3, [r7, #15]
+ 238:./Hardware/device/sd8810.c **** 
+ 239:./Hardware/device/sd8810.c **** 		minute_h = time_buf.minute / 10;
+ 1346              		.loc 1 239 22
+ 1347 00ac 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1348              		.loc 1 239 12
+ 1349 00ae 584A     		ldr	r2, .L48
+ 1350 00b0 A2FB0323 		umull	r2, r3, r2, r3
+ 1351 00b4 DB08     		lsrs	r3, r3, #3
+ 1352 00b6 BB73     		strb	r3, [r7, #14]
+ 240:./Hardware/device/sd8810.c **** 		minute_l = time_buf.minute % 10;  //·Ö
+ 1353              		.loc 1 240 22
+ 1354 00b8 7A79     		ldrb	r2, [r7, #5]	@ zero_extendqisi2
+ 1355              		.loc 1 240 12
+ 1356 00ba 554B     		ldr	r3, .L48
+ 1357 00bc A3FB0213 		umull	r1, r3, r3, r2
+ 1358 00c0 D908     		lsrs	r1, r3, #3
+ 1359 00c2 0B46     		mov	r3, r1
+ 1360 00c4 9B00     		lsls	r3, r3, #2
+ 1361 00c6 0B44     		add	r3, r3, r1
+ 1362 00c8 5B00     		lsls	r3, r3, #1
+ 1363 00ca D31A     		subs	r3, r2, r3
+ 1364 00cc 7B73     		strb	r3, [r7, #13]
+ 241:./Hardware/device/sd8810.c **** 
+ 242:./Hardware/device/sd8810.c **** 		second_h = time_buf.second / 10;
+ 1365              		.loc 1 242 22
+ 1366 00ce 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 1367              		.loc 1 242 12
+ 1368 00d0 4F4A     		ldr	r2, .L48
+ 1369 00d2 A2FB0323 		umull	r2, r3, r2, r3
+ 1370 00d6 DB08     		lsrs	r3, r3, #3
+ 1371 00d8 3B73     		strb	r3, [r7, #12]
+ 243:./Hardware/device/sd8810.c **** 		second_l = time_buf.second % 10; //Ãë
+ 1372              		.loc 1 243 22
+ 1373 00da 3A79     		ldrb	r2, [r7, #4]	@ zero_extendqisi2
+ 1374              		.loc 1 243 12
+ 1375 00dc 4C4B     		ldr	r3, .L48
+ 1376 00de A3FB0213 		umull	r1, r3, r3, r2
+ 1377 00e2 D908     		lsrs	r1, r3, #3
+ 1378 00e4 0B46     		mov	r3, r1
+ 1379 00e6 9B00     		lsls	r3, r3, #2
+ 1380 00e8 0B44     		add	r3, r3, r1
+ 1381 00ea 5B00     		lsls	r3, r3, #1
+ 1382 00ec D31A     		subs	r3, r2, r3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 29
+
+
+ 1383 00ee FB72     		strb	r3, [r7, #11]
+ 244:./Hardware/device/sd8810.c **** 
+ 245:./Hardware/device/sd8810.c **** 		OLED_ShowNum(30,42,year_h,1,OLED_6X8);//Ïà¸ôÏÔÊ¾µÄÊý¾ÝXÖá¼ä¸ô7¸ö×ø±ê£¬Ïà¸ôÏÔÊ¾µÄÊý¾ÝYÖá¼ä¸ô15¸ö×ø
+ 1384              		.loc 1 245 3
+ 1385 00f0 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1386 00f2 0623     		movs	r3, #6
+ 1387 00f4 0093     		str	r3, [sp]
+ 1388 00f6 0123     		movs	r3, #1
+ 1389 00f8 2A21     		movs	r1, #42
+ 1390 00fa 1E20     		movs	r0, #30
+ 1391 00fc FFF7FEFF 		bl	OLED_ShowNum
+ 246:./Hardware/device/sd8810.c **** 		OLED_ShowNum(37,42,year_l,1,OLED_6X8);
+ 1392              		.loc 1 246 3
+ 1393 0100 BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 1394 0102 0623     		movs	r3, #6
+ 1395 0104 0093     		str	r3, [sp]
+ 1396 0106 0123     		movs	r3, #1
+ 1397 0108 2A21     		movs	r1, #42
+ 1398 010a 2520     		movs	r0, #37
+ 1399 010c FFF7FEFF 		bl	OLED_ShowNum
+ 247:./Hardware/device/sd8810.c **** 		OLED_ShowChar(44,42,'-',OLED_6X8);
+ 1400              		.loc 1 247 3
+ 1401 0110 0623     		movs	r3, #6
+ 1402 0112 2D22     		movs	r2, #45
+ 1403 0114 2A21     		movs	r1, #42
+ 1404 0116 2C20     		movs	r0, #44
+ 1405 0118 FFF7FEFF 		bl	OLED_ShowChar
+ 248:./Hardware/device/sd8810.c **** 		OLED_ShowNum(51,42,month_h,1,OLED_6X8);
+ 1406              		.loc 1 248 3
+ 1407 011c 7A7D     		ldrb	r2, [r7, #21]	@ zero_extendqisi2
+ 1408 011e 0623     		movs	r3, #6
+ 1409 0120 0093     		str	r3, [sp]
+ 1410 0122 0123     		movs	r3, #1
+ 1411 0124 2A21     		movs	r1, #42
+ 1412 0126 3320     		movs	r0, #51
+ 1413 0128 FFF7FEFF 		bl	OLED_ShowNum
+ 249:./Hardware/device/sd8810.c **** 		OLED_ShowNum(58,42,month_l,1,OLED_6X8);
+ 1414              		.loc 1 249 3
+ 1415 012c 3A7D     		ldrb	r2, [r7, #20]	@ zero_extendqisi2
+ 1416 012e 0623     		movs	r3, #6
+ 1417 0130 0093     		str	r3, [sp]
+ 1418 0132 0123     		movs	r3, #1
+ 1419 0134 2A21     		movs	r1, #42
+ 1420 0136 3A20     		movs	r0, #58
+ 1421 0138 FFF7FEFF 		bl	OLED_ShowNum
+ 250:./Hardware/device/sd8810.c **** 		OLED_ShowChar(65,42,'-',OLED_6X8);
+ 1422              		.loc 1 250 3
+ 1423 013c 0623     		movs	r3, #6
+ 1424 013e 2D22     		movs	r2, #45
+ 1425 0140 2A21     		movs	r1, #42
+ 1426 0142 4120     		movs	r0, #65
+ 1427 0144 FFF7FEFF 		bl	OLED_ShowChar
+ 251:./Hardware/device/sd8810.c **** 		OLED_ShowNum(72,42,day_h,1,OLED_6X8);
+ 1428              		.loc 1 251 3
+ 1429 0148 FA7C     		ldrb	r2, [r7, #19]	@ zero_extendqisi2
+ 1430 014a 0623     		movs	r3, #6
+ 1431 014c 0093     		str	r3, [sp]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 30
+
+
+ 1432 014e 0123     		movs	r3, #1
+ 1433 0150 2A21     		movs	r1, #42
+ 1434 0152 4820     		movs	r0, #72
+ 1435 0154 FFF7FEFF 		bl	OLED_ShowNum
+ 252:./Hardware/device/sd8810.c **** 		OLED_ShowNum(79,42,day_l,1,OLED_6X8);
+ 1436              		.loc 1 252 3
+ 1437 0158 BA7C     		ldrb	r2, [r7, #18]	@ zero_extendqisi2
+ 1438 015a 0623     		movs	r3, #6
+ 1439 015c 0093     		str	r3, [sp]
+ 1440 015e 0123     		movs	r3, #1
+ 1441 0160 2A21     		movs	r1, #42
+ 1442 0162 4F20     		movs	r0, #79
+ 1443 0164 FFF7FEFF 		bl	OLED_ShowNum
+ 253:./Hardware/device/sd8810.c **** 		OLED_ShowChar(90,42,'W',OLED_6X8);
+ 1444              		.loc 1 253 3
+ 1445 0168 0623     		movs	r3, #6
+ 1446 016a 5722     		movs	r2, #87
+ 1447 016c 2A21     		movs	r1, #42
+ 1448 016e 5A20     		movs	r0, #90
+ 1449 0170 FFF7FEFF 		bl	OLED_ShowChar
+ 254:./Hardware/device/sd8810.c **** 		OLED_ShowNum(99,42,week,1,OLED_6X8);
+ 1450              		.loc 1 254 3
+ 1451 0174 7A7C     		ldrb	r2, [r7, #17]	@ zero_extendqisi2
+ 1452 0176 0623     		movs	r3, #6
+ 1453 0178 0093     		str	r3, [sp]
+ 1454 017a 0123     		movs	r3, #1
+ 1455 017c 2A21     		movs	r1, #42
+ 1456 017e 6320     		movs	r0, #99
+ 1457 0180 FFF7FEFF 		bl	OLED_ShowNum
+ 255:./Hardware/device/sd8810.c **** 
+ 256:./Hardware/device/sd8810.c **** 		OLED_ShowNum(35,53,hour_h,1,OLED_6X8);
+ 1458              		.loc 1 256 3
+ 1459 0184 3A7C     		ldrb	r2, [r7, #16]	@ zero_extendqisi2
+ 1460 0186 0623     		movs	r3, #6
+ 1461 0188 0093     		str	r3, [sp]
+ 1462 018a 0123     		movs	r3, #1
+ 1463 018c 3521     		movs	r1, #53
+ 1464 018e 2320     		movs	r0, #35
+ 1465 0190 FFF7FEFF 		bl	OLED_ShowNum
+ 257:./Hardware/device/sd8810.c **** 		OLED_ShowNum(42,53,hour_l,1,OLED_6X8);
+ 1466              		.loc 1 257 3
+ 1467 0194 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 1468 0196 0623     		movs	r3, #6
+ 1469 0198 0093     		str	r3, [sp]
+ 1470 019a 0123     		movs	r3, #1
+ 1471 019c 3521     		movs	r1, #53
+ 1472 019e 2A20     		movs	r0, #42
+ 1473 01a0 FFF7FEFF 		bl	OLED_ShowNum
+ 258:./Hardware/device/sd8810.c **** 		OLED_ShowChar(49,53,':',OLED_6X8);
+ 1474              		.loc 1 258 3
+ 1475 01a4 0623     		movs	r3, #6
+ 1476 01a6 3A22     		movs	r2, #58
+ 1477 01a8 3521     		movs	r1, #53
+ 1478 01aa 3120     		movs	r0, #49
+ 1479 01ac FFF7FEFF 		bl	OLED_ShowChar
+ 259:./Hardware/device/sd8810.c **** 		OLED_ShowNum(56,53,minute_h,1,OLED_6X8);
+ 1480              		.loc 1 259 3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 31
+
+
+ 1481 01b0 BA7B     		ldrb	r2, [r7, #14]	@ zero_extendqisi2
+ 1482 01b2 0623     		movs	r3, #6
+ 1483 01b4 0093     		str	r3, [sp]
+ 1484 01b6 0123     		movs	r3, #1
+ 1485 01b8 3521     		movs	r1, #53
+ 1486 01ba 3820     		movs	r0, #56
+ 1487 01bc FFF7FEFF 		bl	OLED_ShowNum
+ 260:./Hardware/device/sd8810.c **** 		OLED_ShowNum(63,53,minute_l,1,OLED_6X8);
+ 1488              		.loc 1 260 3
+ 1489 01c0 7A7B     		ldrb	r2, [r7, #13]	@ zero_extendqisi2
+ 1490 01c2 0623     		movs	r3, #6
+ 1491 01c4 0093     		str	r3, [sp]
+ 1492 01c6 0123     		movs	r3, #1
+ 1493 01c8 3521     		movs	r1, #53
+ 1494 01ca 3F20     		movs	r0, #63
+ 1495 01cc FFF7FEFF 		bl	OLED_ShowNum
+ 261:./Hardware/device/sd8810.c **** 		OLED_ShowChar(70,53,':',OLED_6X8);
+ 1496              		.loc 1 261 3
+ 1497 01d0 0623     		movs	r3, #6
+ 1498 01d2 3A22     		movs	r2, #58
+ 1499 01d4 3521     		movs	r1, #53
+ 1500 01d6 4620     		movs	r0, #70
+ 1501 01d8 FFF7FEFF 		bl	OLED_ShowChar
+ 262:./Hardware/device/sd8810.c **** 		OLED_ShowNum(77,53,second_h,1,OLED_6X8);
+ 1502              		.loc 1 262 3
+ 1503 01dc 3A7B     		ldrb	r2, [r7, #12]	@ zero_extendqisi2
+ 1504 01de 0623     		movs	r3, #6
+ 1505 01e0 0093     		str	r3, [sp]
+ 1506 01e2 0123     		movs	r3, #1
+ 1507 01e4 3521     		movs	r1, #53
+ 1508 01e6 4D20     		movs	r0, #77
+ 1509 01e8 FFF7FEFF 		bl	OLED_ShowNum
+ 263:./Hardware/device/sd8810.c **** 		OLED_ShowNum(84,53,second_l,1,OLED_6X8);
+ 1510              		.loc 1 263 3
+ 1511 01ec FA7A     		ldrb	r2, [r7, #11]	@ zero_extendqisi2
+ 1512 01ee 0623     		movs	r3, #6
+ 1513 01f0 0093     		str	r3, [sp]
+ 1514 01f2 0123     		movs	r3, #1
+ 1515 01f4 3521     		movs	r1, #53
+ 1516 01f6 5420     		movs	r0, #84
+ 1517 01f8 FFF7FEFF 		bl	OLED_ShowNum
+ 264:./Hardware/device/sd8810.c **** 
+ 265:./Hardware/device/sd8810.c **** 		return RTC_OK;
+ 1518              		.loc 1 265 10
+ 1519 01fc 0623     		movs	r3, #6
+ 1520 01fe 02E0     		b	.L47
+ 1521              	.L45:
+ 266:./Hardware/device/sd8810.c **** 	}else{
+ 267:./Hardware/device/sd8810.c **** 		NO_ACK_Test_Line();
+ 1522              		.loc 1 267 3
+ 1523 0200 FFF7FEFF 		bl	NO_ACK_Test_Line
+ 268:./Hardware/device/sd8810.c **** 	}
+ 269:./Hardware/device/sd8810.c **** 	
+ 270:./Hardware/device/sd8810.c **** 	return TRUE;
+ 1524              		.loc 1 270 9
+ 1525 0204 0123     		movs	r3, #1
+ 1526              	.L47:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 32
+
+
+ 271:./Hardware/device/sd8810.c **** 
+ 272:./Hardware/device/sd8810.c **** }
+ 1527              		.loc 1 272 1 discriminator 1
+ 1528 0206 1846     		mov	r0, r3
+ 1529 0208 1837     		adds	r7, r7, #24
+ 1530              	.LCFI68:
+ 1531              		.cfi_def_cfa_offset 8
+ 1532 020a BD46     		mov	sp, r7
+ 1533              	.LCFI69:
+ 1534              		.cfi_def_cfa_register 13
+ 1535              		@ sp needed
+ 1536 020c 80BD     		pop	{r7, pc}
+ 1537              	.L49:
+ 1538 020e 00BF     		.align	2
+ 1539              	.L48:
+ 1540 0210 CDCCCCCC 		.word	-858993459
+ 1541              		.cfi_endproc
+ 1542              	.LFE45:
+ 1544              		.section	.rodata
+ 1545 0006 0000     		.align	2
+ 1546              	.LC2:
+ 1547 0008 54656D70 		.ascii	"Temp:\000"
+ 1547      3A00
+ 1548 000e 0000     		.align	2
+ 1549              	.LC3:
+ 1550 0010 56626174 		.ascii	"Vbat:\000"
+ 1550      3A00
+ 1551 0016 0000     		.align	2
+ 1552              	.LC4:
+ 1553 0018 54455354 		.ascii	"TEST IC\000"
+ 1553      20494300 
+ 1554              		.section	.text.sd8810_time_show,"ax",%progbits
+ 1555              		.align	1
+ 1556              		.global	sd8810_time_show
+ 1557              		.syntax unified
+ 1558              		.thumb
+ 1559              		.thumb_func
+ 1560              		.fpu softvfp
+ 1562              	sd8810_time_show:
+ 1563              	.LFB46:
+ 273:./Hardware/device/sd8810.c **** 
+ 274:./Hardware/device/sd8810.c **** uint8_t sd8810_time_show(void)
+ 275:./Hardware/device/sd8810.c **** {
+ 1564              		.loc 1 275 1
+ 1565              		.cfi_startproc
+ 1566              		@ args = 0, pretend = 0, frame = 24
+ 1567              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1568 0000 80B5     		push	{r7, lr}
+ 1569              	.LCFI70:
+ 1570              		.cfi_def_cfa_offset 8
+ 1571              		.cfi_offset 7, -8
+ 1572              		.cfi_offset 14, -4
+ 1573 0002 88B0     		sub	sp, sp, #32
+ 1574              	.LCFI71:
+ 1575              		.cfi_def_cfa_offset 40
+ 1576 0004 02AF     		add	r7, sp, #8
+ 1577              	.LCFI72:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 33
+
+
+ 1578              		.cfi_def_cfa 7, 32
+ 276:./Hardware/device/sd8810.c **** 	uint8_t year_h,year_l;
+ 277:./Hardware/device/sd8810.c **** 	uint8_t month_h,month_l;
+ 278:./Hardware/device/sd8810.c **** 	uint8_t day_h,day_l;
+ 279:./Hardware/device/sd8810.c **** 	uint8_t week;
+ 280:./Hardware/device/sd8810.c **** 	uint8_t hour_h,hour_l;
+ 281:./Hardware/device/sd8810.c **** 	uint8_t minute_h,minute_l;
+ 282:./Hardware/device/sd8810.c **** 	uint8_t second_h,second_l;
+ 283:./Hardware/device/sd8810.c **** 	
+ 284:./Hardware/device/sd8810.c **** 	rtc_time time_bufstd;
+ 285:./Hardware/device/sd8810.c **** 	
+ 286:./Hardware/device/sd8810.c **** 	if(SD8810_ReadTimeDate(&time_bufstd,IIC_TEST)!=RTC_FAIL)
+ 1579              		.loc 1 286 5
+ 1580 0006 3B1D     		adds	r3, r7, #4
+ 1581 0008 0021     		movs	r1, #0
+ 1582 000a 1846     		mov	r0, r3
+ 1583 000c FFF7FEFF 		bl	SD8810_ReadTimeDate
+ 1584 0010 0346     		mov	r3, r0
+ 1585              		.loc 1 286 4
+ 1586 0012 082B     		cmp	r3, #8
+ 1587 0014 00F09881 		beq	.L51
+ 287:./Hardware/device/sd8810.c **** 	{
+ 288:./Hardware/device/sd8810.c **** 		year_h = time_bufstd.year / 10;
+ 1588              		.loc 1 288 23
+ 1589 0018 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 1590              		.loc 1 288 10
+ 1591 001a C64A     		ldr	r2, .L54
+ 1592 001c A2FB0323 		umull	r2, r3, r2, r3
+ 1593 0020 DB08     		lsrs	r3, r3, #3
+ 1594 0022 FB75     		strb	r3, [r7, #23]
+ 289:./Hardware/device/sd8810.c **** 		year_l = time_bufstd.year % 10;  //Äê
+ 1595              		.loc 1 289 23
+ 1596 0024 BA7A     		ldrb	r2, [r7, #10]	@ zero_extendqisi2
+ 1597              		.loc 1 289 10
+ 1598 0026 C34B     		ldr	r3, .L54
+ 1599 0028 A3FB0213 		umull	r1, r3, r3, r2
+ 1600 002c D908     		lsrs	r1, r3, #3
+ 1601 002e 0B46     		mov	r3, r1
+ 1602 0030 9B00     		lsls	r3, r3, #2
+ 1603 0032 0B44     		add	r3, r3, r1
+ 1604 0034 5B00     		lsls	r3, r3, #1
+ 1605 0036 D31A     		subs	r3, r2, r3
+ 1606 0038 BB75     		strb	r3, [r7, #22]
+ 290:./Hardware/device/sd8810.c **** 
+ 291:./Hardware/device/sd8810.c **** 		month_h = time_bufstd.month / 10;
+ 1607              		.loc 1 291 24
+ 1608 003a 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 1609              		.loc 1 291 11
+ 1610 003c BD4A     		ldr	r2, .L54
+ 1611 003e A2FB0323 		umull	r2, r3, r2, r3
+ 1612 0042 DB08     		lsrs	r3, r3, #3
+ 1613 0044 7B75     		strb	r3, [r7, #21]
+ 292:./Hardware/device/sd8810.c **** 		month_l = time_bufstd.month % 10;  //ÔÂ
+ 1614              		.loc 1 292 24
+ 1615 0046 7A7A     		ldrb	r2, [r7, #9]	@ zero_extendqisi2
+ 1616              		.loc 1 292 11
+ 1617 0048 BA4B     		ldr	r3, .L54
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 34
+
+
+ 1618 004a A3FB0213 		umull	r1, r3, r3, r2
+ 1619 004e D908     		lsrs	r1, r3, #3
+ 1620 0050 0B46     		mov	r3, r1
+ 1621 0052 9B00     		lsls	r3, r3, #2
+ 1622 0054 0B44     		add	r3, r3, r1
+ 1623 0056 5B00     		lsls	r3, r3, #1
+ 1624 0058 D31A     		subs	r3, r2, r3
+ 1625 005a 3B75     		strb	r3, [r7, #20]
+ 293:./Hardware/device/sd8810.c **** 
+ 294:./Hardware/device/sd8810.c **** 		day_h = time_bufstd.day / 10;
+ 1626              		.loc 1 294 22
+ 1627 005c 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 1628              		.loc 1 294 9
+ 1629 005e B54A     		ldr	r2, .L54
+ 1630 0060 A2FB0323 		umull	r2, r3, r2, r3
+ 1631 0064 DB08     		lsrs	r3, r3, #3
+ 1632 0066 FB74     		strb	r3, [r7, #19]
+ 295:./Hardware/device/sd8810.c **** 		day_l = time_bufstd.day % 10;  //ÈÕ
+ 1633              		.loc 1 295 22
+ 1634 0068 3A7A     		ldrb	r2, [r7, #8]	@ zero_extendqisi2
+ 1635              		.loc 1 295 9
+ 1636 006a B24B     		ldr	r3, .L54
+ 1637 006c A3FB0213 		umull	r1, r3, r3, r2
+ 1638 0070 D908     		lsrs	r1, r3, #3
+ 1639 0072 0B46     		mov	r3, r1
+ 1640 0074 9B00     		lsls	r3, r3, #2
+ 1641 0076 0B44     		add	r3, r3, r1
+ 1642 0078 5B00     		lsls	r3, r3, #1
+ 1643 007a D31A     		subs	r3, r2, r3
+ 1644 007c BB74     		strb	r3, [r7, #18]
+ 296:./Hardware/device/sd8810.c **** 
+ 297:./Hardware/device/sd8810.c **** 		week  = time_bufstd.week;
+ 1645              		.loc 1 297 9
+ 1646 007e FB79     		ldrb	r3, [r7, #7]
+ 1647 0080 7B74     		strb	r3, [r7, #17]
+ 298:./Hardware/device/sd8810.c **** 		
+ 299:./Hardware/device/sd8810.c **** 		hour_h = time_bufstd.hour / 10;
+ 1648              		.loc 1 299 23
+ 1649 0082 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1650              		.loc 1 299 10
+ 1651 0084 AB4A     		ldr	r2, .L54
+ 1652 0086 A2FB0323 		umull	r2, r3, r2, r3
+ 1653 008a DB08     		lsrs	r3, r3, #3
+ 1654 008c 3B74     		strb	r3, [r7, #16]
+ 300:./Hardware/device/sd8810.c **** 		hour_l = time_bufstd.hour % 10;  //Ê±
+ 1655              		.loc 1 300 23
+ 1656 008e BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 1657              		.loc 1 300 10
+ 1658 0090 A84B     		ldr	r3, .L54
+ 1659 0092 A3FB0213 		umull	r1, r3, r3, r2
+ 1660 0096 D908     		lsrs	r1, r3, #3
+ 1661 0098 0B46     		mov	r3, r1
+ 1662 009a 9B00     		lsls	r3, r3, #2
+ 1663 009c 0B44     		add	r3, r3, r1
+ 1664 009e 5B00     		lsls	r3, r3, #1
+ 1665 00a0 D31A     		subs	r3, r2, r3
+ 1666 00a2 FB73     		strb	r3, [r7, #15]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 35
+
+
+ 301:./Hardware/device/sd8810.c **** 
+ 302:./Hardware/device/sd8810.c **** 		minute_h = time_bufstd.minute / 10;
+ 1667              		.loc 1 302 25
+ 1668 00a4 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1669              		.loc 1 302 12
+ 1670 00a6 A34A     		ldr	r2, .L54
+ 1671 00a8 A2FB0323 		umull	r2, r3, r2, r3
+ 1672 00ac DB08     		lsrs	r3, r3, #3
+ 1673 00ae BB73     		strb	r3, [r7, #14]
+ 303:./Hardware/device/sd8810.c **** 		minute_l = time_bufstd.minute % 10;  //·Ö
+ 1674              		.loc 1 303 25
+ 1675 00b0 7A79     		ldrb	r2, [r7, #5]	@ zero_extendqisi2
+ 1676              		.loc 1 303 12
+ 1677 00b2 A04B     		ldr	r3, .L54
+ 1678 00b4 A3FB0213 		umull	r1, r3, r3, r2
+ 1679 00b8 D908     		lsrs	r1, r3, #3
+ 1680 00ba 0B46     		mov	r3, r1
+ 1681 00bc 9B00     		lsls	r3, r3, #2
+ 1682 00be 0B44     		add	r3, r3, r1
+ 1683 00c0 5B00     		lsls	r3, r3, #1
+ 1684 00c2 D31A     		subs	r3, r2, r3
+ 1685 00c4 7B73     		strb	r3, [r7, #13]
+ 304:./Hardware/device/sd8810.c **** 
+ 305:./Hardware/device/sd8810.c **** 		second_h = time_bufstd.second / 10;
+ 1686              		.loc 1 305 25
+ 1687 00c6 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 1688              		.loc 1 305 12
+ 1689 00c8 9A4A     		ldr	r2, .L54
+ 1690 00ca A2FB0323 		umull	r2, r3, r2, r3
+ 1691 00ce DB08     		lsrs	r3, r3, #3
+ 1692 00d0 3B73     		strb	r3, [r7, #12]
+ 306:./Hardware/device/sd8810.c **** 		second_l = time_bufstd.second % 10; //Ãë
+ 1693              		.loc 1 306 25
+ 1694 00d2 3A79     		ldrb	r2, [r7, #4]	@ zero_extendqisi2
+ 1695              		.loc 1 306 12
+ 1696 00d4 974B     		ldr	r3, .L54
+ 1697 00d6 A3FB0213 		umull	r1, r3, r3, r2
+ 1698 00da D908     		lsrs	r1, r3, #3
+ 1699 00dc 0B46     		mov	r3, r1
+ 1700 00de 9B00     		lsls	r3, r3, #2
+ 1701 00e0 0B44     		add	r3, r3, r1
+ 1702 00e2 5B00     		lsls	r3, r3, #1
+ 1703 00e4 D31A     		subs	r3, r2, r3
+ 1704 00e6 FB72     		strb	r3, [r7, #11]
+ 307:./Hardware/device/sd8810.c **** 		
+ 308:./Hardware/device/sd8810.c **** 		OLED_ShowNum(30,8,year_h,1,8);//Ïà¸ôÏÔÊ¾µÄÊý¾ÝXÖá¼ä¸ô7¸ö×ø±ê£¬Ïà¸ôÏÔÊ¾µÄÊý¾ÝYÖá¼ä¸ô15¸ö×ø±ê
+ 1705              		.loc 1 308 3
+ 1706 00e8 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1707 00ea 0823     		movs	r3, #8
+ 1708 00ec 0093     		str	r3, [sp]
+ 1709 00ee 0123     		movs	r3, #1
+ 1710 00f0 0821     		movs	r1, #8
+ 1711 00f2 1E20     		movs	r0, #30
+ 1712 00f4 FFF7FEFF 		bl	OLED_ShowNum
+ 309:./Hardware/device/sd8810.c **** 		OLED_ShowNum(37,8,year_l,1,8);
+ 1713              		.loc 1 309 3
+ 1714 00f8 BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 36
+
+
+ 1715 00fa 0823     		movs	r3, #8
+ 1716 00fc 0093     		str	r3, [sp]
+ 1717 00fe 0123     		movs	r3, #1
+ 1718 0100 0821     		movs	r1, #8
+ 1719 0102 2520     		movs	r0, #37
+ 1720 0104 FFF7FEFF 		bl	OLED_ShowNum
+ 310:./Hardware/device/sd8810.c **** 		OLED_ShowChar(44,8,'-',8);
+ 1721              		.loc 1 310 3
+ 1722 0108 0823     		movs	r3, #8
+ 1723 010a 2D22     		movs	r2, #45
+ 1724 010c 0821     		movs	r1, #8
+ 1725 010e 2C20     		movs	r0, #44
+ 1726 0110 FFF7FEFF 		bl	OLED_ShowChar
+ 311:./Hardware/device/sd8810.c **** 		OLED_ShowNum(51,8,month_h,1,8);
+ 1727              		.loc 1 311 3
+ 1728 0114 7A7D     		ldrb	r2, [r7, #21]	@ zero_extendqisi2
+ 1729 0116 0823     		movs	r3, #8
+ 1730 0118 0093     		str	r3, [sp]
+ 1731 011a 0123     		movs	r3, #1
+ 1732 011c 0821     		movs	r1, #8
+ 1733 011e 3320     		movs	r0, #51
+ 1734 0120 FFF7FEFF 		bl	OLED_ShowNum
+ 312:./Hardware/device/sd8810.c **** 		OLED_ShowNum(58,8,month_l,1,8);
+ 1735              		.loc 1 312 3
+ 1736 0124 3A7D     		ldrb	r2, [r7, #20]	@ zero_extendqisi2
+ 1737 0126 0823     		movs	r3, #8
+ 1738 0128 0093     		str	r3, [sp]
+ 1739 012a 0123     		movs	r3, #1
+ 1740 012c 0821     		movs	r1, #8
+ 1741 012e 3A20     		movs	r0, #58
+ 1742 0130 FFF7FEFF 		bl	OLED_ShowNum
+ 313:./Hardware/device/sd8810.c **** 		OLED_ShowChar(65,8,'-',8);
+ 1743              		.loc 1 313 3
+ 1744 0134 0823     		movs	r3, #8
+ 1745 0136 2D22     		movs	r2, #45
+ 1746 0138 0821     		movs	r1, #8
+ 1747 013a 4120     		movs	r0, #65
+ 1748 013c FFF7FEFF 		bl	OLED_ShowChar
+ 314:./Hardware/device/sd8810.c **** 		OLED_ShowNum(72,8,day_h,1,8);
+ 1749              		.loc 1 314 3
+ 1750 0140 FA7C     		ldrb	r2, [r7, #19]	@ zero_extendqisi2
+ 1751 0142 0823     		movs	r3, #8
+ 1752 0144 0093     		str	r3, [sp]
+ 1753 0146 0123     		movs	r3, #1
+ 1754 0148 0821     		movs	r1, #8
+ 1755 014a 4820     		movs	r0, #72
+ 1756 014c FFF7FEFF 		bl	OLED_ShowNum
+ 315:./Hardware/device/sd8810.c **** 		OLED_ShowNum(79,8,day_l,1,8);
+ 1757              		.loc 1 315 3
+ 1758 0150 BA7C     		ldrb	r2, [r7, #18]	@ zero_extendqisi2
+ 1759 0152 0823     		movs	r3, #8
+ 1760 0154 0093     		str	r3, [sp]
+ 1761 0156 0123     		movs	r3, #1
+ 1762 0158 0821     		movs	r1, #8
+ 1763 015a 4F20     		movs	r0, #79
+ 1764 015c FFF7FEFF 		bl	OLED_ShowNum
+ 316:./Hardware/device/sd8810.c **** 		OLED_ShowChar(90,8,'W',8);
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 37
+
+
+ 1765              		.loc 1 316 3
+ 1766 0160 0823     		movs	r3, #8
+ 1767 0162 5722     		movs	r2, #87
+ 1768 0164 0821     		movs	r1, #8
+ 1769 0166 5A20     		movs	r0, #90
+ 1770 0168 FFF7FEFF 		bl	OLED_ShowChar
+ 317:./Hardware/device/sd8810.c **** 		OLED_ShowNum(99,8,week,1,8);
+ 1771              		.loc 1 317 3
+ 1772 016c 7A7C     		ldrb	r2, [r7, #17]	@ zero_extendqisi2
+ 1773 016e 0823     		movs	r3, #8
+ 1774 0170 0093     		str	r3, [sp]
+ 1775 0172 0123     		movs	r3, #1
+ 1776 0174 0821     		movs	r1, #8
+ 1777 0176 6320     		movs	r0, #99
+ 1778 0178 FFF7FEFF 		bl	OLED_ShowNum
+ 318:./Hardware/device/sd8810.c **** 		
+ 319:./Hardware/device/sd8810.c **** 		OLED_ShowNum(35,22,hour_h,1,8);
+ 1779              		.loc 1 319 3
+ 1780 017c 3A7C     		ldrb	r2, [r7, #16]	@ zero_extendqisi2
+ 1781 017e 0823     		movs	r3, #8
+ 1782 0180 0093     		str	r3, [sp]
+ 1783 0182 0123     		movs	r3, #1
+ 1784 0184 1621     		movs	r1, #22
+ 1785 0186 2320     		movs	r0, #35
+ 1786 0188 FFF7FEFF 		bl	OLED_ShowNum
+ 320:./Hardware/device/sd8810.c **** 		OLED_ShowNum(42,22,hour_l,1,8);
+ 1787              		.loc 1 320 3
+ 1788 018c FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 1789 018e 0823     		movs	r3, #8
+ 1790 0190 0093     		str	r3, [sp]
+ 1791 0192 0123     		movs	r3, #1
+ 1792 0194 1621     		movs	r1, #22
+ 1793 0196 2A20     		movs	r0, #42
+ 1794 0198 FFF7FEFF 		bl	OLED_ShowNum
+ 321:./Hardware/device/sd8810.c **** 		OLED_ShowChar(49,22,':',8);
+ 1795              		.loc 1 321 3
+ 1796 019c 0823     		movs	r3, #8
+ 1797 019e 3A22     		movs	r2, #58
+ 1798 01a0 1621     		movs	r1, #22
+ 1799 01a2 3120     		movs	r0, #49
+ 1800 01a4 FFF7FEFF 		bl	OLED_ShowChar
+ 322:./Hardware/device/sd8810.c **** 		OLED_ShowNum(56,22,minute_h,1,8);
+ 1801              		.loc 1 322 3
+ 1802 01a8 BA7B     		ldrb	r2, [r7, #14]	@ zero_extendqisi2
+ 1803 01aa 0823     		movs	r3, #8
+ 1804 01ac 0093     		str	r3, [sp]
+ 1805 01ae 0123     		movs	r3, #1
+ 1806 01b0 1621     		movs	r1, #22
+ 1807 01b2 3820     		movs	r0, #56
+ 1808 01b4 FFF7FEFF 		bl	OLED_ShowNum
+ 323:./Hardware/device/sd8810.c **** 		OLED_ShowNum(63,22,minute_l,1,8);
+ 1809              		.loc 1 323 3
+ 1810 01b8 7A7B     		ldrb	r2, [r7, #13]	@ zero_extendqisi2
+ 1811 01ba 0823     		movs	r3, #8
+ 1812 01bc 0093     		str	r3, [sp]
+ 1813 01be 0123     		movs	r3, #1
+ 1814 01c0 1621     		movs	r1, #22
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 38
+
+
+ 1815 01c2 3F20     		movs	r0, #63
+ 1816 01c4 FFF7FEFF 		bl	OLED_ShowNum
+ 324:./Hardware/device/sd8810.c **** 		OLED_ShowChar(70,22,':',8);
+ 1817              		.loc 1 324 3
+ 1818 01c8 0823     		movs	r3, #8
+ 1819 01ca 3A22     		movs	r2, #58
+ 1820 01cc 1621     		movs	r1, #22
+ 1821 01ce 4620     		movs	r0, #70
+ 1822 01d0 FFF7FEFF 		bl	OLED_ShowChar
+ 325:./Hardware/device/sd8810.c **** 		OLED_ShowNum(77,22,second_h,1,8);
+ 1823              		.loc 1 325 3
+ 1824 01d4 3A7B     		ldrb	r2, [r7, #12]	@ zero_extendqisi2
+ 1825 01d6 0823     		movs	r3, #8
+ 1826 01d8 0093     		str	r3, [sp]
+ 1827 01da 0123     		movs	r3, #1
+ 1828 01dc 1621     		movs	r1, #22
+ 1829 01de 4D20     		movs	r0, #77
+ 1830 01e0 FFF7FEFF 		bl	OLED_ShowNum
+ 326:./Hardware/device/sd8810.c **** 		OLED_ShowNum(84,22,second_l,1,8);
+ 1831              		.loc 1 326 3
+ 1832 01e4 FA7A     		ldrb	r2, [r7, #11]	@ zero_extendqisi2
+ 1833 01e6 0823     		movs	r3, #8
+ 1834 01e8 0093     		str	r3, [sp]
+ 1835 01ea 0123     		movs	r3, #1
+ 1836 01ec 1621     		movs	r1, #22
+ 1837 01ee 5420     		movs	r0, #84
+ 1838 01f0 FFF7FEFF 		bl	OLED_ShowNum
+ 327:./Hardware/device/sd8810.c **** 			
+ 328:./Hardware/device/sd8810.c **** 		sd8810_id_show(IIC_TEST);
+ 1839              		.loc 1 328 3
+ 1840 01f4 0020     		movs	r0, #0
+ 1841 01f6 FFF7FEFF 		bl	sd8810_id_show
+ 329:./Hardware/device/sd8810.c **** 		sd8810_ReadTemp(IIC_TEST);
+ 1842              		.loc 1 329 3
+ 1843 01fa 0020     		movs	r0, #0
+ 1844 01fc FFF7FEFF 		bl	sd8810_ReadTemp
+ 330:./Hardware/device/sd8810.c **** 
+ 331:./Hardware/device/sd8810.c **** 		OLED_ShowNum(36,43,sd8810_temp,2,6);
+ 1845              		.loc 1 331 3
+ 1846 0200 4D4B     		ldr	r3, .L54+4
+ 1847 0202 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1848 0204 1A46     		mov	r2, r3
+ 1849 0206 0623     		movs	r3, #6
+ 1850 0208 0093     		str	r3, [sp]
+ 1851 020a 0223     		movs	r3, #2
+ 1852 020c 2B21     		movs	r1, #43
+ 1853 020e 2420     		movs	r0, #36
+ 1854 0210 FFF7FEFF 		bl	OLED_ShowNum
+ 332:./Hardware/device/sd8810.c **** 		OLED_ShowChar(49,43,'C',6);
+ 1855              		.loc 1 332 3
+ 1856 0214 0623     		movs	r3, #6
+ 1857 0216 4322     		movs	r2, #67
+ 1858 0218 2B21     		movs	r1, #43
+ 1859 021a 3120     		movs	r0, #49
+ 1860 021c FFF7FEFF 		bl	OLED_ShowChar
+ 333:./Hardware/device/sd8810.c **** 		OLED_DrawPoint(49,41);
+ 1861              		.loc 1 333 3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 39
+
+
+ 1862 0220 2921     		movs	r1, #41
+ 1863 0222 3120     		movs	r0, #49
+ 1864 0224 FFF7FEFF 		bl	OLED_DrawPoint
+ 334:./Hardware/device/sd8810.c **** 		
+ 335:./Hardware/device/sd8810.c **** 		OLED_ShowChar(122,43,'V',6);
+ 1865              		.loc 1 335 3
+ 1866 0228 0623     		movs	r3, #6
+ 1867 022a 5622     		movs	r2, #86
+ 1868 022c 2B21     		movs	r1, #43
+ 1869 022e 7A20     		movs	r0, #122
+ 1870 0230 FFF7FEFF 		bl	OLED_ShowChar
+ 336:./Hardware/device/sd8810.c **** 		
+ 337:./Hardware/device/sd8810.c **** 		OLED_ShowString(0,43,"Temp:",6);
+ 1871              		.loc 1 337 3
+ 1872 0234 0623     		movs	r3, #6
+ 1873 0236 414A     		ldr	r2, .L54+8
+ 1874 0238 2B21     		movs	r1, #43
+ 1875 023a 0020     		movs	r0, #0
+ 1876 023c FFF7FEFF 		bl	OLED_ShowString
+ 338:./Hardware/device/sd8810.c **** 		OLED_ShowString(68,43,"Vbat:",6);
+ 1877              		.loc 1 338 3
+ 1878 0240 0623     		movs	r3, #6
+ 1879 0242 3F4A     		ldr	r2, .L54+12
+ 1880 0244 2B21     		movs	r1, #43
+ 1881 0246 4420     		movs	r0, #68
+ 1882 0248 FFF7FEFF 		bl	OLED_ShowString
+ 339:./Hardware/device/sd8810.c **** 			
+ 340:./Hardware/device/sd8810.c **** 		OLED_ShowChar(0,0,'-',OLED_6X8);
+ 1883              		.loc 1 340 3
+ 1884 024c 0623     		movs	r3, #6
+ 1885 024e 2D22     		movs	r2, #45
+ 1886 0250 0021     		movs	r1, #0
+ 1887 0252 0020     		movs	r0, #0
+ 1888 0254 FFF7FEFF 		bl	OLED_ShowChar
+ 341:./Hardware/device/sd8810.c **** 		OLED_ShowChar(5,0,'-',OLED_6X8);
+ 1889              		.loc 1 341 3
+ 1890 0258 0623     		movs	r3, #6
+ 1891 025a 2D22     		movs	r2, #45
+ 1892 025c 0021     		movs	r1, #0
+ 1893 025e 0520     		movs	r0, #5
+ 1894 0260 FFF7FEFF 		bl	OLED_ShowChar
+ 342:./Hardware/device/sd8810.c **** 		OLED_ShowChar(10,0,'-',OLED_6X8);
+ 1895              		.loc 1 342 3
+ 1896 0264 0623     		movs	r3, #6
+ 1897 0266 2D22     		movs	r2, #45
+ 1898 0268 0021     		movs	r1, #0
+ 1899 026a 0A20     		movs	r0, #10
+ 1900 026c FFF7FEFF 		bl	OLED_ShowChar
+ 343:./Hardware/device/sd8810.c **** 		OLED_ShowChar(15,0,'-',OLED_6X8);
+ 1901              		.loc 1 343 3
+ 1902 0270 0623     		movs	r3, #6
+ 1903 0272 2D22     		movs	r2, #45
+ 1904 0274 0021     		movs	r1, #0
+ 1905 0276 0F20     		movs	r0, #15
+ 1906 0278 FFF7FEFF 		bl	OLED_ShowChar
+ 344:./Hardware/device/sd8810.c **** 		OLED_ShowChar(20,0,'-',OLED_6X8);
+ 1907              		.loc 1 344 3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 40
+
+
+ 1908 027c 0623     		movs	r3, #6
+ 1909 027e 2D22     		movs	r2, #45
+ 1910 0280 0021     		movs	r1, #0
+ 1911 0282 1420     		movs	r0, #20
+ 1912 0284 FFF7FEFF 		bl	OLED_ShowChar
+ 345:./Hardware/device/sd8810.c **** 		OLED_ShowChar(25,0,'-',OLED_6X8);
+ 1913              		.loc 1 345 3
+ 1914 0288 0623     		movs	r3, #6
+ 1915 028a 2D22     		movs	r2, #45
+ 1916 028c 0021     		movs	r1, #0
+ 1917 028e 1920     		movs	r0, #25
+ 1918 0290 FFF7FEFF 		bl	OLED_ShowChar
+ 346:./Hardware/device/sd8810.c **** 		OLED_ShowChar(30,0,'-',OLED_6X8);
+ 1919              		.loc 1 346 3
+ 1920 0294 0623     		movs	r3, #6
+ 1921 0296 2D22     		movs	r2, #45
+ 1922 0298 0021     		movs	r1, #0
+ 1923 029a 1E20     		movs	r0, #30
+ 1924 029c FFF7FEFF 		bl	OLED_ShowChar
+ 347:./Hardware/device/sd8810.c **** 		OLED_ShowChar(35,0,'-',OLED_6X8);
+ 1925              		.loc 1 347 3
+ 1926 02a0 0623     		movs	r3, #6
+ 1927 02a2 2D22     		movs	r2, #45
+ 1928 02a4 0021     		movs	r1, #0
+ 1929 02a6 2320     		movs	r0, #35
+ 1930 02a8 FFF7FEFF 		bl	OLED_ShowChar
+ 348:./Hardware/device/sd8810.c **** 
+ 349:./Hardware/device/sd8810.c **** 		OLED_ShowString(40,0,"TEST IC",OLED_6X8);
+ 1931              		.loc 1 349 3
+ 1932 02ac 0623     		movs	r3, #6
+ 1933 02ae 254A     		ldr	r2, .L54+16
+ 1934 02b0 0021     		movs	r1, #0
+ 1935 02b2 2820     		movs	r0, #40
+ 1936 02b4 FFF7FEFF 		bl	OLED_ShowString
+ 350:./Hardware/device/sd8810.c **** 		
+ 351:./Hardware/device/sd8810.c **** 		OLED_ShowChar(83,0,'-',OLED_6X8);
+ 1937              		.loc 1 351 3
+ 1938 02b8 0623     		movs	r3, #6
+ 1939 02ba 2D22     		movs	r2, #45
+ 1940 02bc 0021     		movs	r1, #0
+ 1941 02be 5320     		movs	r0, #83
+ 1942 02c0 FFF7FEFF 		bl	OLED_ShowChar
+ 352:./Hardware/device/sd8810.c **** 		OLED_ShowChar(88,0,'-',OLED_6X8);
+ 1943              		.loc 1 352 3
+ 1944 02c4 0623     		movs	r3, #6
+ 1945 02c6 2D22     		movs	r2, #45
+ 1946 02c8 0021     		movs	r1, #0
+ 1947 02ca 5820     		movs	r0, #88
+ 1948 02cc FFF7FEFF 		bl	OLED_ShowChar
+ 353:./Hardware/device/sd8810.c **** 		OLED_ShowChar(90,0,'-',OLED_6X8);
+ 1949              		.loc 1 353 3
+ 1950 02d0 0623     		movs	r3, #6
+ 1951 02d2 2D22     		movs	r2, #45
+ 1952 02d4 0021     		movs	r1, #0
+ 1953 02d6 5A20     		movs	r0, #90
+ 1954 02d8 FFF7FEFF 		bl	OLED_ShowChar
+ 354:./Hardware/device/sd8810.c **** 		OLED_ShowChar(95,0,'-',OLED_6X8);
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 41
+
+
+ 1955              		.loc 1 354 3
+ 1956 02dc 0623     		movs	r3, #6
+ 1957 02de 2D22     		movs	r2, #45
+ 1958 02e0 0021     		movs	r1, #0
+ 1959 02e2 5F20     		movs	r0, #95
+ 1960 02e4 FFF7FEFF 		bl	OLED_ShowChar
+ 355:./Hardware/device/sd8810.c **** 		OLED_ShowChar(100,0,'-',OLED_6X8);
+ 1961              		.loc 1 355 3
+ 1962 02e8 0623     		movs	r3, #6
+ 1963 02ea 2D22     		movs	r2, #45
+ 1964 02ec 0021     		movs	r1, #0
+ 1965 02ee 6420     		movs	r0, #100
+ 1966 02f0 FFF7FEFF 		bl	OLED_ShowChar
+ 356:./Hardware/device/sd8810.c **** 		OLED_ShowChar(105,0,'-',OLED_6X8);
+ 1967              		.loc 1 356 3
+ 1968 02f4 0623     		movs	r3, #6
+ 1969 02f6 2D22     		movs	r2, #45
+ 1970 02f8 0021     		movs	r1, #0
+ 1971 02fa 6920     		movs	r0, #105
+ 1972 02fc FFF7FEFF 		bl	OLED_ShowChar
+ 357:./Hardware/device/sd8810.c **** 		OLED_ShowChar(110,0,'-',OLED_6X8);
+ 1973              		.loc 1 357 3
+ 1974 0300 0623     		movs	r3, #6
+ 1975 0302 2D22     		movs	r2, #45
+ 1976 0304 0021     		movs	r1, #0
+ 1977 0306 6E20     		movs	r0, #110
+ 1978 0308 FFF7FEFF 		bl	OLED_ShowChar
+ 358:./Hardware/device/sd8810.c **** 		OLED_ShowChar(115,0,'-',OLED_6X8);
+ 1979              		.loc 1 358 3
+ 1980 030c 0623     		movs	r3, #6
+ 1981 030e 2D22     		movs	r2, #45
+ 1982 0310 0021     		movs	r1, #0
+ 1983 0312 7320     		movs	r0, #115
+ 1984 0314 FFF7FEFF 		bl	OLED_ShowChar
+ 359:./Hardware/device/sd8810.c **** 		OLED_ShowChar(120,0,'-',OLED_6X8);
+ 1985              		.loc 1 359 3
+ 1986 0318 0623     		movs	r3, #6
+ 1987 031a 2D22     		movs	r2, #45
+ 1988 031c 0021     		movs	r1, #0
+ 1989 031e 7820     		movs	r0, #120
+ 1990 0320 FFF7FEFF 		bl	OLED_ShowChar
+ 360:./Hardware/device/sd8810.c **** 		OLED_ShowChar(125,0,'-',OLED_6X8);
+ 1991              		.loc 1 360 3
+ 1992 0324 0623     		movs	r3, #6
+ 1993 0326 2D22     		movs	r2, #45
+ 1994 0328 0021     		movs	r1, #0
+ 1995 032a 7D20     		movs	r0, #125
+ 1996 032c FFF7FEFF 		bl	OLED_ShowChar
+ 1997 0330 78E0     		b	.L52
+ 1998              	.L55:
+ 1999 0332 00BF     		.align	2
+ 2000              	.L54:
+ 2001 0334 CDCCCCCC 		.word	-858993459
+ 2002 0338 00000000 		.word	sd8810_temp
+ 2003 033c 08000000 		.word	.LC2
+ 2004 0340 10000000 		.word	.LC3
+ 2005 0344 18000000 		.word	.LC4
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 42
+
+
+ 2006              	.L51:
+ 361:./Hardware/device/sd8810.c **** 		
+ 362:./Hardware/device/sd8810.c **** 	}else{
+ 363:./Hardware/device/sd8810.c **** 		
+ 364:./Hardware/device/sd8810.c **** 		OLED_ShowChar(30,8,'-',8);
+ 2007              		.loc 1 364 3
+ 2008 0348 0823     		movs	r3, #8
+ 2009 034a 2D22     		movs	r2, #45
+ 2010 034c 0821     		movs	r1, #8
+ 2011 034e 1E20     		movs	r0, #30
+ 2012 0350 FFF7FEFF 		bl	OLED_ShowChar
+ 365:./Hardware/device/sd8810.c **** 		OLED_ShowChar(37,8,'-',8);
+ 2013              		.loc 1 365 3
+ 2014 0354 0823     		movs	r3, #8
+ 2015 0356 2D22     		movs	r2, #45
+ 2016 0358 0821     		movs	r1, #8
+ 2017 035a 2520     		movs	r0, #37
+ 2018 035c FFF7FEFF 		bl	OLED_ShowChar
+ 366:./Hardware/device/sd8810.c **** 		OLED_ShowChar(44,8,'-',8);
+ 2019              		.loc 1 366 3
+ 2020 0360 0823     		movs	r3, #8
+ 2021 0362 2D22     		movs	r2, #45
+ 2022 0364 0821     		movs	r1, #8
+ 2023 0366 2C20     		movs	r0, #44
+ 2024 0368 FFF7FEFF 		bl	OLED_ShowChar
+ 367:./Hardware/device/sd8810.c **** 		OLED_ShowChar(51,8,'-',8);
+ 2025              		.loc 1 367 3
+ 2026 036c 0823     		movs	r3, #8
+ 2027 036e 2D22     		movs	r2, #45
+ 2028 0370 0821     		movs	r1, #8
+ 2029 0372 3320     		movs	r0, #51
+ 2030 0374 FFF7FEFF 		bl	OLED_ShowChar
+ 368:./Hardware/device/sd8810.c **** 		OLED_ShowChar(58,8,'-',8);
+ 2031              		.loc 1 368 3
+ 2032 0378 0823     		movs	r3, #8
+ 2033 037a 2D22     		movs	r2, #45
+ 2034 037c 0821     		movs	r1, #8
+ 2035 037e 3A20     		movs	r0, #58
+ 2036 0380 FFF7FEFF 		bl	OLED_ShowChar
+ 369:./Hardware/device/sd8810.c **** 		OLED_ShowChar(65,8,'-',8);
+ 2037              		.loc 1 369 3
+ 2038 0384 0823     		movs	r3, #8
+ 2039 0386 2D22     		movs	r2, #45
+ 2040 0388 0821     		movs	r1, #8
+ 2041 038a 4120     		movs	r0, #65
+ 2042 038c FFF7FEFF 		bl	OLED_ShowChar
+ 370:./Hardware/device/sd8810.c **** 		OLED_ShowChar(72,8,'-',8);
+ 2043              		.loc 1 370 3
+ 2044 0390 0823     		movs	r3, #8
+ 2045 0392 2D22     		movs	r2, #45
+ 2046 0394 0821     		movs	r1, #8
+ 2047 0396 4820     		movs	r0, #72
+ 2048 0398 FFF7FEFF 		bl	OLED_ShowChar
+ 371:./Hardware/device/sd8810.c **** 		OLED_ShowChar(79,8,'-',8);
+ 2049              		.loc 1 371 3
+ 2050 039c 0823     		movs	r3, #8
+ 2051 039e 2D22     		movs	r2, #45
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 43
+
+
+ 2052 03a0 0821     		movs	r1, #8
+ 2053 03a2 4F20     		movs	r0, #79
+ 2054 03a4 FFF7FEFF 		bl	OLED_ShowChar
+ 372:./Hardware/device/sd8810.c **** 		OLED_ShowChar(90,8,'W',8);
+ 2055              		.loc 1 372 3
+ 2056 03a8 0823     		movs	r3, #8
+ 2057 03aa 5722     		movs	r2, #87
+ 2058 03ac 0821     		movs	r1, #8
+ 2059 03ae 5A20     		movs	r0, #90
+ 2060 03b0 FFF7FEFF 		bl	OLED_ShowChar
+ 373:./Hardware/device/sd8810.c **** 		OLED_ShowChar(99,8,'-',8);
+ 2061              		.loc 1 373 3
+ 2062 03b4 0823     		movs	r3, #8
+ 2063 03b6 2D22     		movs	r2, #45
+ 2064 03b8 0821     		movs	r1, #8
+ 2065 03ba 6320     		movs	r0, #99
+ 2066 03bc FFF7FEFF 		bl	OLED_ShowChar
+ 374:./Hardware/device/sd8810.c **** 		
+ 375:./Hardware/device/sd8810.c **** 		OLED_ShowChar(35,22,'-',8);
+ 2067              		.loc 1 375 3
+ 2068 03c0 0823     		movs	r3, #8
+ 2069 03c2 2D22     		movs	r2, #45
+ 2070 03c4 1621     		movs	r1, #22
+ 2071 03c6 2320     		movs	r0, #35
+ 2072 03c8 FFF7FEFF 		bl	OLED_ShowChar
+ 376:./Hardware/device/sd8810.c **** 		OLED_ShowChar(42,22,'-',8);
+ 2073              		.loc 1 376 3
+ 2074 03cc 0823     		movs	r3, #8
+ 2075 03ce 2D22     		movs	r2, #45
+ 2076 03d0 1621     		movs	r1, #22
+ 2077 03d2 2A20     		movs	r0, #42
+ 2078 03d4 FFF7FEFF 		bl	OLED_ShowChar
+ 377:./Hardware/device/sd8810.c **** 		OLED_ShowChar(49,22,':',8);
+ 2079              		.loc 1 377 3
+ 2080 03d8 0823     		movs	r3, #8
+ 2081 03da 3A22     		movs	r2, #58
+ 2082 03dc 1621     		movs	r1, #22
+ 2083 03de 3120     		movs	r0, #49
+ 2084 03e0 FFF7FEFF 		bl	OLED_ShowChar
+ 378:./Hardware/device/sd8810.c **** 		OLED_ShowChar(56,22,'-',8);
+ 2085              		.loc 1 378 3
+ 2086 03e4 0823     		movs	r3, #8
+ 2087 03e6 2D22     		movs	r2, #45
+ 2088 03e8 1621     		movs	r1, #22
+ 2089 03ea 3820     		movs	r0, #56
+ 2090 03ec FFF7FEFF 		bl	OLED_ShowChar
+ 379:./Hardware/device/sd8810.c **** 		OLED_ShowChar(63,22,'-',8);
+ 2091              		.loc 1 379 3
+ 2092 03f0 0823     		movs	r3, #8
+ 2093 03f2 2D22     		movs	r2, #45
+ 2094 03f4 1621     		movs	r1, #22
+ 2095 03f6 3F20     		movs	r0, #63
+ 2096 03f8 FFF7FEFF 		bl	OLED_ShowChar
+ 380:./Hardware/device/sd8810.c **** 		OLED_ShowChar(70,22,':',8);
+ 2097              		.loc 1 380 3
+ 2098 03fc 0823     		movs	r3, #8
+ 2099 03fe 3A22     		movs	r2, #58
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 44
+
+
+ 2100 0400 1621     		movs	r1, #22
+ 2101 0402 4620     		movs	r0, #70
+ 2102 0404 FFF7FEFF 		bl	OLED_ShowChar
+ 381:./Hardware/device/sd8810.c **** 		OLED_ShowChar(77,22,'-',8);
+ 2103              		.loc 1 381 3
+ 2104 0408 0823     		movs	r3, #8
+ 2105 040a 2D22     		movs	r2, #45
+ 2106 040c 1621     		movs	r1, #22
+ 2107 040e 4D20     		movs	r0, #77
+ 2108 0410 FFF7FEFF 		bl	OLED_ShowChar
+ 382:./Hardware/device/sd8810.c **** 		OLED_ShowChar(84,22,'-',8);
+ 2109              		.loc 1 382 3
+ 2110 0414 0823     		movs	r3, #8
+ 2111 0416 2D22     		movs	r2, #45
+ 2112 0418 1621     		movs	r1, #22
+ 2113 041a 5420     		movs	r0, #84
+ 2114 041c FFF7FEFF 		bl	OLED_ShowChar
+ 383:./Hardware/device/sd8810.c **** 
+ 384:./Hardware/device/sd8810.c **** 	  NO_ACK_sd3xxx_messgae_line();
+ 2115              		.loc 1 384 4
+ 2116 0420 FFF7FEFF 		bl	NO_ACK_sd3xxx_messgae_line
+ 2117              	.L52:
+ 385:./Hardware/device/sd8810.c **** 	}
+ 386:./Hardware/device/sd8810.c **** 	return TRUE;
+ 2118              		.loc 1 386 9
+ 2119 0424 0123     		movs	r3, #1
+ 387:./Hardware/device/sd8810.c **** }
+ 2120              		.loc 1 387 1
+ 2121 0426 1846     		mov	r0, r3
+ 2122 0428 1837     		adds	r7, r7, #24
+ 2123              	.LCFI73:
+ 2124              		.cfi_def_cfa_offset 8
+ 2125 042a BD46     		mov	sp, r7
+ 2126              	.LCFI74:
+ 2127              		.cfi_def_cfa_register 13
+ 2128              		@ sp needed
+ 2129 042c 80BD     		pop	{r7, pc}
+ 2130              		.cfi_endproc
+ 2131              	.LFE46:
+ 2133 042e 00BF     		.section	.rodata
+ 2134              		.align	2
+ 2135              	.LC5:
+ 2136 0020 74696D65 		.ascii	"time is error\000"
+ 2136      20697320 
+ 2136      6572726F 
+ 2136      7200
+ 2137              		.section	.text.sd8810_time_copy,"ax",%progbits
+ 2138              		.align	1
+ 2139              		.global	sd8810_time_copy
+ 2140              		.syntax unified
+ 2141              		.thumb
+ 2142              		.thumb_func
+ 2143              		.fpu softvfp
+ 2145              	sd8810_time_copy:
+ 2146              	.LFB47:
+ 388:./Hardware/device/sd8810.c **** 
+ 389:./Hardware/device/sd8810.c **** uint8_t sd8810_time_copy(void)
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 45
+
+
+ 390:./Hardware/device/sd8810.c **** {
+ 2147              		.loc 1 390 1
+ 2148              		.cfi_startproc
+ 2149              		@ args = 0, pretend = 0, frame = 24
+ 2150              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2151 0000 80B5     		push	{r7, lr}
+ 2152              	.LCFI75:
+ 2153              		.cfi_def_cfa_offset 8
+ 2154              		.cfi_offset 7, -8
+ 2155              		.cfi_offset 14, -4
+ 2156 0002 88B0     		sub	sp, sp, #32
+ 2157              	.LCFI76:
+ 2158              		.cfi_def_cfa_offset 40
+ 2159 0004 02AF     		add	r7, sp, #8
+ 2160              	.LCFI77:
+ 2161              		.cfi_def_cfa 7, 32
+ 391:./Hardware/device/sd8810.c **** 	uint8_t year_h,year_l;
+ 392:./Hardware/device/sd8810.c **** 	uint8_t month_h,month_l;
+ 393:./Hardware/device/sd8810.c **** 	uint8_t day_h,day_l;
+ 394:./Hardware/device/sd8810.c **** 	uint8_t week;
+ 395:./Hardware/device/sd8810.c **** 	uint8_t hour_h,hour_l;
+ 396:./Hardware/device/sd8810.c **** 	uint8_t minute_h,minute_l;
+ 397:./Hardware/device/sd8810.c **** 	uint8_t second_h,second_l;
+ 398:./Hardware/device/sd8810.c **** 	
+ 399:./Hardware/device/sd8810.c **** 	rtc_time copy_buf;
+ 400:./Hardware/device/sd8810.c **** 	
+ 401:./Hardware/device/sd8810.c **** 	if(RTC_ReadTimeDate(&copy_buf,IIC_STD)!=RTC_OK)
+ 2162              		.loc 1 401 5
+ 2163 0006 3B1D     		adds	r3, r7, #4
+ 2164 0008 0121     		movs	r1, #1
+ 2165 000a 1846     		mov	r0, r3
+ 2166 000c FFF7FEFF 		bl	RTC_ReadTimeDate
+ 2167 0010 0346     		mov	r3, r0
+ 2168              		.loc 1 401 4
+ 2169 0012 062B     		cmp	r3, #6
+ 2170 0014 04D0     		beq	.L57
+ 402:./Hardware/device/sd8810.c **** 	{
+ 403:./Hardware/device/sd8810.c **** 		Usart_Printf("time is error");
+ 2171              		.loc 1 403 3
+ 2172 0016 8048     		ldr	r0, .L61
+ 2173 0018 FFF7FEFF 		bl	Usart_Printf
+ 404:./Hardware/device/sd8810.c **** 		return FALSE;
+ 2174              		.loc 1 404 10
+ 2175 001c 0023     		movs	r3, #0
+ 2176 001e F7E0     		b	.L60
+ 2177              	.L57:
+ 405:./Hardware/device/sd8810.c **** 		
+ 406:./Hardware/device/sd8810.c **** 	}
+ 407:./Hardware/device/sd8810.c **** 	
+ 408:./Hardware/device/sd8810.c **** 	if(SD8810_WriteTimeDate(&copy_buf,IIC_TEST)!=RTC_FAIL)
+ 2178              		.loc 1 408 5
+ 2179 0020 3B1D     		adds	r3, r7, #4
+ 2180 0022 0021     		movs	r1, #0
+ 2181 0024 1846     		mov	r0, r3
+ 2182 0026 FFF7FEFF 		bl	SD8810_WriteTimeDate
+ 2183 002a 0346     		mov	r3, r0
+ 2184              		.loc 1 408 4
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 46
+
+
+ 2185 002c 082B     		cmp	r3, #8
+ 2186 002e 00F0EE80 		beq	.L59
+ 409:./Hardware/device/sd8810.c **** 	{
+ 410:./Hardware/device/sd8810.c **** 	year_h = copy_buf.year / 10;
+ 2187              		.loc 1 410 19
+ 2188 0032 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 2189              		.loc 1 410 9
+ 2190 0034 794A     		ldr	r2, .L61+4
+ 2191 0036 A2FB0323 		umull	r2, r3, r2, r3
+ 2192 003a DB08     		lsrs	r3, r3, #3
+ 2193 003c FB75     		strb	r3, [r7, #23]
+ 411:./Hardware/device/sd8810.c **** 	year_l = copy_buf.year % 10;  //Äê
+ 2194              		.loc 1 411 19
+ 2195 003e BA7A     		ldrb	r2, [r7, #10]	@ zero_extendqisi2
+ 2196              		.loc 1 411 9
+ 2197 0040 764B     		ldr	r3, .L61+4
+ 2198 0042 A3FB0213 		umull	r1, r3, r3, r2
+ 2199 0046 D908     		lsrs	r1, r3, #3
+ 2200 0048 0B46     		mov	r3, r1
+ 2201 004a 9B00     		lsls	r3, r3, #2
+ 2202 004c 0B44     		add	r3, r3, r1
+ 2203 004e 5B00     		lsls	r3, r3, #1
+ 2204 0050 D31A     		subs	r3, r2, r3
+ 2205 0052 BB75     		strb	r3, [r7, #22]
+ 412:./Hardware/device/sd8810.c **** 
+ 413:./Hardware/device/sd8810.c **** 	month_h = copy_buf.month / 10;
+ 2206              		.loc 1 413 20
+ 2207 0054 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 2208              		.loc 1 413 10
+ 2209 0056 714A     		ldr	r2, .L61+4
+ 2210 0058 A2FB0323 		umull	r2, r3, r2, r3
+ 2211 005c DB08     		lsrs	r3, r3, #3
+ 2212 005e 7B75     		strb	r3, [r7, #21]
+ 414:./Hardware/device/sd8810.c **** 	month_l = copy_buf.month % 10;  //ÔÂ
+ 2213              		.loc 1 414 20
+ 2214 0060 7A7A     		ldrb	r2, [r7, #9]	@ zero_extendqisi2
+ 2215              		.loc 1 414 10
+ 2216 0062 6E4B     		ldr	r3, .L61+4
+ 2217 0064 A3FB0213 		umull	r1, r3, r3, r2
+ 2218 0068 D908     		lsrs	r1, r3, #3
+ 2219 006a 0B46     		mov	r3, r1
+ 2220 006c 9B00     		lsls	r3, r3, #2
+ 2221 006e 0B44     		add	r3, r3, r1
+ 2222 0070 5B00     		lsls	r3, r3, #1
+ 2223 0072 D31A     		subs	r3, r2, r3
+ 2224 0074 3B75     		strb	r3, [r7, #20]
+ 415:./Hardware/device/sd8810.c **** 
+ 416:./Hardware/device/sd8810.c **** 	day_h = copy_buf.day / 10;
+ 2225              		.loc 1 416 18
+ 2226 0076 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 2227              		.loc 1 416 8
+ 2228 0078 684A     		ldr	r2, .L61+4
+ 2229 007a A2FB0323 		umull	r2, r3, r2, r3
+ 2230 007e DB08     		lsrs	r3, r3, #3
+ 2231 0080 FB74     		strb	r3, [r7, #19]
+ 417:./Hardware/device/sd8810.c **** 	day_l = copy_buf.day % 10;  //ÈÕ
+ 2232              		.loc 1 417 18
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 47
+
+
+ 2233 0082 3A7A     		ldrb	r2, [r7, #8]	@ zero_extendqisi2
+ 2234              		.loc 1 417 8
+ 2235 0084 654B     		ldr	r3, .L61+4
+ 2236 0086 A3FB0213 		umull	r1, r3, r3, r2
+ 2237 008a D908     		lsrs	r1, r3, #3
+ 2238 008c 0B46     		mov	r3, r1
+ 2239 008e 9B00     		lsls	r3, r3, #2
+ 2240 0090 0B44     		add	r3, r3, r1
+ 2241 0092 5B00     		lsls	r3, r3, #1
+ 2242 0094 D31A     		subs	r3, r2, r3
+ 2243 0096 BB74     		strb	r3, [r7, #18]
+ 418:./Hardware/device/sd8810.c **** 
+ 419:./Hardware/device/sd8810.c **** 	week  = copy_buf.week;
+ 2244              		.loc 1 419 8
+ 2245 0098 FB79     		ldrb	r3, [r7, #7]
+ 2246 009a 7B74     		strb	r3, [r7, #17]
+ 420:./Hardware/device/sd8810.c **** 
+ 421:./Hardware/device/sd8810.c **** 	hour_h = copy_buf.hour / 10;
+ 2247              		.loc 1 421 19
+ 2248 009c BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 2249              		.loc 1 421 9
+ 2250 009e 5F4A     		ldr	r2, .L61+4
+ 2251 00a0 A2FB0323 		umull	r2, r3, r2, r3
+ 2252 00a4 DB08     		lsrs	r3, r3, #3
+ 2253 00a6 3B74     		strb	r3, [r7, #16]
+ 422:./Hardware/device/sd8810.c **** 	hour_l = copy_buf.hour % 10;  //Ê±
+ 2254              		.loc 1 422 19
+ 2255 00a8 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 2256              		.loc 1 422 9
+ 2257 00aa 5C4B     		ldr	r3, .L61+4
+ 2258 00ac A3FB0213 		umull	r1, r3, r3, r2
+ 2259 00b0 D908     		lsrs	r1, r3, #3
+ 2260 00b2 0B46     		mov	r3, r1
+ 2261 00b4 9B00     		lsls	r3, r3, #2
+ 2262 00b6 0B44     		add	r3, r3, r1
+ 2263 00b8 5B00     		lsls	r3, r3, #1
+ 2264 00ba D31A     		subs	r3, r2, r3
+ 2265 00bc FB73     		strb	r3, [r7, #15]
+ 423:./Hardware/device/sd8810.c **** 
+ 424:./Hardware/device/sd8810.c **** 	minute_h = copy_buf.minute / 10;
+ 2266              		.loc 1 424 21
+ 2267 00be 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 2268              		.loc 1 424 11
+ 2269 00c0 564A     		ldr	r2, .L61+4
+ 2270 00c2 A2FB0323 		umull	r2, r3, r2, r3
+ 2271 00c6 DB08     		lsrs	r3, r3, #3
+ 2272 00c8 BB73     		strb	r3, [r7, #14]
+ 425:./Hardware/device/sd8810.c **** 	minute_l = copy_buf.minute % 10;  //·Ö
+ 2273              		.loc 1 425 21
+ 2274 00ca 7A79     		ldrb	r2, [r7, #5]	@ zero_extendqisi2
+ 2275              		.loc 1 425 11
+ 2276 00cc 534B     		ldr	r3, .L61+4
+ 2277 00ce A3FB0213 		umull	r1, r3, r3, r2
+ 2278 00d2 D908     		lsrs	r1, r3, #3
+ 2279 00d4 0B46     		mov	r3, r1
+ 2280 00d6 9B00     		lsls	r3, r3, #2
+ 2281 00d8 0B44     		add	r3, r3, r1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 48
+
+
+ 2282 00da 5B00     		lsls	r3, r3, #1
+ 2283 00dc D31A     		subs	r3, r2, r3
+ 2284 00de 7B73     		strb	r3, [r7, #13]
+ 426:./Hardware/device/sd8810.c **** 
+ 427:./Hardware/device/sd8810.c **** 	second_h = copy_buf.second / 10;
+ 2285              		.loc 1 427 21
+ 2286 00e0 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 2287              		.loc 1 427 11
+ 2288 00e2 4E4A     		ldr	r2, .L61+4
+ 2289 00e4 A2FB0323 		umull	r2, r3, r2, r3
+ 2290 00e8 DB08     		lsrs	r3, r3, #3
+ 2291 00ea 3B73     		strb	r3, [r7, #12]
+ 428:./Hardware/device/sd8810.c **** 	second_l = copy_buf.second % 10; //Ãë
+ 2292              		.loc 1 428 21
+ 2293 00ec 3A79     		ldrb	r2, [r7, #4]	@ zero_extendqisi2
+ 2294              		.loc 1 428 11
+ 2295 00ee 4B4B     		ldr	r3, .L61+4
+ 2296 00f0 A3FB0213 		umull	r1, r3, r3, r2
+ 2297 00f4 D908     		lsrs	r1, r3, #3
+ 2298 00f6 0B46     		mov	r3, r1
+ 2299 00f8 9B00     		lsls	r3, r3, #2
+ 2300 00fa 0B44     		add	r3, r3, r1
+ 2301 00fc 5B00     		lsls	r3, r3, #1
+ 2302 00fe D31A     		subs	r3, r2, r3
+ 2303 0100 FB72     		strb	r3, [r7, #11]
+ 429:./Hardware/device/sd8810.c **** 
+ 430:./Hardware/device/sd8810.c **** 	OLED_ShowNum(30,42,year_h,1,OLED_6X8);//Ïà¸ôÏÔÊ¾µÄÊý¾ÝXÖá¼ä¸ô7¸ö×ø±ê£¬Ïà¸ôÏÔÊ¾µÄÊý¾ÝYÖá¼ä¸ô15¸ö×ø±
+ 2304              		.loc 1 430 2
+ 2305 0102 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 2306 0104 0623     		movs	r3, #6
+ 2307 0106 0093     		str	r3, [sp]
+ 2308 0108 0123     		movs	r3, #1
+ 2309 010a 2A21     		movs	r1, #42
+ 2310 010c 1E20     		movs	r0, #30
+ 2311 010e FFF7FEFF 		bl	OLED_ShowNum
+ 431:./Hardware/device/sd8810.c **** 	OLED_ShowNum(37,42,year_l,1,OLED_6X8);
+ 2312              		.loc 1 431 2
+ 2313 0112 BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 2314 0114 0623     		movs	r3, #6
+ 2315 0116 0093     		str	r3, [sp]
+ 2316 0118 0123     		movs	r3, #1
+ 2317 011a 2A21     		movs	r1, #42
+ 2318 011c 2520     		movs	r0, #37
+ 2319 011e FFF7FEFF 		bl	OLED_ShowNum
+ 432:./Hardware/device/sd8810.c **** 	OLED_ShowChar(44,42,'-',OLED_6X8);
+ 2320              		.loc 1 432 2
+ 2321 0122 0623     		movs	r3, #6
+ 2322 0124 2D22     		movs	r2, #45
+ 2323 0126 2A21     		movs	r1, #42
+ 2324 0128 2C20     		movs	r0, #44
+ 2325 012a FFF7FEFF 		bl	OLED_ShowChar
+ 433:./Hardware/device/sd8810.c **** 	OLED_ShowNum(51,42,month_h,1,OLED_6X8);
+ 2326              		.loc 1 433 2
+ 2327 012e 7A7D     		ldrb	r2, [r7, #21]	@ zero_extendqisi2
+ 2328 0130 0623     		movs	r3, #6
+ 2329 0132 0093     		str	r3, [sp]
+ 2330 0134 0123     		movs	r3, #1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 49
+
+
+ 2331 0136 2A21     		movs	r1, #42
+ 2332 0138 3320     		movs	r0, #51
+ 2333 013a FFF7FEFF 		bl	OLED_ShowNum
+ 434:./Hardware/device/sd8810.c **** 	OLED_ShowNum(58,42,month_l,1,OLED_6X8);
+ 2334              		.loc 1 434 2
+ 2335 013e 3A7D     		ldrb	r2, [r7, #20]	@ zero_extendqisi2
+ 2336 0140 0623     		movs	r3, #6
+ 2337 0142 0093     		str	r3, [sp]
+ 2338 0144 0123     		movs	r3, #1
+ 2339 0146 2A21     		movs	r1, #42
+ 2340 0148 3A20     		movs	r0, #58
+ 2341 014a FFF7FEFF 		bl	OLED_ShowNum
+ 435:./Hardware/device/sd8810.c **** 	OLED_ShowChar(65,42,'-',OLED_6X8);
+ 2342              		.loc 1 435 2
+ 2343 014e 0623     		movs	r3, #6
+ 2344 0150 2D22     		movs	r2, #45
+ 2345 0152 2A21     		movs	r1, #42
+ 2346 0154 4120     		movs	r0, #65
+ 2347 0156 FFF7FEFF 		bl	OLED_ShowChar
+ 436:./Hardware/device/sd8810.c **** 	OLED_ShowNum(72,42,day_h,1,OLED_6X8);
+ 2348              		.loc 1 436 2
+ 2349 015a FA7C     		ldrb	r2, [r7, #19]	@ zero_extendqisi2
+ 2350 015c 0623     		movs	r3, #6
+ 2351 015e 0093     		str	r3, [sp]
+ 2352 0160 0123     		movs	r3, #1
+ 2353 0162 2A21     		movs	r1, #42
+ 2354 0164 4820     		movs	r0, #72
+ 2355 0166 FFF7FEFF 		bl	OLED_ShowNum
+ 437:./Hardware/device/sd8810.c **** 	OLED_ShowNum(79,42,day_l,1,OLED_6X8);
+ 2356              		.loc 1 437 2
+ 2357 016a BA7C     		ldrb	r2, [r7, #18]	@ zero_extendqisi2
+ 2358 016c 0623     		movs	r3, #6
+ 2359 016e 0093     		str	r3, [sp]
+ 2360 0170 0123     		movs	r3, #1
+ 2361 0172 2A21     		movs	r1, #42
+ 2362 0174 4F20     		movs	r0, #79
+ 2363 0176 FFF7FEFF 		bl	OLED_ShowNum
+ 438:./Hardware/device/sd8810.c **** 	OLED_ShowChar(90,42,'W',OLED_6X8);
+ 2364              		.loc 1 438 2
+ 2365 017a 0623     		movs	r3, #6
+ 2366 017c 5722     		movs	r2, #87
+ 2367 017e 2A21     		movs	r1, #42
+ 2368 0180 5A20     		movs	r0, #90
+ 2369 0182 FFF7FEFF 		bl	OLED_ShowChar
+ 439:./Hardware/device/sd8810.c **** 	OLED_ShowNum(99,42,week,1,OLED_6X8);
+ 2370              		.loc 1 439 2
+ 2371 0186 7A7C     		ldrb	r2, [r7, #17]	@ zero_extendqisi2
+ 2372 0188 0623     		movs	r3, #6
+ 2373 018a 0093     		str	r3, [sp]
+ 2374 018c 0123     		movs	r3, #1
+ 2375 018e 2A21     		movs	r1, #42
+ 2376 0190 6320     		movs	r0, #99
+ 2377 0192 FFF7FEFF 		bl	OLED_ShowNum
+ 440:./Hardware/device/sd8810.c **** 
+ 441:./Hardware/device/sd8810.c **** 	OLED_ShowNum(35,53,hour_h,1,OLED_6X8);
+ 2378              		.loc 1 441 2
+ 2379 0196 3A7C     		ldrb	r2, [r7, #16]	@ zero_extendqisi2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 50
+
+
+ 2380 0198 0623     		movs	r3, #6
+ 2381 019a 0093     		str	r3, [sp]
+ 2382 019c 0123     		movs	r3, #1
+ 2383 019e 3521     		movs	r1, #53
+ 2384 01a0 2320     		movs	r0, #35
+ 2385 01a2 FFF7FEFF 		bl	OLED_ShowNum
+ 442:./Hardware/device/sd8810.c **** 	OLED_ShowNum(42,53,hour_l,1,OLED_6X8);
+ 2386              		.loc 1 442 2
+ 2387 01a6 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 2388 01a8 0623     		movs	r3, #6
+ 2389 01aa 0093     		str	r3, [sp]
+ 2390 01ac 0123     		movs	r3, #1
+ 2391 01ae 3521     		movs	r1, #53
+ 2392 01b0 2A20     		movs	r0, #42
+ 2393 01b2 FFF7FEFF 		bl	OLED_ShowNum
+ 443:./Hardware/device/sd8810.c **** 	OLED_ShowChar(49,53,':',OLED_6X8);
+ 2394              		.loc 1 443 2
+ 2395 01b6 0623     		movs	r3, #6
+ 2396 01b8 3A22     		movs	r2, #58
+ 2397 01ba 3521     		movs	r1, #53
+ 2398 01bc 3120     		movs	r0, #49
+ 2399 01be FFF7FEFF 		bl	OLED_ShowChar
+ 444:./Hardware/device/sd8810.c **** 	OLED_ShowNum(56,53,minute_h,1,OLED_6X8);
+ 2400              		.loc 1 444 2
+ 2401 01c2 BA7B     		ldrb	r2, [r7, #14]	@ zero_extendqisi2
+ 2402 01c4 0623     		movs	r3, #6
+ 2403 01c6 0093     		str	r3, [sp]
+ 2404 01c8 0123     		movs	r3, #1
+ 2405 01ca 3521     		movs	r1, #53
+ 2406 01cc 3820     		movs	r0, #56
+ 2407 01ce FFF7FEFF 		bl	OLED_ShowNum
+ 445:./Hardware/device/sd8810.c **** 	OLED_ShowNum(63,53,minute_l,1,OLED_6X8);
+ 2408              		.loc 1 445 2
+ 2409 01d2 7A7B     		ldrb	r2, [r7, #13]	@ zero_extendqisi2
+ 2410 01d4 0623     		movs	r3, #6
+ 2411 01d6 0093     		str	r3, [sp]
+ 2412 01d8 0123     		movs	r3, #1
+ 2413 01da 3521     		movs	r1, #53
+ 2414 01dc 3F20     		movs	r0, #63
+ 2415 01de FFF7FEFF 		bl	OLED_ShowNum
+ 446:./Hardware/device/sd8810.c **** 	OLED_ShowChar(70,53,':',OLED_6X8);
+ 2416              		.loc 1 446 2
+ 2417 01e2 0623     		movs	r3, #6
+ 2418 01e4 3A22     		movs	r2, #58
+ 2419 01e6 3521     		movs	r1, #53
+ 2420 01e8 4620     		movs	r0, #70
+ 2421 01ea FFF7FEFF 		bl	OLED_ShowChar
+ 447:./Hardware/device/sd8810.c **** 	OLED_ShowNum(77,53,second_h,1,OLED_6X8);
+ 2422              		.loc 1 447 2
+ 2423 01ee 3A7B     		ldrb	r2, [r7, #12]	@ zero_extendqisi2
+ 2424 01f0 0623     		movs	r3, #6
+ 2425 01f2 0093     		str	r3, [sp]
+ 2426 01f4 0123     		movs	r3, #1
+ 2427 01f6 3521     		movs	r1, #53
+ 2428 01f8 4D20     		movs	r0, #77
+ 2429 01fa FFF7FEFF 		bl	OLED_ShowNum
+ 448:./Hardware/device/sd8810.c **** 	OLED_ShowNum(84,53,second_l,1,OLED_6X8);
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 51
+
+
+ 2430              		.loc 1 448 2
+ 2431 01fe FA7A     		ldrb	r2, [r7, #11]	@ zero_extendqisi2
+ 2432 0200 0623     		movs	r3, #6
+ 2433 0202 0093     		str	r3, [sp]
+ 2434 0204 0123     		movs	r3, #1
+ 2435 0206 3521     		movs	r1, #53
+ 2436 0208 5420     		movs	r0, #84
+ 2437 020a FFF7FEFF 		bl	OLED_ShowNum
+ 2438              	.L59:
+ 449:./Hardware/device/sd8810.c **** 	 
+ 450:./Hardware/device/sd8810.c ****  }
+ 451:./Hardware/device/sd8810.c **** 	
+ 452:./Hardware/device/sd8810.c ****  return TRUE;
+ 2439              		.loc 1 452 9
+ 2440 020e 0123     		movs	r3, #1
+ 2441              	.L60:
+ 453:./Hardware/device/sd8810.c **** 
+ 454:./Hardware/device/sd8810.c **** }
+ 2442              		.loc 1 454 1 discriminator 1
+ 2443 0210 1846     		mov	r0, r3
+ 2444 0212 1837     		adds	r7, r7, #24
+ 2445              	.LCFI78:
+ 2446              		.cfi_def_cfa_offset 8
+ 2447 0214 BD46     		mov	sp, r7
+ 2448              	.LCFI79:
+ 2449              		.cfi_def_cfa_register 13
+ 2450              		@ sp needed
+ 2451 0216 80BD     		pop	{r7, pc}
+ 2452              	.L62:
+ 2453              		.align	2
+ 2454              	.L61:
+ 2455 0218 20000000 		.word	.LC5
+ 2456 021c CDCCCCCC 		.word	-858993459
+ 2457              		.cfi_endproc
+ 2458              	.LFE47:
+ 2460              		.section	.text.RTC_ReadRAM_8810,"ax",%progbits
+ 2461              		.align	1
+ 2462              		.global	RTC_ReadRAM_8810
+ 2463              		.syntax unified
+ 2464              		.thumb
+ 2465              		.thumb_func
+ 2466              		.fpu softvfp
+ 2468              	RTC_ReadRAM_8810:
+ 2469              	.LFB48:
+ 455:./Hardware/device/sd8810.c **** 
+ 456:./Hardware/device/sd8810.c **** uint8_t RTC_ReadRAM_8810(uint8_t addr,uint8_t *data,uint8_t len,i2c_device_bus IIC_x)
+ 457:./Hardware/device/sd8810.c **** {
+ 2470              		.loc 1 457 1
+ 2471              		.cfi_startproc
+ 2472              		@ args = 0, pretend = 0, frame = 8
+ 2473              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2474 0000 80B5     		push	{r7, lr}
+ 2475              	.LCFI80:
+ 2476              		.cfi_def_cfa_offset 8
+ 2477              		.cfi_offset 7, -8
+ 2478              		.cfi_offset 14, -4
+ 2479 0002 82B0     		sub	sp, sp, #8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 52
+
+
+ 2480              	.LCFI81:
+ 2481              		.cfi_def_cfa_offset 16
+ 2482 0004 00AF     		add	r7, sp, #0
+ 2483              	.LCFI82:
+ 2484              		.cfi_def_cfa_register 7
+ 2485 0006 3960     		str	r1, [r7]
+ 2486 0008 1146     		mov	r1, r2
+ 2487 000a 1A46     		mov	r2, r3
+ 2488 000c 0346     		mov	r3, r0
+ 2489 000e FB71     		strb	r3, [r7, #7]
+ 2490 0010 0B46     		mov	r3, r1
+ 2491 0012 BB71     		strb	r3, [r7, #6]
+ 2492 0014 1346     		mov	r3, r2
+ 2493 0016 7B71     		strb	r3, [r7, #5]
+ 458:./Hardware/device/sd8810.c **** 
+ 459:./Hardware/device/sd8810.c **** 	return SD8810_read_addr(addr,data,len,IIC_x);
+ 2494              		.loc 1 459 9
+ 2495 0018 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 2496 001a BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 2497 001c F879     		ldrb	r0, [r7, #7]	@ zero_extendqisi2
+ 2498 001e 3968     		ldr	r1, [r7]
+ 2499 0020 FFF7FEFF 		bl	SD8810_read_addr
+ 2500 0024 0346     		mov	r3, r0
+ 460:./Hardware/device/sd8810.c **** 	
+ 461:./Hardware/device/sd8810.c **** }
+ 2501              		.loc 1 461 1
+ 2502 0026 1846     		mov	r0, r3
+ 2503 0028 0837     		adds	r7, r7, #8
+ 2504              	.LCFI83:
+ 2505              		.cfi_def_cfa_offset 8
+ 2506 002a BD46     		mov	sp, r7
+ 2507              	.LCFI84:
+ 2508              		.cfi_def_cfa_register 13
+ 2509              		@ sp needed
+ 2510 002c 80BD     		pop	{r7, pc}
+ 2511              		.cfi_endproc
+ 2512              	.LFE48:
+ 2514              		.section	.text.RTC_WriteRAM_8810,"ax",%progbits
+ 2515              		.align	1
+ 2516              		.global	RTC_WriteRAM_8810
+ 2517              		.syntax unified
+ 2518              		.thumb
+ 2519              		.thumb_func
+ 2520              		.fpu softvfp
+ 2522              	RTC_WriteRAM_8810:
+ 2523              	.LFB49:
+ 462:./Hardware/device/sd8810.c **** 
+ 463:./Hardware/device/sd8810.c **** uint8_t RTC_WriteRAM_8810(uint8_t addr,uint8_t *data,uint8_t len,i2c_device_bus IIC_x)
+ 464:./Hardware/device/sd8810.c **** {
+ 2524              		.loc 1 464 1
+ 2525              		.cfi_startproc
+ 2526              		@ args = 0, pretend = 0, frame = 8
+ 2527              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2528 0000 80B5     		push	{r7, lr}
+ 2529              	.LCFI85:
+ 2530              		.cfi_def_cfa_offset 8
+ 2531              		.cfi_offset 7, -8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 53
+
+
+ 2532              		.cfi_offset 14, -4
+ 2533 0002 82B0     		sub	sp, sp, #8
+ 2534              	.LCFI86:
+ 2535              		.cfi_def_cfa_offset 16
+ 2536 0004 00AF     		add	r7, sp, #0
+ 2537              	.LCFI87:
+ 2538              		.cfi_def_cfa_register 7
+ 2539 0006 3960     		str	r1, [r7]
+ 2540 0008 1146     		mov	r1, r2
+ 2541 000a 1A46     		mov	r2, r3
+ 2542 000c 0346     		mov	r3, r0
+ 2543 000e FB71     		strb	r3, [r7, #7]
+ 2544 0010 0B46     		mov	r3, r1
+ 2545 0012 BB71     		strb	r3, [r7, #6]
+ 2546 0014 1346     		mov	r3, r2
+ 2547 0016 7B71     		strb	r3, [r7, #5]
+ 465:./Hardware/device/sd8810.c **** 
+ 466:./Hardware/device/sd8810.c **** 	 if(SD8810_write_addr(addr,data,len,IIC_x)!=RTC_OK)
+ 2548              		.loc 1 466 6
+ 2549 0018 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 2550 001a BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 2551 001c F879     		ldrb	r0, [r7, #7]	@ zero_extendqisi2
+ 2552 001e 3968     		ldr	r1, [r7]
+ 2553 0020 FFF7FEFF 		bl	SD8810_write_addr
+ 2554 0024 0346     		mov	r3, r0
+ 2555              		.loc 1 466 5
+ 2556 0026 062B     		cmp	r3, #6
+ 2557 0028 01D0     		beq	.L66
+ 467:./Hardware/device/sd8810.c **** 		return RTC_NOACK;
+ 2558              		.loc 1 467 10
+ 2559 002a 0723     		movs	r3, #7
+ 2560 002c 00E0     		b	.L67
+ 2561              	.L66:
+ 468:./Hardware/device/sd8810.c **** 	 
+ 469:./Hardware/device/sd8810.c **** 	 return TRUE;
+ 2562              		.loc 1 469 10
+ 2563 002e 0123     		movs	r3, #1
+ 2564              	.L67:
+ 470:./Hardware/device/sd8810.c **** 	 
+ 471:./Hardware/device/sd8810.c **** }
+ 2565              		.loc 1 471 1
+ 2566 0030 1846     		mov	r0, r3
+ 2567 0032 0837     		adds	r7, r7, #8
+ 2568              	.LCFI88:
+ 2569              		.cfi_def_cfa_offset 8
+ 2570 0034 BD46     		mov	sp, r7
+ 2571              	.LCFI89:
+ 2572              		.cfi_def_cfa_register 13
+ 2573              		@ sp needed
+ 2574 0036 80BD     		pop	{r7, pc}
+ 2575              		.cfi_endproc
+ 2576              	.LFE49:
+ 2578              		.text
+ 2579              	.Letext0:
+ 2580              		.file 2 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 2581              		.file 3 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 2582              		.file 4 "./Hardware/device/iic.h"
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 54
+
+
+ 2583              		.file 5 "./Hardware/device/rtc.h"
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 55
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 sd8810.c
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:19     .bss.sd8810_temp:00000000 sd8810_temp
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:20     .bss.sd8810_temp:00000000 $d
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:22     .text.SD8810_read_addr:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:30     .text.SD8810_read_addr:00000000 SD8810_read_addr
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:91     .text.SD8810_write_addr:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:98     .text.SD8810_write_addr:00000000 SD8810_write_addr
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:158    .text.SD8810_ReadTimeDate:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:165    .text.SD8810_ReadTimeDate:00000000 SD8810_ReadTimeDate
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:279    .text.SD8810_WriteTimeDate:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:286    .text.SD8810_WriteTimeDate:00000000 SD8810_WriteTimeDate
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:393    .text.sd8810_idbuff:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:400    .text.sd8810_idbuff:00000000 sd8810_idbuff
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:453    .text.sd8810_ReadTemp:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:460    .text.sd8810_ReadTemp:00000000 sd8810_ReadTemp
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:568    .text.sd8810_ReadTemp:00000090 $d
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:573    .rodata:00000000 $d
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:580    .text.sd8810_id_show:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:587    .text.sd8810_id_show:00000000 sd8810_id_show
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:864    .text.sd8810_id_show:000001a4 $d
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:870    .text.sd8810_f32768:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:877    .text.sd8810_f32768:00000000 sd8810_f32768
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:930    .text.sd8810_f32768_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:937    .text.sd8810_f32768_off:00000000 sd8810_f32768_off
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:990    .text.sd8810_f1024:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:997    .text.sd8810_f1024:00000000 sd8810_f1024
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:1050   .text.sd8810_f1024_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:1057   .text.sd8810_f1024_off:00000000 sd8810_f1024_off
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:1110   .text.sd8810_f1:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:1117   .text.sd8810_f1:00000000 sd8810_f1
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:1170   .text.sd8810_f1_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:1177   .text.sd8810_f1_off:00000000 sd8810_f1_off
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:1230   .text.sd8810_and_std:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:1237   .text.sd8810_and_std:00000000 sd8810_and_std
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:1540   .text.sd8810_and_std:00000210 $d
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:1555   .text.sd8810_time_show:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:1562   .text.sd8810_time_show:00000000 sd8810_time_show
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:2001   .text.sd8810_time_show:00000334 $d
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:2008   .text.sd8810_time_show:00000348 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:2138   .text.sd8810_time_copy:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:2145   .text.sd8810_time_copy:00000000 sd8810_time_copy
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:2455   .text.sd8810_time_copy:00000218 $d
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:2461   .text.RTC_ReadRAM_8810:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:2468   .text.RTC_ReadRAM_8810:00000000 RTC_ReadRAM_8810
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:2515   .text.RTC_WriteRAM_8810:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc67zQWH.s:2522   .text.RTC_WriteRAM_8810:00000000 RTC_WriteRAM_8810
+
+UNDEFINED SYMBOLS
+IIC_read_multiple_bytes
+IIC_write_multiple_bytes
+bcd_to_dec
+dec_to_bcd
+RTC_ReadByte
+OLED_ShowChar
+OLED_ShowString
+OLED_ShowNum
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc67zQWH.s 			page 56
+
+
+sd2405showtime
+Test_Line
+NO_ACK_Test_Line
+OLED_DrawPoint
+NO_ACK_sd3xxx_messgae_line
+RTC_ReadTimeDate
+Usart_Printf

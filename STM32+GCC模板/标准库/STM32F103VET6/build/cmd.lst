@@ -1,0 +1,465 @@
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"cmd.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.rodata
+  16              		.align	2
+  17              	.LC0:
+  18 0000 68656C70 		.ascii	"help\000"
+  18      00
+  19 0005 000000   		.align	2
+  20              	.LC1:
+  21 0008 76657273 		.ascii	"version\000"
+  21      696F6E00 
+  22              		.align	2
+  23              	.LC2:
+  24 0010 74696D65 		.ascii	"time\000"
+  24      00
+  25 0015 000000   		.align	2
+  26              	.LC3:
+  27 0018 63747200 		.ascii	"ctr\000"
+  28              		.align	2
+  29              	.LC4:
+  30 001c 72616D00 		.ascii	"ram\000"
+  31              		.align	2
+  32              	.LC5:
+  33 0020 74657374 		.ascii	"testmode\000"
+  33      6D6F6465 
+  33      00
+  34 0029 000000   		.align	2
+  35              	.LC6:
+  36 002c 696400   		.ascii	"id\000"
+  37 002f 00       		.align	2
+  38              	.LC7:
+  39 0030 72657461 		.ascii	"retain\000"
+  39      696E00
+  40 0037 00       		.align	2
+  41              	.LC8:
+  42 0038 636F6E66 		.ascii	"config\000"
+  42      696700
+  43 003f 00       		.align	2
+  44              	.LC9:
+  45 0040 77656E62 		.ascii	"wenbu\000"
+  45      7500
+  46 0046 0000     		.align	2
+  47              	.LC10:
+  48 0048 63617069 		.ascii	"capin\000"
+  48      6E00
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s 			page 2
+
+
+  49 004e 0000     		.align	2
+  50              	.LC11:
+  51 0050 6361706F 		.ascii	"capout\000"
+  51      757400
+  52 0057 00       		.align	2
+  53              	.LC12:
+  54 0058 636F6E66 		.ascii	"configX\000"
+  54      69675800 
+  55              		.align	2
+  56              	.LC13:
+  57 0060 77656E62 		.ascii	"wenbuOTP\000"
+  57      754F5450 
+  57      00
+  58 0069 000000   		.align	2
+  59              	.LC14:
+  60 006c 63617069 		.ascii	"capinOTP\000"
+  60      6E4F5450 
+  60      00
+  61 0075 000000   		.align	2
+  62              	.LC15:
+  63 0078 6361706F 		.ascii	"capoutOTP\000"
+  63      75744F54 
+  63      5000
+  64 0082 0000     		.align	2
+  65              	.LC16:
+  66 0084 B4AEBFDA 		.ascii	"\264\256\277\332\326\270\301\356\264\355\316\363\307"
+  66      D6B8C1EE 
+  66      B4EDCEF3 
+  66      C7
+  67 0091 EBD6D8D0 		.ascii	"\353\326\330\320\302\312\344\310\353\243\241\015\012"
+  67      C2CAE4C8 
+  67      EBA3A10D 
+  67      0A
+  68 009e 00       		.ascii	"\000"
+  69              		.section	.text.COMMAND,"ax",%progbits
+  70              		.align	1
+  71              		.global	COMMAND
+  72              		.arch armv7-m
+  73              		.syntax unified
+  74              		.thumb
+  75              		.thumb_func
+  76              		.fpu softvfp
+  78              	COMMAND:
+  79              	.LFB32:
+  80              		.file 1 "./Hardware/app/cmd.c"
+   1:./Hardware/app/cmd.c **** #include "cmd.h"
+   2:./Hardware/app/cmd.c **** 
+   3:./Hardware/app/cmd.c **** 
+   4:./Hardware/app/cmd.c **** void COMMAND(void)
+   5:./Hardware/app/cmd.c **** {
+  81              		.loc 1 5 1
+  82              		.cfi_startproc
+  83              		@ args = 0, pretend = 0, frame = 0
+  84              		@ frame_needed = 1, uses_anonymous_args = 0
+  85 0000 80B5     		push	{r7, lr}
+  86              	.LCFI0:
+  87              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s 			page 3
+
+
+  88              		.cfi_offset 7, -8
+  89              		.cfi_offset 14, -4
+  90 0002 00AF     		add	r7, sp, #0
+  91              	.LCFI1:
+  92              		.cfi_def_cfa_register 7
+   6:./Hardware/app/cmd.c **** 		if (Usart_RxFlag == 1)		//如果接收到数据包
+  93              		.loc 1 6 20
+  94 0004 574B     		ldr	r3, .L21
+  95 0006 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  96              		.loc 1 6 6
+  97 0008 012B     		cmp	r3, #1
+  98 000a 40F0A880 		bne	.L20
+   7:./Hardware/app/cmd.c **** 		{
+   8:./Hardware/app/cmd.c **** 			
+   9:./Hardware/app/cmd.c **** 			/*将收到的数据包与预设的指令对比，以此决定将要执行的操作*/
+  10:./Hardware/app/cmd.c **** 			if (strcmp(Usart_RxPacket, "help") == 0)			
+  99              		.loc 1 10 8
+ 100 000e 5649     		ldr	r1, .L21+4
+ 101 0010 5648     		ldr	r0, .L21+8
+ 102 0012 FFF7FEFF 		bl	strcmp
+ 103 0016 0346     		mov	r3, r0
+ 104              		.loc 1 10 7
+ 105 0018 002B     		cmp	r3, #0
+ 106 001a 02D1     		bne	.L3
+  11:./Hardware/app/cmd.c **** 			{
+  12:./Hardware/app/cmd.c **** 				MPrint_Help();
+ 107              		.loc 1 12 5
+ 108 001c FFF7FEFF 		bl	MPrint_Help
+ 109 0020 9AE0     		b	.L4
+ 110              	.L3:
+  13:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "version") == 0)
+ 111              		.loc 1 13 13
+ 112 0022 5349     		ldr	r1, .L21+12
+ 113 0024 5148     		ldr	r0, .L21+8
+ 114 0026 FFF7FEFF 		bl	strcmp
+ 115 002a 0346     		mov	r3, r0
+ 116              		.loc 1 13 12
+ 117 002c 002B     		cmp	r3, #0
+ 118 002e 02D1     		bne	.L5
+  14:./Hardware/app/cmd.c **** 			{
+  15:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 119              		.loc 1 15 5
+ 120 0030 FFF7FEFF 		bl	MPrint_Version
+ 121 0034 90E0     		b	.L4
+ 122              	.L5:
+  16:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "time") == 0)	
+ 123              		.loc 1 16 13
+ 124 0036 4F49     		ldr	r1, .L21+16
+ 125 0038 4C48     		ldr	r0, .L21+8
+ 126 003a FFF7FEFF 		bl	strcmp
+ 127 003e 0346     		mov	r3, r0
+ 128              		.loc 1 16 12
+ 129 0040 002B     		cmp	r3, #0
+ 130 0042 02D1     		bne	.L6
+  17:./Hardware/app/cmd.c **** 			{
+  18:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 131              		.loc 1 18 5
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s 			page 4
+
+
+ 132 0044 FFF7FEFF 		bl	MPrint_Version
+ 133 0048 86E0     		b	.L4
+ 134              	.L6:
+  19:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "ctr") == 0)	
+ 135              		.loc 1 19 13
+ 136 004a 4B49     		ldr	r1, .L21+20
+ 137 004c 4748     		ldr	r0, .L21+8
+ 138 004e FFF7FEFF 		bl	strcmp
+ 139 0052 0346     		mov	r3, r0
+ 140              		.loc 1 19 12
+ 141 0054 002B     		cmp	r3, #0
+ 142 0056 02D1     		bne	.L7
+  20:./Hardware/app/cmd.c **** 			{
+  21:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 143              		.loc 1 21 5
+ 144 0058 FFF7FEFF 		bl	MPrint_Version
+ 145 005c 7CE0     		b	.L4
+ 146              	.L7:
+  22:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "ram") == 0)
+ 147              		.loc 1 22 13
+ 148 005e 4749     		ldr	r1, .L21+24
+ 149 0060 4248     		ldr	r0, .L21+8
+ 150 0062 FFF7FEFF 		bl	strcmp
+ 151 0066 0346     		mov	r3, r0
+ 152              		.loc 1 22 12
+ 153 0068 002B     		cmp	r3, #0
+ 154 006a 02D1     		bne	.L8
+  23:./Hardware/app/cmd.c **** 			{
+  24:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 155              		.loc 1 24 5
+ 156 006c FFF7FEFF 		bl	MPrint_Version
+ 157 0070 72E0     		b	.L4
+ 158              	.L8:
+  25:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "testmode") == 0)	
+ 159              		.loc 1 25 13
+ 160 0072 4349     		ldr	r1, .L21+28
+ 161 0074 3D48     		ldr	r0, .L21+8
+ 162 0076 FFF7FEFF 		bl	strcmp
+ 163 007a 0346     		mov	r3, r0
+ 164              		.loc 1 25 12
+ 165 007c 002B     		cmp	r3, #0
+ 166 007e 02D1     		bne	.L9
+  26:./Hardware/app/cmd.c **** 			{
+  27:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 167              		.loc 1 27 5
+ 168 0080 FFF7FEFF 		bl	MPrint_Version
+ 169 0084 68E0     		b	.L4
+ 170              	.L9:
+  28:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "id") == 0)	
+ 171              		.loc 1 28 13
+ 172 0086 3F49     		ldr	r1, .L21+32
+ 173 0088 3848     		ldr	r0, .L21+8
+ 174 008a FFF7FEFF 		bl	strcmp
+ 175 008e 0346     		mov	r3, r0
+ 176              		.loc 1 28 12
+ 177 0090 002B     		cmp	r3, #0
+ 178 0092 02D1     		bne	.L10
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s 			page 5
+
+
+  29:./Hardware/app/cmd.c **** 			{
+  30:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 179              		.loc 1 30 5
+ 180 0094 FFF7FEFF 		bl	MPrint_Version
+ 181 0098 5EE0     		b	.L4
+ 182              	.L10:
+  31:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "retain") == 0)	
+ 183              		.loc 1 31 13
+ 184 009a 3B49     		ldr	r1, .L21+36
+ 185 009c 3348     		ldr	r0, .L21+8
+ 186 009e FFF7FEFF 		bl	strcmp
+ 187 00a2 0346     		mov	r3, r0
+ 188              		.loc 1 31 12
+ 189 00a4 002B     		cmp	r3, #0
+ 190 00a6 02D1     		bne	.L11
+  32:./Hardware/app/cmd.c **** 			{
+  33:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 191              		.loc 1 33 5
+ 192 00a8 FFF7FEFF 		bl	MPrint_Version
+ 193 00ac 54E0     		b	.L4
+ 194              	.L11:
+  34:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "config") == 0)	
+ 195              		.loc 1 34 13
+ 196 00ae 3749     		ldr	r1, .L21+40
+ 197 00b0 2E48     		ldr	r0, .L21+8
+ 198 00b2 FFF7FEFF 		bl	strcmp
+ 199 00b6 0346     		mov	r3, r0
+ 200              		.loc 1 34 12
+ 201 00b8 002B     		cmp	r3, #0
+ 202 00ba 02D1     		bne	.L12
+  35:./Hardware/app/cmd.c **** 			{
+  36:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 203              		.loc 1 36 5
+ 204 00bc FFF7FEFF 		bl	MPrint_Version
+ 205 00c0 4AE0     		b	.L4
+ 206              	.L12:
+  37:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "wenbu") == 0)	
+ 207              		.loc 1 37 13
+ 208 00c2 3349     		ldr	r1, .L21+44
+ 209 00c4 2948     		ldr	r0, .L21+8
+ 210 00c6 FFF7FEFF 		bl	strcmp
+ 211 00ca 0346     		mov	r3, r0
+ 212              		.loc 1 37 12
+ 213 00cc 002B     		cmp	r3, #0
+ 214 00ce 02D1     		bne	.L13
+  38:./Hardware/app/cmd.c **** 			{
+  39:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 215              		.loc 1 39 5
+ 216 00d0 FFF7FEFF 		bl	MPrint_Version
+ 217 00d4 40E0     		b	.L4
+ 218              	.L13:
+  40:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "capin") == 0)	
+ 219              		.loc 1 40 13
+ 220 00d6 2F49     		ldr	r1, .L21+48
+ 221 00d8 2448     		ldr	r0, .L21+8
+ 222 00da FFF7FEFF 		bl	strcmp
+ 223 00de 0346     		mov	r3, r0
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s 			page 6
+
+
+ 224              		.loc 1 40 12
+ 225 00e0 002B     		cmp	r3, #0
+ 226 00e2 02D1     		bne	.L14
+  41:./Hardware/app/cmd.c **** 			{
+  42:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 227              		.loc 1 42 5
+ 228 00e4 FFF7FEFF 		bl	MPrint_Version
+ 229 00e8 36E0     		b	.L4
+ 230              	.L14:
+  43:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "capout") == 0)	
+ 231              		.loc 1 43 13
+ 232 00ea 2B49     		ldr	r1, .L21+52
+ 233 00ec 1F48     		ldr	r0, .L21+8
+ 234 00ee FFF7FEFF 		bl	strcmp
+ 235 00f2 0346     		mov	r3, r0
+ 236              		.loc 1 43 12
+ 237 00f4 002B     		cmp	r3, #0
+ 238 00f6 02D1     		bne	.L15
+  44:./Hardware/app/cmd.c **** 			{
+  45:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 239              		.loc 1 45 5
+ 240 00f8 FFF7FEFF 		bl	MPrint_Version
+ 241 00fc 2CE0     		b	.L4
+ 242              	.L15:
+  46:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "configX") == 0)	
+ 243              		.loc 1 46 13
+ 244 00fe 2749     		ldr	r1, .L21+56
+ 245 0100 1A48     		ldr	r0, .L21+8
+ 246 0102 FFF7FEFF 		bl	strcmp
+ 247 0106 0346     		mov	r3, r0
+ 248              		.loc 1 46 12
+ 249 0108 002B     		cmp	r3, #0
+ 250 010a 02D1     		bne	.L16
+  47:./Hardware/app/cmd.c **** 			{
+  48:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 251              		.loc 1 48 5
+ 252 010c FFF7FEFF 		bl	MPrint_Version
+ 253 0110 22E0     		b	.L4
+ 254              	.L16:
+  49:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "wenbuOTP") == 0)	
+ 255              		.loc 1 49 13
+ 256 0112 2349     		ldr	r1, .L21+60
+ 257 0114 1548     		ldr	r0, .L21+8
+ 258 0116 FFF7FEFF 		bl	strcmp
+ 259 011a 0346     		mov	r3, r0
+ 260              		.loc 1 49 12
+ 261 011c 002B     		cmp	r3, #0
+ 262 011e 02D1     		bne	.L17
+  50:./Hardware/app/cmd.c **** 			{
+  51:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 263              		.loc 1 51 5
+ 264 0120 FFF7FEFF 		bl	MPrint_Version
+ 265 0124 18E0     		b	.L4
+ 266              	.L17:
+  52:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "capinOTP") == 0)	
+ 267              		.loc 1 52 13
+ 268 0126 1F49     		ldr	r1, .L21+64
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s 			page 7
+
+
+ 269 0128 1048     		ldr	r0, .L21+8
+ 270 012a FFF7FEFF 		bl	strcmp
+ 271 012e 0346     		mov	r3, r0
+ 272              		.loc 1 52 12
+ 273 0130 002B     		cmp	r3, #0
+ 274 0132 02D1     		bne	.L18
+  53:./Hardware/app/cmd.c **** 			{
+  54:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 275              		.loc 1 54 5
+ 276 0134 FFF7FEFF 		bl	MPrint_Version
+ 277 0138 0EE0     		b	.L4
+ 278              	.L18:
+  55:./Hardware/app/cmd.c **** 			}else if(strcmp(Usart_RxPacket, "capoutOTP") == 0)	
+ 279              		.loc 1 55 13
+ 280 013a 1B49     		ldr	r1, .L21+68
+ 281 013c 0B48     		ldr	r0, .L21+8
+ 282 013e FFF7FEFF 		bl	strcmp
+ 283 0142 0346     		mov	r3, r0
+ 284              		.loc 1 55 12
+ 285 0144 002B     		cmp	r3, #0
+ 286 0146 02D1     		bne	.L19
+  56:./Hardware/app/cmd.c **** 			{
+  57:./Hardware/app/cmd.c **** 				MPrint_Version();
+ 287              		.loc 1 57 5
+ 288 0148 FFF7FEFF 		bl	MPrint_Version
+ 289 014c 04E0     		b	.L4
+ 290              	.L19:
+  58:./Hardware/app/cmd.c **** 			}
+  59:./Hardware/app/cmd.c **** 			else						//上述所有条件均不满足，即收到了未知指令
+  60:./Hardware/app/cmd.c **** 			{
+  61:./Hardware/app/cmd.c **** 				MPrint_CmdFail();
+ 291              		.loc 1 61 5
+ 292 014e FFF7FEFF 		bl	MPrint_CmdFail
+  62:./Hardware/app/cmd.c **** 				Usart_SendString("串口指令错误请重新输入！\r\n");			//串口回传一个字符串ERROR_COMMAND
+ 293              		.loc 1 62 5
+ 294 0152 1648     		ldr	r0, .L21+72
+ 295 0154 FFF7FEFF 		bl	Usart_SendString
+ 296              	.L4:
+  63:./Hardware/app/cmd.c **** 			}
+  64:./Hardware/app/cmd.c **** 			
+  65:./Hardware/app/cmd.c **** 			Usart_RxFlag = 0;			//处理完成后，需要将接收数据包标志位清零，否则将无法接收后续数据包
+ 297              		.loc 1 65 17
+ 298 0158 024B     		ldr	r3, .L21
+ 299 015a 0022     		movs	r2, #0
+ 300 015c 1A70     		strb	r2, [r3]
+ 301              	.L20:
+  66:./Hardware/app/cmd.c **** 		}
+  67:./Hardware/app/cmd.c **** 
+  68:./Hardware/app/cmd.c **** }
+ 302              		.loc 1 68 1
+ 303 015e 00BF     		nop
+ 304 0160 80BD     		pop	{r7, pc}
+ 305              	.L22:
+ 306 0162 00BF     		.align	2
+ 307              	.L21:
+ 308 0164 00000000 		.word	Usart_RxFlag
+ 309 0168 00000000 		.word	.LC0
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s 			page 8
+
+
+ 310 016c 00000000 		.word	Usart_RxPacket
+ 311 0170 08000000 		.word	.LC1
+ 312 0174 10000000 		.word	.LC2
+ 313 0178 18000000 		.word	.LC3
+ 314 017c 1C000000 		.word	.LC4
+ 315 0180 20000000 		.word	.LC5
+ 316 0184 2C000000 		.word	.LC6
+ 317 0188 30000000 		.word	.LC7
+ 318 018c 38000000 		.word	.LC8
+ 319 0190 40000000 		.word	.LC9
+ 320 0194 48000000 		.word	.LC10
+ 321 0198 50000000 		.word	.LC11
+ 322 019c 58000000 		.word	.LC12
+ 323 01a0 60000000 		.word	.LC13
+ 324 01a4 6C000000 		.word	.LC14
+ 325 01a8 78000000 		.word	.LC15
+ 326 01ac 84000000 		.word	.LC16
+ 327              		.cfi_endproc
+ 328              	.LFE32:
+ 330              		.text
+ 331              	.Letext0:
+ 332              		.file 2 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 333              		.file 3 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 334              		.file 4 "./Hardware/app/usart.h"
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s 			page 9
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 cmd.c
+C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s:16     .rodata:00000000 $d
+C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s:70     .text.COMMAND:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s:78     .text.COMMAND:00000000 COMMAND
+C:\Users\86134\AppData\Local\Temp\cc9NGwlA.s:308    .text.COMMAND:00000164 $d
+
+UNDEFINED SYMBOLS
+strcmp
+MPrint_Help
+MPrint_Version
+MPrint_CmdFail
+Usart_SendString
+Usart_RxFlag
+Usart_RxPacket

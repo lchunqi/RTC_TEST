@@ -1,0 +1,964 @@
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"iouart.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.iouart1_delayUs,"ax",%progbits
+  20              		.align	1
+  21              		.global	iouart1_delayUs
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	iouart1_delayUs:
+  27              	.LVL0:
+  28              	.LFB133:
+  29              		.file 1 "Core/Src/iouart.c"
+   1:Core/Src/iouart.c **** #include "iouart.h"
+   2:Core/Src/iouart.c **** #include "main.h"
+   3:Core/Src/iouart.c **** #include <stdio.h>
+   4:Core/Src/iouart.c **** #include "tim.h"
+   5:Core/Src/iouart.c **** #include <string.h> 
+   6:Core/Src/iouart.c **** 
+   7:Core/Src/iouart.c **** uint32_t recvData = 0;
+   8:Core/Src/iouart.c **** uint8_t recvStat = COM_STOP_BIT;
+   9:Core/Src/iouart.c ****  
+  10:Core/Src/iouart.c **** uint8_t SUartCnt;                    //模拟串口缓冲区长位置
+  11:Core/Src/iouart.c **** uint8_t SUartBuff[SUartLength];  
+  12:Core/Src/iouart.c ****  
+  13:Core/Src/iouart.c **** 
+  14:Core/Src/iouart.c **** 
+  15:Core/Src/iouart.c **** void iouart1_delayUs(volatile uint32_t nTime)
+  16:Core/Src/iouart.c **** { 
+  30              		.loc 1 16 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 8
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  35              		.loc 1 16 1 is_stmt 0 view .LVU1
+  36 0000 82B0     		sub	sp, sp, #8
+  37              	.LCFI0:
+  38              		.cfi_def_cfa_offset 8
+  39 0002 0190     		str	r0, [sp, #4]
+  17:Core/Src/iouart.c ****     uint16_t tmp;
+  40              		.loc 1 17 5 is_stmt 1 view .LVU2
+  18:Core/Src/iouart.c ****     tmp = __HAL_TIM_GetCounter(&htim6);    //获得 TIM6 计数器的值
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 2
+
+
+  41              		.loc 1 18 5 view .LVU3
+  42              		.loc 1 18 11 is_stmt 0 view .LVU4
+  43 0004 0B4B     		ldr	r3, .L7
+  44 0006 1A68     		ldr	r2, [r3]
+  45 0008 506A     		ldr	r0, [r2, #36]
+  46              	.LVL1:
+  19:Core/Src/iouart.c ****     if(tmp + nTime <= 65535)
+  47              		.loc 1 19 5 is_stmt 1 view .LVU5
+  48 000a 80B2     		uxth	r0, r0
+  49              		.loc 1 19 12 is_stmt 0 view .LVU6
+  50 000c 019B     		ldr	r3, [sp, #4]
+  51 000e 0344     		add	r3, r3, r0
+  52              		.loc 1 19 7 view .LVU7
+  53 0010 B3F5803F 		cmp	r3, #65536
+  54 0014 06D2     		bcs	.L2
+  55              	.L3:
+  20:Core/Src/iouart.c ****         while( (__HAL_TIM_GetCounter(&htim6) - tmp) < nTime );
+  56              		.loc 1 20 62 is_stmt 1 discriminator 1 view .LVU8
+  57              		.loc 1 20 14 discriminator 1 view .LVU9
+  58              		.loc 1 20 17 is_stmt 0 discriminator 1 view .LVU10
+  59 0016 536A     		ldr	r3, [r2, #36]
+  60              		.loc 1 20 46 discriminator 1 view .LVU11
+  61 0018 1B1A     		subs	r3, r3, r0
+  62              		.loc 1 20 53 discriminator 1 view .LVU12
+  63 001a 0199     		ldr	r1, [sp, #4]
+  64              		.loc 1 20 14 discriminator 1 view .LVU13
+  65 001c 8B42     		cmp	r3, r1
+  66 001e FAD3     		bcc	.L3
+  67              	.LVL2:
+  68              	.L1:
+  21:Core/Src/iouart.c ****     else
+  22:Core/Src/iouart.c ****     {
+  23:Core/Src/iouart.c ****         __HAL_TIM_SetCounter(&htim6,0);  //设置 TIM3 计数器寄存器值为0
+  24:Core/Src/iouart.c ****         while( __HAL_TIM_GetCounter(&htim6) < nTime );
+  25:Core/Src/iouart.c ****     }
+  26:Core/Src/iouart.c **** }
+  69              		.loc 1 26 1 view .LVU14
+  70 0020 02B0     		add	sp, sp, #8
+  71              	.LCFI1:
+  72              		.cfi_remember_state
+  73              		.cfi_def_cfa_offset 0
+  74              		@ sp needed
+  75 0022 7047     		bx	lr
+  76              	.LVL3:
+  77              	.L2:
+  78              	.LCFI2:
+  79              		.cfi_restore_state
+  23:Core/Src/iouart.c ****         while( __HAL_TIM_GetCounter(&htim6) < nTime );
+  80              		.loc 1 23 9 is_stmt 1 view .LVU15
+  81 0024 0023     		movs	r3, #0
+  82 0026 5362     		str	r3, [r2, #36]
+  83              	.LVL4:
+  24:Core/Src/iouart.c ****     }
+  84              		.loc 1 24 9 view .LVU16
+  85              	.L5:
+  24:Core/Src/iouart.c ****     }
+  86              		.loc 1 24 54 discriminator 1 view .LVU17
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 3
+
+
+  24:Core/Src/iouart.c ****     }
+  87              		.loc 1 24 14 discriminator 1 view .LVU18
+  24:Core/Src/iouart.c ****     }
+  88              		.loc 1 24 16 is_stmt 0 discriminator 1 view .LVU19
+  89 0028 516A     		ldr	r1, [r2, #36]
+  24:Core/Src/iouart.c ****     }
+  90              		.loc 1 24 45 discriminator 1 view .LVU20
+  91 002a 019B     		ldr	r3, [sp, #4]
+  24:Core/Src/iouart.c ****     }
+  92              		.loc 1 24 14 discriminator 1 view .LVU21
+  93 002c 9942     		cmp	r1, r3
+  94 002e FBD3     		bcc	.L5
+  95 0030 F6E7     		b	.L1
+  96              	.L8:
+  97 0032 00BF     		.align	2
+  98              	.L7:
+  99 0034 00000000 		.word	htim6
+ 100              		.cfi_endproc
+ 101              	.LFE133:
+ 103              		.section	.text.S_Uart_One_Tx,"ax",%progbits
+ 104              		.align	1
+ 105              		.global	S_Uart_One_Tx
+ 106              		.syntax unified
+ 107              		.thumb
+ 108              		.thumb_func
+ 110              	S_Uart_One_Tx:
+ 111              	.LVL5:
+ 112              	.LFB134:
+  27:Core/Src/iouart.c **** 
+  28:Core/Src/iouart.c **** //模拟串口发送一个字节
+  29:Core/Src/iouart.c **** void S_Uart_One_Tx(uint8_t Data)
+  30:Core/Src/iouart.c **** {
+ 113              		.loc 1 30 1 is_stmt 1 view -0
+ 114              		.cfi_startproc
+ 115              		@ args = 0, pretend = 0, frame = 0
+ 116              		@ frame_needed = 0, uses_anonymous_args = 0
+ 117              		.loc 1 30 1 is_stmt 0 view .LVU23
+ 118 0000 38B5     		push	{r3, r4, r5, lr}
+ 119              	.LCFI3:
+ 120              		.cfi_def_cfa_offset 16
+ 121              		.cfi_offset 3, -16
+ 122              		.cfi_offset 4, -12
+ 123              		.cfi_offset 5, -8
+ 124              		.cfi_offset 14, -4
+ 125 0002 0546     		mov	r5, r0
+  31:Core/Src/iouart.c ****     uint8_t i;
+ 126              		.loc 1 31 5 is_stmt 1 view .LVU24
+  32:Core/Src/iouart.c ****  
+  33:Core/Src/iouart.c ****     iouart1_TXD(0);  //起始位
+ 127              		.loc 1 33 5 view .LVU25
+ 128              		.loc 1 33 5 view .LVU26
+ 129 0004 0022     		movs	r2, #0
+ 130 0006 4021     		movs	r1, #64
+ 131 0008 1348     		ldr	r0, .L16
+ 132              	.LVL6:
+ 133              		.loc 1 33 5 is_stmt 0 view .LVU27
+ 134 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 4
+
+
+ 135              	.LVL7:
+ 136              		.loc 1 33 19 is_stmt 1 view .LVU28
+  34:Core/Src/iouart.c ****     iouart1_delayUs(104);
+ 137              		.loc 1 34 5 view .LVU29
+ 138 000e 6820     		movs	r0, #104
+ 139 0010 FFF7FEFF 		bl	iouart1_delayUs
+ 140              	.LVL8:
+  35:Core/Src/iouart.c ****  
+  36:Core/Src/iouart.c ****     for(i=0; i<8; i++)
+ 141              		.loc 1 36 5 view .LVU30
+ 142              		.loc 1 36 10 is_stmt 0 view .LVU31
+ 143 0014 0024     		movs	r4, #0
+ 144              		.loc 1 36 5 view .LVU32
+ 145 0016 0AE0     		b	.L10
+ 146              	.LVL9:
+ 147              	.L11:
+  37:Core/Src/iouart.c ****     {
+  38:Core/Src/iouart.c ****         if(Data & 0x01)            //串口协议 先发LSB
+  39:Core/Src/iouart.c ****         {    
+  40:Core/Src/iouart.c ****             iouart1_TXD(1);
+  41:Core/Src/iouart.c ****         }
+  42:Core/Src/iouart.c ****         else 
+  43:Core/Src/iouart.c ****         {
+  44:Core/Src/iouart.c ****             iouart1_TXD(0);
+ 148              		.loc 1 44 13 is_stmt 1 discriminator 2 view .LVU33
+ 149              		.loc 1 44 13 discriminator 2 view .LVU34
+ 150 0018 0022     		movs	r2, #0
+ 151 001a 4021     		movs	r1, #64
+ 152 001c 0E48     		ldr	r0, .L16
+ 153 001e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 154              	.LVL10:
+ 155              	.L12:
+ 156              		.loc 1 44 27 discriminator 4 view .LVU35
+  45:Core/Src/iouart.c ****         }
+  46:Core/Src/iouart.c ****         
+  47:Core/Src/iouart.c ****         iouart1_delayUs(104);
+ 157              		.loc 1 47 9 discriminator 4 view .LVU36
+ 158 0022 6820     		movs	r0, #104
+ 159 0024 FFF7FEFF 		bl	iouart1_delayUs
+ 160              	.LVL11:
+  48:Core/Src/iouart.c ****         Data >>= 1;
+ 161              		.loc 1 48 9 discriminator 4 view .LVU37
+ 162              		.loc 1 48 14 is_stmt 0 discriminator 4 view .LVU38
+ 163 0028 6D08     		lsrs	r5, r5, #1
+ 164              	.LVL12:
+  36:Core/Src/iouart.c ****     {
+ 165              		.loc 1 36 19 is_stmt 1 discriminator 4 view .LVU39
+  36:Core/Src/iouart.c ****     {
+ 166              		.loc 1 36 20 is_stmt 0 discriminator 4 view .LVU40
+ 167 002a 0134     		adds	r4, r4, #1
+ 168              	.LVL13:
+  36:Core/Src/iouart.c ****     {
+ 169              		.loc 1 36 20 discriminator 4 view .LVU41
+ 170 002c E4B2     		uxtb	r4, r4
+ 171              	.LVL14:
+ 172              	.L10:
+  36:Core/Src/iouart.c ****     {
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 5
+
+
+ 173              		.loc 1 36 14 is_stmt 1 discriminator 2 view .LVU42
+  36:Core/Src/iouart.c ****     {
+ 174              		.loc 1 36 5 is_stmt 0 discriminator 2 view .LVU43
+ 175 002e 072C     		cmp	r4, #7
+ 176 0030 08D8     		bhi	.L15
+  38:Core/Src/iouart.c ****         {    
+ 177              		.loc 1 38 9 is_stmt 1 view .LVU44
+  38:Core/Src/iouart.c ****         {    
+ 178              		.loc 1 38 11 is_stmt 0 view .LVU45
+ 179 0032 15F0010F 		tst	r5, #1
+ 180 0036 EFD0     		beq	.L11
+  40:Core/Src/iouart.c ****         }
+ 181              		.loc 1 40 13 is_stmt 1 discriminator 1 view .LVU46
+  40:Core/Src/iouart.c ****         }
+ 182              		.loc 1 40 13 discriminator 1 view .LVU47
+ 183 0038 0122     		movs	r2, #1
+ 184 003a 4021     		movs	r1, #64
+ 185 003c 0648     		ldr	r0, .L16
+ 186 003e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 187              	.LVL15:
+  40:Core/Src/iouart.c ****         }
+ 188              		.loc 1 40 27 discriminator 1 view .LVU48
+ 189 0042 EEE7     		b	.L12
+ 190              	.L15:
+  49:Core/Src/iouart.c ****     }
+  50:Core/Src/iouart.c ****     
+  51:Core/Src/iouart.c ****     iouart1_TXD(1);    //结束标志位
+ 191              		.loc 1 51 5 discriminator 1 view .LVU49
+ 192              		.loc 1 51 5 discriminator 1 view .LVU50
+ 193 0044 0122     		movs	r2, #1
+ 194 0046 4021     		movs	r1, #64
+ 195 0048 0348     		ldr	r0, .L16
+ 196 004a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 197              	.LVL16:
+ 198              		.loc 1 51 19 discriminator 1 view .LVU51
+  52:Core/Src/iouart.c ****     iouart1_delayUs(104);
+ 199              		.loc 1 52 5 discriminator 1 view .LVU52
+ 200 004e 6820     		movs	r0, #104
+ 201 0050 FFF7FEFF 		bl	iouart1_delayUs
+ 202              	.LVL17:
+  53:Core/Src/iouart.c **** }
+ 203              		.loc 1 53 1 is_stmt 0 discriminator 1 view .LVU53
+ 204 0054 38BD     		pop	{r3, r4, r5, pc}
+ 205              	.LVL18:
+ 206              	.L17:
+ 207              		.loc 1 53 1 discriminator 1 view .LVU54
+ 208 0056 00BF     		.align	2
+ 209              	.L16:
+ 210 0058 00100240 		.word	1073876992
+ 211              		.cfi_endproc
+ 212              	.LFE134:
+ 214              		.section	.text.S_Uart_Send_Buff,"ax",%progbits
+ 215              		.align	1
+ 216              		.global	S_Uart_Send_Buff
+ 217              		.syntax unified
+ 218              		.thumb
+ 219              		.thumb_func
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 6
+
+
+ 221              	S_Uart_Send_Buff:
+ 222              	.LVL19:
+ 223              	.LFB135:
+  54:Core/Src/iouart.c ****  
+  55:Core/Src/iouart.c **** //模拟串口发送数组
+  56:Core/Src/iouart.c **** void S_Uart_Send_Buff(uint8_t *buff,uint8_t length)
+  57:Core/Src/iouart.c **** {
+ 224              		.loc 1 57 1 is_stmt 1 view -0
+ 225              		.cfi_startproc
+ 226              		@ args = 0, pretend = 0, frame = 0
+ 227              		@ frame_needed = 0, uses_anonymous_args = 0
+ 228              		.loc 1 57 1 is_stmt 0 view .LVU56
+ 229 0000 70B5     		push	{r4, r5, r6, lr}
+ 230              	.LCFI4:
+ 231              		.cfi_def_cfa_offset 16
+ 232              		.cfi_offset 4, -16
+ 233              		.cfi_offset 5, -12
+ 234              		.cfi_offset 6, -8
+ 235              		.cfi_offset 14, -4
+ 236 0002 0646     		mov	r6, r0
+ 237 0004 0D46     		mov	r5, r1
+  58:Core/Src/iouart.c ****     for(uint8_t i=0; i<length; i++)
+ 238              		.loc 1 58 5 is_stmt 1 view .LVU57
+ 239              	.LBB2:
+ 240              		.loc 1 58 9 view .LVU58
+ 241              	.LVL20:
+ 242              		.loc 1 58 17 is_stmt 0 view .LVU59
+ 243 0006 0024     		movs	r4, #0
+ 244              		.loc 1 58 5 view .LVU60
+ 245 0008 04E0     		b	.L19
+ 246              	.LVL21:
+ 247              	.L20:
+  59:Core/Src/iouart.c ****     {
+  60:Core/Src/iouart.c ****         S_Uart_One_Tx(buff[i]);    
+ 248              		.loc 1 60 9 is_stmt 1 discriminator 3 view .LVU61
+ 249 000a 305D     		ldrb	r0, [r6, r4]	@ zero_extendqisi2
+ 250 000c FFF7FEFF 		bl	S_Uart_One_Tx
+ 251              	.LVL22:
+  58:Core/Src/iouart.c ****     for(uint8_t i=0; i<length; i++)
+ 252              		.loc 1 58 32 discriminator 3 view .LVU62
+  58:Core/Src/iouart.c ****     for(uint8_t i=0; i<length; i++)
+ 253              		.loc 1 58 33 is_stmt 0 discriminator 3 view .LVU63
+ 254 0010 0134     		adds	r4, r4, #1
+ 255              	.LVL23:
+  58:Core/Src/iouart.c ****     for(uint8_t i=0; i<length; i++)
+ 256              		.loc 1 58 33 discriminator 3 view .LVU64
+ 257 0012 E4B2     		uxtb	r4, r4
+ 258              	.LVL24:
+ 259              	.L19:
+  58:Core/Src/iouart.c ****     for(uint8_t i=0; i<length; i++)
+ 260              		.loc 1 58 22 is_stmt 1 discriminator 1 view .LVU65
+  58:Core/Src/iouart.c ****     for(uint8_t i=0; i<length; i++)
+ 261              		.loc 1 58 5 is_stmt 0 discriminator 1 view .LVU66
+ 262 0014 AC42     		cmp	r4, r5
+ 263 0016 F8D3     		bcc	.L20
+ 264              	.LBE2:
+  61:Core/Src/iouart.c ****     }
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 7
+
+
+  62:Core/Src/iouart.c **** }
+ 265              		.loc 1 62 1 view .LVU67
+ 266 0018 70BD     		pop	{r4, r5, r6, pc}
+ 267              		.loc 1 62 1 view .LVU68
+ 268              		.cfi_endproc
+ 269              	.LFE135:
+ 271              		.section	.text.S_Uart_Send_Str,"ax",%progbits
+ 272              		.align	1
+ 273              		.global	S_Uart_Send_Str
+ 274              		.syntax unified
+ 275              		.thumb
+ 276              		.thumb_func
+ 278              	S_Uart_Send_Str:
+ 279              	.LVL25:
+ 280              	.LFB136:
+  63:Core/Src/iouart.c ****  
+  64:Core/Src/iouart.c ****  //模拟串口发送字符串
+  65:Core/Src/iouart.c **** void S_Uart_Send_Str(uint8_t *str)
+  66:Core/Src/iouart.c **** {
+ 281              		.loc 1 66 1 is_stmt 1 view -0
+ 282              		.cfi_startproc
+ 283              		@ args = 0, pretend = 0, frame = 0
+ 284              		@ frame_needed = 0, uses_anonymous_args = 0
+ 285              		.loc 1 66 1 is_stmt 0 view .LVU70
+ 286 0000 70B5     		push	{r4, r5, r6, lr}
+ 287              	.LCFI5:
+ 288              		.cfi_def_cfa_offset 16
+ 289              		.cfi_offset 4, -16
+ 290              		.cfi_offset 5, -12
+ 291              		.cfi_offset 6, -8
+ 292              		.cfi_offset 14, -4
+ 293 0002 0646     		mov	r6, r0
+  67:Core/Src/iouart.c **** //    uint32_t i = 0;
+  68:Core/Src/iouart.c ****     uint32_t len = strlen((const char*)str);
+ 294              		.loc 1 68 5 is_stmt 1 view .LVU71
+ 295              		.loc 1 68 20 is_stmt 0 view .LVU72
+ 296 0004 FFF7FEFF 		bl	strlen
+ 297              	.LVL26:
+ 298              		.loc 1 68 20 view .LVU73
+ 299 0008 0546     		mov	r5, r0
+ 300              	.LVL27:
+  69:Core/Src/iouart.c ****     for(uint8_t i=0; i<len; i++)
+ 301              		.loc 1 69 5 is_stmt 1 view .LVU74
+ 302              	.LBB3:
+ 303              		.loc 1 69 9 view .LVU75
+ 304              		.loc 1 69 17 is_stmt 0 view .LVU76
+ 305 000a 0024     		movs	r4, #0
+ 306              		.loc 1 69 5 view .LVU77
+ 307 000c 04E0     		b	.L23
+ 308              	.LVL28:
+ 309              	.L24:
+  70:Core/Src/iouart.c ****     {
+  71:Core/Src/iouart.c ****         S_Uart_One_Tx(str[i]);    
+ 310              		.loc 1 71 9 is_stmt 1 discriminator 3 view .LVU78
+ 311 000e 305D     		ldrb	r0, [r6, r4]	@ zero_extendqisi2
+ 312 0010 FFF7FEFF 		bl	S_Uart_One_Tx
+ 313              	.LVL29:
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 8
+
+
+  69:Core/Src/iouart.c ****     for(uint8_t i=0; i<len; i++)
+ 314              		.loc 1 69 29 discriminator 3 view .LVU79
+  69:Core/Src/iouart.c ****     for(uint8_t i=0; i<len; i++)
+ 315              		.loc 1 69 30 is_stmt 0 discriminator 3 view .LVU80
+ 316 0014 0134     		adds	r4, r4, #1
+ 317              	.LVL30:
+  69:Core/Src/iouart.c ****     for(uint8_t i=0; i<len; i++)
+ 318              		.loc 1 69 30 discriminator 3 view .LVU81
+ 319 0016 E4B2     		uxtb	r4, r4
+ 320              	.LVL31:
+ 321              	.L23:
+  69:Core/Src/iouart.c ****     for(uint8_t i=0; i<len; i++)
+ 322              		.loc 1 69 22 is_stmt 1 discriminator 1 view .LVU82
+  69:Core/Src/iouart.c ****     for(uint8_t i=0; i<len; i++)
+ 323              		.loc 1 69 5 is_stmt 0 discriminator 1 view .LVU83
+ 324 0018 AC42     		cmp	r4, r5
+ 325 001a F8D3     		bcc	.L24
+ 326              	.LBE3:
+  72:Core/Src/iouart.c ****     }
+  73:Core/Src/iouart.c **** }
+ 327              		.loc 1 73 1 view .LVU84
+ 328 001c 70BD     		pop	{r4, r5, r6, pc}
+ 329              		.loc 1 73 1 view .LVU85
+ 330              		.cfi_endproc
+ 331              	.LFE136:
+ 333              		.section	.text.S_Uart_Rx_Handler,"ax",%progbits
+ 334              		.align	1
+ 335              		.global	S_Uart_Rx_Handler
+ 336              		.syntax unified
+ 337              		.thumb
+ 338              		.thumb_func
+ 340              	S_Uart_Rx_Handler:
+ 341              	.LVL32:
+ 342              	.LFB137:
+  74:Core/Src/iouart.c ****  
+  75:Core/Src/iouart.c ****  
+  76:Core/Src/iouart.c **** //接收串口数据处理
+  77:Core/Src/iouart.c **** uint8_t S_Uart_Rx_Handler(uint8_t *buf,uint8_t *length)
+  78:Core/Src/iouart.c **** {
+ 343              		.loc 1 78 1 is_stmt 1 view -0
+ 344              		.cfi_startproc
+ 345              		@ args = 0, pretend = 0, frame = 0
+ 346              		@ frame_needed = 0, uses_anonymous_args = 0
+ 347              		.loc 1 78 1 is_stmt 0 view .LVU87
+ 348 0000 10B5     		push	{r4, lr}
+ 349              	.LCFI6:
+ 350              		.cfi_def_cfa_offset 8
+ 351              		.cfi_offset 4, -8
+ 352              		.cfi_offset 14, -4
+ 353 0002 0C46     		mov	r4, r1
+  79:Core/Src/iouart.c ****     *length = 0;
+ 354              		.loc 1 79 5 is_stmt 1 view .LVU88
+ 355              		.loc 1 79 13 is_stmt 0 view .LVU89
+ 356 0004 0023     		movs	r3, #0
+ 357 0006 0B70     		strb	r3, [r1]
+  80:Core/Src/iouart.c ****     if(SUartCnt > 0)            //模拟串口缓冲区不为空
+ 358              		.loc 1 80 5 is_stmt 1 view .LVU90
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 9
+
+
+ 359              		.loc 1 80 17 is_stmt 0 view .LVU91
+ 360 0008 064B     		ldr	r3, .L30
+ 361 000a 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
+ 362              		.loc 1 80 7 view .LVU92
+ 363 000c 0AB9     		cbnz	r2, .L29
+ 364              	.LVL33:
+ 365              	.L27:
+  81:Core/Src/iouart.c ****     {
+  82:Core/Src/iouart.c ****         *length = SUartCnt;            
+  83:Core/Src/iouart.c ****         memcpy(buf,SUartBuff,*length);        //将SUartBuff里面的数据复制到buf里面，长
+  84:Core/Src/iouart.c ****         SUartCnt = 0;
+  85:Core/Src/iouart.c **** //        memset(SUartBuff,0x00,256);  //清除缓存        
+  86:Core/Src/iouart.c ****     }    
+  87:Core/Src/iouart.c ****     return *length;
+ 366              		.loc 1 87 5 is_stmt 1 view .LVU93
+  88:Core/Src/iouart.c **** }
+ 367              		.loc 1 88 1 is_stmt 0 view .LVU94
+ 368 000e 2078     		ldrb	r0, [r4]	@ zero_extendqisi2
+ 369 0010 10BD     		pop	{r4, pc}
+ 370              	.LVL34:
+ 371              	.L29:
+  82:Core/Src/iouart.c ****         memcpy(buf,SUartBuff,*length);        //将SUartBuff里面的数据复制到buf里面，长
+ 372              		.loc 1 82 9 is_stmt 1 view .LVU95
+  82:Core/Src/iouart.c ****         memcpy(buf,SUartBuff,*length);        //将SUartBuff里面的数据复制到buf里面，长
+ 373              		.loc 1 82 17 is_stmt 0 view .LVU96
+ 374 0012 0A70     		strb	r2, [r1]
+  83:Core/Src/iouart.c ****         SUartCnt = 0;
+ 375              		.loc 1 83 9 is_stmt 1 view .LVU97
+ 376 0014 0449     		ldr	r1, .L30+4
+ 377              	.LVL35:
+  83:Core/Src/iouart.c ****         SUartCnt = 0;
+ 378              		.loc 1 83 9 is_stmt 0 view .LVU98
+ 379 0016 FFF7FEFF 		bl	memcpy
+ 380              	.LVL36:
+  84:Core/Src/iouart.c **** //        memset(SUartBuff,0x00,256);  //清除缓存        
+ 381              		.loc 1 84 9 is_stmt 1 view .LVU99
+  84:Core/Src/iouart.c **** //        memset(SUartBuff,0x00,256);  //清除缓存        
+ 382              		.loc 1 84 18 is_stmt 0 view .LVU100
+ 383 001a 024B     		ldr	r3, .L30
+ 384 001c 0022     		movs	r2, #0
+ 385 001e 1A70     		strb	r2, [r3]
+ 386 0020 F5E7     		b	.L27
+ 387              	.L31:
+ 388 0022 00BF     		.align	2
+ 389              	.L30:
+ 390 0024 00000000 		.word	.LANCHOR0
+ 391 0028 00000000 		.word	.LANCHOR1
+ 392              		.cfi_endproc
+ 393              	.LFE137:
+ 395              		.section	.text.HAL_GPIO_EXTI_Callback,"ax",%progbits
+ 396              		.align	1
+ 397              		.global	HAL_GPIO_EXTI_Callback
+ 398              		.syntax unified
+ 399              		.thumb
+ 400              		.thumb_func
+ 402              	HAL_GPIO_EXTI_Callback:
+ 403              	.LVL37:
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 10
+
+
+ 404              	.LFB138:
+  89:Core/Src/iouart.c **** 
+  90:Core/Src/iouart.c **** void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+  91:Core/Src/iouart.c **** {
+ 405              		.loc 1 91 1 is_stmt 1 view -0
+ 406              		.cfi_startproc
+ 407              		@ args = 0, pretend = 0, frame = 0
+ 408              		@ frame_needed = 0, uses_anonymous_args = 0
+  92:Core/Src/iouart.c ****     if(GPIO_Pin == GPIO_PIN_6)
+ 409              		.loc 1 92 5 view .LVU102
+ 410              		.loc 1 92 7 is_stmt 0 view .LVU103
+ 411 0000 4028     		cmp	r0, #64
+ 412 0002 00D0     		beq	.L38
+ 413 0004 7047     		bx	lr
+ 414              	.L38:
+  91:Core/Src/iouart.c ****     if(GPIO_Pin == GPIO_PIN_6)
+ 415              		.loc 1 91 1 view .LVU104
+ 416 0006 08B5     		push	{r3, lr}
+ 417              	.LCFI7:
+ 418              		.cfi_def_cfa_offset 8
+ 419              		.cfi_offset 3, -8
+ 420              		.cfi_offset 14, -4
+  93:Core/Src/iouart.c ****     {                            
+  94:Core/Src/iouart.c ****         if(iouart1_RXD() == 0) 
+ 421              		.loc 1 94 9 is_stmt 1 view .LVU105
+ 422              		.loc 1 94 12 is_stmt 0 view .LVU106
+ 423 0008 4021     		movs	r1, #64
+ 424 000a 0B48     		ldr	r0, .L40
+ 425              	.LVL38:
+ 426              		.loc 1 94 12 view .LVU107
+ 427 000c FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 428              	.LVL39:
+ 429              		.loc 1 94 11 view .LVU108
+ 430 0010 18B9     		cbnz	r0, .L32
+  95:Core/Src/iouart.c ****         {
+  96:Core/Src/iouart.c ****             if(recvStat == COM_STOP_BIT)
+ 431              		.loc 1 96 13 is_stmt 1 view .LVU109
+ 432              		.loc 1 96 25 is_stmt 0 view .LVU110
+ 433 0012 0A4B     		ldr	r3, .L40+4
+ 434 0014 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 435              		.loc 1 96 15 view .LVU111
+ 436 0016 092B     		cmp	r3, #9
+ 437 0018 00D0     		beq	.L39
+ 438              	.L32:
+  97:Core/Src/iouart.c ****             {
+  98:Core/Src/iouart.c ****                 HAL_NVIC_DisableIRQ(EXTI4_IRQn);   //关闭下降沿中断
+  99:Core/Src/iouart.c ****                 recvStat = COM_START_BIT;
+ 100:Core/Src/iouart.c ****                 //延时52us
+ 101:Core/Src/iouart.c ****                 iouart1_delayUs(52);  //延时超过检测电平的正中间
+ 102:Core/Src/iouart.c ****                 HAL_TIM_Base_Start_IT(&htim7);   //开启定时器7                
+ 103:Core/Src/iouart.c ****             }
+ 104:Core/Src/iouart.c ****         }
+ 105:Core/Src/iouart.c ****     }    
+ 106:Core/Src/iouart.c **** }
+ 439              		.loc 1 106 1 view .LVU112
+ 440 001a 08BD     		pop	{r3, pc}
+ 441              	.L39:
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 11
+
+
+  98:Core/Src/iouart.c ****                 recvStat = COM_START_BIT;
+ 442              		.loc 1 98 17 is_stmt 1 view .LVU113
+ 443 001c 0A20     		movs	r0, #10
+ 444 001e FFF7FEFF 		bl	HAL_NVIC_DisableIRQ
+ 445              	.LVL40:
+  99:Core/Src/iouart.c ****                 //延时52us
+ 446              		.loc 1 99 17 view .LVU114
+  99:Core/Src/iouart.c ****                 //延时52us
+ 447              		.loc 1 99 26 is_stmt 0 view .LVU115
+ 448 0022 064B     		ldr	r3, .L40+4
+ 449 0024 0022     		movs	r2, #0
+ 450 0026 1A70     		strb	r2, [r3]
+ 101:Core/Src/iouart.c ****                 HAL_TIM_Base_Start_IT(&htim7);   //开启定时器7                
+ 451              		.loc 1 101 17 is_stmt 1 view .LVU116
+ 452 0028 3420     		movs	r0, #52
+ 453 002a FFF7FEFF 		bl	iouart1_delayUs
+ 454              	.LVL41:
+ 102:Core/Src/iouart.c ****             }
+ 455              		.loc 1 102 17 view .LVU117
+ 456 002e 0448     		ldr	r0, .L40+8
+ 457 0030 FFF7FEFF 		bl	HAL_TIM_Base_Start_IT
+ 458              	.LVL42:
+ 459              		.loc 1 106 1 is_stmt 0 view .LVU118
+ 460 0034 F1E7     		b	.L32
+ 461              	.L41:
+ 462 0036 00BF     		.align	2
+ 463              	.L40:
+ 464 0038 000C0240 		.word	1073875968
+ 465 003c 00000000 		.word	.LANCHOR2
+ 466 0040 00000000 		.word	htim7
+ 467              		.cfi_endproc
+ 468              	.LFE138:
+ 470              		.section	.text.HAL_TIM_PeriodElapsedCallback,"ax",%progbits
+ 471              		.align	1
+ 472              		.global	HAL_TIM_PeriodElapsedCallback
+ 473              		.syntax unified
+ 474              		.thumb
+ 475              		.thumb_func
+ 477              	HAL_TIM_PeriodElapsedCallback:
+ 478              	.LVL43:
+ 479              	.LFB139:
+ 107:Core/Src/iouart.c **** 
+ 108:Core/Src/iouart.c **** void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+ 109:Core/Src/iouart.c **** {
+ 480              		.loc 1 109 1 is_stmt 1 view -0
+ 481              		.cfi_startproc
+ 482              		@ args = 0, pretend = 0, frame = 0
+ 483              		@ frame_needed = 0, uses_anonymous_args = 0
+ 484              		.loc 1 109 1 is_stmt 0 view .LVU120
+ 485 0000 10B5     		push	{r4, lr}
+ 486              	.LCFI8:
+ 487              		.cfi_def_cfa_offset 8
+ 488              		.cfi_offset 4, -8
+ 489              		.cfi_offset 14, -4
+ 490 0002 0446     		mov	r4, r0
+ 110:Core/Src/iouart.c ****   /* USER CODE BEGIN Callback 0 */
+ 111:Core/Src/iouart.c **** 
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 12
+
+
+ 112:Core/Src/iouart.c ****   /* USER CODE END Callback 0 */
+ 113:Core/Src/iouart.c ****   if (htim->Instance == TIM1) {
+ 491              		.loc 1 113 3 is_stmt 1 view .LVU121
+ 492              		.loc 1 113 11 is_stmt 0 view .LVU122
+ 493 0004 0268     		ldr	r2, [r0]
+ 494              		.loc 1 113 6 view .LVU123
+ 495 0006 264B     		ldr	r3, .L53
+ 496 0008 9A42     		cmp	r2, r3
+ 497 000a 05D0     		beq	.L50
+ 498              	.LVL44:
+ 499              	.L43:
+ 114:Core/Src/iouart.c ****     HAL_IncTick();
+ 115:Core/Src/iouart.c ****   }
+ 116:Core/Src/iouart.c ****   /* USER CODE BEGIN Callback 1 */
+ 117:Core/Src/iouart.c ****     if(htim->Instance == htim7.Instance)
+ 500              		.loc 1 117 5 is_stmt 1 view .LVU124
+ 501              		.loc 1 117 12 is_stmt 0 view .LVU125
+ 502 000c 2268     		ldr	r2, [r4]
+ 503              		.loc 1 117 31 view .LVU126
+ 504 000e 254B     		ldr	r3, .L53+4
+ 505 0010 1B68     		ldr	r3, [r3]
+ 506              		.loc 1 117 7 view .LVU127
+ 507 0012 9A42     		cmp	r2, r3
+ 508 0014 03D0     		beq	.L51
+ 509              	.LVL45:
+ 510              	.L42:
+ 118:Core/Src/iouart.c ****         {            
+ 119:Core/Src/iouart.c ****             recvStat++;
+ 120:Core/Src/iouart.c ****             if(recvStat == COM_STOP_BIT)//COM_D7_BIT
+ 121:Core/Src/iouart.c ****             {
+ 122:Core/Src/iouart.c ****                 //到这里接收完成一个字节数据
+ 123:Core/Src/iouart.c ****                 HAL_NVIC_EnableIRQ(EXTI4_IRQn);//开启下降沿中断
+ 124:Core/Src/iouart.c ****                  HAL_TIM_Base_Stop(&htim7);//关闭定时器
+ 125:Core/Src/iouart.c ****                 __HAL_TIM_SetCounter(&htim7,0);//定时器清零
+ 126:Core/Src/iouart.c ****                 if(SUartCnt < SUartLength)
+ 127:Core/Src/iouart.c ****                     SUartBuff[SUartCnt++] = recvData;            //存入缓冲区
+ 128:Core/Src/iouart.c ****                 else 
+ 129:Core/Src/iouart.c ****                     SUartCnt = 0;
+ 130:Core/Src/iouart.c ****                 recvData =0;
+ 131:Core/Src/iouart.c ****                 
+ 132:Core/Src/iouart.c ****                 return;
+ 133:Core/Src/iouart.c ****             }
+ 134:Core/Src/iouart.c ****             if(iouart1_RXD())
+ 135:Core/Src/iouart.c ****             {
+ 136:Core/Src/iouart.c ****                 recvData |= (1 << (recvStat - 1));
+ 137:Core/Src/iouart.c ****             }else{
+ 138:Core/Src/iouart.c ****                 recvData &= ~(1 << (recvStat - 1));
+ 139:Core/Src/iouart.c ****             }
+ 140:Core/Src/iouart.c ****         }
+ 141:Core/Src/iouart.c ****   /* USER CODE END Callback 1 */
+ 142:Core/Src/iouart.c **** }
+ 511              		.loc 1 142 1 view .LVU128
+ 512 0016 10BD     		pop	{r4, pc}
+ 513              	.LVL46:
+ 514              	.L50:
+ 114:Core/Src/iouart.c ****     HAL_IncTick();
+ 515              		.loc 1 114 5 is_stmt 1 view .LVU129
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 13
+
+
+ 516 0018 FFF7FEFF 		bl	HAL_IncTick
+ 517              	.LVL47:
+ 114:Core/Src/iouart.c ****     HAL_IncTick();
+ 518              		.loc 1 114 5 is_stmt 0 view .LVU130
+ 519 001c F6E7     		b	.L43
+ 520              	.L51:
+ 119:Core/Src/iouart.c ****             if(recvStat == COM_STOP_BIT)//COM_D7_BIT
+ 521              		.loc 1 119 13 is_stmt 1 view .LVU131
+ 119:Core/Src/iouart.c ****             if(recvStat == COM_STOP_BIT)//COM_D7_BIT
+ 522              		.loc 1 119 21 is_stmt 0 view .LVU132
+ 523 001e 224A     		ldr	r2, .L53+8
+ 524 0020 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 525 0022 0133     		adds	r3, r3, #1
+ 526 0024 DBB2     		uxtb	r3, r3
+ 527 0026 1370     		strb	r3, [r2]
+ 120:Core/Src/iouart.c ****             {
+ 528              		.loc 1 120 13 is_stmt 1 view .LVU133
+ 120:Core/Src/iouart.c ****             {
+ 529              		.loc 1 120 15 is_stmt 0 view .LVU134
+ 530 0028 092B     		cmp	r3, #9
+ 531 002a 0FD0     		beq	.L52
+ 134:Core/Src/iouart.c ****             {
+ 532              		.loc 1 134 13 is_stmt 1 view .LVU135
+ 134:Core/Src/iouart.c ****             {
+ 533              		.loc 1 134 16 is_stmt 0 view .LVU136
+ 534 002c 4021     		movs	r1, #64
+ 535 002e 1F48     		ldr	r0, .L53+12
+ 536 0030 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 537              	.LVL48:
+ 134:Core/Src/iouart.c ****             {
+ 538              		.loc 1 134 15 view .LVU137
+ 539 0034 38B3     		cbz	r0, .L48
+ 136:Core/Src/iouart.c ****             }else{
+ 540              		.loc 1 136 17 is_stmt 1 view .LVU138
+ 136:Core/Src/iouart.c ****             }else{
+ 541              		.loc 1 136 45 is_stmt 0 view .LVU139
+ 542 0036 1C4B     		ldr	r3, .L53+8
+ 543 0038 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
+ 544 003a 013A     		subs	r2, r2, #1
+ 136:Core/Src/iouart.c ****             }else{
+ 545              		.loc 1 136 32 view .LVU140
+ 546 003c 0123     		movs	r3, #1
+ 547 003e 03FA02F2 		lsl	r2, r3, r2
+ 136:Core/Src/iouart.c ****             }else{
+ 548              		.loc 1 136 26 view .LVU141
+ 549 0042 1B49     		ldr	r1, .L53+16
+ 550 0044 0B68     		ldr	r3, [r1]
+ 551 0046 1343     		orrs	r3, r3, r2
+ 552 0048 0B60     		str	r3, [r1]
+ 553 004a E4E7     		b	.L42
+ 554              	.L52:
+ 123:Core/Src/iouart.c ****                  HAL_TIM_Base_Stop(&htim7);//关闭定时器
+ 555              		.loc 1 123 17 is_stmt 1 view .LVU142
+ 556 004c 0A20     		movs	r0, #10
+ 557 004e FFF7FEFF 		bl	HAL_NVIC_EnableIRQ
+ 558              	.LVL49:
+ 124:Core/Src/iouart.c ****                 __HAL_TIM_SetCounter(&htim7,0);//定时器清零
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 14
+
+
+ 559              		.loc 1 124 18 view .LVU143
+ 560 0052 144C     		ldr	r4, .L53+4
+ 561              	.LVL50:
+ 124:Core/Src/iouart.c ****                 __HAL_TIM_SetCounter(&htim7,0);//定时器清零
+ 562              		.loc 1 124 18 is_stmt 0 view .LVU144
+ 563 0054 2046     		mov	r0, r4
+ 564 0056 FFF7FEFF 		bl	HAL_TIM_Base_Stop
+ 565              	.LVL51:
+ 125:Core/Src/iouart.c ****                 if(SUartCnt < SUartLength)
+ 566              		.loc 1 125 17 is_stmt 1 view .LVU145
+ 567 005a 2368     		ldr	r3, [r4]
+ 568 005c 0022     		movs	r2, #0
+ 569 005e 5A62     		str	r2, [r3, #36]
+ 126:Core/Src/iouart.c ****                     SUartBuff[SUartCnt++] = recvData;            //存入缓冲区
+ 570              		.loc 1 126 17 view .LVU146
+ 126:Core/Src/iouart.c ****                     SUartBuff[SUartCnt++] = recvData;            //存入缓冲区
+ 571              		.loc 1 126 29 is_stmt 0 view .LVU147
+ 572 0060 144B     		ldr	r3, .L53+20
+ 573 0062 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 126:Core/Src/iouart.c ****                     SUartBuff[SUartCnt++] = recvData;            //存入缓冲区
+ 574              		.loc 1 126 19 view .LVU148
+ 575 0064 C72B     		cmp	r3, #199
+ 576 0066 0AD8     		bhi	.L46
+ 127:Core/Src/iouart.c ****                 else 
+ 577              		.loc 1 127 21 is_stmt 1 view .LVU149
+ 127:Core/Src/iouart.c ****                 else 
+ 578              		.loc 1 127 43 is_stmt 0 view .LVU150
+ 579 0068 114A     		ldr	r2, .L53+16
+ 580 006a 1168     		ldr	r1, [r2]
+ 127:Core/Src/iouart.c ****                 else 
+ 581              		.loc 1 127 39 view .LVU151
+ 582 006c 581C     		adds	r0, r3, #1
+ 583 006e 114A     		ldr	r2, .L53+20
+ 584 0070 1070     		strb	r0, [r2]
+ 127:Core/Src/iouart.c ****                 else 
+ 585              		.loc 1 127 43 view .LVU152
+ 586 0072 114A     		ldr	r2, .L53+24
+ 587 0074 D154     		strb	r1, [r2, r3]
+ 588              	.L47:
+ 130:Core/Src/iouart.c ****                 
+ 589              		.loc 1 130 17 is_stmt 1 view .LVU153
+ 130:Core/Src/iouart.c ****                 
+ 590              		.loc 1 130 26 is_stmt 0 view .LVU154
+ 591 0076 0E4B     		ldr	r3, .L53+16
+ 592 0078 0022     		movs	r2, #0
+ 593 007a 1A60     		str	r2, [r3]
+ 132:Core/Src/iouart.c ****             }
+ 594              		.loc 1 132 17 is_stmt 1 view .LVU155
+ 595 007c CBE7     		b	.L42
+ 596              	.L46:
+ 129:Core/Src/iouart.c ****                 recvData =0;
+ 597              		.loc 1 129 21 view .LVU156
+ 129:Core/Src/iouart.c ****                 recvData =0;
+ 598              		.loc 1 129 30 is_stmt 0 view .LVU157
+ 599 007e 0D4B     		ldr	r3, .L53+20
+ 600 0080 0022     		movs	r2, #0
+ 601 0082 1A70     		strb	r2, [r3]
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 15
+
+
+ 602 0084 F7E7     		b	.L47
+ 603              	.LVL52:
+ 604              	.L48:
+ 138:Core/Src/iouart.c ****             }
+ 605              		.loc 1 138 17 is_stmt 1 view .LVU158
+ 138:Core/Src/iouart.c ****             }
+ 606              		.loc 1 138 46 is_stmt 0 view .LVU159
+ 607 0086 084B     		ldr	r3, .L53+8
+ 608 0088 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
+ 609 008a 013A     		subs	r2, r2, #1
+ 138:Core/Src/iouart.c ****             }
+ 610              		.loc 1 138 33 view .LVU160
+ 611 008c 0123     		movs	r3, #1
+ 612 008e 03FA02F2 		lsl	r2, r3, r2
+ 138:Core/Src/iouart.c ****             }
+ 613              		.loc 1 138 26 view .LVU161
+ 614 0092 0749     		ldr	r1, .L53+16
+ 615 0094 0B68     		ldr	r3, [r1]
+ 616 0096 23EA0203 		bic	r3, r3, r2
+ 617 009a 0B60     		str	r3, [r1]
+ 618 009c BBE7     		b	.L42
+ 619              	.L54:
+ 620 009e 00BF     		.align	2
+ 621              	.L53:
+ 622 00a0 00000140 		.word	1073807360
+ 623 00a4 00000000 		.word	htim7
+ 624 00a8 00000000 		.word	.LANCHOR2
+ 625 00ac 000C0240 		.word	1073875968
+ 626 00b0 00000000 		.word	.LANCHOR3
+ 627 00b4 00000000 		.word	.LANCHOR0
+ 628 00b8 00000000 		.word	.LANCHOR1
+ 629              		.cfi_endproc
+ 630              	.LFE139:
+ 632              		.global	SUartBuff
+ 633              		.global	SUartCnt
+ 634              		.global	recvStat
+ 635              		.global	recvData
+ 636              		.section	.bss.SUartBuff,"aw",%nobits
+ 637              		.align	2
+ 638              		.set	.LANCHOR1,. + 0
+ 641              	SUartBuff:
+ 642 0000 00000000 		.space	200
+ 642      00000000 
+ 642      00000000 
+ 642      00000000 
+ 642      00000000 
+ 643              		.section	.bss.SUartCnt,"aw",%nobits
+ 644              		.set	.LANCHOR0,. + 0
+ 647              	SUartCnt:
+ 648 0000 00       		.space	1
+ 649              		.section	.bss.recvData,"aw",%nobits
+ 650              		.align	2
+ 651              		.set	.LANCHOR3,. + 0
+ 654              	recvData:
+ 655 0000 00000000 		.space	4
+ 656              		.section	.data.recvStat,"aw"
+ 657              		.set	.LANCHOR2,. + 0
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 16
+
+
+ 660              	recvStat:
+ 661 0000 09       		.byte	9
+ 662              		.text
+ 663              	.Letext0:
+ 664              		.file 2 "f:\\stm32\310\355\274\376\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2
+ 665              		.file 3 "f:\\stm32\310\355\274\376\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2
+ 666              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 667              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 668              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 669              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 670              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h"
+ 671              		.file 9 "Core/Inc/iouart.h"
+ 672              		.file 10 "Core/Inc/tim.h"
+ 673              		.file 11 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 674              		.file 12 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h"
+ 675              		.file 13 "f:\\stm32\310\355\274\376\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-
+ 676              		.file 14 "<built-in>"
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s 			page 17
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 iouart.c
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:20     .text.iouart1_delayUs:00000000 $t
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:26     .text.iouart1_delayUs:00000000 iouart1_delayUs
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:99     .text.iouart1_delayUs:00000034 $d
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:104    .text.S_Uart_One_Tx:00000000 $t
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:110    .text.S_Uart_One_Tx:00000000 S_Uart_One_Tx
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:210    .text.S_Uart_One_Tx:00000058 $d
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:215    .text.S_Uart_Send_Buff:00000000 $t
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:221    .text.S_Uart_Send_Buff:00000000 S_Uart_Send_Buff
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:272    .text.S_Uart_Send_Str:00000000 $t
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:278    .text.S_Uart_Send_Str:00000000 S_Uart_Send_Str
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:334    .text.S_Uart_Rx_Handler:00000000 $t
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:340    .text.S_Uart_Rx_Handler:00000000 S_Uart_Rx_Handler
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:390    .text.S_Uart_Rx_Handler:00000024 $d
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:396    .text.HAL_GPIO_EXTI_Callback:00000000 $t
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:402    .text.HAL_GPIO_EXTI_Callback:00000000 HAL_GPIO_EXTI_Callback
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:464    .text.HAL_GPIO_EXTI_Callback:00000038 $d
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:471    .text.HAL_TIM_PeriodElapsedCallback:00000000 $t
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:477    .text.HAL_TIM_PeriodElapsedCallback:00000000 HAL_TIM_PeriodElapsedCallback
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:622    .text.HAL_TIM_PeriodElapsedCallback:000000a0 $d
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:641    .bss.SUartBuff:00000000 SUartBuff
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:647    .bss.SUartCnt:00000000 SUartCnt
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:660    .data.recvStat:00000000 recvStat
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:654    .bss.recvData:00000000 recvData
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:637    .bss.SUartBuff:00000000 $d
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:648    .bss.SUartCnt:00000000 $d
+C:\Users\Administrator\AppData\Local\Temp\ccQ18mUy.s:650    .bss.recvData:00000000 $d
+
+UNDEFINED SYMBOLS
+htim6
+HAL_GPIO_WritePin
+strlen
+memcpy
+HAL_GPIO_ReadPin
+HAL_NVIC_DisableIRQ
+HAL_TIM_Base_Start_IT
+htim7
+HAL_IncTick
+HAL_NVIC_EnableIRQ
+HAL_TIM_Base_Stop

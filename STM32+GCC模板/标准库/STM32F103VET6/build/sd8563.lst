@@ -1,0 +1,2615 @@
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"sd8563.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.SD8563_read_addr,"ax",%progbits
+  16              		.align	1
+  17              		.global	SD8563_read_addr
+  18              		.arch armv7-m
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.fpu softvfp
+  24              	SD8563_read_addr:
+  25              	.LFB32:
+  26              		.file 1 "./Hardware/device/sd8563.c"
+   1:./Hardware/device/sd8563.c **** #include "sd8563.h"
+   2:./Hardware/device/sd8563.c **** 
+   3:./Hardware/device/sd8563.c **** 
+   4:./Hardware/device/sd8563.c **** //rtc¶Áaddr
+   5:./Hardware/device/sd8563.c **** rtc_exit_code SD8563_read_addr(uint8_t reg_addr, uint8_t *read_buf, uint8_t length, i2c_device_bus 
+   6:./Hardware/device/sd8563.c **** {
+  27              		.loc 1 6 1
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 8
+  30              		@ frame_needed = 1, uses_anonymous_args = 0
+  31 0000 80B5     		push	{r7, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 84B0     		sub	sp, sp, #16
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 24
+  39 0004 02AF     		add	r7, sp, #8
+  40              	.LCFI2:
+  41              		.cfi_def_cfa 7, 16
+  42 0006 3960     		str	r1, [r7]
+  43 0008 1146     		mov	r1, r2
+  44 000a 1A46     		mov	r2, r3
+  45 000c 0346     		mov	r3, r0
+  46 000e FB71     		strb	r3, [r7, #7]
+  47 0010 0B46     		mov	r3, r1
+  48 0012 BB71     		strb	r3, [r7, #6]
+  49 0014 1346     		mov	r3, r2
+  50 0016 7B71     		strb	r3, [r7, #5]
+   7:./Hardware/device/sd8563.c **** 	if(IIC_read_multiple_bytes(0xA2,reg_addr,read_buf,length,bus)!=IIC_OK)
+  51              		.loc 1 7 5
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 2
+
+
+  52 0018 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+  53 001a F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+  54 001c 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+  55 001e 0093     		str	r3, [sp]
+  56 0020 1346     		mov	r3, r2
+  57 0022 3A68     		ldr	r2, [r7]
+  58 0024 A220     		movs	r0, #162
+  59 0026 FFF7FEFF 		bl	IIC_read_multiple_bytes
+  60 002a 0346     		mov	r3, r0
+  61              		.loc 1 7 4
+  62 002c 022B     		cmp	r3, #2
+  63 002e 01D0     		beq	.L2
+   8:./Hardware/device/sd8563.c **** 	{
+   9:./Hardware/device/sd8563.c **** 		return RTC_NOACK;
+  64              		.loc 1 9 10
+  65 0030 0723     		movs	r3, #7
+  66 0032 00E0     		b	.L3
+  67              	.L2:
+  10:./Hardware/device/sd8563.c **** 	}
+  11:./Hardware/device/sd8563.c **** 	return RTC_OK;
+  68              		.loc 1 11 9
+  69 0034 0623     		movs	r3, #6
+  70              	.L3:
+  12:./Hardware/device/sd8563.c **** }
+  71              		.loc 1 12 1
+  72 0036 1846     		mov	r0, r3
+  73 0038 0837     		adds	r7, r7, #8
+  74              	.LCFI3:
+  75              		.cfi_def_cfa_offset 8
+  76 003a BD46     		mov	sp, r7
+  77              	.LCFI4:
+  78              		.cfi_def_cfa_register 13
+  79              		@ sp needed
+  80 003c 80BD     		pop	{r7, pc}
+  81              		.cfi_endproc
+  82              	.LFE32:
+  84              		.section	.text.SD8563_write_addr,"ax",%progbits
+  85              		.align	1
+  86              		.global	SD8563_write_addr
+  87              		.syntax unified
+  88              		.thumb
+  89              		.thumb_func
+  90              		.fpu softvfp
+  92              	SD8563_write_addr:
+  93              	.LFB33:
+  13:./Hardware/device/sd8563.c **** 
+  14:./Hardware/device/sd8563.c **** //rtcÐ´addr
+  15:./Hardware/device/sd8563.c **** rtc_exit_code SD8563_write_addr(uint8_t reg_addr, uint8_t *write_buf, uint8_t length, i2c_device_bu
+  16:./Hardware/device/sd8563.c **** {
+  94              		.loc 1 16 1
+  95              		.cfi_startproc
+  96              		@ args = 0, pretend = 0, frame = 8
+  97              		@ frame_needed = 1, uses_anonymous_args = 0
+  98 0000 80B5     		push	{r7, lr}
+  99              	.LCFI5:
+ 100              		.cfi_def_cfa_offset 8
+ 101              		.cfi_offset 7, -8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 3
+
+
+ 102              		.cfi_offset 14, -4
+ 103 0002 84B0     		sub	sp, sp, #16
+ 104              	.LCFI6:
+ 105              		.cfi_def_cfa_offset 24
+ 106 0004 02AF     		add	r7, sp, #8
+ 107              	.LCFI7:
+ 108              		.cfi_def_cfa 7, 16
+ 109 0006 3960     		str	r1, [r7]
+ 110 0008 1146     		mov	r1, r2
+ 111 000a 1A46     		mov	r2, r3
+ 112 000c 0346     		mov	r3, r0
+ 113 000e FB71     		strb	r3, [r7, #7]
+ 114 0010 0B46     		mov	r3, r1
+ 115 0012 BB71     		strb	r3, [r7, #6]
+ 116 0014 1346     		mov	r3, r2
+ 117 0016 7B71     		strb	r3, [r7, #5]
+  17:./Hardware/device/sd8563.c **** 	if(IIC_write_multiple_bytes(0xA2,reg_addr,write_buf,length,bus)!=IIC_OK)
+ 118              		.loc 1 17 5
+ 119 0018 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 120 001a F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 121 001c 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 122 001e 0093     		str	r3, [sp]
+ 123 0020 1346     		mov	r3, r2
+ 124 0022 3A68     		ldr	r2, [r7]
+ 125 0024 A220     		movs	r0, #162
+ 126 0026 FFF7FEFF 		bl	IIC_write_multiple_bytes
+ 127 002a 0346     		mov	r3, r0
+ 128              		.loc 1 17 4
+ 129 002c 022B     		cmp	r3, #2
+ 130 002e 01D0     		beq	.L5
+  18:./Hardware/device/sd8563.c **** 	{
+  19:./Hardware/device/sd8563.c **** 		return RTC_NOACK;
+ 131              		.loc 1 19 10
+ 132 0030 0723     		movs	r3, #7
+ 133 0032 00E0     		b	.L6
+ 134              	.L5:
+  20:./Hardware/device/sd8563.c **** 	}
+  21:./Hardware/device/sd8563.c **** 	return RTC_OK;
+ 135              		.loc 1 21 9
+ 136 0034 0623     		movs	r3, #6
+ 137              	.L6:
+  22:./Hardware/device/sd8563.c **** }
+ 138              		.loc 1 22 1
+ 139 0036 1846     		mov	r0, r3
+ 140 0038 0837     		adds	r7, r7, #8
+ 141              	.LCFI8:
+ 142              		.cfi_def_cfa_offset 8
+ 143 003a BD46     		mov	sp, r7
+ 144              	.LCFI9:
+ 145              		.cfi_def_cfa_register 13
+ 146              		@ sp needed
+ 147 003c 80BD     		pop	{r7, pc}
+ 148              		.cfi_endproc
+ 149              	.LFE33:
+ 151              		.section	.text.SD8563_ReadTimeDate,"ax",%progbits
+ 152              		.align	1
+ 153              		.global	SD8563_ReadTimeDate
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 4
+
+
+ 154              		.syntax unified
+ 155              		.thumb
+ 156              		.thumb_func
+ 157              		.fpu softvfp
+ 159              	SD8563_ReadTimeDate:
+ 160              	.LFB34:
+  23:./Hardware/device/sd8563.c **** 
+  24:./Hardware/device/sd8563.c **** 
+  25:./Hardware/device/sd8563.c **** rtc_exit_code SD8563_ReadTimeDate(rtc_time *time, i2c_device_bus IIC_x)
+  26:./Hardware/device/sd8563.c **** {
+ 161              		.loc 1 26 1
+ 162              		.cfi_startproc
+ 163              		@ args = 0, pretend = 0, frame = 16
+ 164              		@ frame_needed = 1, uses_anonymous_args = 0
+ 165 0000 80B5     		push	{r7, lr}
+ 166              	.LCFI10:
+ 167              		.cfi_def_cfa_offset 8
+ 168              		.cfi_offset 7, -8
+ 169              		.cfi_offset 14, -4
+ 170 0002 84B0     		sub	sp, sp, #16
+ 171              	.LCFI11:
+ 172              		.cfi_def_cfa_offset 24
+ 173 0004 00AF     		add	r7, sp, #0
+ 174              	.LCFI12:
+ 175              		.cfi_def_cfa_register 7
+ 176 0006 7860     		str	r0, [r7, #4]
+ 177 0008 0B46     		mov	r3, r1
+ 178 000a FB70     		strb	r3, [r7, #3]
+  27:./Hardware/device/sd8563.c **** 	uint8_t buf[7];
+  28:./Hardware/device/sd8563.c **** 
+  29:./Hardware/device/sd8563.c **** 	if(SD8563_read_addr(0x02,buf,7,IIC_x)!=RTC_OK)
+ 179              		.loc 1 29 5
+ 180 000c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 181 000e 07F10801 		add	r1, r7, #8
+ 182 0012 0722     		movs	r2, #7
+ 183 0014 0220     		movs	r0, #2
+ 184 0016 FFF7FEFF 		bl	SD8563_read_addr
+ 185 001a 0346     		mov	r3, r0
+ 186              		.loc 1 29 4
+ 187 001c 062B     		cmp	r3, #6
+ 188 001e 01D0     		beq	.L8
+  30:./Hardware/device/sd8563.c **** 	{
+  31:./Hardware/device/sd8563.c **** 		return RTC_FAIL;
+ 189              		.loc 1 31 10
+ 190 0020 0823     		movs	r3, #8
+ 191 0022 3BE0     		b	.L10
+ 192              	.L8:
+  32:./Hardware/device/sd8563.c **** 	}
+  33:./Hardware/device/sd8563.c **** 	
+  34:./Hardware/device/sd8563.c **** 	time->second=bcd_to_dec(buf[0] & 0x7F);
+ 193              		.loc 1 34 29
+ 194 0024 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 195              		.loc 1 34 15
+ 196 0026 03F07F03 		and	r3, r3, #127
+ 197 002a DBB2     		uxtb	r3, r3
+ 198 002c 1846     		mov	r0, r3
+ 199 002e FFF7FEFF 		bl	bcd_to_dec
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 5
+
+
+ 200 0032 0346     		mov	r3, r0
+ 201 0034 1A46     		mov	r2, r3
+ 202              		.loc 1 34 14
+ 203 0036 7B68     		ldr	r3, [r7, #4]
+ 204 0038 1A70     		strb	r2, [r3]
+  35:./Hardware/device/sd8563.c **** 	time->minute=bcd_to_dec(buf[1]);
+ 205              		.loc 1 35 15
+ 206 003a 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 207 003c 1846     		mov	r0, r3
+ 208 003e FFF7FEFF 		bl	bcd_to_dec
+ 209 0042 0346     		mov	r3, r0
+ 210 0044 1A46     		mov	r2, r3
+ 211              		.loc 1 35 14
+ 212 0046 7B68     		ldr	r3, [r7, #4]
+ 213 0048 5A70     		strb	r2, [r3, #1]
+  36:./Hardware/device/sd8563.c **** 	time->hour=bcd_to_dec(buf[2]);
+ 214              		.loc 1 36 13
+ 215 004a BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 216 004c 1846     		mov	r0, r3
+ 217 004e FFF7FEFF 		bl	bcd_to_dec
+ 218 0052 0346     		mov	r3, r0
+ 219 0054 1A46     		mov	r2, r3
+ 220              		.loc 1 36 12
+ 221 0056 7B68     		ldr	r3, [r7, #4]
+ 222 0058 9A70     		strb	r2, [r3, #2]
+  37:./Hardware/device/sd8563.c **** 	time->day=bcd_to_dec(buf[3]);	
+ 223              		.loc 1 37 12
+ 224 005a FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 225 005c 1846     		mov	r0, r3
+ 226 005e FFF7FEFF 		bl	bcd_to_dec
+ 227 0062 0346     		mov	r3, r0
+ 228 0064 1A46     		mov	r2, r3
+ 229              		.loc 1 37 11
+ 230 0066 7B68     		ldr	r3, [r7, #4]
+ 231 0068 1A71     		strb	r2, [r3, #4]
+  38:./Hardware/device/sd8563.c **** 	time->week=bcd_to_dec(buf[4]);
+ 232              		.loc 1 38 13
+ 233 006a 3B7B     		ldrb	r3, [r7, #12]	@ zero_extendqisi2
+ 234 006c 1846     		mov	r0, r3
+ 235 006e FFF7FEFF 		bl	bcd_to_dec
+ 236 0072 0346     		mov	r3, r0
+ 237 0074 1A46     		mov	r2, r3
+ 238              		.loc 1 38 12
+ 239 0076 7B68     		ldr	r3, [r7, #4]
+ 240 0078 DA70     		strb	r2, [r3, #3]
+  39:./Hardware/device/sd8563.c **** 	time->month=bcd_to_dec(buf[5]);	
+ 241              		.loc 1 39 14
+ 242 007a 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 243 007c 1846     		mov	r0, r3
+ 244 007e FFF7FEFF 		bl	bcd_to_dec
+ 245 0082 0346     		mov	r3, r0
+ 246 0084 1A46     		mov	r2, r3
+ 247              		.loc 1 39 13
+ 248 0086 7B68     		ldr	r3, [r7, #4]
+ 249 0088 5A71     		strb	r2, [r3, #5]
+  40:./Hardware/device/sd8563.c **** 	time->year=bcd_to_dec(buf[6]);
+ 250              		.loc 1 40 13
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 6
+
+
+ 251 008a BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 252 008c 1846     		mov	r0, r3
+ 253 008e FFF7FEFF 		bl	bcd_to_dec
+ 254 0092 0346     		mov	r3, r0
+ 255 0094 1A46     		mov	r2, r3
+ 256              		.loc 1 40 12
+ 257 0096 7B68     		ldr	r3, [r7, #4]
+ 258 0098 9A71     		strb	r2, [r3, #6]
+  41:./Hardware/device/sd8563.c **** 		
+  42:./Hardware/device/sd8563.c **** 	return RTC_OK;
+ 259              		.loc 1 42 9
+ 260 009a 0623     		movs	r3, #6
+ 261              	.L10:
+  43:./Hardware/device/sd8563.c **** 
+  44:./Hardware/device/sd8563.c **** }
+ 262              		.loc 1 44 1 discriminator 1
+ 263 009c 1846     		mov	r0, r3
+ 264 009e 1037     		adds	r7, r7, #16
+ 265              	.LCFI13:
+ 266              		.cfi_def_cfa_offset 8
+ 267 00a0 BD46     		mov	sp, r7
+ 268              	.LCFI14:
+ 269              		.cfi_def_cfa_register 13
+ 270              		@ sp needed
+ 271 00a2 80BD     		pop	{r7, pc}
+ 272              		.cfi_endproc
+ 273              	.LFE34:
+ 275              		.section	.text.SD8563_WriteTimeDate,"ax",%progbits
+ 276              		.align	1
+ 277              		.global	SD8563_WriteTimeDate
+ 278              		.syntax unified
+ 279              		.thumb
+ 280              		.thumb_func
+ 281              		.fpu softvfp
+ 283              	SD8563_WriteTimeDate:
+ 284              	.LFB35:
+  45:./Hardware/device/sd8563.c **** 
+  46:./Hardware/device/sd8563.c **** rtc_exit_code SD8563_WriteTimeDate(rtc_time *time, i2c_device_bus IIC_x)
+  47:./Hardware/device/sd8563.c **** {
+ 285              		.loc 1 47 1
+ 286              		.cfi_startproc
+ 287              		@ args = 0, pretend = 0, frame = 16
+ 288              		@ frame_needed = 1, uses_anonymous_args = 0
+ 289 0000 80B5     		push	{r7, lr}
+ 290              	.LCFI15:
+ 291              		.cfi_def_cfa_offset 8
+ 292              		.cfi_offset 7, -8
+ 293              		.cfi_offset 14, -4
+ 294 0002 84B0     		sub	sp, sp, #16
+ 295              	.LCFI16:
+ 296              		.cfi_def_cfa_offset 24
+ 297 0004 00AF     		add	r7, sp, #0
+ 298              	.LCFI17:
+ 299              		.cfi_def_cfa_register 7
+ 300 0006 7860     		str	r0, [r7, #4]
+ 301 0008 0B46     		mov	r3, r1
+ 302 000a FB70     		strb	r3, [r7, #3]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 7
+
+
+  48:./Hardware/device/sd8563.c **** 	uint8_t buf[7];
+  49:./Hardware/device/sd8563.c **** 
+  50:./Hardware/device/sd8563.c **** 	buf[0]=dec_to_bcd(time->second);
+ 303              		.loc 1 50 9
+ 304 000c 7B68     		ldr	r3, [r7, #4]
+ 305 000e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 306 0010 1846     		mov	r0, r3
+ 307 0012 FFF7FEFF 		bl	dec_to_bcd
+ 308 0016 0346     		mov	r3, r0
+ 309              		.loc 1 50 8
+ 310 0018 3B72     		strb	r3, [r7, #8]
+  51:./Hardware/device/sd8563.c **** 	buf[1]=dec_to_bcd(time->minute);
+ 311              		.loc 1 51 9
+ 312 001a 7B68     		ldr	r3, [r7, #4]
+ 313 001c 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 314 001e 1846     		mov	r0, r3
+ 315 0020 FFF7FEFF 		bl	dec_to_bcd
+ 316 0024 0346     		mov	r3, r0
+ 317              		.loc 1 51 8
+ 318 0026 7B72     		strb	r3, [r7, #9]
+  52:./Hardware/device/sd8563.c **** 	buf[2]=dec_to_bcd(time->hour);
+ 319              		.loc 1 52 9
+ 320 0028 7B68     		ldr	r3, [r7, #4]
+ 321 002a 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 322 002c 1846     		mov	r0, r3
+ 323 002e FFF7FEFF 		bl	dec_to_bcd
+ 324 0032 0346     		mov	r3, r0
+ 325              		.loc 1 52 8
+ 326 0034 BB72     		strb	r3, [r7, #10]
+  53:./Hardware/device/sd8563.c **** 	buf[3]=dec_to_bcd(time->day);
+ 327              		.loc 1 53 9
+ 328 0036 7B68     		ldr	r3, [r7, #4]
+ 329 0038 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 330 003a 1846     		mov	r0, r3
+ 331 003c FFF7FEFF 		bl	dec_to_bcd
+ 332 0040 0346     		mov	r3, r0
+ 333              		.loc 1 53 8
+ 334 0042 FB72     		strb	r3, [r7, #11]
+  54:./Hardware/device/sd8563.c **** 	buf[4]=dec_to_bcd(time->week);
+ 335              		.loc 1 54 9
+ 336 0044 7B68     		ldr	r3, [r7, #4]
+ 337 0046 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 338 0048 1846     		mov	r0, r3
+ 339 004a FFF7FEFF 		bl	dec_to_bcd
+ 340 004e 0346     		mov	r3, r0
+ 341              		.loc 1 54 8
+ 342 0050 3B73     		strb	r3, [r7, #12]
+  55:./Hardware/device/sd8563.c **** 	buf[5]=dec_to_bcd(time->month);
+ 343              		.loc 1 55 9
+ 344 0052 7B68     		ldr	r3, [r7, #4]
+ 345 0054 5B79     		ldrb	r3, [r3, #5]	@ zero_extendqisi2
+ 346 0056 1846     		mov	r0, r3
+ 347 0058 FFF7FEFF 		bl	dec_to_bcd
+ 348 005c 0346     		mov	r3, r0
+ 349              		.loc 1 55 8
+ 350 005e 7B73     		strb	r3, [r7, #13]
+  56:./Hardware/device/sd8563.c **** 	buf[6]=dec_to_bcd(time->year);
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 8
+
+
+ 351              		.loc 1 56 9
+ 352 0060 7B68     		ldr	r3, [r7, #4]
+ 353 0062 9B79     		ldrb	r3, [r3, #6]	@ zero_extendqisi2
+ 354 0064 1846     		mov	r0, r3
+ 355 0066 FFF7FEFF 		bl	dec_to_bcd
+ 356 006a 0346     		mov	r3, r0
+ 357              		.loc 1 56 8
+ 358 006c BB73     		strb	r3, [r7, #14]
+  57:./Hardware/device/sd8563.c **** 
+  58:./Hardware/device/sd8563.c **** 	if(SD8563_write_addr(0x02,buf,7,IIC_x)!=RTC_OK)
+ 359              		.loc 1 58 5
+ 360 006e FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 361 0070 07F10801 		add	r1, r7, #8
+ 362 0074 0722     		movs	r2, #7
+ 363 0076 0220     		movs	r0, #2
+ 364 0078 FFF7FEFF 		bl	SD8563_write_addr
+ 365 007c 0346     		mov	r3, r0
+ 366              		.loc 1 58 4
+ 367 007e 062B     		cmp	r3, #6
+ 368 0080 01D0     		beq	.L12
+  59:./Hardware/device/sd8563.c **** 	{
+  60:./Hardware/device/sd8563.c **** 		return RTC_FAIL;
+ 369              		.loc 1 60 10
+ 370 0082 0823     		movs	r3, #8
+ 371 0084 00E0     		b	.L14
+ 372              	.L12:
+  61:./Hardware/device/sd8563.c **** 	}
+  62:./Hardware/device/sd8563.c **** 	
+  63:./Hardware/device/sd8563.c **** 	return RTC_OK;
+ 373              		.loc 1 63 9
+ 374 0086 0623     		movs	r3, #6
+ 375              	.L14:
+  64:./Hardware/device/sd8563.c **** 	
+  65:./Hardware/device/sd8563.c **** }
+ 376              		.loc 1 65 1 discriminator 1
+ 377 0088 1846     		mov	r0, r3
+ 378 008a 1037     		adds	r7, r7, #16
+ 379              	.LCFI18:
+ 380              		.cfi_def_cfa_offset 8
+ 381 008c BD46     		mov	sp, r7
+ 382              	.LCFI19:
+ 383              		.cfi_def_cfa_register 13
+ 384              		@ sp needed
+ 385 008e 80BD     		pop	{r7, pc}
+ 386              		.cfi_endproc
+ 387              	.LFE35:
+ 389              		.section	.text.sd8563_f1,"ax",%progbits
+ 390              		.align	1
+ 391              		.global	sd8563_f1
+ 392              		.syntax unified
+ 393              		.thumb
+ 394              		.thumb_func
+ 395              		.fpu softvfp
+ 397              	sd8563_f1:
+ 398              	.LFB36:
+  66:./Hardware/device/sd8563.c **** 
+  67:./Hardware/device/sd8563.c **** rtc_exit_code sd8563_f1(i2c_device_bus IIC_x)
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 9
+
+
+  68:./Hardware/device/sd8563.c **** {	
+ 399              		.loc 1 68 1
+ 400              		.cfi_startproc
+ 401              		@ args = 0, pretend = 0, frame = 16
+ 402              		@ frame_needed = 1, uses_anonymous_args = 0
+ 403 0000 80B5     		push	{r7, lr}
+ 404              	.LCFI20:
+ 405              		.cfi_def_cfa_offset 8
+ 406              		.cfi_offset 7, -8
+ 407              		.cfi_offset 14, -4
+ 408 0002 84B0     		sub	sp, sp, #16
+ 409              	.LCFI21:
+ 410              		.cfi_def_cfa_offset 24
+ 411 0004 00AF     		add	r7, sp, #0
+ 412              	.LCFI22:
+ 413              		.cfi_def_cfa_register 7
+ 414 0006 0346     		mov	r3, r0
+ 415 0008 FB71     		strb	r3, [r7, #7]
+  69:./Hardware/device/sd8563.c **** 		uint8_t buf=0x83;
+ 416              		.loc 1 69 11
+ 417 000a 8323     		movs	r3, #131
+ 418 000c FB73     		strb	r3, [r7, #15]
+  70:./Hardware/device/sd8563.c **** 		SD8563_write_addr(0x0D,&buf,1,IIC_x);
+ 419              		.loc 1 70 3
+ 420 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 421 0010 07F10F01 		add	r1, r7, #15
+ 422 0014 0122     		movs	r2, #1
+ 423 0016 0D20     		movs	r0, #13
+ 424 0018 FFF7FEFF 		bl	SD8563_write_addr
+  71:./Hardware/device/sd8563.c **** 	
+  72:./Hardware/device/sd8563.c **** 		return RTC_OK;
+ 425              		.loc 1 72 10
+ 426 001c 0623     		movs	r3, #6
+  73:./Hardware/device/sd8563.c **** 
+  74:./Hardware/device/sd8563.c **** }
+ 427              		.loc 1 74 1
+ 428 001e 1846     		mov	r0, r3
+ 429 0020 1037     		adds	r7, r7, #16
+ 430              	.LCFI23:
+ 431              		.cfi_def_cfa_offset 8
+ 432 0022 BD46     		mov	sp, r7
+ 433              	.LCFI24:
+ 434              		.cfi_def_cfa_register 13
+ 435              		@ sp needed
+ 436 0024 80BD     		pop	{r7, pc}
+ 437              		.cfi_endproc
+ 438              	.LFE36:
+ 440              		.section	.text.sd8563_f1_off,"ax",%progbits
+ 441              		.align	1
+ 442              		.global	sd8563_f1_off
+ 443              		.syntax unified
+ 444              		.thumb
+ 445              		.thumb_func
+ 446              		.fpu softvfp
+ 448              	sd8563_f1_off:
+ 449              	.LFB37:
+  75:./Hardware/device/sd8563.c **** 
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 10
+
+
+  76:./Hardware/device/sd8563.c **** rtc_exit_code sd8563_f1_off(i2c_device_bus IIC_x)
+  77:./Hardware/device/sd8563.c **** {
+ 450              		.loc 1 77 1
+ 451              		.cfi_startproc
+ 452              		@ args = 0, pretend = 0, frame = 16
+ 453              		@ frame_needed = 1, uses_anonymous_args = 0
+ 454 0000 80B5     		push	{r7, lr}
+ 455              	.LCFI25:
+ 456              		.cfi_def_cfa_offset 8
+ 457              		.cfi_offset 7, -8
+ 458              		.cfi_offset 14, -4
+ 459 0002 84B0     		sub	sp, sp, #16
+ 460              	.LCFI26:
+ 461              		.cfi_def_cfa_offset 24
+ 462 0004 00AF     		add	r7, sp, #0
+ 463              	.LCFI27:
+ 464              		.cfi_def_cfa_register 7
+ 465 0006 0346     		mov	r3, r0
+ 466 0008 FB71     		strb	r3, [r7, #7]
+  78:./Hardware/device/sd8563.c **** 		uint8_t buf=0x00;
+ 467              		.loc 1 78 11
+ 468 000a 0023     		movs	r3, #0
+ 469 000c FB73     		strb	r3, [r7, #15]
+  79:./Hardware/device/sd8563.c **** 		SD8563_write_addr(0x0D,&buf,1,IIC_x);
+ 470              		.loc 1 79 3
+ 471 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 472 0010 07F10F01 		add	r1, r7, #15
+ 473 0014 0122     		movs	r2, #1
+ 474 0016 0D20     		movs	r0, #13
+ 475 0018 FFF7FEFF 		bl	SD8563_write_addr
+  80:./Hardware/device/sd8563.c **** 	
+  81:./Hardware/device/sd8563.c **** 		return RTC_OK;
+ 476              		.loc 1 81 10
+ 477 001c 0623     		movs	r3, #6
+  82:./Hardware/device/sd8563.c **** }
+ 478              		.loc 1 82 1
+ 479 001e 1846     		mov	r0, r3
+ 480 0020 1037     		adds	r7, r7, #16
+ 481              	.LCFI28:
+ 482              		.cfi_def_cfa_offset 8
+ 483 0022 BD46     		mov	sp, r7
+ 484              	.LCFI29:
+ 485              		.cfi_def_cfa_register 13
+ 486              		@ sp needed
+ 487 0024 80BD     		pop	{r7, pc}
+ 488              		.cfi_endproc
+ 489              	.LFE37:
+ 491              		.section	.text.sd8563_f32,"ax",%progbits
+ 492              		.align	1
+ 493              		.global	sd8563_f32
+ 494              		.syntax unified
+ 495              		.thumb
+ 496              		.thumb_func
+ 497              		.fpu softvfp
+ 499              	sd8563_f32:
+ 500              	.LFB38:
+  83:./Hardware/device/sd8563.c **** 
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 11
+
+
+  84:./Hardware/device/sd8563.c **** rtc_exit_code sd8563_f32(i2c_device_bus IIC_x)
+  85:./Hardware/device/sd8563.c **** {	
+ 501              		.loc 1 85 1
+ 502              		.cfi_startproc
+ 503              		@ args = 0, pretend = 0, frame = 16
+ 504              		@ frame_needed = 1, uses_anonymous_args = 0
+ 505 0000 80B5     		push	{r7, lr}
+ 506              	.LCFI30:
+ 507              		.cfi_def_cfa_offset 8
+ 508              		.cfi_offset 7, -8
+ 509              		.cfi_offset 14, -4
+ 510 0002 84B0     		sub	sp, sp, #16
+ 511              	.LCFI31:
+ 512              		.cfi_def_cfa_offset 24
+ 513 0004 00AF     		add	r7, sp, #0
+ 514              	.LCFI32:
+ 515              		.cfi_def_cfa_register 7
+ 516 0006 0346     		mov	r3, r0
+ 517 0008 FB71     		strb	r3, [r7, #7]
+  86:./Hardware/device/sd8563.c **** 		uint8_t buf=0x82;
+ 518              		.loc 1 86 11
+ 519 000a 8223     		movs	r3, #130
+ 520 000c FB73     		strb	r3, [r7, #15]
+  87:./Hardware/device/sd8563.c **** 		SD8563_write_addr(0x0D,&buf,1,IIC_x);
+ 521              		.loc 1 87 3
+ 522 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 523 0010 07F10F01 		add	r1, r7, #15
+ 524 0014 0122     		movs	r2, #1
+ 525 0016 0D20     		movs	r0, #13
+ 526 0018 FFF7FEFF 		bl	SD8563_write_addr
+  88:./Hardware/device/sd8563.c **** 	
+  89:./Hardware/device/sd8563.c **** 		return RTC_OK;
+ 527              		.loc 1 89 10
+ 528 001c 0623     		movs	r3, #6
+  90:./Hardware/device/sd8563.c **** 
+  91:./Hardware/device/sd8563.c **** }
+ 529              		.loc 1 91 1
+ 530 001e 1846     		mov	r0, r3
+ 531 0020 1037     		adds	r7, r7, #16
+ 532              	.LCFI33:
+ 533              		.cfi_def_cfa_offset 8
+ 534 0022 BD46     		mov	sp, r7
+ 535              	.LCFI34:
+ 536              		.cfi_def_cfa_register 13
+ 537              		@ sp needed
+ 538 0024 80BD     		pop	{r7, pc}
+ 539              		.cfi_endproc
+ 540              	.LFE38:
+ 542              		.section	.text.sd8563_f32_off,"ax",%progbits
+ 543              		.align	1
+ 544              		.global	sd8563_f32_off
+ 545              		.syntax unified
+ 546              		.thumb
+ 547              		.thumb_func
+ 548              		.fpu softvfp
+ 550              	sd8563_f32_off:
+ 551              	.LFB39:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 12
+
+
+  92:./Hardware/device/sd8563.c **** 
+  93:./Hardware/device/sd8563.c **** rtc_exit_code sd8563_f32_off(i2c_device_bus IIC_x)
+  94:./Hardware/device/sd8563.c **** {
+ 552              		.loc 1 94 1
+ 553              		.cfi_startproc
+ 554              		@ args = 0, pretend = 0, frame = 16
+ 555              		@ frame_needed = 1, uses_anonymous_args = 0
+ 556 0000 80B5     		push	{r7, lr}
+ 557              	.LCFI35:
+ 558              		.cfi_def_cfa_offset 8
+ 559              		.cfi_offset 7, -8
+ 560              		.cfi_offset 14, -4
+ 561 0002 84B0     		sub	sp, sp, #16
+ 562              	.LCFI36:
+ 563              		.cfi_def_cfa_offset 24
+ 564 0004 00AF     		add	r7, sp, #0
+ 565              	.LCFI37:
+ 566              		.cfi_def_cfa_register 7
+ 567 0006 0346     		mov	r3, r0
+ 568 0008 FB71     		strb	r3, [r7, #7]
+  95:./Hardware/device/sd8563.c **** 		uint8_t buf=0x00;
+ 569              		.loc 1 95 11
+ 570 000a 0023     		movs	r3, #0
+ 571 000c FB73     		strb	r3, [r7, #15]
+  96:./Hardware/device/sd8563.c **** 		SD8563_write_addr(0x0D,&buf,1,IIC_x);
+ 572              		.loc 1 96 3
+ 573 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 574 0010 07F10F01 		add	r1, r7, #15
+ 575 0014 0122     		movs	r2, #1
+ 576 0016 0D20     		movs	r0, #13
+ 577 0018 FFF7FEFF 		bl	SD8563_write_addr
+  97:./Hardware/device/sd8563.c **** 	
+  98:./Hardware/device/sd8563.c **** 		return RTC_OK;
+ 578              		.loc 1 98 10
+ 579 001c 0623     		movs	r3, #6
+  99:./Hardware/device/sd8563.c **** }
+ 580              		.loc 1 99 1
+ 581 001e 1846     		mov	r0, r3
+ 582 0020 1037     		adds	r7, r7, #16
+ 583              	.LCFI38:
+ 584              		.cfi_def_cfa_offset 8
+ 585 0022 BD46     		mov	sp, r7
+ 586              	.LCFI39:
+ 587              		.cfi_def_cfa_register 13
+ 588              		@ sp needed
+ 589 0024 80BD     		pop	{r7, pc}
+ 590              		.cfi_endproc
+ 591              	.LFE39:
+ 593              		.section	.text.sd8563_f1024,"ax",%progbits
+ 594              		.align	1
+ 595              		.global	sd8563_f1024
+ 596              		.syntax unified
+ 597              		.thumb
+ 598              		.thumb_func
+ 599              		.fpu softvfp
+ 601              	sd8563_f1024:
+ 602              	.LFB40:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 13
+
+
+ 100:./Hardware/device/sd8563.c **** 
+ 101:./Hardware/device/sd8563.c **** rtc_exit_code sd8563_f1024(i2c_device_bus IIC_x)
+ 102:./Hardware/device/sd8563.c **** {	
+ 603              		.loc 1 102 1
+ 604              		.cfi_startproc
+ 605              		@ args = 0, pretend = 0, frame = 16
+ 606              		@ frame_needed = 1, uses_anonymous_args = 0
+ 607 0000 80B5     		push	{r7, lr}
+ 608              	.LCFI40:
+ 609              		.cfi_def_cfa_offset 8
+ 610              		.cfi_offset 7, -8
+ 611              		.cfi_offset 14, -4
+ 612 0002 84B0     		sub	sp, sp, #16
+ 613              	.LCFI41:
+ 614              		.cfi_def_cfa_offset 24
+ 615 0004 00AF     		add	r7, sp, #0
+ 616              	.LCFI42:
+ 617              		.cfi_def_cfa_register 7
+ 618 0006 0346     		mov	r3, r0
+ 619 0008 FB71     		strb	r3, [r7, #7]
+ 103:./Hardware/device/sd8563.c **** 		uint8_t buf=0x81;
+ 620              		.loc 1 103 11
+ 621 000a 8123     		movs	r3, #129
+ 622 000c FB73     		strb	r3, [r7, #15]
+ 104:./Hardware/device/sd8563.c **** 		SD8563_write_addr(0x0D,&buf,1,IIC_x);
+ 623              		.loc 1 104 3
+ 624 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 625 0010 07F10F01 		add	r1, r7, #15
+ 626 0014 0122     		movs	r2, #1
+ 627 0016 0D20     		movs	r0, #13
+ 628 0018 FFF7FEFF 		bl	SD8563_write_addr
+ 105:./Hardware/device/sd8563.c **** 	
+ 106:./Hardware/device/sd8563.c **** 		return RTC_OK;
+ 629              		.loc 1 106 10
+ 630 001c 0623     		movs	r3, #6
+ 107:./Hardware/device/sd8563.c **** 
+ 108:./Hardware/device/sd8563.c **** }
+ 631              		.loc 1 108 1
+ 632 001e 1846     		mov	r0, r3
+ 633 0020 1037     		adds	r7, r7, #16
+ 634              	.LCFI43:
+ 635              		.cfi_def_cfa_offset 8
+ 636 0022 BD46     		mov	sp, r7
+ 637              	.LCFI44:
+ 638              		.cfi_def_cfa_register 13
+ 639              		@ sp needed
+ 640 0024 80BD     		pop	{r7, pc}
+ 641              		.cfi_endproc
+ 642              	.LFE40:
+ 644              		.section	.text.sd8563_f1024_off,"ax",%progbits
+ 645              		.align	1
+ 646              		.global	sd8563_f1024_off
+ 647              		.syntax unified
+ 648              		.thumb
+ 649              		.thumb_func
+ 650              		.fpu softvfp
+ 652              	sd8563_f1024_off:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 14
+
+
+ 653              	.LFB41:
+ 109:./Hardware/device/sd8563.c **** 
+ 110:./Hardware/device/sd8563.c **** rtc_exit_code sd8563_f1024_off(i2c_device_bus IIC_x)
+ 111:./Hardware/device/sd8563.c **** {
+ 654              		.loc 1 111 1
+ 655              		.cfi_startproc
+ 656              		@ args = 0, pretend = 0, frame = 16
+ 657              		@ frame_needed = 1, uses_anonymous_args = 0
+ 658 0000 80B5     		push	{r7, lr}
+ 659              	.LCFI45:
+ 660              		.cfi_def_cfa_offset 8
+ 661              		.cfi_offset 7, -8
+ 662              		.cfi_offset 14, -4
+ 663 0002 84B0     		sub	sp, sp, #16
+ 664              	.LCFI46:
+ 665              		.cfi_def_cfa_offset 24
+ 666 0004 00AF     		add	r7, sp, #0
+ 667              	.LCFI47:
+ 668              		.cfi_def_cfa_register 7
+ 669 0006 0346     		mov	r3, r0
+ 670 0008 FB71     		strb	r3, [r7, #7]
+ 112:./Hardware/device/sd8563.c **** 		uint8_t buf=0x00;
+ 671              		.loc 1 112 11
+ 672 000a 0023     		movs	r3, #0
+ 673 000c FB73     		strb	r3, [r7, #15]
+ 113:./Hardware/device/sd8563.c **** 		SD8563_write_addr(0x0D,&buf,1,IIC_x);
+ 674              		.loc 1 113 3
+ 675 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 676 0010 07F10F01 		add	r1, r7, #15
+ 677 0014 0122     		movs	r2, #1
+ 678 0016 0D20     		movs	r0, #13
+ 679 0018 FFF7FEFF 		bl	SD8563_write_addr
+ 114:./Hardware/device/sd8563.c **** 	
+ 115:./Hardware/device/sd8563.c **** 		return RTC_OK;
+ 680              		.loc 1 115 10
+ 681 001c 0623     		movs	r3, #6
+ 116:./Hardware/device/sd8563.c **** }
+ 682              		.loc 1 116 1
+ 683 001e 1846     		mov	r0, r3
+ 684 0020 1037     		adds	r7, r7, #16
+ 685              	.LCFI48:
+ 686              		.cfi_def_cfa_offset 8
+ 687 0022 BD46     		mov	sp, r7
+ 688              	.LCFI49:
+ 689              		.cfi_def_cfa_register 13
+ 690              		@ sp needed
+ 691 0024 80BD     		pop	{r7, pc}
+ 692              		.cfi_endproc
+ 693              	.LFE41:
+ 695              		.section	.text.sd8563_f32768,"ax",%progbits
+ 696              		.align	1
+ 697              		.global	sd8563_f32768
+ 698              		.syntax unified
+ 699              		.thumb
+ 700              		.thumb_func
+ 701              		.fpu softvfp
+ 703              	sd8563_f32768:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 15
+
+
+ 704              	.LFB42:
+ 117:./Hardware/device/sd8563.c **** 
+ 118:./Hardware/device/sd8563.c **** rtc_exit_code sd8563_f32768(i2c_device_bus IIC_x)
+ 119:./Hardware/device/sd8563.c **** {	
+ 705              		.loc 1 119 1
+ 706              		.cfi_startproc
+ 707              		@ args = 0, pretend = 0, frame = 16
+ 708              		@ frame_needed = 1, uses_anonymous_args = 0
+ 709 0000 80B5     		push	{r7, lr}
+ 710              	.LCFI50:
+ 711              		.cfi_def_cfa_offset 8
+ 712              		.cfi_offset 7, -8
+ 713              		.cfi_offset 14, -4
+ 714 0002 84B0     		sub	sp, sp, #16
+ 715              	.LCFI51:
+ 716              		.cfi_def_cfa_offset 24
+ 717 0004 00AF     		add	r7, sp, #0
+ 718              	.LCFI52:
+ 719              		.cfi_def_cfa_register 7
+ 720 0006 0346     		mov	r3, r0
+ 721 0008 FB71     		strb	r3, [r7, #7]
+ 120:./Hardware/device/sd8563.c **** 		uint8_t buf=0x80;
+ 722              		.loc 1 120 11
+ 723 000a 8023     		movs	r3, #128
+ 724 000c FB73     		strb	r3, [r7, #15]
+ 121:./Hardware/device/sd8563.c **** 		SD8563_write_addr(0x0D,&buf,1,IIC_x);
+ 725              		.loc 1 121 3
+ 726 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 727 0010 07F10F01 		add	r1, r7, #15
+ 728 0014 0122     		movs	r2, #1
+ 729 0016 0D20     		movs	r0, #13
+ 730 0018 FFF7FEFF 		bl	SD8563_write_addr
+ 122:./Hardware/device/sd8563.c **** 	
+ 123:./Hardware/device/sd8563.c **** 		return RTC_OK;
+ 731              		.loc 1 123 10
+ 732 001c 0623     		movs	r3, #6
+ 124:./Hardware/device/sd8563.c **** 
+ 125:./Hardware/device/sd8563.c **** }
+ 733              		.loc 1 125 1
+ 734 001e 1846     		mov	r0, r3
+ 735 0020 1037     		adds	r7, r7, #16
+ 736              	.LCFI53:
+ 737              		.cfi_def_cfa_offset 8
+ 738 0022 BD46     		mov	sp, r7
+ 739              	.LCFI54:
+ 740              		.cfi_def_cfa_register 13
+ 741              		@ sp needed
+ 742 0024 80BD     		pop	{r7, pc}
+ 743              		.cfi_endproc
+ 744              	.LFE42:
+ 746              		.section	.text.sd8563_f32768_off,"ax",%progbits
+ 747              		.align	1
+ 748              		.global	sd8563_f32768_off
+ 749              		.syntax unified
+ 750              		.thumb
+ 751              		.thumb_func
+ 752              		.fpu softvfp
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 16
+
+
+ 754              	sd8563_f32768_off:
+ 755              	.LFB43:
+ 126:./Hardware/device/sd8563.c **** 
+ 127:./Hardware/device/sd8563.c **** rtc_exit_code sd8563_f32768_off(i2c_device_bus IIC_x)
+ 128:./Hardware/device/sd8563.c **** {
+ 756              		.loc 1 128 1
+ 757              		.cfi_startproc
+ 758              		@ args = 0, pretend = 0, frame = 16
+ 759              		@ frame_needed = 1, uses_anonymous_args = 0
+ 760 0000 80B5     		push	{r7, lr}
+ 761              	.LCFI55:
+ 762              		.cfi_def_cfa_offset 8
+ 763              		.cfi_offset 7, -8
+ 764              		.cfi_offset 14, -4
+ 765 0002 84B0     		sub	sp, sp, #16
+ 766              	.LCFI56:
+ 767              		.cfi_def_cfa_offset 24
+ 768 0004 00AF     		add	r7, sp, #0
+ 769              	.LCFI57:
+ 770              		.cfi_def_cfa_register 7
+ 771 0006 0346     		mov	r3, r0
+ 772 0008 FB71     		strb	r3, [r7, #7]
+ 129:./Hardware/device/sd8563.c **** 		uint8_t buf=0x00;
+ 773              		.loc 1 129 11
+ 774 000a 0023     		movs	r3, #0
+ 775 000c FB73     		strb	r3, [r7, #15]
+ 130:./Hardware/device/sd8563.c **** 		SD8563_write_addr(0x0D,&buf,1,IIC_x);
+ 776              		.loc 1 130 3
+ 777 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 778 0010 07F10F01 		add	r1, r7, #15
+ 779 0014 0122     		movs	r2, #1
+ 780 0016 0D20     		movs	r0, #13
+ 781 0018 FFF7FEFF 		bl	SD8563_write_addr
+ 131:./Hardware/device/sd8563.c **** 	
+ 132:./Hardware/device/sd8563.c **** 		return RTC_OK;
+ 782              		.loc 1 132 10
+ 783 001c 0623     		movs	r3, #6
+ 133:./Hardware/device/sd8563.c **** }
+ 784              		.loc 1 133 1
+ 785 001e 1846     		mov	r0, r3
+ 786 0020 1037     		adds	r7, r7, #16
+ 787              	.LCFI58:
+ 788              		.cfi_def_cfa_offset 8
+ 789 0022 BD46     		mov	sp, r7
+ 790              	.LCFI59:
+ 791              		.cfi_def_cfa_register 13
+ 792              		@ sp needed
+ 793 0024 80BD     		pop	{r7, pc}
+ 794              		.cfi_endproc
+ 795              	.LFE43:
+ 797              		.section	.text.sd85xx_and_std,"ax",%progbits
+ 798              		.align	1
+ 799              		.global	sd85xx_and_std
+ 800              		.syntax unified
+ 801              		.thumb
+ 802              		.thumb_func
+ 803              		.fpu softvfp
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 17
+
+
+ 805              	sd85xx_and_std:
+ 806              	.LFB44:
+ 134:./Hardware/device/sd8563.c **** 
+ 135:./Hardware/device/sd8563.c **** uint8_t sd85xx_and_std(void)
+ 136:./Hardware/device/sd8563.c **** {
+ 807              		.loc 1 136 1
+ 808              		.cfi_startproc
+ 809              		@ args = 0, pretend = 0, frame = 24
+ 810              		@ frame_needed = 1, uses_anonymous_args = 0
+ 811 0000 80B5     		push	{r7, lr}
+ 812              	.LCFI60:
+ 813              		.cfi_def_cfa_offset 8
+ 814              		.cfi_offset 7, -8
+ 815              		.cfi_offset 14, -4
+ 816 0002 88B0     		sub	sp, sp, #32
+ 817              	.LCFI61:
+ 818              		.cfi_def_cfa_offset 40
+ 819 0004 02AF     		add	r7, sp, #8
+ 820              	.LCFI62:
+ 821              		.cfi_def_cfa 7, 32
+ 137:./Hardware/device/sd8563.c **** 	uint8_t year_h,year_l;
+ 138:./Hardware/device/sd8563.c **** 	uint8_t month_h,month_l;
+ 139:./Hardware/device/sd8563.c **** 	uint8_t day_h,day_l;
+ 140:./Hardware/device/sd8563.c **** 	uint8_t week;
+ 141:./Hardware/device/sd8563.c **** 	uint8_t hour_h,hour_l;
+ 142:./Hardware/device/sd8563.c **** 	uint8_t minute_h,minute_l;
+ 143:./Hardware/device/sd8563.c **** 	uint8_t second_h,second_l;
+ 144:./Hardware/device/sd8563.c **** 	
+ 145:./Hardware/device/sd8563.c **** 	rtc_time time_buf;
+ 146:./Hardware/device/sd8563.c **** 	
+ 147:./Hardware/device/sd8563.c **** 	sd2405showtime();
+ 822              		.loc 1 147 2
+ 823 0006 FFF7FEFF 		bl	sd2405showtime
+ 148:./Hardware/device/sd8563.c **** 	Test_Line();
+ 824              		.loc 1 148 2
+ 825 000a FFF7FEFF 		bl	Test_Line
+ 149:./Hardware/device/sd8563.c **** 	
+ 150:./Hardware/device/sd8563.c **** 	if(SD8563_ReadTimeDate(&time_buf,IIC_TEST)!=RTC_FAIL)
+ 826              		.loc 1 150 5
+ 827 000e 3B1D     		adds	r3, r7, #4
+ 828 0010 0021     		movs	r1, #0
+ 829 0012 1846     		mov	r0, r3
+ 830 0014 FFF7FEFF 		bl	SD8563_ReadTimeDate
+ 831 0018 0346     		mov	r3, r0
+ 832              		.loc 1 150 4
+ 833 001a 082B     		cmp	r3, #8
+ 834 001c 00F0F080 		beq	.L32
+ 151:./Hardware/device/sd8563.c **** 	{
+ 152:./Hardware/device/sd8563.c **** 			year_h = time_buf.year / 10;
+ 835              		.loc 1 152 21
+ 836 0020 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 837              		.loc 1 152 11
+ 838 0022 7B4A     		ldr	r2, .L35
+ 839 0024 A2FB0323 		umull	r2, r3, r2, r3
+ 840 0028 DB08     		lsrs	r3, r3, #3
+ 841 002a FB75     		strb	r3, [r7, #23]
+ 153:./Hardware/device/sd8563.c **** 			year_l = time_buf.year % 10;  //Äê
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 18
+
+
+ 842              		.loc 1 153 21
+ 843 002c BA7A     		ldrb	r2, [r7, #10]	@ zero_extendqisi2
+ 844              		.loc 1 153 11
+ 845 002e 784B     		ldr	r3, .L35
+ 846 0030 A3FB0213 		umull	r1, r3, r3, r2
+ 847 0034 D908     		lsrs	r1, r3, #3
+ 848 0036 0B46     		mov	r3, r1
+ 849 0038 9B00     		lsls	r3, r3, #2
+ 850 003a 0B44     		add	r3, r3, r1
+ 851 003c 5B00     		lsls	r3, r3, #1
+ 852 003e D31A     		subs	r3, r2, r3
+ 853 0040 BB75     		strb	r3, [r7, #22]
+ 154:./Hardware/device/sd8563.c **** 
+ 155:./Hardware/device/sd8563.c **** 			month_h = time_buf.month / 10;
+ 854              		.loc 1 155 22
+ 855 0042 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 856              		.loc 1 155 12
+ 857 0044 724A     		ldr	r2, .L35
+ 858 0046 A2FB0323 		umull	r2, r3, r2, r3
+ 859 004a DB08     		lsrs	r3, r3, #3
+ 860 004c 7B75     		strb	r3, [r7, #21]
+ 156:./Hardware/device/sd8563.c **** 			month_l = time_buf.month % 10;  //ÔÂ
+ 861              		.loc 1 156 22
+ 862 004e 7A7A     		ldrb	r2, [r7, #9]	@ zero_extendqisi2
+ 863              		.loc 1 156 12
+ 864 0050 6F4B     		ldr	r3, .L35
+ 865 0052 A3FB0213 		umull	r1, r3, r3, r2
+ 866 0056 D908     		lsrs	r1, r3, #3
+ 867 0058 0B46     		mov	r3, r1
+ 868 005a 9B00     		lsls	r3, r3, #2
+ 869 005c 0B44     		add	r3, r3, r1
+ 870 005e 5B00     		lsls	r3, r3, #1
+ 871 0060 D31A     		subs	r3, r2, r3
+ 872 0062 3B75     		strb	r3, [r7, #20]
+ 157:./Hardware/device/sd8563.c **** 
+ 158:./Hardware/device/sd8563.c **** 			day_h = time_buf.day / 10;
+ 873              		.loc 1 158 20
+ 874 0064 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 875              		.loc 1 158 10
+ 876 0066 6A4A     		ldr	r2, .L35
+ 877 0068 A2FB0323 		umull	r2, r3, r2, r3
+ 878 006c DB08     		lsrs	r3, r3, #3
+ 879 006e FB74     		strb	r3, [r7, #19]
+ 159:./Hardware/device/sd8563.c **** 			day_l = time_buf.day % 10;  //ÈÕ
+ 880              		.loc 1 159 20
+ 881 0070 3A7A     		ldrb	r2, [r7, #8]	@ zero_extendqisi2
+ 882              		.loc 1 159 10
+ 883 0072 674B     		ldr	r3, .L35
+ 884 0074 A3FB0213 		umull	r1, r3, r3, r2
+ 885 0078 D908     		lsrs	r1, r3, #3
+ 886 007a 0B46     		mov	r3, r1
+ 887 007c 9B00     		lsls	r3, r3, #2
+ 888 007e 0B44     		add	r3, r3, r1
+ 889 0080 5B00     		lsls	r3, r3, #1
+ 890 0082 D31A     		subs	r3, r2, r3
+ 891 0084 BB74     		strb	r3, [r7, #18]
+ 160:./Hardware/device/sd8563.c **** 
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 19
+
+
+ 161:./Hardware/device/sd8563.c **** 			week  = time_buf.week;
+ 892              		.loc 1 161 10
+ 893 0086 FB79     		ldrb	r3, [r7, #7]
+ 894 0088 7B74     		strb	r3, [r7, #17]
+ 162:./Hardware/device/sd8563.c **** 
+ 163:./Hardware/device/sd8563.c **** 			hour_h = time_buf.hour / 10;
+ 895              		.loc 1 163 21
+ 896 008a BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 897              		.loc 1 163 11
+ 898 008c 604A     		ldr	r2, .L35
+ 899 008e A2FB0323 		umull	r2, r3, r2, r3
+ 900 0092 DB08     		lsrs	r3, r3, #3
+ 901 0094 3B74     		strb	r3, [r7, #16]
+ 164:./Hardware/device/sd8563.c **** 			hour_l = time_buf.hour % 10;  //Ê±
+ 902              		.loc 1 164 21
+ 903 0096 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 904              		.loc 1 164 11
+ 905 0098 5D4B     		ldr	r3, .L35
+ 906 009a A3FB0213 		umull	r1, r3, r3, r2
+ 907 009e D908     		lsrs	r1, r3, #3
+ 908 00a0 0B46     		mov	r3, r1
+ 909 00a2 9B00     		lsls	r3, r3, #2
+ 910 00a4 0B44     		add	r3, r3, r1
+ 911 00a6 5B00     		lsls	r3, r3, #1
+ 912 00a8 D31A     		subs	r3, r2, r3
+ 913 00aa FB73     		strb	r3, [r7, #15]
+ 165:./Hardware/device/sd8563.c **** 
+ 166:./Hardware/device/sd8563.c **** 			minute_h = time_buf.minute / 10;
+ 914              		.loc 1 166 23
+ 915 00ac 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 916              		.loc 1 166 13
+ 917 00ae 584A     		ldr	r2, .L35
+ 918 00b0 A2FB0323 		umull	r2, r3, r2, r3
+ 919 00b4 DB08     		lsrs	r3, r3, #3
+ 920 00b6 BB73     		strb	r3, [r7, #14]
+ 167:./Hardware/device/sd8563.c **** 			minute_l = time_buf.minute % 10;  //·Ö
+ 921              		.loc 1 167 23
+ 922 00b8 7A79     		ldrb	r2, [r7, #5]	@ zero_extendqisi2
+ 923              		.loc 1 167 13
+ 924 00ba 554B     		ldr	r3, .L35
+ 925 00bc A3FB0213 		umull	r1, r3, r3, r2
+ 926 00c0 D908     		lsrs	r1, r3, #3
+ 927 00c2 0B46     		mov	r3, r1
+ 928 00c4 9B00     		lsls	r3, r3, #2
+ 929 00c6 0B44     		add	r3, r3, r1
+ 930 00c8 5B00     		lsls	r3, r3, #1
+ 931 00ca D31A     		subs	r3, r2, r3
+ 932 00cc 7B73     		strb	r3, [r7, #13]
+ 168:./Hardware/device/sd8563.c **** 
+ 169:./Hardware/device/sd8563.c **** 			second_h = time_buf.second / 10;
+ 933              		.loc 1 169 23
+ 934 00ce 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 935              		.loc 1 169 13
+ 936 00d0 4F4A     		ldr	r2, .L35
+ 937 00d2 A2FB0323 		umull	r2, r3, r2, r3
+ 938 00d6 DB08     		lsrs	r3, r3, #3
+ 939 00d8 3B73     		strb	r3, [r7, #12]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 20
+
+
+ 170:./Hardware/device/sd8563.c **** 			second_l = time_buf.second % 10; //Ãë
+ 940              		.loc 1 170 23
+ 941 00da 3A79     		ldrb	r2, [r7, #4]	@ zero_extendqisi2
+ 942              		.loc 1 170 13
+ 943 00dc 4C4B     		ldr	r3, .L35
+ 944 00de A3FB0213 		umull	r1, r3, r3, r2
+ 945 00e2 D908     		lsrs	r1, r3, #3
+ 946 00e4 0B46     		mov	r3, r1
+ 947 00e6 9B00     		lsls	r3, r3, #2
+ 948 00e8 0B44     		add	r3, r3, r1
+ 949 00ea 5B00     		lsls	r3, r3, #1
+ 950 00ec D31A     		subs	r3, r2, r3
+ 951 00ee FB72     		strb	r3, [r7, #11]
+ 171:./Hardware/device/sd8563.c **** 
+ 172:./Hardware/device/sd8563.c **** 			OLED_ShowNum(30,42,year_h,1,OLED_6X8);//Ïà¸ôÏÔÊ¾µÄÊý¾ÝXÖá¼ä¸ô7¸ö×ø±ê£¬Ïà¸ôÏÔÊ¾µÄÊý¾ÝYÖá¼ä¸ô15¸ö×
+ 952              		.loc 1 172 4
+ 953 00f0 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 954 00f2 0623     		movs	r3, #6
+ 955 00f4 0093     		str	r3, [sp]
+ 956 00f6 0123     		movs	r3, #1
+ 957 00f8 2A21     		movs	r1, #42
+ 958 00fa 1E20     		movs	r0, #30
+ 959 00fc FFF7FEFF 		bl	OLED_ShowNum
+ 173:./Hardware/device/sd8563.c **** 			OLED_ShowNum(37,42,year_l,1,OLED_6X8);
+ 960              		.loc 1 173 4
+ 961 0100 BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 962 0102 0623     		movs	r3, #6
+ 963 0104 0093     		str	r3, [sp]
+ 964 0106 0123     		movs	r3, #1
+ 965 0108 2A21     		movs	r1, #42
+ 966 010a 2520     		movs	r0, #37
+ 967 010c FFF7FEFF 		bl	OLED_ShowNum
+ 174:./Hardware/device/sd8563.c **** 			OLED_ShowChar(44,42,'-',OLED_6X8);
+ 968              		.loc 1 174 4
+ 969 0110 0623     		movs	r3, #6
+ 970 0112 2D22     		movs	r2, #45
+ 971 0114 2A21     		movs	r1, #42
+ 972 0116 2C20     		movs	r0, #44
+ 973 0118 FFF7FEFF 		bl	OLED_ShowChar
+ 175:./Hardware/device/sd8563.c **** 			OLED_ShowNum(51,42,month_h,1,OLED_6X8);
+ 974              		.loc 1 175 4
+ 975 011c 7A7D     		ldrb	r2, [r7, #21]	@ zero_extendqisi2
+ 976 011e 0623     		movs	r3, #6
+ 977 0120 0093     		str	r3, [sp]
+ 978 0122 0123     		movs	r3, #1
+ 979 0124 2A21     		movs	r1, #42
+ 980 0126 3320     		movs	r0, #51
+ 981 0128 FFF7FEFF 		bl	OLED_ShowNum
+ 176:./Hardware/device/sd8563.c **** 			OLED_ShowNum(58,42,month_l,1,OLED_6X8);
+ 982              		.loc 1 176 4
+ 983 012c 3A7D     		ldrb	r2, [r7, #20]	@ zero_extendqisi2
+ 984 012e 0623     		movs	r3, #6
+ 985 0130 0093     		str	r3, [sp]
+ 986 0132 0123     		movs	r3, #1
+ 987 0134 2A21     		movs	r1, #42
+ 988 0136 3A20     		movs	r0, #58
+ 989 0138 FFF7FEFF 		bl	OLED_ShowNum
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 21
+
+
+ 177:./Hardware/device/sd8563.c **** 			OLED_ShowChar(65,42,'-',OLED_6X8);
+ 990              		.loc 1 177 4
+ 991 013c 0623     		movs	r3, #6
+ 992 013e 2D22     		movs	r2, #45
+ 993 0140 2A21     		movs	r1, #42
+ 994 0142 4120     		movs	r0, #65
+ 995 0144 FFF7FEFF 		bl	OLED_ShowChar
+ 178:./Hardware/device/sd8563.c **** 			OLED_ShowNum(72,42,day_h,1,OLED_6X8);
+ 996              		.loc 1 178 4
+ 997 0148 FA7C     		ldrb	r2, [r7, #19]	@ zero_extendqisi2
+ 998 014a 0623     		movs	r3, #6
+ 999 014c 0093     		str	r3, [sp]
+ 1000 014e 0123     		movs	r3, #1
+ 1001 0150 2A21     		movs	r1, #42
+ 1002 0152 4820     		movs	r0, #72
+ 1003 0154 FFF7FEFF 		bl	OLED_ShowNum
+ 179:./Hardware/device/sd8563.c **** 			OLED_ShowNum(79,42,day_l,1,OLED_6X8);
+ 1004              		.loc 1 179 4
+ 1005 0158 BA7C     		ldrb	r2, [r7, #18]	@ zero_extendqisi2
+ 1006 015a 0623     		movs	r3, #6
+ 1007 015c 0093     		str	r3, [sp]
+ 1008 015e 0123     		movs	r3, #1
+ 1009 0160 2A21     		movs	r1, #42
+ 1010 0162 4F20     		movs	r0, #79
+ 1011 0164 FFF7FEFF 		bl	OLED_ShowNum
+ 180:./Hardware/device/sd8563.c **** 			OLED_ShowChar(90,42,'W',OLED_6X8);
+ 1012              		.loc 1 180 4
+ 1013 0168 0623     		movs	r3, #6
+ 1014 016a 5722     		movs	r2, #87
+ 1015 016c 2A21     		movs	r1, #42
+ 1016 016e 5A20     		movs	r0, #90
+ 1017 0170 FFF7FEFF 		bl	OLED_ShowChar
+ 181:./Hardware/device/sd8563.c **** 			OLED_ShowNum(99,42,week,1,OLED_6X8);
+ 1018              		.loc 1 181 4
+ 1019 0174 7A7C     		ldrb	r2, [r7, #17]	@ zero_extendqisi2
+ 1020 0176 0623     		movs	r3, #6
+ 1021 0178 0093     		str	r3, [sp]
+ 1022 017a 0123     		movs	r3, #1
+ 1023 017c 2A21     		movs	r1, #42
+ 1024 017e 6320     		movs	r0, #99
+ 1025 0180 FFF7FEFF 		bl	OLED_ShowNum
+ 182:./Hardware/device/sd8563.c **** 
+ 183:./Hardware/device/sd8563.c **** 			OLED_ShowNum(35,53,hour_h,1,OLED_6X8);
+ 1026              		.loc 1 183 4
+ 1027 0184 3A7C     		ldrb	r2, [r7, #16]	@ zero_extendqisi2
+ 1028 0186 0623     		movs	r3, #6
+ 1029 0188 0093     		str	r3, [sp]
+ 1030 018a 0123     		movs	r3, #1
+ 1031 018c 3521     		movs	r1, #53
+ 1032 018e 2320     		movs	r0, #35
+ 1033 0190 FFF7FEFF 		bl	OLED_ShowNum
+ 184:./Hardware/device/sd8563.c **** 			OLED_ShowNum(42,53,hour_l,1,OLED_6X8);
+ 1034              		.loc 1 184 4
+ 1035 0194 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 1036 0196 0623     		movs	r3, #6
+ 1037 0198 0093     		str	r3, [sp]
+ 1038 019a 0123     		movs	r3, #1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 22
+
+
+ 1039 019c 3521     		movs	r1, #53
+ 1040 019e 2A20     		movs	r0, #42
+ 1041 01a0 FFF7FEFF 		bl	OLED_ShowNum
+ 185:./Hardware/device/sd8563.c **** 			OLED_ShowChar(49,53,':',OLED_6X8);
+ 1042              		.loc 1 185 4
+ 1043 01a4 0623     		movs	r3, #6
+ 1044 01a6 3A22     		movs	r2, #58
+ 1045 01a8 3521     		movs	r1, #53
+ 1046 01aa 3120     		movs	r0, #49
+ 1047 01ac FFF7FEFF 		bl	OLED_ShowChar
+ 186:./Hardware/device/sd8563.c **** 			OLED_ShowNum(56,53,minute_h,1,OLED_6X8);
+ 1048              		.loc 1 186 4
+ 1049 01b0 BA7B     		ldrb	r2, [r7, #14]	@ zero_extendqisi2
+ 1050 01b2 0623     		movs	r3, #6
+ 1051 01b4 0093     		str	r3, [sp]
+ 1052 01b6 0123     		movs	r3, #1
+ 1053 01b8 3521     		movs	r1, #53
+ 1054 01ba 3820     		movs	r0, #56
+ 1055 01bc FFF7FEFF 		bl	OLED_ShowNum
+ 187:./Hardware/device/sd8563.c **** 			OLED_ShowNum(63,53,minute_l,1,OLED_6X8);
+ 1056              		.loc 1 187 4
+ 1057 01c0 7A7B     		ldrb	r2, [r7, #13]	@ zero_extendqisi2
+ 1058 01c2 0623     		movs	r3, #6
+ 1059 01c4 0093     		str	r3, [sp]
+ 1060 01c6 0123     		movs	r3, #1
+ 1061 01c8 3521     		movs	r1, #53
+ 1062 01ca 3F20     		movs	r0, #63
+ 1063 01cc FFF7FEFF 		bl	OLED_ShowNum
+ 188:./Hardware/device/sd8563.c **** 			OLED_ShowChar(70,53,':',OLED_6X8);
+ 1064              		.loc 1 188 4
+ 1065 01d0 0623     		movs	r3, #6
+ 1066 01d2 3A22     		movs	r2, #58
+ 1067 01d4 3521     		movs	r1, #53
+ 1068 01d6 4620     		movs	r0, #70
+ 1069 01d8 FFF7FEFF 		bl	OLED_ShowChar
+ 189:./Hardware/device/sd8563.c **** 			OLED_ShowNum(77,53,second_h,1,OLED_6X8);
+ 1070              		.loc 1 189 4
+ 1071 01dc 3A7B     		ldrb	r2, [r7, #12]	@ zero_extendqisi2
+ 1072 01de 0623     		movs	r3, #6
+ 1073 01e0 0093     		str	r3, [sp]
+ 1074 01e2 0123     		movs	r3, #1
+ 1075 01e4 3521     		movs	r1, #53
+ 1076 01e6 4D20     		movs	r0, #77
+ 1077 01e8 FFF7FEFF 		bl	OLED_ShowNum
+ 190:./Hardware/device/sd8563.c **** 			OLED_ShowNum(84,53,second_l,1,OLED_6X8);
+ 1078              		.loc 1 190 4
+ 1079 01ec FA7A     		ldrb	r2, [r7, #11]	@ zero_extendqisi2
+ 1080 01ee 0623     		movs	r3, #6
+ 1081 01f0 0093     		str	r3, [sp]
+ 1082 01f2 0123     		movs	r3, #1
+ 1083 01f4 3521     		movs	r1, #53
+ 1084 01f6 5420     		movs	r0, #84
+ 1085 01f8 FFF7FEFF 		bl	OLED_ShowNum
+ 191:./Hardware/device/sd8563.c **** 	
+ 192:./Hardware/device/sd8563.c **** 		return RTC_OK;
+ 1086              		.loc 1 192 10
+ 1087 01fc 0623     		movs	r3, #6
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 23
+
+
+ 1088 01fe 02E0     		b	.L34
+ 1089              	.L32:
+ 193:./Hardware/device/sd8563.c **** 		
+ 194:./Hardware/device/sd8563.c **** 	}else{
+ 195:./Hardware/device/sd8563.c **** 		NO_ACK_Test_Line();
+ 1090              		.loc 1 195 3
+ 1091 0200 FFF7FEFF 		bl	NO_ACK_Test_Line
+ 196:./Hardware/device/sd8563.c **** 	}
+ 197:./Hardware/device/sd8563.c **** 	
+ 198:./Hardware/device/sd8563.c **** 	return TRUE;
+ 1092              		.loc 1 198 9
+ 1093 0204 0123     		movs	r3, #1
+ 1094              	.L34:
+ 199:./Hardware/device/sd8563.c **** 
+ 200:./Hardware/device/sd8563.c **** }
+ 1095              		.loc 1 200 1 discriminator 1
+ 1096 0206 1846     		mov	r0, r3
+ 1097 0208 1837     		adds	r7, r7, #24
+ 1098              	.LCFI63:
+ 1099              		.cfi_def_cfa_offset 8
+ 1100 020a BD46     		mov	sp, r7
+ 1101              	.LCFI64:
+ 1102              		.cfi_def_cfa_register 13
+ 1103              		@ sp needed
+ 1104 020c 80BD     		pop	{r7, pc}
+ 1105              	.L36:
+ 1106 020e 00BF     		.align	2
+ 1107              	.L35:
+ 1108 0210 CDCCCCCC 		.word	-858993459
+ 1109              		.cfi_endproc
+ 1110              	.LFE44:
+ 1112              		.section	.rodata
+ 1113              		.align	2
+ 1114              	.LC0:
+ 1115 0000 54455354 		.ascii	"TEST IC\000"
+ 1115      20494300 
+ 1116              		.section	.text.sd85xx_time_show,"ax",%progbits
+ 1117              		.align	1
+ 1118              		.global	sd85xx_time_show
+ 1119              		.syntax unified
+ 1120              		.thumb
+ 1121              		.thumb_func
+ 1122              		.fpu softvfp
+ 1124              	sd85xx_time_show:
+ 1125              	.LFB45:
+ 201:./Hardware/device/sd8563.c **** 
+ 202:./Hardware/device/sd8563.c **** uint8_t sd85xx_time_show(void)
+ 203:./Hardware/device/sd8563.c **** {
+ 1126              		.loc 1 203 1
+ 1127              		.cfi_startproc
+ 1128              		@ args = 0, pretend = 0, frame = 24
+ 1129              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1130 0000 80B5     		push	{r7, lr}
+ 1131              	.LCFI65:
+ 1132              		.cfi_def_cfa_offset 8
+ 1133              		.cfi_offset 7, -8
+ 1134              		.cfi_offset 14, -4
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 24
+
+
+ 1135 0002 88B0     		sub	sp, sp, #32
+ 1136              	.LCFI66:
+ 1137              		.cfi_def_cfa_offset 40
+ 1138 0004 02AF     		add	r7, sp, #8
+ 1139              	.LCFI67:
+ 1140              		.cfi_def_cfa 7, 32
+ 204:./Hardware/device/sd8563.c **** 	uint8_t year_h,year_l;
+ 205:./Hardware/device/sd8563.c **** 	uint8_t month_h,month_l;
+ 206:./Hardware/device/sd8563.c **** 	uint8_t day_h,day_l;
+ 207:./Hardware/device/sd8563.c **** 	uint8_t week;
+ 208:./Hardware/device/sd8563.c **** 	uint8_t hour_h,hour_l;
+ 209:./Hardware/device/sd8563.c **** 	uint8_t minute_h,minute_l;
+ 210:./Hardware/device/sd8563.c **** 	uint8_t second_h,second_l;
+ 211:./Hardware/device/sd8563.c **** 	
+ 212:./Hardware/device/sd8563.c **** 	rtc_time time_buf;
+ 213:./Hardware/device/sd8563.c **** 	
+ 214:./Hardware/device/sd8563.c **** 	if(SD8563_ReadTimeDate(&time_buf,IIC_TEST)!=RTC_FAIL)
+ 1141              		.loc 1 214 5
+ 1142 0006 3B1D     		adds	r3, r7, #4
+ 1143 0008 0021     		movs	r1, #0
+ 1144 000a 1846     		mov	r0, r3
+ 1145 000c FFF7FEFF 		bl	SD8563_ReadTimeDate
+ 1146 0010 0346     		mov	r3, r0
+ 1147              		.loc 1 214 4
+ 1148 0012 082B     		cmp	r3, #8
+ 1149 0014 00F04A81 		beq	.L38
+ 215:./Hardware/device/sd8563.c **** 	{
+ 216:./Hardware/device/sd8563.c **** 		year_h = time_buf.year / 10;
+ 1150              		.loc 1 216 20
+ 1151 0018 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 1152              		.loc 1 216 10
+ 1153 001a DD4A     		ldr	r2, .L41
+ 1154 001c A2FB0323 		umull	r2, r3, r2, r3
+ 1155 0020 DB08     		lsrs	r3, r3, #3
+ 1156 0022 FB75     		strb	r3, [r7, #23]
+ 217:./Hardware/device/sd8563.c **** 		year_l = time_buf.year % 10;  //Äê
+ 1157              		.loc 1 217 20
+ 1158 0024 BA7A     		ldrb	r2, [r7, #10]	@ zero_extendqisi2
+ 1159              		.loc 1 217 10
+ 1160 0026 DA4B     		ldr	r3, .L41
+ 1161 0028 A3FB0213 		umull	r1, r3, r3, r2
+ 1162 002c D908     		lsrs	r1, r3, #3
+ 1163 002e 0B46     		mov	r3, r1
+ 1164 0030 9B00     		lsls	r3, r3, #2
+ 1165 0032 0B44     		add	r3, r3, r1
+ 1166 0034 5B00     		lsls	r3, r3, #1
+ 1167 0036 D31A     		subs	r3, r2, r3
+ 1168 0038 BB75     		strb	r3, [r7, #22]
+ 218:./Hardware/device/sd8563.c **** 
+ 219:./Hardware/device/sd8563.c **** 		month_h = time_buf.month / 10;
+ 1169              		.loc 1 219 21
+ 1170 003a 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 1171              		.loc 1 219 11
+ 1172 003c D44A     		ldr	r2, .L41
+ 1173 003e A2FB0323 		umull	r2, r3, r2, r3
+ 1174 0042 DB08     		lsrs	r3, r3, #3
+ 1175 0044 7B75     		strb	r3, [r7, #21]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 25
+
+
+ 220:./Hardware/device/sd8563.c **** 		month_l = time_buf.month % 10;  //ÔÂ
+ 1176              		.loc 1 220 21
+ 1177 0046 7A7A     		ldrb	r2, [r7, #9]	@ zero_extendqisi2
+ 1178              		.loc 1 220 11
+ 1179 0048 D14B     		ldr	r3, .L41
+ 1180 004a A3FB0213 		umull	r1, r3, r3, r2
+ 1181 004e D908     		lsrs	r1, r3, #3
+ 1182 0050 0B46     		mov	r3, r1
+ 1183 0052 9B00     		lsls	r3, r3, #2
+ 1184 0054 0B44     		add	r3, r3, r1
+ 1185 0056 5B00     		lsls	r3, r3, #1
+ 1186 0058 D31A     		subs	r3, r2, r3
+ 1187 005a 3B75     		strb	r3, [r7, #20]
+ 221:./Hardware/device/sd8563.c **** 
+ 222:./Hardware/device/sd8563.c **** 		day_h = time_buf.day / 10;
+ 1188              		.loc 1 222 19
+ 1189 005c 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 1190              		.loc 1 222 9
+ 1191 005e CC4A     		ldr	r2, .L41
+ 1192 0060 A2FB0323 		umull	r2, r3, r2, r3
+ 1193 0064 DB08     		lsrs	r3, r3, #3
+ 1194 0066 FB74     		strb	r3, [r7, #19]
+ 223:./Hardware/device/sd8563.c **** 		day_l = time_buf.day % 10;  //ÈÕ
+ 1195              		.loc 1 223 19
+ 1196 0068 3A7A     		ldrb	r2, [r7, #8]	@ zero_extendqisi2
+ 1197              		.loc 1 223 9
+ 1198 006a C94B     		ldr	r3, .L41
+ 1199 006c A3FB0213 		umull	r1, r3, r3, r2
+ 1200 0070 D908     		lsrs	r1, r3, #3
+ 1201 0072 0B46     		mov	r3, r1
+ 1202 0074 9B00     		lsls	r3, r3, #2
+ 1203 0076 0B44     		add	r3, r3, r1
+ 1204 0078 5B00     		lsls	r3, r3, #1
+ 1205 007a D31A     		subs	r3, r2, r3
+ 1206 007c BB74     		strb	r3, [r7, #18]
+ 224:./Hardware/device/sd8563.c **** 
+ 225:./Hardware/device/sd8563.c **** 		week  = time_buf.week;
+ 1207              		.loc 1 225 9
+ 1208 007e FB79     		ldrb	r3, [r7, #7]
+ 1209 0080 7B74     		strb	r3, [r7, #17]
+ 226:./Hardware/device/sd8563.c **** 
+ 227:./Hardware/device/sd8563.c **** 		hour_h = time_buf.hour / 10;
+ 1210              		.loc 1 227 20
+ 1211 0082 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1212              		.loc 1 227 10
+ 1213 0084 C24A     		ldr	r2, .L41
+ 1214 0086 A2FB0323 		umull	r2, r3, r2, r3
+ 1215 008a DB08     		lsrs	r3, r3, #3
+ 1216 008c 3B74     		strb	r3, [r7, #16]
+ 228:./Hardware/device/sd8563.c **** 		hour_l = time_buf.hour % 10;  //Ê±
+ 1217              		.loc 1 228 20
+ 1218 008e BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 1219              		.loc 1 228 10
+ 1220 0090 BF4B     		ldr	r3, .L41
+ 1221 0092 A3FB0213 		umull	r1, r3, r3, r2
+ 1222 0096 D908     		lsrs	r1, r3, #3
+ 1223 0098 0B46     		mov	r3, r1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 26
+
+
+ 1224 009a 9B00     		lsls	r3, r3, #2
+ 1225 009c 0B44     		add	r3, r3, r1
+ 1226 009e 5B00     		lsls	r3, r3, #1
+ 1227 00a0 D31A     		subs	r3, r2, r3
+ 1228 00a2 FB73     		strb	r3, [r7, #15]
+ 229:./Hardware/device/sd8563.c **** 
+ 230:./Hardware/device/sd8563.c **** 		minute_h = time_buf.minute / 10;
+ 1229              		.loc 1 230 22
+ 1230 00a4 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1231              		.loc 1 230 12
+ 1232 00a6 BA4A     		ldr	r2, .L41
+ 1233 00a8 A2FB0323 		umull	r2, r3, r2, r3
+ 1234 00ac DB08     		lsrs	r3, r3, #3
+ 1235 00ae BB73     		strb	r3, [r7, #14]
+ 231:./Hardware/device/sd8563.c **** 		minute_l = time_buf.minute % 10;  //·Ö
+ 1236              		.loc 1 231 22
+ 1237 00b0 7A79     		ldrb	r2, [r7, #5]	@ zero_extendqisi2
+ 1238              		.loc 1 231 12
+ 1239 00b2 B74B     		ldr	r3, .L41
+ 1240 00b4 A3FB0213 		umull	r1, r3, r3, r2
+ 1241 00b8 D908     		lsrs	r1, r3, #3
+ 1242 00ba 0B46     		mov	r3, r1
+ 1243 00bc 9B00     		lsls	r3, r3, #2
+ 1244 00be 0B44     		add	r3, r3, r1
+ 1245 00c0 5B00     		lsls	r3, r3, #1
+ 1246 00c2 D31A     		subs	r3, r2, r3
+ 1247 00c4 7B73     		strb	r3, [r7, #13]
+ 232:./Hardware/device/sd8563.c **** 
+ 233:./Hardware/device/sd8563.c **** 		second_h = time_buf.second / 10;
+ 1248              		.loc 1 233 22
+ 1249 00c6 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 1250              		.loc 1 233 12
+ 1251 00c8 B14A     		ldr	r2, .L41
+ 1252 00ca A2FB0323 		umull	r2, r3, r2, r3
+ 1253 00ce DB08     		lsrs	r3, r3, #3
+ 1254 00d0 3B73     		strb	r3, [r7, #12]
+ 234:./Hardware/device/sd8563.c **** 		second_l = time_buf.second % 10; //Ãë
+ 1255              		.loc 1 234 22
+ 1256 00d2 3A79     		ldrb	r2, [r7, #4]	@ zero_extendqisi2
+ 1257              		.loc 1 234 12
+ 1258 00d4 AE4B     		ldr	r3, .L41
+ 1259 00d6 A3FB0213 		umull	r1, r3, r3, r2
+ 1260 00da D908     		lsrs	r1, r3, #3
+ 1261 00dc 0B46     		mov	r3, r1
+ 1262 00de 9B00     		lsls	r3, r3, #2
+ 1263 00e0 0B44     		add	r3, r3, r1
+ 1264 00e2 5B00     		lsls	r3, r3, #1
+ 1265 00e4 D31A     		subs	r3, r2, r3
+ 1266 00e6 FB72     		strb	r3, [r7, #11]
+ 235:./Hardware/device/sd8563.c **** 		
+ 236:./Hardware/device/sd8563.c **** 		OLED_ShowNum(30,15,year_h,1,8);//Ïà¸ôÏÔÊ¾µÄÊý¾ÝXÖá¼ä¸ô7¸ö×ø±ê£¬Ïà¸ôÏÔÊ¾µÄÊý¾ÝYÖá¼ä¸ô15¸ö×ø±ê
+ 1267              		.loc 1 236 3
+ 1268 00e8 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1269 00ea 0823     		movs	r3, #8
+ 1270 00ec 0093     		str	r3, [sp]
+ 1271 00ee 0123     		movs	r3, #1
+ 1272 00f0 0F21     		movs	r1, #15
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 27
+
+
+ 1273 00f2 1E20     		movs	r0, #30
+ 1274 00f4 FFF7FEFF 		bl	OLED_ShowNum
+ 237:./Hardware/device/sd8563.c **** 		OLED_ShowNum(37,15,year_l,1,8);
+ 1275              		.loc 1 237 3
+ 1276 00f8 BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 1277 00fa 0823     		movs	r3, #8
+ 1278 00fc 0093     		str	r3, [sp]
+ 1279 00fe 0123     		movs	r3, #1
+ 1280 0100 0F21     		movs	r1, #15
+ 1281 0102 2520     		movs	r0, #37
+ 1282 0104 FFF7FEFF 		bl	OLED_ShowNum
+ 238:./Hardware/device/sd8563.c **** 		OLED_ShowChar(44,15,'-',8);
+ 1283              		.loc 1 238 3
+ 1284 0108 0823     		movs	r3, #8
+ 1285 010a 2D22     		movs	r2, #45
+ 1286 010c 0F21     		movs	r1, #15
+ 1287 010e 2C20     		movs	r0, #44
+ 1288 0110 FFF7FEFF 		bl	OLED_ShowChar
+ 239:./Hardware/device/sd8563.c **** 		OLED_ShowNum(51,15,month_h,1,8);
+ 1289              		.loc 1 239 3
+ 1290 0114 7A7D     		ldrb	r2, [r7, #21]	@ zero_extendqisi2
+ 1291 0116 0823     		movs	r3, #8
+ 1292 0118 0093     		str	r3, [sp]
+ 1293 011a 0123     		movs	r3, #1
+ 1294 011c 0F21     		movs	r1, #15
+ 1295 011e 3320     		movs	r0, #51
+ 1296 0120 FFF7FEFF 		bl	OLED_ShowNum
+ 240:./Hardware/device/sd8563.c **** 		OLED_ShowNum(58,15,month_l,1,8);
+ 1297              		.loc 1 240 3
+ 1298 0124 3A7D     		ldrb	r2, [r7, #20]	@ zero_extendqisi2
+ 1299 0126 0823     		movs	r3, #8
+ 1300 0128 0093     		str	r3, [sp]
+ 1301 012a 0123     		movs	r3, #1
+ 1302 012c 0F21     		movs	r1, #15
+ 1303 012e 3A20     		movs	r0, #58
+ 1304 0130 FFF7FEFF 		bl	OLED_ShowNum
+ 241:./Hardware/device/sd8563.c **** 		OLED_ShowChar(65,15,'-',8);
+ 1305              		.loc 1 241 3
+ 1306 0134 0823     		movs	r3, #8
+ 1307 0136 2D22     		movs	r2, #45
+ 1308 0138 0F21     		movs	r1, #15
+ 1309 013a 4120     		movs	r0, #65
+ 1310 013c FFF7FEFF 		bl	OLED_ShowChar
+ 242:./Hardware/device/sd8563.c **** 		OLED_ShowNum(72,15,day_h,1,8);
+ 1311              		.loc 1 242 3
+ 1312 0140 FA7C     		ldrb	r2, [r7, #19]	@ zero_extendqisi2
+ 1313 0142 0823     		movs	r3, #8
+ 1314 0144 0093     		str	r3, [sp]
+ 1315 0146 0123     		movs	r3, #1
+ 1316 0148 0F21     		movs	r1, #15
+ 1317 014a 4820     		movs	r0, #72
+ 1318 014c FFF7FEFF 		bl	OLED_ShowNum
+ 243:./Hardware/device/sd8563.c **** 		OLED_ShowNum(79,15,day_l,1,8);
+ 1319              		.loc 1 243 3
+ 1320 0150 BA7C     		ldrb	r2, [r7, #18]	@ zero_extendqisi2
+ 1321 0152 0823     		movs	r3, #8
+ 1322 0154 0093     		str	r3, [sp]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 28
+
+
+ 1323 0156 0123     		movs	r3, #1
+ 1324 0158 0F21     		movs	r1, #15
+ 1325 015a 4F20     		movs	r0, #79
+ 1326 015c FFF7FEFF 		bl	OLED_ShowNum
+ 244:./Hardware/device/sd8563.c **** 		OLED_ShowChar(90,15,'W',8);
+ 1327              		.loc 1 244 3
+ 1328 0160 0823     		movs	r3, #8
+ 1329 0162 5722     		movs	r2, #87
+ 1330 0164 0F21     		movs	r1, #15
+ 1331 0166 5A20     		movs	r0, #90
+ 1332 0168 FFF7FEFF 		bl	OLED_ShowChar
+ 245:./Hardware/device/sd8563.c **** 		OLED_ShowNum(99,15,week,1,8);
+ 1333              		.loc 1 245 3
+ 1334 016c 7A7C     		ldrb	r2, [r7, #17]	@ zero_extendqisi2
+ 1335 016e 0823     		movs	r3, #8
+ 1336 0170 0093     		str	r3, [sp]
+ 1337 0172 0123     		movs	r3, #1
+ 1338 0174 0F21     		movs	r1, #15
+ 1339 0176 6320     		movs	r0, #99
+ 1340 0178 FFF7FEFF 		bl	OLED_ShowNum
+ 246:./Hardware/device/sd8563.c **** 		
+ 247:./Hardware/device/sd8563.c **** 		OLED_ShowNum(35,30,hour_h,1,8);
+ 1341              		.loc 1 247 3
+ 1342 017c 3A7C     		ldrb	r2, [r7, #16]	@ zero_extendqisi2
+ 1343 017e 0823     		movs	r3, #8
+ 1344 0180 0093     		str	r3, [sp]
+ 1345 0182 0123     		movs	r3, #1
+ 1346 0184 1E21     		movs	r1, #30
+ 1347 0186 2320     		movs	r0, #35
+ 1348 0188 FFF7FEFF 		bl	OLED_ShowNum
+ 248:./Hardware/device/sd8563.c **** 		OLED_ShowNum(42,30,hour_l,1,8);
+ 1349              		.loc 1 248 3
+ 1350 018c FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 1351 018e 0823     		movs	r3, #8
+ 1352 0190 0093     		str	r3, [sp]
+ 1353 0192 0123     		movs	r3, #1
+ 1354 0194 1E21     		movs	r1, #30
+ 1355 0196 2A20     		movs	r0, #42
+ 1356 0198 FFF7FEFF 		bl	OLED_ShowNum
+ 249:./Hardware/device/sd8563.c **** 		OLED_ShowChar(49,30,':',8);
+ 1357              		.loc 1 249 3
+ 1358 019c 0823     		movs	r3, #8
+ 1359 019e 3A22     		movs	r2, #58
+ 1360 01a0 1E21     		movs	r1, #30
+ 1361 01a2 3120     		movs	r0, #49
+ 1362 01a4 FFF7FEFF 		bl	OLED_ShowChar
+ 250:./Hardware/device/sd8563.c **** 		OLED_ShowNum(56,30,minute_h,1,8);
+ 1363              		.loc 1 250 3
+ 1364 01a8 BA7B     		ldrb	r2, [r7, #14]	@ zero_extendqisi2
+ 1365 01aa 0823     		movs	r3, #8
+ 1366 01ac 0093     		str	r3, [sp]
+ 1367 01ae 0123     		movs	r3, #1
+ 1368 01b0 1E21     		movs	r1, #30
+ 1369 01b2 3820     		movs	r0, #56
+ 1370 01b4 FFF7FEFF 		bl	OLED_ShowNum
+ 251:./Hardware/device/sd8563.c **** 		OLED_ShowNum(63,30,minute_l,1,8);
+ 1371              		.loc 1 251 3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 29
+
+
+ 1372 01b8 7A7B     		ldrb	r2, [r7, #13]	@ zero_extendqisi2
+ 1373 01ba 0823     		movs	r3, #8
+ 1374 01bc 0093     		str	r3, [sp]
+ 1375 01be 0123     		movs	r3, #1
+ 1376 01c0 1E21     		movs	r1, #30
+ 1377 01c2 3F20     		movs	r0, #63
+ 1378 01c4 FFF7FEFF 		bl	OLED_ShowNum
+ 252:./Hardware/device/sd8563.c **** 		OLED_ShowChar(70,30,':',8);
+ 1379              		.loc 1 252 3
+ 1380 01c8 0823     		movs	r3, #8
+ 1381 01ca 3A22     		movs	r2, #58
+ 1382 01cc 1E21     		movs	r1, #30
+ 1383 01ce 4620     		movs	r0, #70
+ 1384 01d0 FFF7FEFF 		bl	OLED_ShowChar
+ 253:./Hardware/device/sd8563.c **** 		OLED_ShowNum(77,30,second_h,1,8);
+ 1385              		.loc 1 253 3
+ 1386 01d4 3A7B     		ldrb	r2, [r7, #12]	@ zero_extendqisi2
+ 1387 01d6 0823     		movs	r3, #8
+ 1388 01d8 0093     		str	r3, [sp]
+ 1389 01da 0123     		movs	r3, #1
+ 1390 01dc 1E21     		movs	r1, #30
+ 1391 01de 4D20     		movs	r0, #77
+ 1392 01e0 FFF7FEFF 		bl	OLED_ShowNum
+ 254:./Hardware/device/sd8563.c **** 		OLED_ShowNum(84,30,second_l,1,8);
+ 1393              		.loc 1 254 3
+ 1394 01e4 FA7A     		ldrb	r2, [r7, #11]	@ zero_extendqisi2
+ 1395 01e6 0823     		movs	r3, #8
+ 1396 01e8 0093     		str	r3, [sp]
+ 1397 01ea 0123     		movs	r3, #1
+ 1398 01ec 1E21     		movs	r1, #30
+ 1399 01ee 5420     		movs	r0, #84
+ 1400 01f0 FFF7FEFF 		bl	OLED_ShowNum
+ 255:./Hardware/device/sd8563.c **** 		
+ 256:./Hardware/device/sd8563.c **** 		OLED_ShowChar(0,0,'-',8);
+ 1401              		.loc 1 256 3
+ 1402 01f4 0823     		movs	r3, #8
+ 1403 01f6 2D22     		movs	r2, #45
+ 1404 01f8 0021     		movs	r1, #0
+ 1405 01fa 0020     		movs	r0, #0
+ 1406 01fc FFF7FEFF 		bl	OLED_ShowChar
+ 257:./Hardware/device/sd8563.c **** 		OLED_ShowChar(5,0,'-',8);
+ 1407              		.loc 1 257 3
+ 1408 0200 0823     		movs	r3, #8
+ 1409 0202 2D22     		movs	r2, #45
+ 1410 0204 0021     		movs	r1, #0
+ 1411 0206 0520     		movs	r0, #5
+ 1412 0208 FFF7FEFF 		bl	OLED_ShowChar
+ 258:./Hardware/device/sd8563.c **** 		OLED_ShowChar(10,0,'-',8);
+ 1413              		.loc 1 258 3
+ 1414 020c 0823     		movs	r3, #8
+ 1415 020e 2D22     		movs	r2, #45
+ 1416 0210 0021     		movs	r1, #0
+ 1417 0212 0A20     		movs	r0, #10
+ 1418 0214 FFF7FEFF 		bl	OLED_ShowChar
+ 259:./Hardware/device/sd8563.c **** 		OLED_ShowChar(15,0,'-',8);
+ 1419              		.loc 1 259 3
+ 1420 0218 0823     		movs	r3, #8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 30
+
+
+ 1421 021a 2D22     		movs	r2, #45
+ 1422 021c 0021     		movs	r1, #0
+ 1423 021e 0F20     		movs	r0, #15
+ 1424 0220 FFF7FEFF 		bl	OLED_ShowChar
+ 260:./Hardware/device/sd8563.c **** 		OLED_ShowChar(20,0,'-',8);
+ 1425              		.loc 1 260 3
+ 1426 0224 0823     		movs	r3, #8
+ 1427 0226 2D22     		movs	r2, #45
+ 1428 0228 0021     		movs	r1, #0
+ 1429 022a 1420     		movs	r0, #20
+ 1430 022c FFF7FEFF 		bl	OLED_ShowChar
+ 261:./Hardware/device/sd8563.c **** 		OLED_ShowChar(25,0,'-',8);
+ 1431              		.loc 1 261 3
+ 1432 0230 0823     		movs	r3, #8
+ 1433 0232 2D22     		movs	r2, #45
+ 1434 0234 0021     		movs	r1, #0
+ 1435 0236 1920     		movs	r0, #25
+ 1436 0238 FFF7FEFF 		bl	OLED_ShowChar
+ 262:./Hardware/device/sd8563.c **** 		OLED_ShowChar(30,0,'-',8);
+ 1437              		.loc 1 262 3
+ 1438 023c 0823     		movs	r3, #8
+ 1439 023e 2D22     		movs	r2, #45
+ 1440 0240 0021     		movs	r1, #0
+ 1441 0242 1E20     		movs	r0, #30
+ 1442 0244 FFF7FEFF 		bl	OLED_ShowChar
+ 263:./Hardware/device/sd8563.c **** 
+ 264:./Hardware/device/sd8563.c **** 		OLED_ShowString(40,0,"TEST IC",8);
+ 1443              		.loc 1 264 3
+ 1444 0248 0823     		movs	r3, #8
+ 1445 024a 524A     		ldr	r2, .L41+4
+ 1446 024c 0021     		movs	r1, #0
+ 1447 024e 2820     		movs	r0, #40
+ 1448 0250 FFF7FEFF 		bl	OLED_ShowString
+ 265:./Hardware/device/sd8563.c **** 		
+ 266:./Hardware/device/sd8563.c **** 		OLED_ShowChar(95,0,'-',8);
+ 1449              		.loc 1 266 3
+ 1450 0254 0823     		movs	r3, #8
+ 1451 0256 2D22     		movs	r2, #45
+ 1452 0258 0021     		movs	r1, #0
+ 1453 025a 5F20     		movs	r0, #95
+ 1454 025c FFF7FEFF 		bl	OLED_ShowChar
+ 267:./Hardware/device/sd8563.c **** 		OLED_ShowChar(100,0,'-',8);
+ 1455              		.loc 1 267 3
+ 1456 0260 0823     		movs	r3, #8
+ 1457 0262 2D22     		movs	r2, #45
+ 1458 0264 0021     		movs	r1, #0
+ 1459 0266 6420     		movs	r0, #100
+ 1460 0268 FFF7FEFF 		bl	OLED_ShowChar
+ 268:./Hardware/device/sd8563.c **** 		OLED_ShowChar(105,0,'-',8);
+ 1461              		.loc 1 268 3
+ 1462 026c 0823     		movs	r3, #8
+ 1463 026e 2D22     		movs	r2, #45
+ 1464 0270 0021     		movs	r1, #0
+ 1465 0272 6920     		movs	r0, #105
+ 1466 0274 FFF7FEFF 		bl	OLED_ShowChar
+ 269:./Hardware/device/sd8563.c **** 		OLED_ShowChar(110,0,'-',8);
+ 1467              		.loc 1 269 3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 31
+
+
+ 1468 0278 0823     		movs	r3, #8
+ 1469 027a 2D22     		movs	r2, #45
+ 1470 027c 0021     		movs	r1, #0
+ 1471 027e 6E20     		movs	r0, #110
+ 1472 0280 FFF7FEFF 		bl	OLED_ShowChar
+ 270:./Hardware/device/sd8563.c **** 		OLED_ShowChar(115,0,'-',8);
+ 1473              		.loc 1 270 3
+ 1474 0284 0823     		movs	r3, #8
+ 1475 0286 2D22     		movs	r2, #45
+ 1476 0288 0021     		movs	r1, #0
+ 1477 028a 7320     		movs	r0, #115
+ 1478 028c FFF7FEFF 		bl	OLED_ShowChar
+ 271:./Hardware/device/sd8563.c **** 		OLED_ShowChar(120,0,'-',8);
+ 1479              		.loc 1 271 3
+ 1480 0290 0823     		movs	r3, #8
+ 1481 0292 2D22     		movs	r2, #45
+ 1482 0294 0021     		movs	r1, #0
+ 1483 0296 7820     		movs	r0, #120
+ 1484 0298 FFF7FEFF 		bl	OLED_ShowChar
+ 272:./Hardware/device/sd8563.c **** 		OLED_ShowChar(125,0,'-',8);
+ 1485              		.loc 1 272 3
+ 1486 029c 0823     		movs	r3, #8
+ 1487 029e 2D22     		movs	r2, #45
+ 1488 02a0 0021     		movs	r1, #0
+ 1489 02a2 7D20     		movs	r0, #125
+ 1490 02a4 FFF7FEFF 		bl	OLED_ShowChar
+ 273:./Hardware/device/sd8563.c **** 		
+ 274:./Hardware/device/sd8563.c **** 		return RTC_OK;
+ 1491              		.loc 1 274 10
+ 1492 02a8 0623     		movs	r3, #6
+ 1493 02aa 6CE0     		b	.L40
+ 1494              	.L38:
+ 275:./Hardware/device/sd8563.c **** 	}else{
+ 276:./Hardware/device/sd8563.c **** 		OLED_ShowChar(30,15,'-',8);//Ïà¸ôÏÔÊ¾µÄÊý¾ÝXÖá¼ä¸ô7¸ö×ø±ê£¬Ïà¸ôÏÔÊ¾µÄÊý¾ÝYÖá¼ä¸ô15¸ö×ø±ê
+ 1495              		.loc 1 276 3
+ 1496 02ac 0823     		movs	r3, #8
+ 1497 02ae 2D22     		movs	r2, #45
+ 1498 02b0 0F21     		movs	r1, #15
+ 1499 02b2 1E20     		movs	r0, #30
+ 1500 02b4 FFF7FEFF 		bl	OLED_ShowChar
+ 277:./Hardware/device/sd8563.c **** 		OLED_ShowChar(37,15,'-',8);
+ 1501              		.loc 1 277 3
+ 1502 02b8 0823     		movs	r3, #8
+ 1503 02ba 2D22     		movs	r2, #45
+ 1504 02bc 0F21     		movs	r1, #15
+ 1505 02be 2520     		movs	r0, #37
+ 1506 02c0 FFF7FEFF 		bl	OLED_ShowChar
+ 278:./Hardware/device/sd8563.c **** 		OLED_ShowChar(44,15,'-',8);
+ 1507              		.loc 1 278 3
+ 1508 02c4 0823     		movs	r3, #8
+ 1509 02c6 2D22     		movs	r2, #45
+ 1510 02c8 0F21     		movs	r1, #15
+ 1511 02ca 2C20     		movs	r0, #44
+ 1512 02cc FFF7FEFF 		bl	OLED_ShowChar
+ 279:./Hardware/device/sd8563.c **** 		OLED_ShowChar(51,15,'-',8);
+ 1513              		.loc 1 279 3
+ 1514 02d0 0823     		movs	r3, #8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 32
+
+
+ 1515 02d2 2D22     		movs	r2, #45
+ 1516 02d4 0F21     		movs	r1, #15
+ 1517 02d6 3320     		movs	r0, #51
+ 1518 02d8 FFF7FEFF 		bl	OLED_ShowChar
+ 280:./Hardware/device/sd8563.c **** 		OLED_ShowChar(58,15,'-',8);
+ 1519              		.loc 1 280 3
+ 1520 02dc 0823     		movs	r3, #8
+ 1521 02de 2D22     		movs	r2, #45
+ 1522 02e0 0F21     		movs	r1, #15
+ 1523 02e2 3A20     		movs	r0, #58
+ 1524 02e4 FFF7FEFF 		bl	OLED_ShowChar
+ 281:./Hardware/device/sd8563.c **** 		OLED_ShowChar(65,15,'-',8);
+ 1525              		.loc 1 281 3
+ 1526 02e8 0823     		movs	r3, #8
+ 1527 02ea 2D22     		movs	r2, #45
+ 1528 02ec 0F21     		movs	r1, #15
+ 1529 02ee 4120     		movs	r0, #65
+ 1530 02f0 FFF7FEFF 		bl	OLED_ShowChar
+ 282:./Hardware/device/sd8563.c **** 		OLED_ShowChar(72,15,'-',8);
+ 1531              		.loc 1 282 3
+ 1532 02f4 0823     		movs	r3, #8
+ 1533 02f6 2D22     		movs	r2, #45
+ 1534 02f8 0F21     		movs	r1, #15
+ 1535 02fa 4820     		movs	r0, #72
+ 1536 02fc FFF7FEFF 		bl	OLED_ShowChar
+ 283:./Hardware/device/sd8563.c **** 		OLED_ShowChar(79,15,'-',8);
+ 1537              		.loc 1 283 3
+ 1538 0300 0823     		movs	r3, #8
+ 1539 0302 2D22     		movs	r2, #45
+ 1540 0304 0F21     		movs	r1, #15
+ 1541 0306 4F20     		movs	r0, #79
+ 1542 0308 FFF7FEFF 		bl	OLED_ShowChar
+ 284:./Hardware/device/sd8563.c **** 		OLED_ShowChar(90,15,'W',8);
+ 1543              		.loc 1 284 3
+ 1544 030c 0823     		movs	r3, #8
+ 1545 030e 5722     		movs	r2, #87
+ 1546 0310 0F21     		movs	r1, #15
+ 1547 0312 5A20     		movs	r0, #90
+ 1548 0314 FFF7FEFF 		bl	OLED_ShowChar
+ 285:./Hardware/device/sd8563.c **** 		OLED_ShowChar(99,15,'-',8);
+ 1549              		.loc 1 285 3
+ 1550 0318 0823     		movs	r3, #8
+ 1551 031a 2D22     		movs	r2, #45
+ 1552 031c 0F21     		movs	r1, #15
+ 1553 031e 6320     		movs	r0, #99
+ 1554 0320 FFF7FEFF 		bl	OLED_ShowChar
+ 286:./Hardware/device/sd8563.c **** 		
+ 287:./Hardware/device/sd8563.c **** 		OLED_ShowChar(35,30,'-',8);
+ 1555              		.loc 1 287 3
+ 1556 0324 0823     		movs	r3, #8
+ 1557 0326 2D22     		movs	r2, #45
+ 1558 0328 1E21     		movs	r1, #30
+ 1559 032a 2320     		movs	r0, #35
+ 1560 032c FFF7FEFF 		bl	OLED_ShowChar
+ 288:./Hardware/device/sd8563.c **** 		OLED_ShowChar(42,30,'-',8);
+ 1561              		.loc 1 288 3
+ 1562 0330 0823     		movs	r3, #8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 33
+
+
+ 1563 0332 2D22     		movs	r2, #45
+ 1564 0334 1E21     		movs	r1, #30
+ 1565 0336 2A20     		movs	r0, #42
+ 1566 0338 FFF7FEFF 		bl	OLED_ShowChar
+ 289:./Hardware/device/sd8563.c **** 		OLED_ShowChar(49,30,':',8);
+ 1567              		.loc 1 289 3
+ 1568 033c 0823     		movs	r3, #8
+ 1569 033e 3A22     		movs	r2, #58
+ 1570 0340 1E21     		movs	r1, #30
+ 1571 0342 3120     		movs	r0, #49
+ 1572 0344 FFF7FEFF 		bl	OLED_ShowChar
+ 290:./Hardware/device/sd8563.c **** 		OLED_ShowChar(56,30,'-',8);
+ 1573              		.loc 1 290 3
+ 1574 0348 0823     		movs	r3, #8
+ 1575 034a 2D22     		movs	r2, #45
+ 1576 034c 1E21     		movs	r1, #30
+ 1577 034e 3820     		movs	r0, #56
+ 1578 0350 FFF7FEFF 		bl	OLED_ShowChar
+ 291:./Hardware/device/sd8563.c **** 		OLED_ShowChar(63,30,'-',8);
+ 1579              		.loc 1 291 3
+ 1580 0354 0823     		movs	r3, #8
+ 1581 0356 2D22     		movs	r2, #45
+ 1582 0358 1E21     		movs	r1, #30
+ 1583 035a 3F20     		movs	r0, #63
+ 1584 035c FFF7FEFF 		bl	OLED_ShowChar
+ 292:./Hardware/device/sd8563.c **** 		OLED_ShowChar(70,30,':',8);
+ 1585              		.loc 1 292 3
+ 1586 0360 0823     		movs	r3, #8
+ 1587 0362 3A22     		movs	r2, #58
+ 1588 0364 1E21     		movs	r1, #30
+ 1589 0366 4620     		movs	r0, #70
+ 1590 0368 FFF7FEFF 		bl	OLED_ShowChar
+ 293:./Hardware/device/sd8563.c **** 		OLED_ShowChar(77,30,'-',8);
+ 1591              		.loc 1 293 3
+ 1592 036c 0823     		movs	r3, #8
+ 1593 036e 2D22     		movs	r2, #45
+ 1594 0370 1E21     		movs	r1, #30
+ 1595 0372 4D20     		movs	r0, #77
+ 1596 0374 FFF7FEFF 		bl	OLED_ShowChar
+ 294:./Hardware/device/sd8563.c **** 		OLED_ShowChar(84,30,'-',8);
+ 1597              		.loc 1 294 3
+ 1598 0378 0823     		movs	r3, #8
+ 1599 037a 2D22     		movs	r2, #45
+ 1600 037c 1E21     		movs	r1, #30
+ 1601 037e 5420     		movs	r0, #84
+ 1602 0380 FFF7FEFF 		bl	OLED_ShowChar
+ 295:./Hardware/device/sd8563.c **** 	}
+ 296:./Hardware/device/sd8563.c **** 
+ 297:./Hardware/device/sd8563.c **** 	return TRUE;
+ 1603              		.loc 1 297 9
+ 1604 0384 0123     		movs	r3, #1
+ 1605              	.L40:
+ 298:./Hardware/device/sd8563.c **** 
+ 299:./Hardware/device/sd8563.c **** }
+ 1606              		.loc 1 299 1 discriminator 1
+ 1607 0386 1846     		mov	r0, r3
+ 1608 0388 1837     		adds	r7, r7, #24
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 34
+
+
+ 1609              	.LCFI68:
+ 1610              		.cfi_def_cfa_offset 8
+ 1611 038a BD46     		mov	sp, r7
+ 1612              	.LCFI69:
+ 1613              		.cfi_def_cfa_register 13
+ 1614              		@ sp needed
+ 1615 038c 80BD     		pop	{r7, pc}
+ 1616              	.L42:
+ 1617 038e 00BF     		.align	2
+ 1618              	.L41:
+ 1619 0390 CDCCCCCC 		.word	-858993459
+ 1620 0394 00000000 		.word	.LC0
+ 1621              		.cfi_endproc
+ 1622              	.LFE45:
+ 1624              		.section	.rodata
+ 1625              		.align	2
+ 1626              	.LC1:
+ 1627 0008 74696D65 		.ascii	"time is error\000"
+ 1627      20697320 
+ 1627      6572726F 
+ 1627      7200
+ 1628              		.section	.text.sd85xx_time_copy,"ax",%progbits
+ 1629              		.align	1
+ 1630              		.global	sd85xx_time_copy
+ 1631              		.syntax unified
+ 1632              		.thumb
+ 1633              		.thumb_func
+ 1634              		.fpu softvfp
+ 1636              	sd85xx_time_copy:
+ 1637              	.LFB46:
+ 300:./Hardware/device/sd8563.c **** 
+ 301:./Hardware/device/sd8563.c **** uint8_t sd85xx_time_copy(void)
+ 302:./Hardware/device/sd8563.c **** {
+ 1638              		.loc 1 302 1
+ 1639              		.cfi_startproc
+ 1640              		@ args = 0, pretend = 0, frame = 24
+ 1641              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1642 0000 80B5     		push	{r7, lr}
+ 1643              	.LCFI70:
+ 1644              		.cfi_def_cfa_offset 8
+ 1645              		.cfi_offset 7, -8
+ 1646              		.cfi_offset 14, -4
+ 1647 0002 88B0     		sub	sp, sp, #32
+ 1648              	.LCFI71:
+ 1649              		.cfi_def_cfa_offset 40
+ 1650 0004 02AF     		add	r7, sp, #8
+ 1651              	.LCFI72:
+ 1652              		.cfi_def_cfa 7, 32
+ 303:./Hardware/device/sd8563.c **** 	uint8_t year_h,year_l;
+ 304:./Hardware/device/sd8563.c **** 	uint8_t month_h,month_l;
+ 305:./Hardware/device/sd8563.c **** 	uint8_t day_h,day_l;
+ 306:./Hardware/device/sd8563.c **** 	uint8_t week;
+ 307:./Hardware/device/sd8563.c **** 	uint8_t hour_h,hour_l;
+ 308:./Hardware/device/sd8563.c **** 	uint8_t minute_h,minute_l;
+ 309:./Hardware/device/sd8563.c **** 	uint8_t second_h,second_l;
+ 310:./Hardware/device/sd8563.c **** 	
+ 311:./Hardware/device/sd8563.c **** 	rtc_time copy_buf;
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 35
+
+
+ 312:./Hardware/device/sd8563.c **** 	
+ 313:./Hardware/device/sd8563.c **** 	if(RTC_ReadTimeDate(&copy_buf,IIC_STD)!=RTC_OK)
+ 1653              		.loc 1 313 5
+ 1654 0006 3B1D     		adds	r3, r7, #4
+ 1655 0008 0121     		movs	r1, #1
+ 1656 000a 1846     		mov	r0, r3
+ 1657 000c FFF7FEFF 		bl	RTC_ReadTimeDate
+ 1658 0010 0346     		mov	r3, r0
+ 1659              		.loc 1 313 4
+ 1660 0012 062B     		cmp	r3, #6
+ 1661 0014 04D0     		beq	.L44
+ 314:./Hardware/device/sd8563.c **** 	{
+ 315:./Hardware/device/sd8563.c **** 		Usart_Printf("time is error");
+ 1662              		.loc 1 315 3
+ 1663 0016 8048     		ldr	r0, .L48
+ 1664 0018 FFF7FEFF 		bl	Usart_Printf
+ 316:./Hardware/device/sd8563.c **** 		return FALSE;
+ 1665              		.loc 1 316 10
+ 1666 001c 0023     		movs	r3, #0
+ 1667 001e F7E0     		b	.L47
+ 1668              	.L44:
+ 317:./Hardware/device/sd8563.c **** 		
+ 318:./Hardware/device/sd8563.c **** 	}
+ 319:./Hardware/device/sd8563.c **** 	
+ 320:./Hardware/device/sd8563.c **** 	if(SD8563_WriteTimeDate(&copy_buf,IIC_TEST)!=RTC_FAIL)
+ 1669              		.loc 1 320 5
+ 1670 0020 3B1D     		adds	r3, r7, #4
+ 1671 0022 0021     		movs	r1, #0
+ 1672 0024 1846     		mov	r0, r3
+ 1673 0026 FFF7FEFF 		bl	SD8563_WriteTimeDate
+ 1674 002a 0346     		mov	r3, r0
+ 1675              		.loc 1 320 4
+ 1676 002c 082B     		cmp	r3, #8
+ 1677 002e 00F0EE80 		beq	.L46
+ 321:./Hardware/device/sd8563.c **** 	{
+ 322:./Hardware/device/sd8563.c **** 	year_h = copy_buf.year / 10;
+ 1678              		.loc 1 322 19
+ 1679 0032 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 1680              		.loc 1 322 9
+ 1681 0034 794A     		ldr	r2, .L48+4
+ 1682 0036 A2FB0323 		umull	r2, r3, r2, r3
+ 1683 003a DB08     		lsrs	r3, r3, #3
+ 1684 003c FB75     		strb	r3, [r7, #23]
+ 323:./Hardware/device/sd8563.c **** 	year_l = copy_buf.year % 10;  //Äê
+ 1685              		.loc 1 323 19
+ 1686 003e BA7A     		ldrb	r2, [r7, #10]	@ zero_extendqisi2
+ 1687              		.loc 1 323 9
+ 1688 0040 764B     		ldr	r3, .L48+4
+ 1689 0042 A3FB0213 		umull	r1, r3, r3, r2
+ 1690 0046 D908     		lsrs	r1, r3, #3
+ 1691 0048 0B46     		mov	r3, r1
+ 1692 004a 9B00     		lsls	r3, r3, #2
+ 1693 004c 0B44     		add	r3, r3, r1
+ 1694 004e 5B00     		lsls	r3, r3, #1
+ 1695 0050 D31A     		subs	r3, r2, r3
+ 1696 0052 BB75     		strb	r3, [r7, #22]
+ 324:./Hardware/device/sd8563.c **** 
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 36
+
+
+ 325:./Hardware/device/sd8563.c **** 	month_h = copy_buf.month / 10;
+ 1697              		.loc 1 325 20
+ 1698 0054 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 1699              		.loc 1 325 10
+ 1700 0056 714A     		ldr	r2, .L48+4
+ 1701 0058 A2FB0323 		umull	r2, r3, r2, r3
+ 1702 005c DB08     		lsrs	r3, r3, #3
+ 1703 005e 7B75     		strb	r3, [r7, #21]
+ 326:./Hardware/device/sd8563.c **** 	month_l = copy_buf.month % 10;  //ÔÂ
+ 1704              		.loc 1 326 20
+ 1705 0060 7A7A     		ldrb	r2, [r7, #9]	@ zero_extendqisi2
+ 1706              		.loc 1 326 10
+ 1707 0062 6E4B     		ldr	r3, .L48+4
+ 1708 0064 A3FB0213 		umull	r1, r3, r3, r2
+ 1709 0068 D908     		lsrs	r1, r3, #3
+ 1710 006a 0B46     		mov	r3, r1
+ 1711 006c 9B00     		lsls	r3, r3, #2
+ 1712 006e 0B44     		add	r3, r3, r1
+ 1713 0070 5B00     		lsls	r3, r3, #1
+ 1714 0072 D31A     		subs	r3, r2, r3
+ 1715 0074 3B75     		strb	r3, [r7, #20]
+ 327:./Hardware/device/sd8563.c **** 
+ 328:./Hardware/device/sd8563.c **** 	day_h = copy_buf.day / 10;
+ 1716              		.loc 1 328 18
+ 1717 0076 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 1718              		.loc 1 328 8
+ 1719 0078 684A     		ldr	r2, .L48+4
+ 1720 007a A2FB0323 		umull	r2, r3, r2, r3
+ 1721 007e DB08     		lsrs	r3, r3, #3
+ 1722 0080 FB74     		strb	r3, [r7, #19]
+ 329:./Hardware/device/sd8563.c **** 	day_l = copy_buf.day % 10;  //ÈÕ
+ 1723              		.loc 1 329 18
+ 1724 0082 3A7A     		ldrb	r2, [r7, #8]	@ zero_extendqisi2
+ 1725              		.loc 1 329 8
+ 1726 0084 654B     		ldr	r3, .L48+4
+ 1727 0086 A3FB0213 		umull	r1, r3, r3, r2
+ 1728 008a D908     		lsrs	r1, r3, #3
+ 1729 008c 0B46     		mov	r3, r1
+ 1730 008e 9B00     		lsls	r3, r3, #2
+ 1731 0090 0B44     		add	r3, r3, r1
+ 1732 0092 5B00     		lsls	r3, r3, #1
+ 1733 0094 D31A     		subs	r3, r2, r3
+ 1734 0096 BB74     		strb	r3, [r7, #18]
+ 330:./Hardware/device/sd8563.c **** 
+ 331:./Hardware/device/sd8563.c **** 	week  = copy_buf.week;
+ 1735              		.loc 1 331 8
+ 1736 0098 FB79     		ldrb	r3, [r7, #7]
+ 1737 009a 7B74     		strb	r3, [r7, #17]
+ 332:./Hardware/device/sd8563.c **** 
+ 333:./Hardware/device/sd8563.c **** 	hour_h = copy_buf.hour / 10;
+ 1738              		.loc 1 333 19
+ 1739 009c BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1740              		.loc 1 333 9
+ 1741 009e 5F4A     		ldr	r2, .L48+4
+ 1742 00a0 A2FB0323 		umull	r2, r3, r2, r3
+ 1743 00a4 DB08     		lsrs	r3, r3, #3
+ 1744 00a6 3B74     		strb	r3, [r7, #16]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 37
+
+
+ 334:./Hardware/device/sd8563.c **** 	hour_l = copy_buf.hour % 10;  //Ê±
+ 1745              		.loc 1 334 19
+ 1746 00a8 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 1747              		.loc 1 334 9
+ 1748 00aa 5C4B     		ldr	r3, .L48+4
+ 1749 00ac A3FB0213 		umull	r1, r3, r3, r2
+ 1750 00b0 D908     		lsrs	r1, r3, #3
+ 1751 00b2 0B46     		mov	r3, r1
+ 1752 00b4 9B00     		lsls	r3, r3, #2
+ 1753 00b6 0B44     		add	r3, r3, r1
+ 1754 00b8 5B00     		lsls	r3, r3, #1
+ 1755 00ba D31A     		subs	r3, r2, r3
+ 1756 00bc FB73     		strb	r3, [r7, #15]
+ 335:./Hardware/device/sd8563.c **** 
+ 336:./Hardware/device/sd8563.c **** 	minute_h = copy_buf.minute / 10;
+ 1757              		.loc 1 336 21
+ 1758 00be 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1759              		.loc 1 336 11
+ 1760 00c0 564A     		ldr	r2, .L48+4
+ 1761 00c2 A2FB0323 		umull	r2, r3, r2, r3
+ 1762 00c6 DB08     		lsrs	r3, r3, #3
+ 1763 00c8 BB73     		strb	r3, [r7, #14]
+ 337:./Hardware/device/sd8563.c **** 	minute_l = copy_buf.minute % 10;  //·Ö
+ 1764              		.loc 1 337 21
+ 1765 00ca 7A79     		ldrb	r2, [r7, #5]	@ zero_extendqisi2
+ 1766              		.loc 1 337 11
+ 1767 00cc 534B     		ldr	r3, .L48+4
+ 1768 00ce A3FB0213 		umull	r1, r3, r3, r2
+ 1769 00d2 D908     		lsrs	r1, r3, #3
+ 1770 00d4 0B46     		mov	r3, r1
+ 1771 00d6 9B00     		lsls	r3, r3, #2
+ 1772 00d8 0B44     		add	r3, r3, r1
+ 1773 00da 5B00     		lsls	r3, r3, #1
+ 1774 00dc D31A     		subs	r3, r2, r3
+ 1775 00de 7B73     		strb	r3, [r7, #13]
+ 338:./Hardware/device/sd8563.c **** 
+ 339:./Hardware/device/sd8563.c **** 	second_h = copy_buf.second / 10;
+ 1776              		.loc 1 339 21
+ 1777 00e0 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 1778              		.loc 1 339 11
+ 1779 00e2 4E4A     		ldr	r2, .L48+4
+ 1780 00e4 A2FB0323 		umull	r2, r3, r2, r3
+ 1781 00e8 DB08     		lsrs	r3, r3, #3
+ 1782 00ea 3B73     		strb	r3, [r7, #12]
+ 340:./Hardware/device/sd8563.c **** 	second_l = copy_buf.second % 10; //Ãë
+ 1783              		.loc 1 340 21
+ 1784 00ec 3A79     		ldrb	r2, [r7, #4]	@ zero_extendqisi2
+ 1785              		.loc 1 340 11
+ 1786 00ee 4B4B     		ldr	r3, .L48+4
+ 1787 00f0 A3FB0213 		umull	r1, r3, r3, r2
+ 1788 00f4 D908     		lsrs	r1, r3, #3
+ 1789 00f6 0B46     		mov	r3, r1
+ 1790 00f8 9B00     		lsls	r3, r3, #2
+ 1791 00fa 0B44     		add	r3, r3, r1
+ 1792 00fc 5B00     		lsls	r3, r3, #1
+ 1793 00fe D31A     		subs	r3, r2, r3
+ 1794 0100 FB72     		strb	r3, [r7, #11]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 38
+
+
+ 341:./Hardware/device/sd8563.c **** 
+ 342:./Hardware/device/sd8563.c **** 	OLED_ShowNum(30,42,year_h,1,OLED_6X8);//Ïà¸ôÏÔÊ¾µÄÊý¾ÝXÖá¼ä¸ô7¸ö×ø±ê£¬Ïà¸ôÏÔÊ¾µÄÊý¾ÝYÖá¼ä¸ô15¸ö×ø±
+ 1795              		.loc 1 342 2
+ 1796 0102 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1797 0104 0623     		movs	r3, #6
+ 1798 0106 0093     		str	r3, [sp]
+ 1799 0108 0123     		movs	r3, #1
+ 1800 010a 2A21     		movs	r1, #42
+ 1801 010c 1E20     		movs	r0, #30
+ 1802 010e FFF7FEFF 		bl	OLED_ShowNum
+ 343:./Hardware/device/sd8563.c **** 	OLED_ShowNum(37,42,year_l,1,OLED_6X8);
+ 1803              		.loc 1 343 2
+ 1804 0112 BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 1805 0114 0623     		movs	r3, #6
+ 1806 0116 0093     		str	r3, [sp]
+ 1807 0118 0123     		movs	r3, #1
+ 1808 011a 2A21     		movs	r1, #42
+ 1809 011c 2520     		movs	r0, #37
+ 1810 011e FFF7FEFF 		bl	OLED_ShowNum
+ 344:./Hardware/device/sd8563.c **** 	OLED_ShowChar(44,42,'-',OLED_6X8);
+ 1811              		.loc 1 344 2
+ 1812 0122 0623     		movs	r3, #6
+ 1813 0124 2D22     		movs	r2, #45
+ 1814 0126 2A21     		movs	r1, #42
+ 1815 0128 2C20     		movs	r0, #44
+ 1816 012a FFF7FEFF 		bl	OLED_ShowChar
+ 345:./Hardware/device/sd8563.c **** 	OLED_ShowNum(51,42,month_h,1,OLED_6X8);
+ 1817              		.loc 1 345 2
+ 1818 012e 7A7D     		ldrb	r2, [r7, #21]	@ zero_extendqisi2
+ 1819 0130 0623     		movs	r3, #6
+ 1820 0132 0093     		str	r3, [sp]
+ 1821 0134 0123     		movs	r3, #1
+ 1822 0136 2A21     		movs	r1, #42
+ 1823 0138 3320     		movs	r0, #51
+ 1824 013a FFF7FEFF 		bl	OLED_ShowNum
+ 346:./Hardware/device/sd8563.c **** 	OLED_ShowNum(58,42,month_l,1,OLED_6X8);
+ 1825              		.loc 1 346 2
+ 1826 013e 3A7D     		ldrb	r2, [r7, #20]	@ zero_extendqisi2
+ 1827 0140 0623     		movs	r3, #6
+ 1828 0142 0093     		str	r3, [sp]
+ 1829 0144 0123     		movs	r3, #1
+ 1830 0146 2A21     		movs	r1, #42
+ 1831 0148 3A20     		movs	r0, #58
+ 1832 014a FFF7FEFF 		bl	OLED_ShowNum
+ 347:./Hardware/device/sd8563.c **** 	OLED_ShowChar(65,42,'-',OLED_6X8);
+ 1833              		.loc 1 347 2
+ 1834 014e 0623     		movs	r3, #6
+ 1835 0150 2D22     		movs	r2, #45
+ 1836 0152 2A21     		movs	r1, #42
+ 1837 0154 4120     		movs	r0, #65
+ 1838 0156 FFF7FEFF 		bl	OLED_ShowChar
+ 348:./Hardware/device/sd8563.c **** 	OLED_ShowNum(72,42,day_h,1,OLED_6X8);
+ 1839              		.loc 1 348 2
+ 1840 015a FA7C     		ldrb	r2, [r7, #19]	@ zero_extendqisi2
+ 1841 015c 0623     		movs	r3, #6
+ 1842 015e 0093     		str	r3, [sp]
+ 1843 0160 0123     		movs	r3, #1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 39
+
+
+ 1844 0162 2A21     		movs	r1, #42
+ 1845 0164 4820     		movs	r0, #72
+ 1846 0166 FFF7FEFF 		bl	OLED_ShowNum
+ 349:./Hardware/device/sd8563.c **** 	OLED_ShowNum(79,42,day_l,1,OLED_6X8);
+ 1847              		.loc 1 349 2
+ 1848 016a BA7C     		ldrb	r2, [r7, #18]	@ zero_extendqisi2
+ 1849 016c 0623     		movs	r3, #6
+ 1850 016e 0093     		str	r3, [sp]
+ 1851 0170 0123     		movs	r3, #1
+ 1852 0172 2A21     		movs	r1, #42
+ 1853 0174 4F20     		movs	r0, #79
+ 1854 0176 FFF7FEFF 		bl	OLED_ShowNum
+ 350:./Hardware/device/sd8563.c **** 	OLED_ShowChar(90,42,'W',OLED_6X8);
+ 1855              		.loc 1 350 2
+ 1856 017a 0623     		movs	r3, #6
+ 1857 017c 5722     		movs	r2, #87
+ 1858 017e 2A21     		movs	r1, #42
+ 1859 0180 5A20     		movs	r0, #90
+ 1860 0182 FFF7FEFF 		bl	OLED_ShowChar
+ 351:./Hardware/device/sd8563.c **** 	OLED_ShowNum(99,42,week,1,OLED_6X8);
+ 1861              		.loc 1 351 2
+ 1862 0186 7A7C     		ldrb	r2, [r7, #17]	@ zero_extendqisi2
+ 1863 0188 0623     		movs	r3, #6
+ 1864 018a 0093     		str	r3, [sp]
+ 1865 018c 0123     		movs	r3, #1
+ 1866 018e 2A21     		movs	r1, #42
+ 1867 0190 6320     		movs	r0, #99
+ 1868 0192 FFF7FEFF 		bl	OLED_ShowNum
+ 352:./Hardware/device/sd8563.c **** 
+ 353:./Hardware/device/sd8563.c **** 	OLED_ShowNum(35,53,hour_h,1,OLED_6X8);
+ 1869              		.loc 1 353 2
+ 1870 0196 3A7C     		ldrb	r2, [r7, #16]	@ zero_extendqisi2
+ 1871 0198 0623     		movs	r3, #6
+ 1872 019a 0093     		str	r3, [sp]
+ 1873 019c 0123     		movs	r3, #1
+ 1874 019e 3521     		movs	r1, #53
+ 1875 01a0 2320     		movs	r0, #35
+ 1876 01a2 FFF7FEFF 		bl	OLED_ShowNum
+ 354:./Hardware/device/sd8563.c **** 	OLED_ShowNum(42,53,hour_l,1,OLED_6X8);
+ 1877              		.loc 1 354 2
+ 1878 01a6 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 1879 01a8 0623     		movs	r3, #6
+ 1880 01aa 0093     		str	r3, [sp]
+ 1881 01ac 0123     		movs	r3, #1
+ 1882 01ae 3521     		movs	r1, #53
+ 1883 01b0 2A20     		movs	r0, #42
+ 1884 01b2 FFF7FEFF 		bl	OLED_ShowNum
+ 355:./Hardware/device/sd8563.c **** 	OLED_ShowChar(49,53,':',OLED_6X8);
+ 1885              		.loc 1 355 2
+ 1886 01b6 0623     		movs	r3, #6
+ 1887 01b8 3A22     		movs	r2, #58
+ 1888 01ba 3521     		movs	r1, #53
+ 1889 01bc 3120     		movs	r0, #49
+ 1890 01be FFF7FEFF 		bl	OLED_ShowChar
+ 356:./Hardware/device/sd8563.c **** 	OLED_ShowNum(56,53,minute_h,1,OLED_6X8);
+ 1891              		.loc 1 356 2
+ 1892 01c2 BA7B     		ldrb	r2, [r7, #14]	@ zero_extendqisi2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 40
+
+
+ 1893 01c4 0623     		movs	r3, #6
+ 1894 01c6 0093     		str	r3, [sp]
+ 1895 01c8 0123     		movs	r3, #1
+ 1896 01ca 3521     		movs	r1, #53
+ 1897 01cc 3820     		movs	r0, #56
+ 1898 01ce FFF7FEFF 		bl	OLED_ShowNum
+ 357:./Hardware/device/sd8563.c **** 	OLED_ShowNum(63,53,minute_l,1,OLED_6X8);
+ 1899              		.loc 1 357 2
+ 1900 01d2 7A7B     		ldrb	r2, [r7, #13]	@ zero_extendqisi2
+ 1901 01d4 0623     		movs	r3, #6
+ 1902 01d6 0093     		str	r3, [sp]
+ 1903 01d8 0123     		movs	r3, #1
+ 1904 01da 3521     		movs	r1, #53
+ 1905 01dc 3F20     		movs	r0, #63
+ 1906 01de FFF7FEFF 		bl	OLED_ShowNum
+ 358:./Hardware/device/sd8563.c **** 	OLED_ShowChar(70,53,':',OLED_6X8);
+ 1907              		.loc 1 358 2
+ 1908 01e2 0623     		movs	r3, #6
+ 1909 01e4 3A22     		movs	r2, #58
+ 1910 01e6 3521     		movs	r1, #53
+ 1911 01e8 4620     		movs	r0, #70
+ 1912 01ea FFF7FEFF 		bl	OLED_ShowChar
+ 359:./Hardware/device/sd8563.c **** 	OLED_ShowNum(77,53,second_h,1,OLED_6X8);
+ 1913              		.loc 1 359 2
+ 1914 01ee 3A7B     		ldrb	r2, [r7, #12]	@ zero_extendqisi2
+ 1915 01f0 0623     		movs	r3, #6
+ 1916 01f2 0093     		str	r3, [sp]
+ 1917 01f4 0123     		movs	r3, #1
+ 1918 01f6 3521     		movs	r1, #53
+ 1919 01f8 4D20     		movs	r0, #77
+ 1920 01fa FFF7FEFF 		bl	OLED_ShowNum
+ 360:./Hardware/device/sd8563.c **** 	OLED_ShowNum(84,53,second_l,1,OLED_6X8);
+ 1921              		.loc 1 360 2
+ 1922 01fe FA7A     		ldrb	r2, [r7, #11]	@ zero_extendqisi2
+ 1923 0200 0623     		movs	r3, #6
+ 1924 0202 0093     		str	r3, [sp]
+ 1925 0204 0123     		movs	r3, #1
+ 1926 0206 3521     		movs	r1, #53
+ 1927 0208 5420     		movs	r0, #84
+ 1928 020a FFF7FEFF 		bl	OLED_ShowNum
+ 1929              	.L46:
+ 361:./Hardware/device/sd8563.c **** 	 
+ 362:./Hardware/device/sd8563.c ****  }
+ 363:./Hardware/device/sd8563.c **** 	
+ 364:./Hardware/device/sd8563.c ****  return TRUE;
+ 1930              		.loc 1 364 9
+ 1931 020e 0123     		movs	r3, #1
+ 1932              	.L47:
+ 365:./Hardware/device/sd8563.c ****  
+ 366:./Hardware/device/sd8563.c **** }
+ 1933              		.loc 1 366 1 discriminator 1
+ 1934 0210 1846     		mov	r0, r3
+ 1935 0212 1837     		adds	r7, r7, #24
+ 1936              	.LCFI73:
+ 1937              		.cfi_def_cfa_offset 8
+ 1938 0214 BD46     		mov	sp, r7
+ 1939              	.LCFI74:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 41
+
+
+ 1940              		.cfi_def_cfa_register 13
+ 1941              		@ sp needed
+ 1942 0216 80BD     		pop	{r7, pc}
+ 1943              	.L49:
+ 1944              		.align	2
+ 1945              	.L48:
+ 1946 0218 08000000 		.word	.LC1
+ 1947 021c CDCCCCCC 		.word	-858993459
+ 1948              		.cfi_endproc
+ 1949              	.LFE46:
+ 1951              		.section	.text.RTC_ReadRAM_8563,"ax",%progbits
+ 1952              		.align	1
+ 1953              		.global	RTC_ReadRAM_8563
+ 1954              		.syntax unified
+ 1955              		.thumb
+ 1956              		.thumb_func
+ 1957              		.fpu softvfp
+ 1959              	RTC_ReadRAM_8563:
+ 1960              	.LFB47:
+ 367:./Hardware/device/sd8563.c **** 
+ 368:./Hardware/device/sd8563.c **** 
+ 369:./Hardware/device/sd8563.c **** //ÓëÉÏÎ»»ú½»»¥
+ 370:./Hardware/device/sd8563.c **** uint8_t RTC_ReadRAM_8563(uint8_t addr,uint8_t *data,uint8_t len,i2c_device_bus IIC_x)
+ 371:./Hardware/device/sd8563.c **** {
+ 1961              		.loc 1 371 1
+ 1962              		.cfi_startproc
+ 1963              		@ args = 0, pretend = 0, frame = 8
+ 1964              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1965 0000 80B5     		push	{r7, lr}
+ 1966              	.LCFI75:
+ 1967              		.cfi_def_cfa_offset 8
+ 1968              		.cfi_offset 7, -8
+ 1969              		.cfi_offset 14, -4
+ 1970 0002 82B0     		sub	sp, sp, #8
+ 1971              	.LCFI76:
+ 1972              		.cfi_def_cfa_offset 16
+ 1973 0004 00AF     		add	r7, sp, #0
+ 1974              	.LCFI77:
+ 1975              		.cfi_def_cfa_register 7
+ 1976 0006 3960     		str	r1, [r7]
+ 1977 0008 1146     		mov	r1, r2
+ 1978 000a 1A46     		mov	r2, r3
+ 1979 000c 0346     		mov	r3, r0
+ 1980 000e FB71     		strb	r3, [r7, #7]
+ 1981 0010 0B46     		mov	r3, r1
+ 1982 0012 BB71     		strb	r3, [r7, #6]
+ 1983 0014 1346     		mov	r3, r2
+ 1984 0016 7B71     		strb	r3, [r7, #5]
+ 372:./Hardware/device/sd8563.c **** 
+ 373:./Hardware/device/sd8563.c **** 	return SD8563_read_addr(addr,data,len,IIC_x);
+ 1985              		.loc 1 373 9
+ 1986 0018 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1987 001a BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 1988 001c F879     		ldrb	r0, [r7, #7]	@ zero_extendqisi2
+ 1989 001e 3968     		ldr	r1, [r7]
+ 1990 0020 FFF7FEFF 		bl	SD8563_read_addr
+ 1991 0024 0346     		mov	r3, r0
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 42
+
+
+ 374:./Hardware/device/sd8563.c **** 	
+ 375:./Hardware/device/sd8563.c **** }
+ 1992              		.loc 1 375 1
+ 1993 0026 1846     		mov	r0, r3
+ 1994 0028 0837     		adds	r7, r7, #8
+ 1995              	.LCFI78:
+ 1996              		.cfi_def_cfa_offset 8
+ 1997 002a BD46     		mov	sp, r7
+ 1998              	.LCFI79:
+ 1999              		.cfi_def_cfa_register 13
+ 2000              		@ sp needed
+ 2001 002c 80BD     		pop	{r7, pc}
+ 2002              		.cfi_endproc
+ 2003              	.LFE47:
+ 2005              		.section	.text.RTC_WriteRAM_8563,"ax",%progbits
+ 2006              		.align	1
+ 2007              		.global	RTC_WriteRAM_8563
+ 2008              		.syntax unified
+ 2009              		.thumb
+ 2010              		.thumb_func
+ 2011              		.fpu softvfp
+ 2013              	RTC_WriteRAM_8563:
+ 2014              	.LFB48:
+ 376:./Hardware/device/sd8563.c **** 
+ 377:./Hardware/device/sd8563.c **** uint8_t RTC_WriteRAM_8563(uint8_t addr,uint8_t *data,uint8_t len,i2c_device_bus IIC_x)
+ 378:./Hardware/device/sd8563.c **** {
+ 2015              		.loc 1 378 1
+ 2016              		.cfi_startproc
+ 2017              		@ args = 0, pretend = 0, frame = 8
+ 2018              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2019 0000 80B5     		push	{r7, lr}
+ 2020              	.LCFI80:
+ 2021              		.cfi_def_cfa_offset 8
+ 2022              		.cfi_offset 7, -8
+ 2023              		.cfi_offset 14, -4
+ 2024 0002 82B0     		sub	sp, sp, #8
+ 2025              	.LCFI81:
+ 2026              		.cfi_def_cfa_offset 16
+ 2027 0004 00AF     		add	r7, sp, #0
+ 2028              	.LCFI82:
+ 2029              		.cfi_def_cfa_register 7
+ 2030 0006 3960     		str	r1, [r7]
+ 2031 0008 1146     		mov	r1, r2
+ 2032 000a 1A46     		mov	r2, r3
+ 2033 000c 0346     		mov	r3, r0
+ 2034 000e FB71     		strb	r3, [r7, #7]
+ 2035 0010 0B46     		mov	r3, r1
+ 2036 0012 BB71     		strb	r3, [r7, #6]
+ 2037 0014 1346     		mov	r3, r2
+ 2038 0016 7B71     		strb	r3, [r7, #5]
+ 379:./Hardware/device/sd8563.c **** 
+ 380:./Hardware/device/sd8563.c **** 	 if(SD8563_write_addr(addr,data,len,IIC_x)!=RTC_OK)
+ 2039              		.loc 1 380 6
+ 2040 0018 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 2041 001a BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 2042 001c F879     		ldrb	r0, [r7, #7]	@ zero_extendqisi2
+ 2043 001e 3968     		ldr	r1, [r7]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 43
+
+
+ 2044 0020 FFF7FEFF 		bl	SD8563_write_addr
+ 2045 0024 0346     		mov	r3, r0
+ 2046              		.loc 1 380 5
+ 2047 0026 062B     		cmp	r3, #6
+ 2048 0028 01D0     		beq	.L53
+ 381:./Hardware/device/sd8563.c **** 		return RTC_NOACK;
+ 2049              		.loc 1 381 10
+ 2050 002a 0723     		movs	r3, #7
+ 2051 002c 00E0     		b	.L54
+ 2052              	.L53:
+ 382:./Hardware/device/sd8563.c **** 	 
+ 383:./Hardware/device/sd8563.c **** 	 return TRUE;
+ 2053              		.loc 1 383 10
+ 2054 002e 0123     		movs	r3, #1
+ 2055              	.L54:
+ 384:./Hardware/device/sd8563.c **** 	 
+ 385:./Hardware/device/sd8563.c **** }
+ 2056              		.loc 1 385 1
+ 2057 0030 1846     		mov	r0, r3
+ 2058 0032 0837     		adds	r7, r7, #8
+ 2059              	.LCFI83:
+ 2060              		.cfi_def_cfa_offset 8
+ 2061 0034 BD46     		mov	sp, r7
+ 2062              	.LCFI84:
+ 2063              		.cfi_def_cfa_register 13
+ 2064              		@ sp needed
+ 2065 0036 80BD     		pop	{r7, pc}
+ 2066              		.cfi_endproc
+ 2067              	.LFE48:
+ 2069              		.text
+ 2070              	.Letext0:
+ 2071              		.file 2 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 2072              		.file 3 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 2073              		.file 4 "./Hardware/device/iic.h"
+ 2074              		.file 5 "./Hardware/device/rtc.h"
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s 			page 44
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 sd8563.c
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:16     .text.SD8563_read_addr:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:24     .text.SD8563_read_addr:00000000 SD8563_read_addr
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:85     .text.SD8563_write_addr:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:92     .text.SD8563_write_addr:00000000 SD8563_write_addr
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:152    .text.SD8563_ReadTimeDate:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:159    .text.SD8563_ReadTimeDate:00000000 SD8563_ReadTimeDate
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:276    .text.SD8563_WriteTimeDate:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:283    .text.SD8563_WriteTimeDate:00000000 SD8563_WriteTimeDate
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:390    .text.sd8563_f1:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:397    .text.sd8563_f1:00000000 sd8563_f1
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:441    .text.sd8563_f1_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:448    .text.sd8563_f1_off:00000000 sd8563_f1_off
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:492    .text.sd8563_f32:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:499    .text.sd8563_f32:00000000 sd8563_f32
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:543    .text.sd8563_f32_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:550    .text.sd8563_f32_off:00000000 sd8563_f32_off
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:594    .text.sd8563_f1024:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:601    .text.sd8563_f1024:00000000 sd8563_f1024
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:645    .text.sd8563_f1024_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:652    .text.sd8563_f1024_off:00000000 sd8563_f1024_off
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:696    .text.sd8563_f32768:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:703    .text.sd8563_f32768:00000000 sd8563_f32768
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:747    .text.sd8563_f32768_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:754    .text.sd8563_f32768_off:00000000 sd8563_f32768_off
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:798    .text.sd85xx_and_std:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:805    .text.sd85xx_and_std:00000000 sd85xx_and_std
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:1108   .text.sd85xx_and_std:00000210 $d
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:1113   .rodata:00000000 $d
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:1117   .text.sd85xx_time_show:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:1124   .text.sd85xx_time_show:00000000 sd85xx_time_show
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:1619   .text.sd85xx_time_show:00000390 $d
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:1629   .text.sd85xx_time_copy:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:1636   .text.sd85xx_time_copy:00000000 sd85xx_time_copy
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:1946   .text.sd85xx_time_copy:00000218 $d
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:1952   .text.RTC_ReadRAM_8563:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:1959   .text.RTC_ReadRAM_8563:00000000 RTC_ReadRAM_8563
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:2006   .text.RTC_WriteRAM_8563:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccA1zfaW.s:2013   .text.RTC_WriteRAM_8563:00000000 RTC_WriteRAM_8563
+
+UNDEFINED SYMBOLS
+IIC_read_multiple_bytes
+IIC_write_multiple_bytes
+bcd_to_dec
+dec_to_bcd
+sd2405showtime
+Test_Line
+OLED_ShowNum
+OLED_ShowChar
+NO_ACK_Test_Line
+OLED_ShowString
+RTC_ReadTimeDate
+Usart_Printf

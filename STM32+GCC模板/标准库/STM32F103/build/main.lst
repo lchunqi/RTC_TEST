@@ -1,0 +1,96 @@
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccYpVf4v.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.rodata
+  18              		.align	2
+  19              	.LC0:
+  20 0000 48656C6C 		.ascii	"Hello world\000"
+  20      6F20776F 
+  20      726C6400 
+  21              		.section	.text.main,"ax",%progbits
+  22              		.align	1
+  23              		.global	main
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	main:
+  29              	.LFB32:
+  30              		.file 1 "./User/Src/main.c"
+   1:./User/Src/main.c **** /**		 
+   2:./User/Src/main.c ****  * @Date:               2022.3.16 
+   3:./User/Src/main.c ****  * @Revision:           V1.0
+   4:./User/Src/main.c ****  * @author:             点灯大师
+   5:./User/Src/main.c ****  * @Affiliated unit：   黄河科技学院
+   6:./User/Src/main.c ****  * @Description:        基于STM32F103的固件库工程模板
+   7:./User/Src/main.c ****  * @Email:              im_leihao@163.com
+   8:./User/Src/main.c ****  * @github:             https://github.com/zleihao
+   9:./User/Src/main.c ****  */
+  10:./User/Src/main.c **** #include "bsp_debug_usart.h"
+  11:./User/Src/main.c **** 
+  12:./User/Src/main.c **** int main(void) {
+  31              		.loc 1 12 16
+  32              		.cfi_startproc
+  33              		@ args = 0, pretend = 0, frame = 0
+  34              		@ frame_needed = 1, uses_anonymous_args = 0
+  35 0000 80B5     		push	{r7, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 8
+  38              		.cfi_offset 7, -8
+  39              		.cfi_offset 14, -4
+  40 0002 00AF     		add	r7, sp, #0
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_register 7
+  13:./User/Src/main.c **** 	//初始化USART1
+  14:./User/Src/main.c **** 	USART_Config();
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccYpVf4v.s 			page 2
+
+
+  43              		.loc 1 14 2
+  44 0004 FFF7FEFF 		bl	USART_Config
+  15:./User/Src/main.c **** 
+  16:./User/Src/main.c ****     printf("Hello world\n");
+  45              		.loc 1 16 5
+  46 0008 0148     		ldr	r0, .L3
+  47 000a FFF7FEFF 		bl	puts
+  48              	.L2:
+  17:./User/Src/main.c **** 
+  18:./User/Src/main.c **** 	while (1)
+  49              		.loc 1 18 8 discriminator 1
+  50 000e FEE7     		b	.L2
+  51              	.L4:
+  52              		.align	2
+  53              	.L3:
+  54 0010 00000000 		.word	.LC0
+  55              		.cfi_endproc
+  56              	.LFE32:
+  58              		.text
+  59              	.Letext0:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccYpVf4v.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\86134\AppData\Local\Temp\ccYpVf4v.s:18     .rodata:00000000 $d
+C:\Users\86134\AppData\Local\Temp\ccYpVf4v.s:22     .text.main:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccYpVf4v.s:28     .text.main:00000000 main
+C:\Users\86134\AppData\Local\Temp\ccYpVf4v.s:54     .text.main:00000010 $d
+
+UNDEFINED SYMBOLS
+USART_Config
+puts

@@ -1,0 +1,2725 @@
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"iic.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.SET_SDA_H,"ax",%progbits
+  16              		.align	1
+  17              		.global	SET_SDA_H
+  18              		.arch armv7-m
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.fpu softvfp
+  24              	SET_SDA_H:
+  25              	.LFB32:
+  26              		.file 1 "./Hardware/device/iic.c"
+   1:./Hardware/device/iic.c **** #include "iic.h"
+   2:./Hardware/device/iic.c **** 
+   3:./Hardware/device/iic.c **** /* Function	 -	SET_SDA_H
+   4:./Hardware/device/iic.c ****  * Brief		 -	选择一组IIC的SDA置位
+   5:./Hardware/device/iic.c ****  * Parameter -	iic_x SDA引脚编号
+   6:./Hardware/device/iic.c ****  * Return		 -	none
+   7:./Hardware/device/iic.c ****  * Editor		 -	
+   8:./Hardware/device/iic.c ****  * Date			 -	
+   9:./Hardware/device/iic.c ****  */
+  10:./Hardware/device/iic.c **** void SET_SDA_H(i2c_device_bus iic_x)
+  11:./Hardware/device/iic.c **** {
+  27              		.loc 1 11 1
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 8
+  30              		@ frame_needed = 1, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32 0000 80B4     		push	{r7}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 4
+  35              		.cfi_offset 7, -4
+  36 0002 83B0     		sub	sp, sp, #12
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 16
+  39 0004 00AF     		add	r7, sp, #0
+  40              	.LCFI2:
+  41              		.cfi_def_cfa_register 7
+  42 0006 0346     		mov	r3, r0
+  43 0008 FB71     		strb	r3, [r7, #7]
+  12:./Hardware/device/iic.c **** 	switch(iic_x)
+  44              		.loc 1 12 2
+  45 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+  46 000c 032B     		cmp	r3, #3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 2
+
+
+  47 000e 1BD8     		bhi	.L9
+  48 0010 01A2     		adr	r2, .L4
+  49 0012 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+  50 0016 00BF     		.p2align 2
+  51              	.L4:
+  52 0018 29000000 		.word	.L7+1
+  53 001c 31000000 		.word	.L6+1
+  54 0020 39000000 		.word	.L5+1
+  55 0024 41000000 		.word	.L3+1
+  56              		.p2align 1
+  57              	.L7:
+  13:./Hardware/device/iic.c **** 	{
+  14:./Hardware/device/iic.c **** 		case IIC_TEST:
+  15:./Hardware/device/iic.c **** 			SDA_TEST_H;
+  58              		.loc 1 15 4
+  59 0028 0A4B     		ldr	r3, .L10
+  60 002a 8022     		movs	r2, #128
+  61 002c 1A61     		str	r2, [r3, #16]
+  16:./Hardware/device/iic.c **** 			break;
+  62              		.loc 1 16 4
+  63 002e 0CE0     		b	.L8
+  64              	.L6:
+  17:./Hardware/device/iic.c **** 		case IIC_STD:
+  18:./Hardware/device/iic.c **** 			SDA_STD_H;
+  65              		.loc 1 18 4
+  66 0030 094B     		ldr	r3, .L10+4
+  67 0032 0422     		movs	r2, #4
+  68 0034 1A61     		str	r2, [r3, #16]
+  19:./Hardware/device/iic.c **** 			break;
+  69              		.loc 1 19 4
+  70 0036 08E0     		b	.L8
+  71              	.L5:
+  20:./Hardware/device/iic.c **** 		case IIC_GPS:
+  21:./Hardware/device/iic.c **** 			SDA_GPS_H;
+  72              		.loc 1 21 4
+  73 0038 084B     		ldr	r3, .L10+8
+  74 003a 8022     		movs	r2, #128
+  75 003c 1A61     		str	r2, [r3, #16]
+  22:./Hardware/device/iic.c **** 			break;
+  76              		.loc 1 22 4
+  77 003e 04E0     		b	.L8
+  78              	.L3:
+  23:./Hardware/device/iic.c **** 		case IIC_SD22:
+  24:./Hardware/device/iic.c **** 			SDA_TEST_H;
+  79              		.loc 1 24 4
+  80 0040 044B     		ldr	r3, .L10
+  81 0042 8022     		movs	r2, #128
+  82 0044 1A61     		str	r2, [r3, #16]
+  25:./Hardware/device/iic.c **** 			break;
+  83              		.loc 1 25 4
+  84 0046 00E0     		b	.L8
+  85              	.L9:
+  26:./Hardware/device/iic.c **** 		default:
+  27:./Hardware/device/iic.c **** 			break;
+  86              		.loc 1 27 4
+  87 0048 00BF     		nop
+  88              	.L8:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 3
+
+
+  28:./Hardware/device/iic.c **** 	}
+  29:./Hardware/device/iic.c **** }
+  89              		.loc 1 29 1
+  90 004a 00BF     		nop
+  91 004c 0C37     		adds	r7, r7, #12
+  92              	.LCFI3:
+  93              		.cfi_def_cfa_offset 4
+  94 004e BD46     		mov	sp, r7
+  95              	.LCFI4:
+  96              		.cfi_def_cfa_register 13
+  97              		@ sp needed
+  98 0050 80BC     		pop	{r7}
+  99              	.LCFI5:
+ 100              		.cfi_restore 7
+ 101              		.cfi_def_cfa_offset 0
+ 102 0052 7047     		bx	lr
+ 103              	.L11:
+ 104              		.align	2
+ 105              	.L10:
+ 106 0054 000C0140 		.word	1073810432
+ 107 0058 00180140 		.word	1073813504
+ 108 005c 00100140 		.word	1073811456
+ 109              		.cfi_endproc
+ 110              	.LFE32:
+ 112              		.section	.text.SET_SDA_L,"ax",%progbits
+ 113              		.align	1
+ 114              		.global	SET_SDA_L
+ 115              		.syntax unified
+ 116              		.thumb
+ 117              		.thumb_func
+ 118              		.fpu softvfp
+ 120              	SET_SDA_L:
+ 121              	.LFB33:
+  30:./Hardware/device/iic.c **** 
+  31:./Hardware/device/iic.c **** /* Function	 -	SET_SDA_L
+  32:./Hardware/device/iic.c ****  * Brief		 -	选择一组IIC的SDA拉低
+  33:./Hardware/device/iic.c ****  * Parameter -	iic_x SDA引脚编号
+  34:./Hardware/device/iic.c ****  * Return		 -	none
+  35:./Hardware/device/iic.c ****  * Editor		 -	
+  36:./Hardware/device/iic.c ****  * Date			 -	
+  37:./Hardware/device/iic.c ****  */
+  38:./Hardware/device/iic.c **** void SET_SDA_L(i2c_device_bus iic_x)
+  39:./Hardware/device/iic.c **** {
+ 122              		.loc 1 39 1
+ 123              		.cfi_startproc
+ 124              		@ args = 0, pretend = 0, frame = 8
+ 125              		@ frame_needed = 1, uses_anonymous_args = 0
+ 126              		@ link register save eliminated.
+ 127 0000 80B4     		push	{r7}
+ 128              	.LCFI6:
+ 129              		.cfi_def_cfa_offset 4
+ 130              		.cfi_offset 7, -4
+ 131 0002 83B0     		sub	sp, sp, #12
+ 132              	.LCFI7:
+ 133              		.cfi_def_cfa_offset 16
+ 134 0004 00AF     		add	r7, sp, #0
+ 135              	.LCFI8:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 4
+
+
+ 136              		.cfi_def_cfa_register 7
+ 137 0006 0346     		mov	r3, r0
+ 138 0008 FB71     		strb	r3, [r7, #7]
+  40:./Hardware/device/iic.c **** 	switch(iic_x)
+ 139              		.loc 1 40 2
+ 140 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 141 000c 032B     		cmp	r3, #3
+ 142 000e 1BD8     		bhi	.L20
+ 143 0010 01A2     		adr	r2, .L15
+ 144 0012 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 145 0016 00BF     		.p2align 2
+ 146              	.L15:
+ 147 0018 29000000 		.word	.L18+1
+ 148 001c 31000000 		.word	.L17+1
+ 149 0020 39000000 		.word	.L16+1
+ 150 0024 41000000 		.word	.L14+1
+ 151              		.p2align 1
+ 152              	.L18:
+  41:./Hardware/device/iic.c **** 	{
+  42:./Hardware/device/iic.c **** 		case IIC_TEST:
+  43:./Hardware/device/iic.c **** 			SDA_TEST_L;
+ 153              		.loc 1 43 4
+ 154 0028 0A4B     		ldr	r3, .L21
+ 155 002a 8022     		movs	r2, #128
+ 156 002c 5A61     		str	r2, [r3, #20]
+  44:./Hardware/device/iic.c **** 			break;
+ 157              		.loc 1 44 4
+ 158 002e 0CE0     		b	.L19
+ 159              	.L17:
+  45:./Hardware/device/iic.c **** 		case IIC_STD:
+  46:./Hardware/device/iic.c **** 			SDA_STD_L;
+ 160              		.loc 1 46 4
+ 161 0030 094B     		ldr	r3, .L21+4
+ 162 0032 0422     		movs	r2, #4
+ 163 0034 5A61     		str	r2, [r3, #20]
+  47:./Hardware/device/iic.c **** 			break;
+ 164              		.loc 1 47 4
+ 165 0036 08E0     		b	.L19
+ 166              	.L16:
+  48:./Hardware/device/iic.c **** 		case IIC_GPS:
+  49:./Hardware/device/iic.c **** 			SDA_GPS_L;
+ 167              		.loc 1 49 4
+ 168 0038 084B     		ldr	r3, .L21+8
+ 169 003a 8022     		movs	r2, #128
+ 170 003c 5A61     		str	r2, [r3, #20]
+  50:./Hardware/device/iic.c **** 			break;
+ 171              		.loc 1 50 4
+ 172 003e 04E0     		b	.L19
+ 173              	.L14:
+  51:./Hardware/device/iic.c **** 		case IIC_SD22:
+  52:./Hardware/device/iic.c **** 			SDA_TEST_L;
+ 174              		.loc 1 52 4
+ 175 0040 044B     		ldr	r3, .L21
+ 176 0042 8022     		movs	r2, #128
+ 177 0044 5A61     		str	r2, [r3, #20]
+  53:./Hardware/device/iic.c **** 			break;
+ 178              		.loc 1 53 4
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 5
+
+
+ 179 0046 00E0     		b	.L19
+ 180              	.L20:
+  54:./Hardware/device/iic.c **** 		default:
+  55:./Hardware/device/iic.c **** 			break;
+ 181              		.loc 1 55 4
+ 182 0048 00BF     		nop
+ 183              	.L19:
+  56:./Hardware/device/iic.c **** 	}
+  57:./Hardware/device/iic.c **** }
+ 184              		.loc 1 57 1
+ 185 004a 00BF     		nop
+ 186 004c 0C37     		adds	r7, r7, #12
+ 187              	.LCFI9:
+ 188              		.cfi_def_cfa_offset 4
+ 189 004e BD46     		mov	sp, r7
+ 190              	.LCFI10:
+ 191              		.cfi_def_cfa_register 13
+ 192              		@ sp needed
+ 193 0050 80BC     		pop	{r7}
+ 194              	.LCFI11:
+ 195              		.cfi_restore 7
+ 196              		.cfi_def_cfa_offset 0
+ 197 0052 7047     		bx	lr
+ 198              	.L22:
+ 199              		.align	2
+ 200              	.L21:
+ 201 0054 000C0140 		.word	1073810432
+ 202 0058 00180140 		.word	1073813504
+ 203 005c 00100140 		.word	1073811456
+ 204              		.cfi_endproc
+ 205              	.LFE33:
+ 207              		.section	.text.SET_SCL_H,"ax",%progbits
+ 208              		.align	1
+ 209              		.global	SET_SCL_H
+ 210              		.syntax unified
+ 211              		.thumb
+ 212              		.thumb_func
+ 213              		.fpu softvfp
+ 215              	SET_SCL_H:
+ 216              	.LFB34:
+  58:./Hardware/device/iic.c **** 
+  59:./Hardware/device/iic.c **** /* Function	 -	SET_SCL_H
+  60:./Hardware/device/iic.c ****  * Brief		 -	选择一组IIC的SCL置位
+  61:./Hardware/device/iic.c ****  * Parameter -	iic_x SCL引脚编号
+  62:./Hardware/device/iic.c ****  * Return		 -	none
+  63:./Hardware/device/iic.c ****  * Editor		 -	
+  64:./Hardware/device/iic.c ****  * Date			 -	
+  65:./Hardware/device/iic.c ****  */
+  66:./Hardware/device/iic.c **** void SET_SCL_H(i2c_device_bus iic_x)
+  67:./Hardware/device/iic.c **** {
+ 217              		.loc 1 67 1
+ 218              		.cfi_startproc
+ 219              		@ args = 0, pretend = 0, frame = 8
+ 220              		@ frame_needed = 1, uses_anonymous_args = 0
+ 221              		@ link register save eliminated.
+ 222 0000 80B4     		push	{r7}
+ 223              	.LCFI12:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 6
+
+
+ 224              		.cfi_def_cfa_offset 4
+ 225              		.cfi_offset 7, -4
+ 226 0002 83B0     		sub	sp, sp, #12
+ 227              	.LCFI13:
+ 228              		.cfi_def_cfa_offset 16
+ 229 0004 00AF     		add	r7, sp, #0
+ 230              	.LCFI14:
+ 231              		.cfi_def_cfa_register 7
+ 232 0006 0346     		mov	r3, r0
+ 233 0008 FB71     		strb	r3, [r7, #7]
+  68:./Hardware/device/iic.c **** 	switch(iic_x)
+ 234              		.loc 1 68 2
+ 235 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 236 000c 032B     		cmp	r3, #3
+ 237 000e 1BD8     		bhi	.L31
+ 238 0010 01A2     		adr	r2, .L26
+ 239 0012 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 240 0016 00BF     		.p2align 2
+ 241              	.L26:
+ 242 0018 29000000 		.word	.L29+1
+ 243 001c 31000000 		.word	.L28+1
+ 244 0020 39000000 		.word	.L27+1
+ 245 0024 41000000 		.word	.L25+1
+ 246              		.p2align 1
+ 247              	.L29:
+  69:./Hardware/device/iic.c **** 	{
+  70:./Hardware/device/iic.c **** 		case IIC_TEST:
+  71:./Hardware/device/iic.c **** 			SCL_TEST_H;
+ 248              		.loc 1 71 4
+ 249 0028 0A4B     		ldr	r3, .L32
+ 250 002a 4022     		movs	r2, #64
+ 251 002c 1A61     		str	r2, [r3, #16]
+  72:./Hardware/device/iic.c **** 			break;
+ 252              		.loc 1 72 4
+ 253 002e 0CE0     		b	.L30
+ 254              	.L28:
+  73:./Hardware/device/iic.c **** 		case IIC_STD:
+  74:./Hardware/device/iic.c **** 			SCL_STD_H;
+ 255              		.loc 1 74 4
+ 256 0030 094B     		ldr	r3, .L32+4
+ 257 0032 0822     		movs	r2, #8
+ 258 0034 1A61     		str	r2, [r3, #16]
+  75:./Hardware/device/iic.c **** 			break;
+ 259              		.loc 1 75 4
+ 260 0036 08E0     		b	.L30
+ 261              	.L27:
+  76:./Hardware/device/iic.c **** 		case IIC_GPS:
+  77:./Hardware/device/iic.c **** 			SCL_GPS_H;
+ 262              		.loc 1 77 4
+ 263 0038 084B     		ldr	r3, .L32+8
+ 264 003a 4022     		movs	r2, #64
+ 265 003c 1A61     		str	r2, [r3, #16]
+  78:./Hardware/device/iic.c **** 			break;
+ 266              		.loc 1 78 4
+ 267 003e 04E0     		b	.L30
+ 268              	.L25:
+  79:./Hardware/device/iic.c **** 		case IIC_SD22:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 7
+
+
+  80:./Hardware/device/iic.c **** 			SCL_TEST_H;
+ 269              		.loc 1 80 4
+ 270 0040 044B     		ldr	r3, .L32
+ 271 0042 4022     		movs	r2, #64
+ 272 0044 1A61     		str	r2, [r3, #16]
+  81:./Hardware/device/iic.c **** 			break;
+ 273              		.loc 1 81 4
+ 274 0046 00E0     		b	.L30
+ 275              	.L31:
+  82:./Hardware/device/iic.c **** 		default:
+  83:./Hardware/device/iic.c **** 			break;
+ 276              		.loc 1 83 4
+ 277 0048 00BF     		nop
+ 278              	.L30:
+  84:./Hardware/device/iic.c **** 	}
+  85:./Hardware/device/iic.c **** }
+ 279              		.loc 1 85 1
+ 280 004a 00BF     		nop
+ 281 004c 0C37     		adds	r7, r7, #12
+ 282              	.LCFI15:
+ 283              		.cfi_def_cfa_offset 4
+ 284 004e BD46     		mov	sp, r7
+ 285              	.LCFI16:
+ 286              		.cfi_def_cfa_register 13
+ 287              		@ sp needed
+ 288 0050 80BC     		pop	{r7}
+ 289              	.LCFI17:
+ 290              		.cfi_restore 7
+ 291              		.cfi_def_cfa_offset 0
+ 292 0052 7047     		bx	lr
+ 293              	.L33:
+ 294              		.align	2
+ 295              	.L32:
+ 296 0054 000C0140 		.word	1073810432
+ 297 0058 00180140 		.word	1073813504
+ 298 005c 00100140 		.word	1073811456
+ 299              		.cfi_endproc
+ 300              	.LFE34:
+ 302              		.section	.text.SET_SCL_L,"ax",%progbits
+ 303              		.align	1
+ 304              		.global	SET_SCL_L
+ 305              		.syntax unified
+ 306              		.thumb
+ 307              		.thumb_func
+ 308              		.fpu softvfp
+ 310              	SET_SCL_L:
+ 311              	.LFB35:
+  86:./Hardware/device/iic.c **** 
+  87:./Hardware/device/iic.c **** /* Function	 -	SET_SCL_L
+  88:./Hardware/device/iic.c ****  * Brief		 -	选择一组IIC的SDA拉低
+  89:./Hardware/device/iic.c ****  * Parameter -	iic_x SCL引脚编号
+  90:./Hardware/device/iic.c ****  * Return		 -	none
+  91:./Hardware/device/iic.c ****  * Editor		 -	
+  92:./Hardware/device/iic.c ****  * Date			 -	
+  93:./Hardware/device/iic.c ****  */
+  94:./Hardware/device/iic.c **** void SET_SCL_L(i2c_device_bus iic_x)
+  95:./Hardware/device/iic.c **** {
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 8
+
+
+ 312              		.loc 1 95 1
+ 313              		.cfi_startproc
+ 314              		@ args = 0, pretend = 0, frame = 8
+ 315              		@ frame_needed = 1, uses_anonymous_args = 0
+ 316              		@ link register save eliminated.
+ 317 0000 80B4     		push	{r7}
+ 318              	.LCFI18:
+ 319              		.cfi_def_cfa_offset 4
+ 320              		.cfi_offset 7, -4
+ 321 0002 83B0     		sub	sp, sp, #12
+ 322              	.LCFI19:
+ 323              		.cfi_def_cfa_offset 16
+ 324 0004 00AF     		add	r7, sp, #0
+ 325              	.LCFI20:
+ 326              		.cfi_def_cfa_register 7
+ 327 0006 0346     		mov	r3, r0
+ 328 0008 FB71     		strb	r3, [r7, #7]
+  96:./Hardware/device/iic.c **** 	switch(iic_x)
+ 329              		.loc 1 96 2
+ 330 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 331 000c 032B     		cmp	r3, #3
+ 332 000e 1BD8     		bhi	.L42
+ 333 0010 01A2     		adr	r2, .L37
+ 334 0012 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 335 0016 00BF     		.p2align 2
+ 336              	.L37:
+ 337 0018 29000000 		.word	.L40+1
+ 338 001c 31000000 		.word	.L39+1
+ 339 0020 39000000 		.word	.L38+1
+ 340 0024 41000000 		.word	.L36+1
+ 341              		.p2align 1
+ 342              	.L40:
+  97:./Hardware/device/iic.c **** 	{
+  98:./Hardware/device/iic.c **** 		case IIC_TEST:
+  99:./Hardware/device/iic.c **** 			SCL_TEST_L;
+ 343              		.loc 1 99 4
+ 344 0028 0A4B     		ldr	r3, .L43
+ 345 002a 4022     		movs	r2, #64
+ 346 002c 5A61     		str	r2, [r3, #20]
+ 100:./Hardware/device/iic.c **** 			break;
+ 347              		.loc 1 100 4
+ 348 002e 0CE0     		b	.L41
+ 349              	.L39:
+ 101:./Hardware/device/iic.c **** 		case IIC_STD:
+ 102:./Hardware/device/iic.c **** 			SCL_STD_L;
+ 350              		.loc 1 102 4
+ 351 0030 094B     		ldr	r3, .L43+4
+ 352 0032 0822     		movs	r2, #8
+ 353 0034 5A61     		str	r2, [r3, #20]
+ 103:./Hardware/device/iic.c **** 			break;
+ 354              		.loc 1 103 4
+ 355 0036 08E0     		b	.L41
+ 356              	.L38:
+ 104:./Hardware/device/iic.c **** 		case IIC_GPS:
+ 105:./Hardware/device/iic.c **** 			SCL_GPS_L;
+ 357              		.loc 1 105 4
+ 358 0038 084B     		ldr	r3, .L43+8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 9
+
+
+ 359 003a 4022     		movs	r2, #64
+ 360 003c 5A61     		str	r2, [r3, #20]
+ 106:./Hardware/device/iic.c **** 			break;
+ 361              		.loc 1 106 4
+ 362 003e 04E0     		b	.L41
+ 363              	.L36:
+ 107:./Hardware/device/iic.c **** 		case IIC_SD22:
+ 108:./Hardware/device/iic.c **** 			SCL_TEST_L;
+ 364              		.loc 1 108 4
+ 365 0040 044B     		ldr	r3, .L43
+ 366 0042 4022     		movs	r2, #64
+ 367 0044 5A61     		str	r2, [r3, #20]
+ 109:./Hardware/device/iic.c **** 			break;
+ 368              		.loc 1 109 4
+ 369 0046 00E0     		b	.L41
+ 370              	.L42:
+ 110:./Hardware/device/iic.c **** 		default:
+ 111:./Hardware/device/iic.c **** 			break;
+ 371              		.loc 1 111 4
+ 372 0048 00BF     		nop
+ 373              	.L41:
+ 112:./Hardware/device/iic.c **** 	}
+ 113:./Hardware/device/iic.c **** }
+ 374              		.loc 1 113 1
+ 375 004a 00BF     		nop
+ 376 004c 0C37     		adds	r7, r7, #12
+ 377              	.LCFI21:
+ 378              		.cfi_def_cfa_offset 4
+ 379 004e BD46     		mov	sp, r7
+ 380              	.LCFI22:
+ 381              		.cfi_def_cfa_register 13
+ 382              		@ sp needed
+ 383 0050 80BC     		pop	{r7}
+ 384              	.LCFI23:
+ 385              		.cfi_restore 7
+ 386              		.cfi_def_cfa_offset 0
+ 387 0052 7047     		bx	lr
+ 388              	.L44:
+ 389              		.align	2
+ 390              	.L43:
+ 391 0054 000C0140 		.word	1073810432
+ 392 0058 00180140 		.word	1073813504
+ 393 005c 00100140 		.word	1073811456
+ 394              		.cfi_endproc
+ 395              	.LFE35:
+ 397              		.section	.text.Read_SDA,"ax",%progbits
+ 398              		.align	1
+ 399              		.global	Read_SDA
+ 400              		.syntax unified
+ 401              		.thumb
+ 402              		.thumb_func
+ 403              		.fpu softvfp
+ 405              	Read_SDA:
+ 406              	.LFB36:
+ 114:./Hardware/device/iic.c **** 
+ 115:./Hardware/device/iic.c **** /* Function	 -	Read_SDA
+ 116:./Hardware/device/iic.c ****  * Brief		 -	选择一组IIC的读取SDA状态值
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 10
+
+
+ 117:./Hardware/device/iic.c ****  * Parameter -	iic_x SDA引脚编号
+ 118:./Hardware/device/iic.c ****  * Return		 -	SDA的高低电平信号
+ 119:./Hardware/device/iic.c ****  * Editor		 -	
+ 120:./Hardware/device/iic.c ****  * Date			 -	
+ 121:./Hardware/device/iic.c ****  */
+ 122:./Hardware/device/iic.c **** uint8_t Read_SDA(i2c_device_bus iic_x)
+ 123:./Hardware/device/iic.c **** {
+ 407              		.loc 1 123 1
+ 408              		.cfi_startproc
+ 409              		@ args = 0, pretend = 0, frame = 8
+ 410              		@ frame_needed = 1, uses_anonymous_args = 0
+ 411              		@ link register save eliminated.
+ 412 0000 80B4     		push	{r7}
+ 413              	.LCFI24:
+ 414              		.cfi_def_cfa_offset 4
+ 415              		.cfi_offset 7, -4
+ 416 0002 83B0     		sub	sp, sp, #12
+ 417              	.LCFI25:
+ 418              		.cfi_def_cfa_offset 16
+ 419 0004 00AF     		add	r7, sp, #0
+ 420              	.LCFI26:
+ 421              		.cfi_def_cfa_register 7
+ 422 0006 0346     		mov	r3, r0
+ 423 0008 FB71     		strb	r3, [r7, #7]
+ 124:./Hardware/device/iic.c ****     switch(iic_x)
+ 424              		.loc 1 124 5
+ 425 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 426 000c 032B     		cmp	r3, #3
+ 427 000e 33D8     		bhi	.L58
+ 428 0010 01A2     		adr	r2, .L48
+ 429 0012 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 430 0016 00BF     		.p2align 2
+ 431              	.L48:
+ 432 0018 29000000 		.word	.L51+1
+ 433 001c 3D000000 		.word	.L50+1
+ 434 0020 51000000 		.word	.L49+1
+ 435 0024 65000000 		.word	.L47+1
+ 436              		.p2align 1
+ 437              	.L51:
+ 125:./Hardware/device/iic.c ****     {
+ 126:./Hardware/device/iic.c ****         case IIC_TEST:
+ 127:./Hardware/device/iic.c ****             if(SDA_TEST_read)
+ 438              		.loc 1 127 16
+ 439 0028 174B     		ldr	r3, .L59
+ 440 002a 9B68     		ldr	r3, [r3, #8]
+ 441 002c 03F08003 		and	r3, r3, #128
+ 442              		.loc 1 127 15
+ 443 0030 002B     		cmp	r3, #0
+ 444 0032 01D0     		beq	.L52
+ 128:./Hardware/device/iic.c ****                 return 1;
+ 445              		.loc 1 128 24
+ 446 0034 0123     		movs	r3, #1
+ 447 0036 21E0     		b	.L53
+ 448              	.L52:
+ 129:./Hardware/device/iic.c ****             else
+ 130:./Hardware/device/iic.c ****                 return 0;            
+ 449              		.loc 1 130 24
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 11
+
+
+ 450 0038 0023     		movs	r3, #0
+ 451 003a 1FE0     		b	.L53
+ 452              	.L50:
+ 131:./Hardware/device/iic.c ****         case IIC_STD:
+ 132:./Hardware/device/iic.c ****             if(SDA_STD_read)
+ 453              		.loc 1 132 16
+ 454 003c 134B     		ldr	r3, .L59+4
+ 455 003e 9B68     		ldr	r3, [r3, #8]
+ 456 0040 03F00403 		and	r3, r3, #4
+ 457              		.loc 1 132 15
+ 458 0044 002B     		cmp	r3, #0
+ 459 0046 01D0     		beq	.L54
+ 133:./Hardware/device/iic.c ****                 return 1;
+ 460              		.loc 1 133 24
+ 461 0048 0123     		movs	r3, #1
+ 462 004a 17E0     		b	.L53
+ 463              	.L54:
+ 134:./Hardware/device/iic.c ****             else
+ 135:./Hardware/device/iic.c ****                 return 0;
+ 464              		.loc 1 135 24
+ 465 004c 0023     		movs	r3, #0
+ 466 004e 15E0     		b	.L53
+ 467              	.L49:
+ 136:./Hardware/device/iic.c ****         case IIC_GPS:
+ 137:./Hardware/device/iic.c ****             if(SDA_GPS_read)
+ 468              		.loc 1 137 16
+ 469 0050 0F4B     		ldr	r3, .L59+8
+ 470 0052 9B68     		ldr	r3, [r3, #8]
+ 471 0054 03F08003 		and	r3, r3, #128
+ 472              		.loc 1 137 15
+ 473 0058 002B     		cmp	r3, #0
+ 474 005a 01D0     		beq	.L55
+ 138:./Hardware/device/iic.c ****                 return 1;
+ 475              		.loc 1 138 24
+ 476 005c 0123     		movs	r3, #1
+ 477 005e 0DE0     		b	.L53
+ 478              	.L55:
+ 139:./Hardware/device/iic.c ****             else
+ 140:./Hardware/device/iic.c ****                 return 0;
+ 479              		.loc 1 140 24
+ 480 0060 0023     		movs	r3, #0
+ 481 0062 0BE0     		b	.L53
+ 482              	.L47:
+ 141:./Hardware/device/iic.c ****         case IIC_SD22:
+ 142:./Hardware/device/iic.c ****             if(SDA_TEST_read)
+ 483              		.loc 1 142 16
+ 484 0064 084B     		ldr	r3, .L59
+ 485 0066 9B68     		ldr	r3, [r3, #8]
+ 486 0068 03F08003 		and	r3, r3, #128
+ 487              		.loc 1 142 15
+ 488 006c 002B     		cmp	r3, #0
+ 489 006e 01D0     		beq	.L56
+ 143:./Hardware/device/iic.c ****                 return 1;
+ 490              		.loc 1 143 24
+ 491 0070 0123     		movs	r3, #1
+ 492 0072 03E0     		b	.L53
+ 493              	.L56:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 12
+
+
+ 144:./Hardware/device/iic.c ****             else
+ 145:./Hardware/device/iic.c ****                 return 0;
+ 494              		.loc 1 145 24
+ 495 0074 0023     		movs	r3, #0
+ 496 0076 01E0     		b	.L53
+ 497              	.L58:
+ 146:./Hardware/device/iic.c ****         default:
+ 147:./Hardware/device/iic.c ****             break;
+ 498              		.loc 1 147 13
+ 499 0078 00BF     		nop
+ 148:./Hardware/device/iic.c ****     }
+ 149:./Hardware/device/iic.c ****     return 1;
+ 500              		.loc 1 149 12
+ 501 007a 0123     		movs	r3, #1
+ 502              	.L53:
+ 150:./Hardware/device/iic.c **** }
+ 503              		.loc 1 150 1
+ 504 007c 1846     		mov	r0, r3
+ 505 007e 0C37     		adds	r7, r7, #12
+ 506              	.LCFI27:
+ 507              		.cfi_def_cfa_offset 4
+ 508 0080 BD46     		mov	sp, r7
+ 509              	.LCFI28:
+ 510              		.cfi_def_cfa_register 13
+ 511              		@ sp needed
+ 512 0082 80BC     		pop	{r7}
+ 513              	.LCFI29:
+ 514              		.cfi_restore 7
+ 515              		.cfi_def_cfa_offset 0
+ 516 0084 7047     		bx	lr
+ 517              	.L60:
+ 518 0086 00BF     		.align	2
+ 519              	.L59:
+ 520 0088 000C0140 		.word	1073810432
+ 521 008c 00180140 		.word	1073813504
+ 522 0090 00100140 		.word	1073811456
+ 523              		.cfi_endproc
+ 524              	.LFE36:
+ 526              		.section	.text.IIC_Init,"ax",%progbits
+ 527              		.align	1
+ 528              		.global	IIC_Init
+ 529              		.syntax unified
+ 530              		.thumb
+ 531              		.thumb_func
+ 532              		.fpu softvfp
+ 534              	IIC_Init:
+ 535              	.LFB37:
+ 151:./Hardware/device/iic.c **** 
+ 152:./Hardware/device/iic.c **** /* Function	 -	IIC_Init
+ 153:./Hardware/device/iic.c ****  * Brief		 -	IIC引脚初始化
+ 154:./Hardware/device/iic.c ****  * Parameter -	none
+ 155:./Hardware/device/iic.c ****  * Return		 -	none
+ 156:./Hardware/device/iic.c ****  * Editor		 -	
+ 157:./Hardware/device/iic.c ****  * Date			 -	
+ 158:./Hardware/device/iic.c ****  */
+ 159:./Hardware/device/iic.c **** void IIC_Init(void)
+ 160:./Hardware/device/iic.c **** {	
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 13
+
+
+ 536              		.loc 1 160 1
+ 537              		.cfi_startproc
+ 538              		@ args = 0, pretend = 0, frame = 8
+ 539              		@ frame_needed = 1, uses_anonymous_args = 0
+ 540 0000 80B5     		push	{r7, lr}
+ 541              	.LCFI30:
+ 542              		.cfi_def_cfa_offset 8
+ 543              		.cfi_offset 7, -8
+ 544              		.cfi_offset 14, -4
+ 545 0002 82B0     		sub	sp, sp, #8
+ 546              	.LCFI31:
+ 547              		.cfi_def_cfa_offset 16
+ 548 0004 00AF     		add	r7, sp, #0
+ 549              	.LCFI32:
+ 550              		.cfi_def_cfa_register 7
+ 161:./Hardware/device/iic.c **** 	GPIO_InitTypeDef  GPIO_InitStructure; 
+ 162:./Hardware/device/iic.c **** 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOC|RCC_APB2Peri
+ 551              		.loc 1 162 2
+ 552 0006 0121     		movs	r1, #1
+ 553 0008 7C20     		movs	r0, #124
+ 554 000a FFF7FEFF 		bl	RCC_APB2PeriphClockCmd
+ 163:./Hardware/device/iic.c **** 	
+ 164:./Hardware/device/iic.c **** 	/*SCL*/
+ 165:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Pin=SCL_TEST_Pin;
+ 555              		.loc 1 165 29
+ 556 000e 4023     		movs	r3, #64
+ 557 0010 BB80     		strh	r3, [r7, #4]	@ movhi
+ 166:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
+ 558              		.loc 1 166 31
+ 559 0012 0323     		movs	r3, #3
+ 560 0014 BB71     		strb	r3, [r7, #6]
+ 167:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_OD;
+ 561              		.loc 1 167 30
+ 562 0016 1423     		movs	r3, #20
+ 563 0018 FB71     		strb	r3, [r7, #7]
+ 168:./Hardware/device/iic.c **** 	GPIO_Init(GPIOB,&GPIO_InitStructure);
+ 564              		.loc 1 168 2
+ 565 001a 3B1D     		adds	r3, r7, #4
+ 566 001c 1946     		mov	r1, r3
+ 567 001e 3448     		ldr	r0, .L62
+ 568 0020 FFF7FEFF 		bl	GPIO_Init
+ 169:./Hardware/device/iic.c **** 	
+ 170:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Pin=SCL_STD_Pin;
+ 569              		.loc 1 170 29
+ 570 0024 0823     		movs	r3, #8
+ 571 0026 BB80     		strh	r3, [r7, #4]	@ movhi
+ 171:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
+ 572              		.loc 1 171 31
+ 573 0028 0323     		movs	r3, #3
+ 574 002a BB71     		strb	r3, [r7, #6]
+ 172:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_OD;
+ 575              		.loc 1 172 30
+ 576 002c 1423     		movs	r3, #20
+ 577 002e FB71     		strb	r3, [r7, #7]
+ 173:./Hardware/device/iic.c **** 	GPIO_Init(GPIOE,&GPIO_InitStructure);
+ 578              		.loc 1 173 2
+ 579 0030 3B1D     		adds	r3, r7, #4
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 14
+
+
+ 580 0032 1946     		mov	r1, r3
+ 581 0034 2F48     		ldr	r0, .L62+4
+ 582 0036 FFF7FEFF 		bl	GPIO_Init
+ 174:./Hardware/device/iic.c **** 	
+ 175:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Pin=SCL_GPS_Pin;
+ 583              		.loc 1 175 29
+ 584 003a 4023     		movs	r3, #64
+ 585 003c BB80     		strh	r3, [r7, #4]	@ movhi
+ 176:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
+ 586              		.loc 1 176 31
+ 587 003e 0323     		movs	r3, #3
+ 588 0040 BB71     		strb	r3, [r7, #6]
+ 177:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_OD;
+ 589              		.loc 1 177 30
+ 590 0042 1423     		movs	r3, #20
+ 591 0044 FB71     		strb	r3, [r7, #7]
+ 178:./Hardware/device/iic.c **** 	GPIO_Init(GPIOC,&GPIO_InitStructure);
+ 592              		.loc 1 178 2
+ 593 0046 3B1D     		adds	r3, r7, #4
+ 594 0048 1946     		mov	r1, r3
+ 595 004a 2B48     		ldr	r0, .L62+8
+ 596 004c FFF7FEFF 		bl	GPIO_Init
+ 179:./Hardware/device/iic.c **** 
+ 180:./Hardware/device/iic.c **** 	/*SDA*/
+ 181:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Pin=SDA_TEST_Pin;
+ 597              		.loc 1 181 29
+ 598 0050 8023     		movs	r3, #128
+ 599 0052 BB80     		strh	r3, [r7, #4]	@ movhi
+ 182:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
+ 600              		.loc 1 182 31
+ 601 0054 0323     		movs	r3, #3
+ 602 0056 BB71     		strb	r3, [r7, #6]
+ 183:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_OD;
+ 603              		.loc 1 183 30
+ 604 0058 1423     		movs	r3, #20
+ 605 005a FB71     		strb	r3, [r7, #7]
+ 184:./Hardware/device/iic.c **** 	GPIO_Init(GPIOB,&GPIO_InitStructure);
+ 606              		.loc 1 184 2
+ 607 005c 3B1D     		adds	r3, r7, #4
+ 608 005e 1946     		mov	r1, r3
+ 609 0060 2348     		ldr	r0, .L62
+ 610 0062 FFF7FEFF 		bl	GPIO_Init
+ 185:./Hardware/device/iic.c **** 	
+ 186:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Pin=SDA_STD_Pin;
+ 611              		.loc 1 186 29
+ 612 0066 0423     		movs	r3, #4
+ 613 0068 BB80     		strh	r3, [r7, #4]	@ movhi
+ 187:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
+ 614              		.loc 1 187 31
+ 615 006a 0323     		movs	r3, #3
+ 616 006c BB71     		strb	r3, [r7, #6]
+ 188:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_OD;
+ 617              		.loc 1 188 30
+ 618 006e 1423     		movs	r3, #20
+ 619 0070 FB71     		strb	r3, [r7, #7]
+ 189:./Hardware/device/iic.c **** 	GPIO_Init(GPIOE,&GPIO_InitStructure);
+ 620              		.loc 1 189 2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 15
+
+
+ 621 0072 3B1D     		adds	r3, r7, #4
+ 622 0074 1946     		mov	r1, r3
+ 623 0076 1F48     		ldr	r0, .L62+4
+ 624 0078 FFF7FEFF 		bl	GPIO_Init
+ 190:./Hardware/device/iic.c **** 	
+ 191:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Pin=SDA_GPS_Pin;
+ 625              		.loc 1 191 29
+ 626 007c 8023     		movs	r3, #128
+ 627 007e BB80     		strh	r3, [r7, #4]	@ movhi
+ 192:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
+ 628              		.loc 1 192 31
+ 629 0080 0323     		movs	r3, #3
+ 630 0082 BB71     		strb	r3, [r7, #6]
+ 193:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_OD;
+ 631              		.loc 1 193 30
+ 632 0084 1423     		movs	r3, #20
+ 633 0086 FB71     		strb	r3, [r7, #7]
+ 194:./Hardware/device/iic.c **** 	GPIO_Init(GPIOC,&GPIO_InitStructure);
+ 634              		.loc 1 194 2
+ 635 0088 3B1D     		adds	r3, r7, #4
+ 636 008a 1946     		mov	r1, r3
+ 637 008c 1A48     		ldr	r0, .L62+8
+ 638 008e FFF7FEFF 		bl	GPIO_Init
+ 195:./Hardware/device/iic.c **** 		
+ 196:./Hardware/device/iic.c **** 	/*BUSY*/
+ 197:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Pin=BUSY;
+ 639              		.loc 1 197 29
+ 640 0092 4FF48073 		mov	r3, #256
+ 641 0096 BB80     		strh	r3, [r7, #4]	@ movhi
+ 198:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
+ 642              		.loc 1 198 31
+ 643 0098 0323     		movs	r3, #3
+ 644 009a BB71     		strb	r3, [r7, #6]
+ 199:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_PP;
+ 645              		.loc 1 199 30
+ 646 009c 1023     		movs	r3, #16
+ 647 009e FB71     		strb	r3, [r7, #7]
+ 200:./Hardware/device/iic.c **** 	GPIO_Init(GPIOA,&GPIO_InitStructure);
+ 648              		.loc 1 200 2
+ 649 00a0 3B1D     		adds	r3, r7, #4
+ 650 00a2 1946     		mov	r1, r3
+ 651 00a4 1548     		ldr	r0, .L62+12
+ 652 00a6 FFF7FEFF 		bl	GPIO_Init
+ 201:./Hardware/device/iic.c **** 	
+ 202:./Hardware/device/iic.c **** 	/*GPS_EN*/
+ 203:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Pin=GPS_EN;
+ 653              		.loc 1 203 29
+ 654 00aa 4FF40073 		mov	r3, #512
+ 655 00ae BB80     		strh	r3, [r7, #4]	@ movhi
+ 204:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
+ 656              		.loc 1 204 31
+ 657 00b0 0323     		movs	r3, #3
+ 658 00b2 BB71     		strb	r3, [r7, #6]
+ 205:./Hardware/device/iic.c **** 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_PP;
+ 659              		.loc 1 205 30
+ 660 00b4 1023     		movs	r3, #16
+ 661 00b6 FB71     		strb	r3, [r7, #7]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 16
+
+
+ 206:./Hardware/device/iic.c **** 	GPIO_Init(GPIOC,&GPIO_InitStructure);
+ 662              		.loc 1 206 2
+ 663 00b8 3B1D     		adds	r3, r7, #4
+ 664 00ba 1946     		mov	r1, r3
+ 665 00bc 0E48     		ldr	r0, .L62+8
+ 666 00be FFF7FEFF 		bl	GPIO_Init
+ 207:./Hardware/device/iic.c **** 		
+ 208:./Hardware/device/iic.c **** 	SCL_TEST_H;
+ 667              		.loc 1 208 2
+ 668 00c2 0B4B     		ldr	r3, .L62
+ 669 00c4 4022     		movs	r2, #64
+ 670 00c6 1A61     		str	r2, [r3, #16]
+ 209:./Hardware/device/iic.c **** 	SCL_STD_H;
+ 671              		.loc 1 209 2
+ 672 00c8 0A4B     		ldr	r3, .L62+4
+ 673 00ca 0822     		movs	r2, #8
+ 674 00cc 1A61     		str	r2, [r3, #16]
+ 210:./Hardware/device/iic.c **** 	SCL_GPS_H;
+ 675              		.loc 1 210 2
+ 676 00ce 0A4B     		ldr	r3, .L62+8
+ 677 00d0 4022     		movs	r2, #64
+ 678 00d2 1A61     		str	r2, [r3, #16]
+ 211:./Hardware/device/iic.c **** 	
+ 212:./Hardware/device/iic.c **** 	SDA_TEST_H;
+ 679              		.loc 1 212 2
+ 680 00d4 064B     		ldr	r3, .L62
+ 681 00d6 8022     		movs	r2, #128
+ 682 00d8 1A61     		str	r2, [r3, #16]
+ 213:./Hardware/device/iic.c **** 	SDA_STD_H;
+ 683              		.loc 1 213 2
+ 684 00da 064B     		ldr	r3, .L62+4
+ 685 00dc 0422     		movs	r2, #4
+ 686 00de 1A61     		str	r2, [r3, #16]
+ 214:./Hardware/device/iic.c **** 	SDA_GPS_H;
+ 687              		.loc 1 214 2
+ 688 00e0 054B     		ldr	r3, .L62+8
+ 689 00e2 8022     		movs	r2, #128
+ 690 00e4 1A61     		str	r2, [r3, #16]
+ 215:./Hardware/device/iic.c **** 	
+ 216:./Hardware/device/iic.c **** }
+ 691              		.loc 1 216 1
+ 692 00e6 00BF     		nop
+ 693 00e8 0837     		adds	r7, r7, #8
+ 694              	.LCFI33:
+ 695              		.cfi_def_cfa_offset 8
+ 696 00ea BD46     		mov	sp, r7
+ 697              	.LCFI34:
+ 698              		.cfi_def_cfa_register 13
+ 699              		@ sp needed
+ 700 00ec 80BD     		pop	{r7, pc}
+ 701              	.L63:
+ 702 00ee 00BF     		.align	2
+ 703              	.L62:
+ 704 00f0 000C0140 		.word	1073810432
+ 705 00f4 00180140 		.word	1073813504
+ 706 00f8 00100140 		.word	1073811456
+ 707 00fc 00080140 		.word	1073809408
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 17
+
+
+ 708              		.cfi_endproc
+ 709              	.LFE37:
+ 711              		.section	.text.IIC_Delay,"ax",%progbits
+ 712              		.align	1
+ 713              		.global	IIC_Delay
+ 714              		.syntax unified
+ 715              		.thumb
+ 716              		.thumb_func
+ 717              		.fpu softvfp
+ 719              	IIC_Delay:
+ 720              	.LFB38:
+ 217:./Hardware/device/iic.c **** 
+ 218:./Hardware/device/iic.c **** /* Function	 -	IIC_Delay
+ 219:./Hardware/device/iic.c ****  * Brief		 -	IIC延时函数
+ 220:./Hardware/device/iic.c ****  * Parameter -	none
+ 221:./Hardware/device/iic.c ****  * Return		 -	none
+ 222:./Hardware/device/iic.c ****  * Editor		 -	
+ 223:./Hardware/device/iic.c ****  * Date			 -	
+ 224:./Hardware/device/iic.c ****  */
+ 225:./Hardware/device/iic.c **** void IIC_Delay(void)
+ 226:./Hardware/device/iic.c **** {
+ 721              		.loc 1 226 1
+ 722              		.cfi_startproc
+ 723              		@ args = 0, pretend = 0, frame = 0
+ 724              		@ frame_needed = 1, uses_anonymous_args = 0
+ 725 0000 80B5     		push	{r7, lr}
+ 726              	.LCFI35:
+ 727              		.cfi_def_cfa_offset 8
+ 728              		.cfi_offset 7, -8
+ 729              		.cfi_offset 14, -4
+ 730 0002 00AF     		add	r7, sp, #0
+ 731              	.LCFI36:
+ 732              		.cfi_def_cfa_register 7
+ 227:./Hardware/device/iic.c **** 	Delay_us(3);
+ 733              		.loc 1 227 2
+ 734 0004 0320     		movs	r0, #3
+ 735 0006 FFF7FEFF 		bl	Delay_us
+ 228:./Hardware/device/iic.c **** }
+ 736              		.loc 1 228 1
+ 737 000a 00BF     		nop
+ 738 000c 80BD     		pop	{r7, pc}
+ 739              		.cfi_endproc
+ 740              	.LFE38:
+ 742              		.section	.text.IIC_Stop,"ax",%progbits
+ 743              		.align	1
+ 744              		.global	IIC_Stop
+ 745              		.syntax unified
+ 746              		.thumb
+ 747              		.thumb_func
+ 748              		.fpu softvfp
+ 750              	IIC_Stop:
+ 751              	.LFB39:
+ 229:./Hardware/device/iic.c **** 
+ 230:./Hardware/device/iic.c **** /* Function	 -	IIC_Stop
+ 231:./Hardware/device/iic.c ****  * Brief		 -	选择一组IIC发送结束信号
+ 232:./Hardware/device/iic.c ****  * Parameter -	iic_x IIC的编号
+ 233:./Hardware/device/iic.c ****  * Return		 -	none
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 18
+
+
+ 234:./Hardware/device/iic.c ****  * Editor		 -	
+ 235:./Hardware/device/iic.c ****  * Date			 -	
+ 236:./Hardware/device/iic.c ****  */
+ 237:./Hardware/device/iic.c **** void IIC_Stop(i2c_device_bus iic_x)
+ 238:./Hardware/device/iic.c **** {
+ 752              		.loc 1 238 1
+ 753              		.cfi_startproc
+ 754              		@ args = 0, pretend = 0, frame = 8
+ 755              		@ frame_needed = 1, uses_anonymous_args = 0
+ 756 0000 80B5     		push	{r7, lr}
+ 757              	.LCFI37:
+ 758              		.cfi_def_cfa_offset 8
+ 759              		.cfi_offset 7, -8
+ 760              		.cfi_offset 14, -4
+ 761 0002 82B0     		sub	sp, sp, #8
+ 762              	.LCFI38:
+ 763              		.cfi_def_cfa_offset 16
+ 764 0004 00AF     		add	r7, sp, #0
+ 765              	.LCFI39:
+ 766              		.cfi_def_cfa_register 7
+ 767 0006 0346     		mov	r3, r0
+ 768 0008 FB71     		strb	r3, [r7, #7]
+ 239:./Hardware/device/iic.c **** 	SET_SDA_L(iic_x);
+ 769              		.loc 1 239 2
+ 770 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 771 000c 1846     		mov	r0, r3
+ 772 000e FFF7FEFF 		bl	SET_SDA_L
+ 240:./Hardware/device/iic.c **** 	SET_SCL_H(iic_x);
+ 773              		.loc 1 240 2
+ 774 0012 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 775 0014 1846     		mov	r0, r3
+ 776 0016 FFF7FEFF 		bl	SET_SCL_H
+ 241:./Hardware/device/iic.c **** 	IIC_Delay();
+ 777              		.loc 1 241 2
+ 778 001a FFF7FEFF 		bl	IIC_Delay
+ 242:./Hardware/device/iic.c **** 	SET_SDA_H(iic_x);
+ 779              		.loc 1 242 2
+ 780 001e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 781 0020 1846     		mov	r0, r3
+ 782 0022 FFF7FEFF 		bl	SET_SDA_H
+ 243:./Hardware/device/iic.c **** 	IIC_Delay();
+ 783              		.loc 1 243 2
+ 784 0026 FFF7FEFF 		bl	IIC_Delay
+ 244:./Hardware/device/iic.c **** }
+ 785              		.loc 1 244 1
+ 786 002a 00BF     		nop
+ 787 002c 0837     		adds	r7, r7, #8
+ 788              	.LCFI40:
+ 789              		.cfi_def_cfa_offset 8
+ 790 002e BD46     		mov	sp, r7
+ 791              	.LCFI41:
+ 792              		.cfi_def_cfa_register 13
+ 793              		@ sp needed
+ 794 0030 80BD     		pop	{r7, pc}
+ 795              		.cfi_endproc
+ 796              	.LFE39:
+ 798              		.section	.text.IIC_Start,"ax",%progbits
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 19
+
+
+ 799              		.align	1
+ 800              		.global	IIC_Start
+ 801              		.syntax unified
+ 802              		.thumb
+ 803              		.thumb_func
+ 804              		.fpu softvfp
+ 806              	IIC_Start:
+ 807              	.LFB40:
+ 245:./Hardware/device/iic.c **** 
+ 246:./Hardware/device/iic.c **** /* Function	 -	IIC_Start
+ 247:./Hardware/device/iic.c ****  * Brief		 -	选择一组IIC发送起始信号
+ 248:./Hardware/device/iic.c ****  * Parameter -	iic_x IIC的编号
+ 249:./Hardware/device/iic.c ****  * Return		 -	none
+ 250:./Hardware/device/iic.c ****  * Editor		 -	
+ 251:./Hardware/device/iic.c ****  * Date			 -	
+ 252:./Hardware/device/iic.c ****  */
+ 253:./Hardware/device/iic.c **** i2c_exit_code IIC_Start(i2c_device_bus iic_x)
+ 254:./Hardware/device/iic.c **** {
+ 808              		.loc 1 254 1
+ 809              		.cfi_startproc
+ 810              		@ args = 0, pretend = 0, frame = 8
+ 811              		@ frame_needed = 1, uses_anonymous_args = 0
+ 812 0000 80B5     		push	{r7, lr}
+ 813              	.LCFI42:
+ 814              		.cfi_def_cfa_offset 8
+ 815              		.cfi_offset 7, -8
+ 816              		.cfi_offset 14, -4
+ 817 0002 82B0     		sub	sp, sp, #8
+ 818              	.LCFI43:
+ 819              		.cfi_def_cfa_offset 16
+ 820 0004 00AF     		add	r7, sp, #0
+ 821              	.LCFI44:
+ 822              		.cfi_def_cfa_register 7
+ 823 0006 0346     		mov	r3, r0
+ 824 0008 FB71     		strb	r3, [r7, #7]
+ 255:./Hardware/device/iic.c **** 	SET_SDA_H(iic_x);
+ 825              		.loc 1 255 2
+ 826 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 827 000c 1846     		mov	r0, r3
+ 828 000e FFF7FEFF 		bl	SET_SDA_H
+ 256:./Hardware/device/iic.c **** 	SET_SCL_H(iic_x);
+ 829              		.loc 1 256 2
+ 830 0012 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 831 0014 1846     		mov	r0, r3
+ 832 0016 FFF7FEFF 		bl	SET_SCL_H
+ 257:./Hardware/device/iic.c **** 	IIC_Delay();
+ 833              		.loc 1 257 2
+ 834 001a FFF7FEFF 		bl	IIC_Delay
+ 258:./Hardware/device/iic.c **** 	if(Read_SDA(iic_x) == 0)
+ 835              		.loc 1 258 5
+ 836 001e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 837 0020 1846     		mov	r0, r3
+ 838 0022 FFF7FEFF 		bl	Read_SDA
+ 839 0026 0346     		mov	r3, r0
+ 840              		.loc 1 258 4
+ 841 0028 002B     		cmp	r3, #0
+ 842 002a 05D1     		bne	.L67
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 20
+
+
+ 259:./Hardware/device/iic.c **** 	{
+ 260:./Hardware/device/iic.c **** 		IIC_Stop(iic_x);
+ 843              		.loc 1 260 3
+ 844 002c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 845 002e 1846     		mov	r0, r3
+ 846 0030 FFF7FEFF 		bl	IIC_Stop
+ 261:./Hardware/device/iic.c **** 		return IIC_FAIL;
+ 847              		.loc 1 261 10
+ 848 0034 0323     		movs	r3, #3
+ 849 0036 0AE0     		b	.L68
+ 850              	.L67:
+ 262:./Hardware/device/iic.c **** 	}
+ 263:./Hardware/device/iic.c **** 	SET_SDA_L(iic_x);
+ 851              		.loc 1 263 2
+ 852 0038 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 853 003a 1846     		mov	r0, r3
+ 854 003c FFF7FEFF 		bl	SET_SDA_L
+ 264:./Hardware/device/iic.c **** 	IIC_Delay();
+ 855              		.loc 1 264 2
+ 856 0040 FFF7FEFF 		bl	IIC_Delay
+ 265:./Hardware/device/iic.c **** 	SET_SCL_L(iic_x);
+ 857              		.loc 1 265 2
+ 858 0044 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 859 0046 1846     		mov	r0, r3
+ 860 0048 FFF7FEFF 		bl	SET_SCL_L
+ 266:./Hardware/device/iic.c **** 	return IIC_OK;
+ 861              		.loc 1 266 9
+ 862 004c 0223     		movs	r3, #2
+ 863              	.L68:
+ 267:./Hardware/device/iic.c **** }
+ 864              		.loc 1 267 1
+ 865 004e 1846     		mov	r0, r3
+ 866 0050 0837     		adds	r7, r7, #8
+ 867              	.LCFI45:
+ 868              		.cfi_def_cfa_offset 8
+ 869 0052 BD46     		mov	sp, r7
+ 870              	.LCFI46:
+ 871              		.cfi_def_cfa_register 13
+ 872              		@ sp needed
+ 873 0054 80BD     		pop	{r7, pc}
+ 874              		.cfi_endproc
+ 875              	.LFE40:
+ 877              		.section	.text.IIC_Ack,"ax",%progbits
+ 878              		.align	1
+ 879              		.global	IIC_Ack
+ 880              		.syntax unified
+ 881              		.thumb
+ 882              		.thumb_func
+ 883              		.fpu softvfp
+ 885              	IIC_Ack:
+ 886              	.LFB41:
+ 268:./Hardware/device/iic.c **** 
+ 269:./Hardware/device/iic.c **** /* Function	 -	IIC_Ack
+ 270:./Hardware/device/iic.c ****  * Brief		 -	选择一组IIC对从机发送应答信号
+ 271:./Hardware/device/iic.c ****  * Parameter -	iic_x IIC的编号
+ 272:./Hardware/device/iic.c ****  * Return		 -	none
+ 273:./Hardware/device/iic.c ****  * Editor		 -	
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 21
+
+
+ 274:./Hardware/device/iic.c ****  * Date			 -	
+ 275:./Hardware/device/iic.c ****  */
+ 276:./Hardware/device/iic.c **** void IIC_Ack(i2c_device_bus iic_x)
+ 277:./Hardware/device/iic.c **** {
+ 887              		.loc 1 277 1
+ 888              		.cfi_startproc
+ 889              		@ args = 0, pretend = 0, frame = 8
+ 890              		@ frame_needed = 1, uses_anonymous_args = 0
+ 891 0000 80B5     		push	{r7, lr}
+ 892              	.LCFI47:
+ 893              		.cfi_def_cfa_offset 8
+ 894              		.cfi_offset 7, -8
+ 895              		.cfi_offset 14, -4
+ 896 0002 82B0     		sub	sp, sp, #8
+ 897              	.LCFI48:
+ 898              		.cfi_def_cfa_offset 16
+ 899 0004 00AF     		add	r7, sp, #0
+ 900              	.LCFI49:
+ 901              		.cfi_def_cfa_register 7
+ 902 0006 0346     		mov	r3, r0
+ 903 0008 FB71     		strb	r3, [r7, #7]
+ 278:./Hardware/device/iic.c **** 	SET_SCL_L(iic_x);
+ 904              		.loc 1 278 2
+ 905 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 906 000c 1846     		mov	r0, r3
+ 907 000e FFF7FEFF 		bl	SET_SCL_L
+ 279:./Hardware/device/iic.c **** 	SET_SDA_L(iic_x);
+ 908              		.loc 1 279 2
+ 909 0012 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 910 0014 1846     		mov	r0, r3
+ 911 0016 FFF7FEFF 		bl	SET_SDA_L
+ 280:./Hardware/device/iic.c **** 	IIC_Delay();
+ 912              		.loc 1 280 2
+ 913 001a FFF7FEFF 		bl	IIC_Delay
+ 281:./Hardware/device/iic.c **** 	SET_SCL_H(iic_x);
+ 914              		.loc 1 281 2
+ 915 001e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 916 0020 1846     		mov	r0, r3
+ 917 0022 FFF7FEFF 		bl	SET_SCL_H
+ 282:./Hardware/device/iic.c **** 	IIC_Delay();
+ 918              		.loc 1 282 2
+ 919 0026 FFF7FEFF 		bl	IIC_Delay
+ 283:./Hardware/device/iic.c **** 	SET_SCL_L(iic_x);
+ 920              		.loc 1 283 2
+ 921 002a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 922 002c 1846     		mov	r0, r3
+ 923 002e FFF7FEFF 		bl	SET_SCL_L
+ 284:./Hardware/device/iic.c **** }
+ 924              		.loc 1 284 1
+ 925 0032 00BF     		nop
+ 926 0034 0837     		adds	r7, r7, #8
+ 927              	.LCFI50:
+ 928              		.cfi_def_cfa_offset 8
+ 929 0036 BD46     		mov	sp, r7
+ 930              	.LCFI51:
+ 931              		.cfi_def_cfa_register 13
+ 932              		@ sp needed
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 22
+
+
+ 933 0038 80BD     		pop	{r7, pc}
+ 934              		.cfi_endproc
+ 935              	.LFE41:
+ 937              		.section	.text.IIC_NoAck,"ax",%progbits
+ 938              		.align	1
+ 939              		.global	IIC_NoAck
+ 940              		.syntax unified
+ 941              		.thumb
+ 942              		.thumb_func
+ 943              		.fpu softvfp
+ 945              	IIC_NoAck:
+ 946              	.LFB42:
+ 285:./Hardware/device/iic.c **** 
+ 286:./Hardware/device/iic.c **** /* Function	 -	IIC_NoACK
+ 287:./Hardware/device/iic.c ****  * Brief		 -	选择一组IIC对从机发送无应答信号
+ 288:./Hardware/device/iic.c ****  * Parameter -	iic_x IIC的编号
+ 289:./Hardware/device/iic.c ****  * Return		 -	none
+ 290:./Hardware/device/iic.c ****  * Editor		 -	
+ 291:./Hardware/device/iic.c ****  * Date			 -	
+ 292:./Hardware/device/iic.c ****  */
+ 293:./Hardware/device/iic.c **** void IIC_NoAck(i2c_device_bus iic_x)
+ 294:./Hardware/device/iic.c **** {
+ 947              		.loc 1 294 1
+ 948              		.cfi_startproc
+ 949              		@ args = 0, pretend = 0, frame = 8
+ 950              		@ frame_needed = 1, uses_anonymous_args = 0
+ 951 0000 80B5     		push	{r7, lr}
+ 952              	.LCFI52:
+ 953              		.cfi_def_cfa_offset 8
+ 954              		.cfi_offset 7, -8
+ 955              		.cfi_offset 14, -4
+ 956 0002 82B0     		sub	sp, sp, #8
+ 957              	.LCFI53:
+ 958              		.cfi_def_cfa_offset 16
+ 959 0004 00AF     		add	r7, sp, #0
+ 960              	.LCFI54:
+ 961              		.cfi_def_cfa_register 7
+ 962 0006 0346     		mov	r3, r0
+ 963 0008 FB71     		strb	r3, [r7, #7]
+ 295:./Hardware/device/iic.c **** 	SET_SCL_L(iic_x);
+ 964              		.loc 1 295 2
+ 965 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 966 000c 1846     		mov	r0, r3
+ 967 000e FFF7FEFF 		bl	SET_SCL_L
+ 296:./Hardware/device/iic.c **** 	SET_SDA_H(iic_x);
+ 968              		.loc 1 296 2
+ 969 0012 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 970 0014 1846     		mov	r0, r3
+ 971 0016 FFF7FEFF 		bl	SET_SDA_H
+ 297:./Hardware/device/iic.c **** 	IIC_Delay();
+ 972              		.loc 1 297 2
+ 973 001a FFF7FEFF 		bl	IIC_Delay
+ 298:./Hardware/device/iic.c **** 	SET_SCL_H(iic_x);
+ 974              		.loc 1 298 2
+ 975 001e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 976 0020 1846     		mov	r0, r3
+ 977 0022 FFF7FEFF 		bl	SET_SCL_H
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 23
+
+
+ 299:./Hardware/device/iic.c **** 	IIC_Delay();
+ 978              		.loc 1 299 2
+ 979 0026 FFF7FEFF 		bl	IIC_Delay
+ 300:./Hardware/device/iic.c **** 	SET_SCL_L(iic_x);
+ 980              		.loc 1 300 2
+ 981 002a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 982 002c 1846     		mov	r0, r3
+ 983 002e FFF7FEFF 		bl	SET_SCL_L
+ 301:./Hardware/device/iic.c **** }
+ 984              		.loc 1 301 1
+ 985 0032 00BF     		nop
+ 986 0034 0837     		adds	r7, r7, #8
+ 987              	.LCFI55:
+ 988              		.cfi_def_cfa_offset 8
+ 989 0036 BD46     		mov	sp, r7
+ 990              	.LCFI56:
+ 991              		.cfi_def_cfa_register 13
+ 992              		@ sp needed
+ 993 0038 80BD     		pop	{r7, pc}
+ 994              		.cfi_endproc
+ 995              	.LFE42:
+ 997              		.section	.text.IIC_WaitAck,"ax",%progbits
+ 998              		.align	1
+ 999              		.global	IIC_WaitAck
+ 1000              		.syntax unified
+ 1001              		.thumb
+ 1002              		.thumb_func
+ 1003              		.fpu softvfp
+ 1005              	IIC_WaitAck:
+ 1006              	.LFB43:
+ 302:./Hardware/device/iic.c **** 
+ 303:./Hardware/device/iic.c **** /* Function	 -	IIC_WaitAck
+ 304:./Hardware/device/iic.c ****  * Brief		 -	选择一组IIC等待从机应答信号
+ 305:./Hardware/device/iic.c ****  * Parameter -	iic_x IIC的编号
+ 306:./Hardware/device/iic.c ****  * Return		 -	TRUE	成功接收应答
+ 307:./Hardware/device/iic.c ****  * 					 - FALSE	应答接收失败
+ 308:./Hardware/device/iic.c ****  * Editor		 -	
+ 309:./Hardware/device/iic.c ****  * Date			 -	
+ 310:./Hardware/device/iic.c ****  */
+ 311:./Hardware/device/iic.c **** i2c_exit_code IIC_WaitAck(i2c_device_bus iic_x)
+ 312:./Hardware/device/iic.c **** {		
+ 1007              		.loc 1 312 1
+ 1008              		.cfi_startproc
+ 1009              		@ args = 0, pretend = 0, frame = 16
+ 1010              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1011 0000 80B5     		push	{r7, lr}
+ 1012              	.LCFI57:
+ 1013              		.cfi_def_cfa_offset 8
+ 1014              		.cfi_offset 7, -8
+ 1015              		.cfi_offset 14, -4
+ 1016 0002 84B0     		sub	sp, sp, #16
+ 1017              	.LCFI58:
+ 1018              		.cfi_def_cfa_offset 24
+ 1019 0004 00AF     		add	r7, sp, #0
+ 1020              	.LCFI59:
+ 1021              		.cfi_def_cfa_register 7
+ 1022 0006 0346     		mov	r3, r0
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 24
+
+
+ 1023 0008 FB71     		strb	r3, [r7, #7]
+ 313:./Hardware/device/iic.c **** 	uint8_t i;
+ 314:./Hardware/device/iic.c **** 	SET_SCL_L(iic_x);
+ 1024              		.loc 1 314 2
+ 1025 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1026 000c 1846     		mov	r0, r3
+ 1027 000e FFF7FEFF 		bl	SET_SCL_L
+ 315:./Hardware/device/iic.c **** 	SET_SDA_H(iic_x);
+ 1028              		.loc 1 315 2
+ 1029 0012 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1030 0014 1846     		mov	r0, r3
+ 1031 0016 FFF7FEFF 		bl	SET_SDA_H
+ 316:./Hardware/device/iic.c **** 	IIC_Delay();
+ 1032              		.loc 1 316 2
+ 1033 001a FFF7FEFF 		bl	IIC_Delay
+ 317:./Hardware/device/iic.c **** 	SET_SCL_H(iic_x);
+ 1034              		.loc 1 317 2
+ 1035 001e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1036 0020 1846     		mov	r0, r3
+ 1037 0022 FFF7FEFF 		bl	SET_SCL_H
+ 318:./Hardware/device/iic.c **** 	IIC_Delay();
+ 1038              		.loc 1 318 2
+ 1039 0026 FFF7FEFF 		bl	IIC_Delay
+ 319:./Hardware/device/iic.c **** 	while(Read_SDA(iic_x))
+ 1040              		.loc 1 319 7
+ 1041 002a 0BE0     		b	.L72
+ 1042              	.L74:
+ 320:./Hardware/device/iic.c **** 	{
+ 321:./Hardware/device/iic.c **** 		i++;
+ 1043              		.loc 1 321 4
+ 1044 002c FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1045 002e 0133     		adds	r3, r3, #1
+ 1046 0030 FB73     		strb	r3, [r7, #15]
+ 322:./Hardware/device/iic.c **** 		if (i >=  200)
+ 1047              		.loc 1 322 6
+ 1048 0032 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1049 0034 C72B     		cmp	r3, #199
+ 1050 0036 05D9     		bls	.L72
+ 323:./Hardware/device/iic.c **** 		{
+ 324:./Hardware/device/iic.c **** 			IIC_Stop(iic_x);
+ 1051              		.loc 1 324 4
+ 1052 0038 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1053 003a 1846     		mov	r0, r3
+ 1054 003c FFF7FEFF 		bl	IIC_Stop
+ 325:./Hardware/device/iic.c **** 			return SLAVE_NO_ACK;
+ 1055              		.loc 1 325 11
+ 1056 0040 0523     		movs	r3, #5
+ 1057 0042 0BE0     		b	.L73
+ 1058              	.L72:
+ 319:./Hardware/device/iic.c **** 	{
+ 1059              		.loc 1 319 8
+ 1060 0044 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1061 0046 1846     		mov	r0, r3
+ 1062 0048 FFF7FEFF 		bl	Read_SDA
+ 1063 004c 0346     		mov	r3, r0
+ 319:./Hardware/device/iic.c **** 	{
+ 1064              		.loc 1 319 7
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 25
+
+
+ 1065 004e 002B     		cmp	r3, #0
+ 1066 0050 ECD1     		bne	.L74
+ 326:./Hardware/device/iic.c **** 		}
+ 327:./Hardware/device/iic.c **** 	}
+ 328:./Hardware/device/iic.c **** 	SET_SCL_L(iic_x);
+ 1067              		.loc 1 328 2
+ 1068 0052 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1069 0054 1846     		mov	r0, r3
+ 1070 0056 FFF7FEFF 		bl	SET_SCL_L
+ 329:./Hardware/device/iic.c **** 	return SLAVE_ACK;
+ 1071              		.loc 1 329 9
+ 1072 005a 0423     		movs	r3, #4
+ 1073              	.L73:
+ 330:./Hardware/device/iic.c **** }
+ 1074              		.loc 1 330 1
+ 1075 005c 1846     		mov	r0, r3
+ 1076 005e 1037     		adds	r7, r7, #16
+ 1077              	.LCFI60:
+ 1078              		.cfi_def_cfa_offset 8
+ 1079 0060 BD46     		mov	sp, r7
+ 1080              	.LCFI61:
+ 1081              		.cfi_def_cfa_register 13
+ 1082              		@ sp needed
+ 1083 0062 80BD     		pop	{r7, pc}
+ 1084              		.cfi_endproc
+ 1085              	.LFE43:
+ 1087              		.section	.text.IIC_ReceiveByte,"ax",%progbits
+ 1088              		.align	1
+ 1089              		.global	IIC_ReceiveByte
+ 1090              		.syntax unified
+ 1091              		.thumb
+ 1092              		.thumb_func
+ 1093              		.fpu softvfp
+ 1095              	IIC_ReceiveByte:
+ 1096              	.LFB44:
+ 331:./Hardware/device/iic.c **** 
+ 332:./Hardware/device/iic.c **** /* Function	 -	IIC_ReceiveByte
+ 333:./Hardware/device/iic.c ****  * Brief		 -	选择一组IIC读取一个字节
+ 334:./Hardware/device/iic.c ****  * Parameter -	iic_x IIC的编号
+ 335:./Hardware/device/iic.c ****  * Return		 -	byte 	接收的IIC数据
+ 336:./Hardware/device/iic.c ****  * Editor		 -	
+ 337:./Hardware/device/iic.c ****  * Date			 -	
+ 338:./Hardware/device/iic.c ****  */
+ 339:./Hardware/device/iic.c **** uint8_t IIC_ReceiveByte(i2c_device_bus iic_x)
+ 340:./Hardware/device/iic.c **** {	
+ 1097              		.loc 1 340 1
+ 1098              		.cfi_startproc
+ 1099              		@ args = 0, pretend = 0, frame = 16
+ 1100              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1101 0000 80B5     		push	{r7, lr}
+ 1102              	.LCFI62:
+ 1103              		.cfi_def_cfa_offset 8
+ 1104              		.cfi_offset 7, -8
+ 1105              		.cfi_offset 14, -4
+ 1106 0002 84B0     		sub	sp, sp, #16
+ 1107              	.LCFI63:
+ 1108              		.cfi_def_cfa_offset 24
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 26
+
+
+ 1109 0004 00AF     		add	r7, sp, #0
+ 1110              	.LCFI64:
+ 1111              		.cfi_def_cfa_register 7
+ 1112 0006 0346     		mov	r3, r0
+ 1113 0008 FB71     		strb	r3, [r7, #7]
+ 341:./Hardware/device/iic.c **** 	uint8_t i;
+ 342:./Hardware/device/iic.c **** 	uint8_t byte;
+ 343:./Hardware/device/iic.c **** 	SET_SDA_H(iic_x);
+ 1114              		.loc 1 343 2
+ 1115 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1116 000c 1846     		mov	r0, r3
+ 1117 000e FFF7FEFF 		bl	SET_SDA_H
+ 344:./Hardware/device/iic.c **** 	for(i = 0;i < 8;i++)
+ 1118              		.loc 1 344 8
+ 1119 0012 0023     		movs	r3, #0
+ 1120 0014 FB73     		strb	r3, [r7, #15]
+ 1121              		.loc 1 344 2
+ 1122 0016 1CE0     		b	.L76
+ 1123              	.L78:
+ 345:./Hardware/device/iic.c **** 	{
+ 346:./Hardware/device/iic.c **** 		SET_SCL_L(iic_x);
+ 1124              		.loc 1 346 3
+ 1125 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1126 001a 1846     		mov	r0, r3
+ 1127 001c FFF7FEFF 		bl	SET_SCL_L
+ 347:./Hardware/device/iic.c **** 		IIC_Delay();
+ 1128              		.loc 1 347 3
+ 1129 0020 FFF7FEFF 		bl	IIC_Delay
+ 348:./Hardware/device/iic.c **** 		SET_SCL_H(iic_x);
+ 1130              		.loc 1 348 3
+ 1131 0024 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1132 0026 1846     		mov	r0, r3
+ 1133 0028 FFF7FEFF 		bl	SET_SCL_H
+ 349:./Hardware/device/iic.c **** 		IIC_Delay();
+ 1134              		.loc 1 349 3
+ 1135 002c FFF7FEFF 		bl	IIC_Delay
+ 350:./Hardware/device/iic.c **** 		byte <<= 1;
+ 1136              		.loc 1 350 8
+ 1137 0030 BB7B     		ldrb	r3, [r7, #14]
+ 1138 0032 5B00     		lsls	r3, r3, #1
+ 1139 0034 BB73     		strb	r3, [r7, #14]
+ 351:./Hardware/device/iic.c **** 		if (Read_SDA(iic_x))
+ 1140              		.loc 1 351 7
+ 1141 0036 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1142 0038 1846     		mov	r0, r3
+ 1143 003a FFF7FEFF 		bl	Read_SDA
+ 1144 003e 0346     		mov	r3, r0
+ 1145              		.loc 1 351 6
+ 1146 0040 002B     		cmp	r3, #0
+ 1147 0042 03D0     		beq	.L77
+ 352:./Hardware/device/iic.c **** 			byte |= 0x01;
+ 1148              		.loc 1 352 9
+ 1149 0044 BB7B     		ldrb	r3, [r7, #14]
+ 1150 0046 43F00103 		orr	r3, r3, #1
+ 1151 004a BB73     		strb	r3, [r7, #14]
+ 1152              	.L77:
+ 344:./Hardware/device/iic.c **** 	{
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 27
+
+
+ 1153              		.loc 1 344 19 discriminator 2
+ 1154 004c FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1155 004e 0133     		adds	r3, r3, #1
+ 1156 0050 FB73     		strb	r3, [r7, #15]
+ 1157              	.L76:
+ 344:./Hardware/device/iic.c **** 	{
+ 1158              		.loc 1 344 2 discriminator 1
+ 1159 0052 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1160 0054 072B     		cmp	r3, #7
+ 1161 0056 DFD9     		bls	.L78
+ 353:./Hardware/device/iic.c **** 	}
+ 354:./Hardware/device/iic.c **** 	SET_SCL_L(iic_x);
+ 1162              		.loc 1 354 2
+ 1163 0058 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1164 005a 1846     		mov	r0, r3
+ 1165 005c FFF7FEFF 		bl	SET_SCL_L
+ 355:./Hardware/device/iic.c **** 	return byte;
+ 1166              		.loc 1 355 9
+ 1167 0060 BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 356:./Hardware/device/iic.c **** }
+ 1168              		.loc 1 356 1
+ 1169 0062 1846     		mov	r0, r3
+ 1170 0064 1037     		adds	r7, r7, #16
+ 1171              	.LCFI65:
+ 1172              		.cfi_def_cfa_offset 8
+ 1173 0066 BD46     		mov	sp, r7
+ 1174              	.LCFI66:
+ 1175              		.cfi_def_cfa_register 13
+ 1176              		@ sp needed
+ 1177 0068 80BD     		pop	{r7, pc}
+ 1178              		.cfi_endproc
+ 1179              	.LFE44:
+ 1181              		.section	.text.IIC_SendByte,"ax",%progbits
+ 1182              		.align	1
+ 1183              		.global	IIC_SendByte
+ 1184              		.syntax unified
+ 1185              		.thumb
+ 1186              		.thumb_func
+ 1187              		.fpu softvfp
+ 1189              	IIC_SendByte:
+ 1190              	.LFB45:
+ 357:./Hardware/device/iic.c **** 
+ 358:./Hardware/device/iic.c **** /* Function	 -	IIC_SendByte
+ 359:./Hardware/device/iic.c ****  * Brief		 -	选择一组IIC写入一个字节
+ 360:./Hardware/device/iic.c ****  * Parameter -	byte	发送的IIC数据
+ 361:./Hardware/device/iic.c ****  * 					 - iic_x	IIC的编号
+ 362:./Hardware/device/iic.c ****  * Return		 -	none
+ 363:./Hardware/device/iic.c ****  * Editor		 -	
+ 364:./Hardware/device/iic.c ****  * Date			 -	
+ 365:./Hardware/device/iic.c ****  */
+ 366:./Hardware/device/iic.c **** void IIC_SendByte(uint8_t byte, i2c_device_bus iic_x)
+ 367:./Hardware/device/iic.c **** {
+ 1191              		.loc 1 367 1
+ 1192              		.cfi_startproc
+ 1193              		@ args = 0, pretend = 0, frame = 16
+ 1194              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1195 0000 80B5     		push	{r7, lr}
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 28
+
+
+ 1196              	.LCFI67:
+ 1197              		.cfi_def_cfa_offset 8
+ 1198              		.cfi_offset 7, -8
+ 1199              		.cfi_offset 14, -4
+ 1200 0002 84B0     		sub	sp, sp, #16
+ 1201              	.LCFI68:
+ 1202              		.cfi_def_cfa_offset 24
+ 1203 0004 00AF     		add	r7, sp, #0
+ 1204              	.LCFI69:
+ 1205              		.cfi_def_cfa_register 7
+ 1206 0006 0346     		mov	r3, r0
+ 1207 0008 0A46     		mov	r2, r1
+ 1208 000a FB71     		strb	r3, [r7, #7]
+ 1209 000c 1346     		mov	r3, r2
+ 1210 000e BB71     		strb	r3, [r7, #6]
+ 368:./Hardware/device/iic.c **** 	uint8_t i;
+ 369:./Hardware/device/iic.c **** 	for(i = 0;i < 8;i++)
+ 1211              		.loc 1 369 8
+ 1212 0010 0023     		movs	r3, #0
+ 1213 0012 FB73     		strb	r3, [r7, #15]
+ 1214              		.loc 1 369 2
+ 1215 0014 1EE0     		b	.L81
+ 1216              	.L84:
+ 370:./Hardware/device/iic.c **** 	{
+ 371:./Hardware/device/iic.c **** 		SET_SCL_L(iic_x);
+ 1217              		.loc 1 371 3
+ 1218 0016 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1219 0018 1846     		mov	r0, r3
+ 1220 001a FFF7FEFF 		bl	SET_SCL_L
+ 372:./Hardware/device/iic.c **** 		if(byte & 0x80)
+ 1221              		.loc 1 372 6
+ 1222 001e 97F90730 		ldrsb	r3, [r7, #7]
+ 1223              		.loc 1 372 5
+ 1224 0022 002B     		cmp	r3, #0
+ 1225 0024 04DA     		bge	.L82
+ 373:./Hardware/device/iic.c **** 			SET_SDA_H(iic_x);
+ 1226              		.loc 1 373 4
+ 1227 0026 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1228 0028 1846     		mov	r0, r3
+ 1229 002a FFF7FEFF 		bl	SET_SDA_H
+ 1230 002e 03E0     		b	.L83
+ 1231              	.L82:
+ 374:./Hardware/device/iic.c **** 		else
+ 375:./Hardware/device/iic.c **** 			SET_SDA_L(iic_x);
+ 1232              		.loc 1 375 4
+ 1233 0030 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1234 0032 1846     		mov	r0, r3
+ 1235 0034 FFF7FEFF 		bl	SET_SDA_L
+ 1236              	.L83:
+ 376:./Hardware/device/iic.c **** 		byte <<= 1;
+ 1237              		.loc 1 376 8 discriminator 2
+ 1238 0038 FB79     		ldrb	r3, [r7, #7]
+ 1239 003a 5B00     		lsls	r3, r3, #1
+ 1240 003c FB71     		strb	r3, [r7, #7]
+ 377:./Hardware/device/iic.c **** 		IIC_Delay();
+ 1241              		.loc 1 377 3 discriminator 2
+ 1242 003e FFF7FEFF 		bl	IIC_Delay
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 29
+
+
+ 378:./Hardware/device/iic.c **** 		SET_SCL_H(iic_x);
+ 1243              		.loc 1 378 3 discriminator 2
+ 1244 0042 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1245 0044 1846     		mov	r0, r3
+ 1246 0046 FFF7FEFF 		bl	SET_SCL_H
+ 379:./Hardware/device/iic.c **** 		IIC_Delay();
+ 1247              		.loc 1 379 3 discriminator 2
+ 1248 004a FFF7FEFF 		bl	IIC_Delay
+ 369:./Hardware/device/iic.c **** 	{
+ 1249              		.loc 1 369 19 discriminator 2
+ 1250 004e FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1251 0050 0133     		adds	r3, r3, #1
+ 1252 0052 FB73     		strb	r3, [r7, #15]
+ 1253              	.L81:
+ 369:./Hardware/device/iic.c **** 	{
+ 1254              		.loc 1 369 2 discriminator 1
+ 1255 0054 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1256 0056 072B     		cmp	r3, #7
+ 1257 0058 DDD9     		bls	.L84
+ 380:./Hardware/device/iic.c **** 	}
+ 381:./Hardware/device/iic.c **** 	SET_SCL_L(iic_x);
+ 1258              		.loc 1 381 2
+ 1259 005a BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1260 005c 1846     		mov	r0, r3
+ 1261 005e FFF7FEFF 		bl	SET_SCL_L
+ 382:./Hardware/device/iic.c **** }
+ 1262              		.loc 1 382 1
+ 1263 0062 00BF     		nop
+ 1264 0064 1037     		adds	r7, r7, #16
+ 1265              	.LCFI70:
+ 1266              		.cfi_def_cfa_offset 8
+ 1267 0066 BD46     		mov	sp, r7
+ 1268              	.LCFI71:
+ 1269              		.cfi_def_cfa_register 13
+ 1270              		@ sp needed
+ 1271 0068 80BD     		pop	{r7, pc}
+ 1272              		.cfi_endproc
+ 1273              	.LFE45:
+ 1275              		.section	.text.RTC_ReadByte,"ax",%progbits
+ 1276              		.align	1
+ 1277              		.global	RTC_ReadByte
+ 1278              		.syntax unified
+ 1279              		.thumb
+ 1280              		.thumb_func
+ 1281              		.fpu softvfp
+ 1283              	RTC_ReadByte:
+ 1284              	.LFB46:
+ 383:./Hardware/device/iic.c **** 
+ 384:./Hardware/device/iic.c **** //iic读取寄存器，返回读取到的数据
+ 385:./Hardware/device/iic.c **** uint8_t RTC_ReadByte(uint8_t addr,i2c_device_bus bus)
+ 386:./Hardware/device/iic.c **** {
+ 1285              		.loc 1 386 1
+ 1286              		.cfi_startproc
+ 1287              		@ args = 0, pretend = 0, frame = 16
+ 1288              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1289 0000 80B5     		push	{r7, lr}
+ 1290              	.LCFI72:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 30
+
+
+ 1291              		.cfi_def_cfa_offset 8
+ 1292              		.cfi_offset 7, -8
+ 1293              		.cfi_offset 14, -4
+ 1294 0002 84B0     		sub	sp, sp, #16
+ 1295              	.LCFI73:
+ 1296              		.cfi_def_cfa_offset 24
+ 1297 0004 00AF     		add	r7, sp, #0
+ 1298              	.LCFI74:
+ 1299              		.cfi_def_cfa_register 7
+ 1300 0006 0346     		mov	r3, r0
+ 1301 0008 0A46     		mov	r2, r1
+ 1302 000a FB71     		strb	r3, [r7, #7]
+ 1303 000c 1346     		mov	r3, r2
+ 1304 000e BB71     		strb	r3, [r7, #6]
+ 387:./Hardware/device/iic.c **** 	uint8_t mdata;
+ 388:./Hardware/device/iic.c **** 	
+ 389:./Hardware/device/iic.c **** 	IIC_Start(bus);
+ 1305              		.loc 1 389 2
+ 1306 0010 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1307 0012 1846     		mov	r0, r3
+ 1308 0014 FFF7FEFF 		bl	IIC_Start
+ 390:./Hardware/device/iic.c **** 
+ 391:./Hardware/device/iic.c **** 	IIC_SendByte(0x64,bus);
+ 1309              		.loc 1 391 2
+ 1310 0018 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1311 001a 1946     		mov	r1, r3
+ 1312 001c 6420     		movs	r0, #100
+ 1313 001e FFF7FEFF 		bl	IIC_SendByte
+ 392:./Hardware/device/iic.c **** 	if (IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1314              		.loc 1 392 6
+ 1315 0022 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1316 0024 1846     		mov	r0, r3
+ 1317 0026 FFF7FEFF 		bl	IIC_WaitAck
+ 1318 002a 0346     		mov	r3, r0
+ 1319              		.loc 1 392 5
+ 1320 002c 042B     		cmp	r3, #4
+ 1321 002e 01D0     		beq	.L86
+ 393:./Hardware/device/iic.c **** 	{
+ 394:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1322              		.loc 1 394 10
+ 1323 0030 0523     		movs	r3, #5
+ 1324 0032 2FE0     		b	.L87
+ 1325              	.L86:
+ 395:./Hardware/device/iic.c **** 	}
+ 396:./Hardware/device/iic.c **** 
+ 397:./Hardware/device/iic.c **** 	IIC_SendByte(addr,bus);
+ 1326              		.loc 1 397 2
+ 1327 0034 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 1328 0036 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1329 0038 1146     		mov	r1, r2
+ 1330 003a 1846     		mov	r0, r3
+ 1331 003c FFF7FEFF 		bl	IIC_SendByte
+ 398:./Hardware/device/iic.c **** 	if (IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1332              		.loc 1 398 6
+ 1333 0040 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1334 0042 1846     		mov	r0, r3
+ 1335 0044 FFF7FEFF 		bl	IIC_WaitAck
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 31
+
+
+ 1336 0048 0346     		mov	r3, r0
+ 1337              		.loc 1 398 5
+ 1338 004a 042B     		cmp	r3, #4
+ 1339 004c 01D0     		beq	.L88
+ 399:./Hardware/device/iic.c **** 	{
+ 400:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1340              		.loc 1 400 10
+ 1341 004e 0523     		movs	r3, #5
+ 1342 0050 20E0     		b	.L87
+ 1343              	.L88:
+ 401:./Hardware/device/iic.c **** 	}
+ 402:./Hardware/device/iic.c **** 	
+ 403:./Hardware/device/iic.c **** 	IIC_Start(bus);
+ 1344              		.loc 1 403 2
+ 1345 0052 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1346 0054 1846     		mov	r0, r3
+ 1347 0056 FFF7FEFF 		bl	IIC_Start
+ 404:./Hardware/device/iic.c **** 	
+ 405:./Hardware/device/iic.c **** 	IIC_SendByte(0x65,bus);
+ 1348              		.loc 1 405 2
+ 1349 005a BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1350 005c 1946     		mov	r1, r3
+ 1351 005e 6520     		movs	r0, #101
+ 1352 0060 FFF7FEFF 		bl	IIC_SendByte
+ 406:./Hardware/device/iic.c **** 	if (IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1353              		.loc 1 406 6
+ 1354 0064 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1355 0066 1846     		mov	r0, r3
+ 1356 0068 FFF7FEFF 		bl	IIC_WaitAck
+ 1357 006c 0346     		mov	r3, r0
+ 1358              		.loc 1 406 5
+ 1359 006e 042B     		cmp	r3, #4
+ 1360 0070 01D0     		beq	.L89
+ 407:./Hardware/device/iic.c **** 	{
+ 408:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1361              		.loc 1 408 10
+ 1362 0072 0523     		movs	r3, #5
+ 1363 0074 0EE0     		b	.L87
+ 1364              	.L89:
+ 409:./Hardware/device/iic.c **** 	}
+ 410:./Hardware/device/iic.c **** 	
+ 411:./Hardware/device/iic.c **** 	mdata = IIC_ReceiveByte(bus);
+ 1365              		.loc 1 411 10
+ 1366 0076 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1367 0078 1846     		mov	r0, r3
+ 1368 007a FFF7FEFF 		bl	IIC_ReceiveByte
+ 1369 007e 0346     		mov	r3, r0
+ 1370 0080 FB73     		strb	r3, [r7, #15]
+ 412:./Hardware/device/iic.c **** 	
+ 413:./Hardware/device/iic.c **** 	IIC_NoAck(bus);
+ 1371              		.loc 1 413 2
+ 1372 0082 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1373 0084 1846     		mov	r0, r3
+ 1374 0086 FFF7FEFF 		bl	IIC_NoAck
+ 414:./Hardware/device/iic.c **** 	
+ 415:./Hardware/device/iic.c **** 	IIC_Stop(bus);
+ 1375              		.loc 1 415 2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 32
+
+
+ 1376 008a BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1377 008c 1846     		mov	r0, r3
+ 1378 008e FFF7FEFF 		bl	IIC_Stop
+ 416:./Hardware/device/iic.c **** 	
+ 417:./Hardware/device/iic.c **** 	return mdata;
+ 1379              		.loc 1 417 9
+ 1380 0092 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1381              	.L87:
+ 418:./Hardware/device/iic.c **** 
+ 419:./Hardware/device/iic.c **** }
+ 1382              		.loc 1 419 1
+ 1383 0094 1846     		mov	r0, r3
+ 1384 0096 1037     		adds	r7, r7, #16
+ 1385              	.LCFI75:
+ 1386              		.cfi_def_cfa_offset 8
+ 1387 0098 BD46     		mov	sp, r7
+ 1388              	.LCFI76:
+ 1389              		.cfi_def_cfa_register 13
+ 1390              		@ sp needed
+ 1391 009a 80BD     		pop	{r7, pc}
+ 1392              		.cfi_endproc
+ 1393              	.LFE46:
+ 1395              		.section	.text.IIC_read_byte,"ax",%progbits
+ 1396              		.align	1
+ 1397              		.global	IIC_read_byte
+ 1398              		.syntax unified
+ 1399              		.thumb
+ 1400              		.thumb_func
+ 1401              		.fpu softvfp
+ 1403              	IIC_read_byte:
+ 1404              	.LFB47:
+ 420:./Hardware/device/iic.c **** 
+ 421:./Hardware/device/iic.c **** //iic读一个字节
+ 422:./Hardware/device/iic.c **** i2c_exit_code IIC_read_byte(uint8_t dev_addr, uint8_t reg_addr, uint8_t *Data, i2c_device_bus bus)
+ 423:./Hardware/device/iic.c **** {
+ 1405              		.loc 1 423 1
+ 1406              		.cfi_startproc
+ 1407              		@ args = 0, pretend = 0, frame = 8
+ 1408              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1409 0000 80B5     		push	{r7, lr}
+ 1410              	.LCFI77:
+ 1411              		.cfi_def_cfa_offset 8
+ 1412              		.cfi_offset 7, -8
+ 1413              		.cfi_offset 14, -4
+ 1414 0002 82B0     		sub	sp, sp, #8
+ 1415              	.LCFI78:
+ 1416              		.cfi_def_cfa_offset 16
+ 1417 0004 00AF     		add	r7, sp, #0
+ 1418              	.LCFI79:
+ 1419              		.cfi_def_cfa_register 7
+ 1420 0006 3A60     		str	r2, [r7]
+ 1421 0008 1A46     		mov	r2, r3
+ 1422 000a 0346     		mov	r3, r0
+ 1423 000c FB71     		strb	r3, [r7, #7]
+ 1424 000e 0B46     		mov	r3, r1
+ 1425 0010 BB71     		strb	r3, [r7, #6]
+ 1426 0012 1346     		mov	r3, r2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 33
+
+
+ 1427 0014 7B71     		strb	r3, [r7, #5]
+ 424:./Hardware/device/iic.c **** 	
+ 425:./Hardware/device/iic.c **** 	if(IIC_Start(bus) != IIC_OK)
+ 1428              		.loc 1 425 5
+ 1429 0016 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1430 0018 1846     		mov	r0, r3
+ 1431 001a FFF7FEFF 		bl	IIC_Start
+ 1432 001e 0346     		mov	r3, r0
+ 1433              		.loc 1 425 4
+ 1434 0020 022B     		cmp	r3, #2
+ 1435 0022 01D0     		beq	.L91
+ 426:./Hardware/device/iic.c **** 	return IIC_FAIL;
+ 1436              		.loc 1 426 9
+ 1437 0024 0323     		movs	r3, #3
+ 1438 0026 49E0     		b	.L92
+ 1439              	.L91:
+ 427:./Hardware/device/iic.c **** 	
+ 428:./Hardware/device/iic.c **** 	IIC_SendByte(dev_addr | i2c_wr, bus);    /*写入设备的地址+写控制*/
+ 1440              		.loc 1 428 2
+ 1441 0028 7A79     		ldrb	r2, [r7, #5]	@ zero_extendqisi2
+ 1442 002a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1443 002c 1146     		mov	r1, r2
+ 1444 002e 1846     		mov	r0, r3
+ 1445 0030 FFF7FEFF 		bl	IIC_SendByte
+ 429:./Hardware/device/iic.c **** 	if (IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1446              		.loc 1 429 6
+ 1447 0034 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1448 0036 1846     		mov	r0, r3
+ 1449 0038 FFF7FEFF 		bl	IIC_WaitAck
+ 1450 003c 0346     		mov	r3, r0
+ 1451              		.loc 1 429 5
+ 1452 003e 042B     		cmp	r3, #4
+ 1453 0040 01D0     		beq	.L93
+ 430:./Hardware/device/iic.c **** 	{
+ 431:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1454              		.loc 1 431 10
+ 1455 0042 0523     		movs	r3, #5
+ 1456 0044 3AE0     		b	.L92
+ 1457              	.L93:
+ 432:./Hardware/device/iic.c **** 	}
+ 433:./Hardware/device/iic.c **** 	
+ 434:./Hardware/device/iic.c **** 	IIC_SendByte(reg_addr, bus);            //要读寄存器地址
+ 1458              		.loc 1 434 2
+ 1459 0046 7A79     		ldrb	r2, [r7, #5]	@ zero_extendqisi2
+ 1460 0048 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1461 004a 1146     		mov	r1, r2
+ 1462 004c 1846     		mov	r0, r3
+ 1463 004e FFF7FEFF 		bl	IIC_SendByte
+ 435:./Hardware/device/iic.c **** 	if (IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1464              		.loc 1 435 6
+ 1465 0052 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1466 0054 1846     		mov	r0, r3
+ 1467 0056 FFF7FEFF 		bl	IIC_WaitAck
+ 1468 005a 0346     		mov	r3, r0
+ 1469              		.loc 1 435 5
+ 1470 005c 042B     		cmp	r3, #4
+ 1471 005e 01D0     		beq	.L94
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 34
+
+
+ 436:./Hardware/device/iic.c **** 	{
+ 437:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1472              		.loc 1 437 10
+ 1473 0060 0523     		movs	r3, #5
+ 1474 0062 2BE0     		b	.L92
+ 1475              	.L94:
+ 438:./Hardware/device/iic.c **** 	}                
+ 439:./Hardware/device/iic.c **** 	
+ 440:./Hardware/device/iic.c **** 	if(IIC_Start(bus) != IIC_OK)						//重发开始信号
+ 1476              		.loc 1 440 5
+ 1477 0064 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1478 0066 1846     		mov	r0, r3
+ 1479 0068 FFF7FEFF 		bl	IIC_Start
+ 1480 006c 0346     		mov	r3, r0
+ 1481              		.loc 1 440 4
+ 1482 006e 022B     		cmp	r3, #2
+ 1483 0070 01D0     		beq	.L95
+ 441:./Hardware/device/iic.c **** 	return IIC_FAIL; 
+ 1484              		.loc 1 441 9
+ 1485 0072 0323     		movs	r3, #3
+ 1486 0074 22E0     		b	.L92
+ 1487              	.L95:
+ 442:./Hardware/device/iic.c **** 
+ 443:./Hardware/device/iic.c **** 	IIC_SendByte(dev_addr | i2c_rd, bus);   //读设备的地址+读控制
+ 1488              		.loc 1 443 2
+ 1489 0076 FB79     		ldrb	r3, [r7, #7]
+ 1490 0078 43F00103 		orr	r3, r3, #1
+ 1491 007c DBB2     		uxtb	r3, r3
+ 1492 007e 7A79     		ldrb	r2, [r7, #5]	@ zero_extendqisi2
+ 1493 0080 1146     		mov	r1, r2
+ 1494 0082 1846     		mov	r0, r3
+ 1495 0084 FFF7FEFF 		bl	IIC_SendByte
+ 444:./Hardware/device/iic.c **** 	if (IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1496              		.loc 1 444 6
+ 1497 0088 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1498 008a 1846     		mov	r0, r3
+ 1499 008c FFF7FEFF 		bl	IIC_WaitAck
+ 1500 0090 0346     		mov	r3, r0
+ 1501              		.loc 1 444 5
+ 1502 0092 042B     		cmp	r3, #4
+ 1503 0094 01D0     		beq	.L96
+ 445:./Hardware/device/iic.c **** 	{
+ 446:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1504              		.loc 1 446 10
+ 1505 0096 0523     		movs	r3, #5
+ 1506 0098 10E0     		b	.L92
+ 1507              	.L96:
+ 447:./Hardware/device/iic.c **** 	}
+ 448:./Hardware/device/iic.c **** 	*Data = IIC_ReceiveByte(bus);          //读一个数据
+ 1508              		.loc 1 448 10
+ 1509 009a 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1510 009c 1846     		mov	r0, r3
+ 1511 009e FFF7FEFF 		bl	IIC_ReceiveByte
+ 1512 00a2 0346     		mov	r3, r0
+ 1513 00a4 1A46     		mov	r2, r3
+ 1514              		.loc 1 448 8
+ 1515 00a6 3B68     		ldr	r3, [r7]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 35
+
+
+ 1516 00a8 1A70     		strb	r2, [r3]
+ 449:./Hardware/device/iic.c **** 	IIC_NoAck(bus);                    	 //主机发送非应答停止通信
+ 1517              		.loc 1 449 2
+ 1518 00aa 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1519 00ac 1846     		mov	r0, r3
+ 1520 00ae FFF7FEFF 		bl	IIC_NoAck
+ 450:./Hardware/device/iic.c **** 	IIC_Stop(bus);
+ 1521              		.loc 1 450 2
+ 1522 00b2 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1523 00b4 1846     		mov	r0, r3
+ 1524 00b6 FFF7FEFF 		bl	IIC_Stop
+ 451:./Hardware/device/iic.c **** 	
+ 452:./Hardware/device/iic.c **** 	return IIC_OK;	
+ 1525              		.loc 1 452 9
+ 1526 00ba 0223     		movs	r3, #2
+ 1527              	.L92:
+ 453:./Hardware/device/iic.c **** }
+ 1528              		.loc 1 453 1
+ 1529 00bc 1846     		mov	r0, r3
+ 1530 00be 0837     		adds	r7, r7, #8
+ 1531              	.LCFI80:
+ 1532              		.cfi_def_cfa_offset 8
+ 1533 00c0 BD46     		mov	sp, r7
+ 1534              	.LCFI81:
+ 1535              		.cfi_def_cfa_register 13
+ 1536              		@ sp needed
+ 1537 00c2 80BD     		pop	{r7, pc}
+ 1538              		.cfi_endproc
+ 1539              	.LFE47:
+ 1541              		.section	.text.IIC_write_byte,"ax",%progbits
+ 1542              		.align	1
+ 1543              		.global	IIC_write_byte
+ 1544              		.syntax unified
+ 1545              		.thumb
+ 1546              		.thumb_func
+ 1547              		.fpu softvfp
+ 1549              	IIC_write_byte:
+ 1550              	.LFB48:
+ 454:./Hardware/device/iic.c **** 
+ 455:./Hardware/device/iic.c **** //iic写一个字节
+ 456:./Hardware/device/iic.c **** i2c_exit_code IIC_write_byte(uint8_t dev_addr, uint8_t reg_addr, uint8_t Data, i2c_device_bus bus)
+ 457:./Hardware/device/iic.c **** {
+ 1551              		.loc 1 457 1
+ 1552              		.cfi_startproc
+ 1553              		@ args = 0, pretend = 0, frame = 8
+ 1554              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1555 0000 90B5     		push	{r4, r7, lr}
+ 1556              	.LCFI82:
+ 1557              		.cfi_def_cfa_offset 12
+ 1558              		.cfi_offset 4, -12
+ 1559              		.cfi_offset 7, -8
+ 1560              		.cfi_offset 14, -4
+ 1561 0002 83B0     		sub	sp, sp, #12
+ 1562              	.LCFI83:
+ 1563              		.cfi_def_cfa_offset 24
+ 1564 0004 00AF     		add	r7, sp, #0
+ 1565              	.LCFI84:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 36
+
+
+ 1566              		.cfi_def_cfa_register 7
+ 1567 0006 0446     		mov	r4, r0
+ 1568 0008 0846     		mov	r0, r1
+ 1569 000a 1146     		mov	r1, r2
+ 1570 000c 1A46     		mov	r2, r3
+ 1571 000e 2346     		mov	r3, r4
+ 1572 0010 FB71     		strb	r3, [r7, #7]
+ 1573 0012 0346     		mov	r3, r0
+ 1574 0014 BB71     		strb	r3, [r7, #6]
+ 1575 0016 0B46     		mov	r3, r1
+ 1576 0018 7B71     		strb	r3, [r7, #5]
+ 1577 001a 1346     		mov	r3, r2
+ 1578 001c 3B71     		strb	r3, [r7, #4]
+ 458:./Hardware/device/iic.c **** 
+ 459:./Hardware/device/iic.c **** 	if(IIC_Start(bus) != IIC_OK)					//I2C开始信号
+ 1579              		.loc 1 459 5
+ 1580 001e 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 1581 0020 1846     		mov	r0, r3
+ 1582 0022 FFF7FEFF 		bl	IIC_Start
+ 1583 0026 0346     		mov	r3, r0
+ 1584              		.loc 1 459 4
+ 1585 0028 022B     		cmp	r3, #2
+ 1586 002a 01D0     		beq	.L98
+ 460:./Hardware/device/iic.c **** 	return IIC_FAIL;  
+ 1587              		.loc 1 460 9
+ 1588 002c 0323     		movs	r3, #3
+ 1589 002e 31E0     		b	.L99
+ 1590              	.L98:
+ 461:./Hardware/device/iic.c **** 	
+ 462:./Hardware/device/iic.c **** 	IIC_SendByte(dev_addr | i2c_wr, bus);  //写入设备的地址+写控制
+ 1591              		.loc 1 462 2
+ 1592 0030 3A79     		ldrb	r2, [r7, #4]	@ zero_extendqisi2
+ 1593 0032 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1594 0034 1146     		mov	r1, r2
+ 1595 0036 1846     		mov	r0, r3
+ 1596 0038 FFF7FEFF 		bl	IIC_SendByte
+ 463:./Hardware/device/iic.c **** 	if(IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1597              		.loc 1 463 5
+ 1598 003c 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 1599 003e 1846     		mov	r0, r3
+ 1600 0040 FFF7FEFF 		bl	IIC_WaitAck
+ 1601 0044 0346     		mov	r3, r0
+ 1602              		.loc 1 463 4
+ 1603 0046 042B     		cmp	r3, #4
+ 1604 0048 01D0     		beq	.L100
+ 464:./Hardware/device/iic.c **** 	{
+ 465:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1605              		.loc 1 465 10
+ 1606 004a 0523     		movs	r3, #5
+ 1607 004c 22E0     		b	.L99
+ 1608              	.L100:
+ 466:./Hardware/device/iic.c **** 	}
+ 467:./Hardware/device/iic.c **** 	
+ 468:./Hardware/device/iic.c **** 	IIC_SendByte(reg_addr, bus);           //要写入寄存器地址
+ 1609              		.loc 1 468 2
+ 1610 004e 3A79     		ldrb	r2, [r7, #4]	@ zero_extendqisi2
+ 1611 0050 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 37
+
+
+ 1612 0052 1146     		mov	r1, r2
+ 1613 0054 1846     		mov	r0, r3
+ 1614 0056 FFF7FEFF 		bl	IIC_SendByte
+ 469:./Hardware/device/iic.c **** 	if(IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1615              		.loc 1 469 5
+ 1616 005a 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 1617 005c 1846     		mov	r0, r3
+ 1618 005e FFF7FEFF 		bl	IIC_WaitAck
+ 1619 0062 0346     		mov	r3, r0
+ 1620              		.loc 1 469 4
+ 1621 0064 042B     		cmp	r3, #4
+ 1622 0066 01D0     		beq	.L101
+ 470:./Hardware/device/iic.c **** 	{
+ 471:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1623              		.loc 1 471 10
+ 1624 0068 0523     		movs	r3, #5
+ 1625 006a 13E0     		b	.L99
+ 1626              	.L101:
+ 472:./Hardware/device/iic.c **** 	}
+ 473:./Hardware/device/iic.c **** 	
+ 474:./Hardware/device/iic.c **** 	IIC_SendByte(Data, bus);           //写入的数据
+ 1627              		.loc 1 474 2
+ 1628 006c 3A79     		ldrb	r2, [r7, #4]	@ zero_extendqisi2
+ 1629 006e 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1630 0070 1146     		mov	r1, r2
+ 1631 0072 1846     		mov	r0, r3
+ 1632 0074 FFF7FEFF 		bl	IIC_SendByte
+ 475:./Hardware/device/iic.c **** 	if(IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1633              		.loc 1 475 5
+ 1634 0078 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 1635 007a 1846     		mov	r0, r3
+ 1636 007c FFF7FEFF 		bl	IIC_WaitAck
+ 1637 0080 0346     		mov	r3, r0
+ 1638              		.loc 1 475 4
+ 1639 0082 042B     		cmp	r3, #4
+ 1640 0084 01D0     		beq	.L102
+ 476:./Hardware/device/iic.c **** 	{
+ 477:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1641              		.loc 1 477 10
+ 1642 0086 0523     		movs	r3, #5
+ 1643 0088 04E0     		b	.L99
+ 1644              	.L102:
+ 478:./Hardware/device/iic.c **** 	}
+ 479:./Hardware/device/iic.c **** 	
+ 480:./Hardware/device/iic.c **** 	IIC_Stop(bus);                      //I2C停止信号
+ 1645              		.loc 1 480 2
+ 1646 008a 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 1647 008c 1846     		mov	r0, r3
+ 1648 008e FFF7FEFF 		bl	IIC_Stop
+ 481:./Hardware/device/iic.c **** 	return IIC_OK;
+ 1649              		.loc 1 481 9
+ 1650 0092 0223     		movs	r3, #2
+ 1651              	.L99:
+ 482:./Hardware/device/iic.c **** }
+ 1652              		.loc 1 482 1
+ 1653 0094 1846     		mov	r0, r3
+ 1654 0096 0C37     		adds	r7, r7, #12
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 38
+
+
+ 1655              	.LCFI85:
+ 1656              		.cfi_def_cfa_offset 12
+ 1657 0098 BD46     		mov	sp, r7
+ 1658              	.LCFI86:
+ 1659              		.cfi_def_cfa_register 13
+ 1660              		@ sp needed
+ 1661 009a 90BD     		pop	{r4, r7, pc}
+ 1662              		.cfi_endproc
+ 1663              	.LFE48:
+ 1665              		.section	.text.IIC_read_multiple_bytes,"ax",%progbits
+ 1666              		.align	1
+ 1667              		.global	IIC_read_multiple_bytes
+ 1668              		.syntax unified
+ 1669              		.thumb
+ 1670              		.thumb_func
+ 1671              		.fpu softvfp
+ 1673              	IIC_read_multiple_bytes:
+ 1674              	.LFB49:
+ 483:./Hardware/device/iic.c **** 
+ 484:./Hardware/device/iic.c **** 
+ 485:./Hardware/device/iic.c **** //iic读多个字节
+ 486:./Hardware/device/iic.c **** i2c_exit_code IIC_read_multiple_bytes(uint8_t dev_addr,uint8_t reg_addr, uint8_t *buf, uint8_t leng
+ 487:./Hardware/device/iic.c **** {
+ 1675              		.loc 1 487 1
+ 1676              		.cfi_startproc
+ 1677              		@ args = 4, pretend = 0, frame = 16
+ 1678              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1679 0000 90B5     		push	{r4, r7, lr}
+ 1680              	.LCFI87:
+ 1681              		.cfi_def_cfa_offset 12
+ 1682              		.cfi_offset 4, -12
+ 1683              		.cfi_offset 7, -8
+ 1684              		.cfi_offset 14, -4
+ 1685 0002 85B0     		sub	sp, sp, #20
+ 1686              	.LCFI88:
+ 1687              		.cfi_def_cfa_offset 32
+ 1688 0004 00AF     		add	r7, sp, #0
+ 1689              	.LCFI89:
+ 1690              		.cfi_def_cfa_register 7
+ 1691 0006 3A60     		str	r2, [r7]
+ 1692 0008 1A46     		mov	r2, r3
+ 1693 000a 0346     		mov	r3, r0
+ 1694 000c FB71     		strb	r3, [r7, #7]
+ 1695 000e 0B46     		mov	r3, r1
+ 1696 0010 BB71     		strb	r3, [r7, #6]
+ 1697 0012 1346     		mov	r3, r2
+ 1698 0014 7B71     		strb	r3, [r7, #5]
+ 488:./Hardware/device/iic.c **** 	uint8_t i;
+ 489:./Hardware/device/iic.c **** 
+ 490:./Hardware/device/iic.c **** 	if(IIC_Start(bus) != IIC_OK)
+ 1699              		.loc 1 490 5
+ 1700 0016 97F82030 		ldrb	r3, [r7, #32]	@ zero_extendqisi2
+ 1701 001a 1846     		mov	r0, r3
+ 1702 001c FFF7FEFF 		bl	IIC_Start
+ 1703 0020 0346     		mov	r3, r0
+ 1704              		.loc 1 490 4
+ 1705 0022 022B     		cmp	r3, #2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 39
+
+
+ 1706 0024 01D0     		beq	.L104
+ 491:./Hardware/device/iic.c **** 	return IIC_FAIL;
+ 1707              		.loc 1 491 9
+ 1708 0026 0323     		movs	r3, #3
+ 1709 0028 68E0     		b	.L105
+ 1710              	.L104:
+ 492:./Hardware/device/iic.c **** 	
+ 493:./Hardware/device/iic.c **** 	IIC_SendByte(dev_addr | i2c_wr, bus);		/*send device address*/
+ 1711              		.loc 1 493 2
+ 1712 002a 97F82020 		ldrb	r2, [r7, #32]	@ zero_extendqisi2
+ 1713 002e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1714 0030 1146     		mov	r1, r2
+ 1715 0032 1846     		mov	r0, r3
+ 1716 0034 FFF7FEFF 		bl	IIC_SendByte
+ 494:./Hardware/device/iic.c **** 	if(IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1717              		.loc 1 494 5
+ 1718 0038 97F82030 		ldrb	r3, [r7, #32]	@ zero_extendqisi2
+ 1719 003c 1846     		mov	r0, r3
+ 1720 003e FFF7FEFF 		bl	IIC_WaitAck
+ 1721 0042 0346     		mov	r3, r0
+ 1722              		.loc 1 494 4
+ 1723 0044 042B     		cmp	r3, #4
+ 1724 0046 01D0     		beq	.L106
+ 495:./Hardware/device/iic.c **** 	{
+ 496:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1725              		.loc 1 496 10
+ 1726 0048 0523     		movs	r3, #5
+ 1727 004a 57E0     		b	.L105
+ 1728              	.L106:
+ 497:./Hardware/device/iic.c **** 	}
+ 498:./Hardware/device/iic.c **** 	
+ 499:./Hardware/device/iic.c **** 	IIC_SendByte(reg_addr, bus);						/*读数据起始地址*/
+ 1729              		.loc 1 499 2
+ 1730 004c 97F82020 		ldrb	r2, [r7, #32]	@ zero_extendqisi2
+ 1731 0050 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1732 0052 1146     		mov	r1, r2
+ 1733 0054 1846     		mov	r0, r3
+ 1734 0056 FFF7FEFF 		bl	IIC_SendByte
+ 500:./Hardware/device/iic.c **** 	if(IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1735              		.loc 1 500 5
+ 1736 005a 97F82030 		ldrb	r3, [r7, #32]	@ zero_extendqisi2
+ 1737 005e 1846     		mov	r0, r3
+ 1738 0060 FFF7FEFF 		bl	IIC_WaitAck
+ 1739 0064 0346     		mov	r3, r0
+ 1740              		.loc 1 500 4
+ 1741 0066 042B     		cmp	r3, #4
+ 1742 0068 01D0     		beq	.L107
+ 501:./Hardware/device/iic.c **** 	{
+ 502:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1743              		.loc 1 502 10
+ 1744 006a 0523     		movs	r3, #5
+ 1745 006c 46E0     		b	.L105
+ 1746              	.L107:
+ 503:./Hardware/device/iic.c **** 	}
+ 504:./Hardware/device/iic.c **** 
+ 505:./Hardware/device/iic.c **** 	if(IIC_Start(bus) != IIC_OK)						/*restart and send read device address*/
+ 1747              		.loc 1 505 5
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 40
+
+
+ 1748 006e 97F82030 		ldrb	r3, [r7, #32]	@ zero_extendqisi2
+ 1749 0072 1846     		mov	r0, r3
+ 1750 0074 FFF7FEFF 		bl	IIC_Start
+ 1751 0078 0346     		mov	r3, r0
+ 1752              		.loc 1 505 4
+ 1753 007a 022B     		cmp	r3, #2
+ 1754 007c 01D0     		beq	.L108
+ 506:./Hardware/device/iic.c **** 	return IIC_FAIL;
+ 1755              		.loc 1 506 9
+ 1756 007e 0323     		movs	r3, #3
+ 1757 0080 3CE0     		b	.L105
+ 1758              	.L108:
+ 507:./Hardware/device/iic.c **** 	
+ 508:./Hardware/device/iic.c **** 	IIC_SendByte(dev_addr | i2c_rd, bus);
+ 1759              		.loc 1 508 2
+ 1760 0082 FB79     		ldrb	r3, [r7, #7]
+ 1761 0084 43F00103 		orr	r3, r3, #1
+ 1762 0088 DBB2     		uxtb	r3, r3
+ 1763 008a 97F82020 		ldrb	r2, [r7, #32]	@ zero_extendqisi2
+ 1764 008e 1146     		mov	r1, r2
+ 1765 0090 1846     		mov	r0, r3
+ 1766 0092 FFF7FEFF 		bl	IIC_SendByte
+ 509:./Hardware/device/iic.c **** 	if(IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1767              		.loc 1 509 5
+ 1768 0096 97F82030 		ldrb	r3, [r7, #32]	@ zero_extendqisi2
+ 1769 009a 1846     		mov	r0, r3
+ 1770 009c FFF7FEFF 		bl	IIC_WaitAck
+ 1771 00a0 0346     		mov	r3, r0
+ 1772              		.loc 1 509 4
+ 1773 00a2 042B     		cmp	r3, #4
+ 1774 00a4 01D0     		beq	.L109
+ 510:./Hardware/device/iic.c **** 	{
+ 511:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1775              		.loc 1 511 10
+ 1776 00a6 0523     		movs	r3, #5
+ 1777 00a8 28E0     		b	.L105
+ 1778              	.L109:
+ 512:./Hardware/device/iic.c **** 	}
+ 513:./Hardware/device/iic.c **** 	
+ 514:./Hardware/device/iic.c **** 	for (i = 0; i < length; i++)
+ 1779              		.loc 1 514 9
+ 1780 00aa 0023     		movs	r3, #0
+ 1781 00ac FB73     		strb	r3, [r7, #15]
+ 1782              		.loc 1 514 2
+ 1783 00ae 16E0     		b	.L110
+ 1784              	.L112:
+ 515:./Hardware/device/iic.c **** 	{
+ 516:./Hardware/device/iic.c **** 		*(buf+i) = IIC_ReceiveByte(bus);
+ 1785              		.loc 1 516 8
+ 1786 00b0 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1787 00b2 3A68     		ldr	r2, [r7]
+ 1788 00b4 D418     		adds	r4, r2, r3
+ 1789              		.loc 1 516 14
+ 1790 00b6 97F82030 		ldrb	r3, [r7, #32]	@ zero_extendqisi2
+ 1791 00ba 1846     		mov	r0, r3
+ 1792 00bc FFF7FEFF 		bl	IIC_ReceiveByte
+ 1793 00c0 0346     		mov	r3, r0
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 41
+
+
+ 1794              		.loc 1 516 12
+ 1795 00c2 2370     		strb	r3, [r4]
+ 517:./Hardware/device/iic.c **** 		if(i < length-1)
+ 1796              		.loc 1 517 8
+ 1797 00c4 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 1798              		.loc 1 517 16
+ 1799 00c6 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1800 00c8 013B     		subs	r3, r3, #1
+ 1801              		.loc 1 517 5
+ 1802 00ca 9A42     		cmp	r2, r3
+ 1803 00cc 04DA     		bge	.L111
+ 518:./Hardware/device/iic.c **** 		{
+ 519:./Hardware/device/iic.c **** 			IIC_Ack(bus);
+ 1804              		.loc 1 519 4
+ 1805 00ce 97F82030 		ldrb	r3, [r7, #32]	@ zero_extendqisi2
+ 1806 00d2 1846     		mov	r0, r3
+ 1807 00d4 FFF7FEFF 		bl	IIC_Ack
+ 1808              	.L111:
+ 514:./Hardware/device/iic.c **** 	{
+ 1809              		.loc 1 514 27 discriminator 2
+ 1810 00d8 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1811 00da 0133     		adds	r3, r3, #1
+ 1812 00dc FB73     		strb	r3, [r7, #15]
+ 1813              	.L110:
+ 514:./Hardware/device/iic.c **** 	{
+ 1814              		.loc 1 514 2 discriminator 1
+ 1815 00de FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 1816 00e0 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1817 00e2 9A42     		cmp	r2, r3
+ 1818 00e4 E4D3     		bcc	.L112
+ 520:./Hardware/device/iic.c **** 		}
+ 521:./Hardware/device/iic.c **** 	}
+ 522:./Hardware/device/iic.c **** 	
+ 523:./Hardware/device/iic.c **** 	IIC_NoAck(bus);  					/*主机发送非应答结束通信*/
+ 1819              		.loc 1 523 2
+ 1820 00e6 97F82030 		ldrb	r3, [r7, #32]	@ zero_extendqisi2
+ 1821 00ea 1846     		mov	r0, r3
+ 1822 00ec FFF7FEFF 		bl	IIC_NoAck
+ 524:./Hardware/device/iic.c **** 	
+ 525:./Hardware/device/iic.c **** 	IIC_Stop(bus);
+ 1823              		.loc 1 525 2
+ 1824 00f0 97F82030 		ldrb	r3, [r7, #32]	@ zero_extendqisi2
+ 1825 00f4 1846     		mov	r0, r3
+ 1826 00f6 FFF7FEFF 		bl	IIC_Stop
+ 526:./Hardware/device/iic.c **** 	return  IIC_OK;
+ 1827              		.loc 1 526 10
+ 1828 00fa 0223     		movs	r3, #2
+ 1829              	.L105:
+ 527:./Hardware/device/iic.c **** 
+ 528:./Hardware/device/iic.c **** }
+ 1830              		.loc 1 528 1
+ 1831 00fc 1846     		mov	r0, r3
+ 1832 00fe 1437     		adds	r7, r7, #20
+ 1833              	.LCFI90:
+ 1834              		.cfi_def_cfa_offset 12
+ 1835 0100 BD46     		mov	sp, r7
+ 1836              	.LCFI91:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 42
+
+
+ 1837              		.cfi_def_cfa_register 13
+ 1838              		@ sp needed
+ 1839 0102 90BD     		pop	{r4, r7, pc}
+ 1840              		.cfi_endproc
+ 1841              	.LFE49:
+ 1843              		.section	.text.IIC_write_multiple_bytes,"ax",%progbits
+ 1844              		.align	1
+ 1845              		.global	IIC_write_multiple_bytes
+ 1846              		.syntax unified
+ 1847              		.thumb
+ 1848              		.thumb_func
+ 1849              		.fpu softvfp
+ 1851              	IIC_write_multiple_bytes:
+ 1852              	.LFB50:
+ 529:./Hardware/device/iic.c **** 
+ 530:./Hardware/device/iic.c **** //iic写多个字节
+ 531:./Hardware/device/iic.c **** i2c_exit_code IIC_write_multiple_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t *buf, uint8_t le
+ 532:./Hardware/device/iic.c **** {
+ 1853              		.loc 1 532 1
+ 1854              		.cfi_startproc
+ 1855              		@ args = 4, pretend = 0, frame = 16
+ 1856              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1857 0000 80B5     		push	{r7, lr}
+ 1858              	.LCFI92:
+ 1859              		.cfi_def_cfa_offset 8
+ 1860              		.cfi_offset 7, -8
+ 1861              		.cfi_offset 14, -4
+ 1862 0002 84B0     		sub	sp, sp, #16
+ 1863              	.LCFI93:
+ 1864              		.cfi_def_cfa_offset 24
+ 1865 0004 00AF     		add	r7, sp, #0
+ 1866              	.LCFI94:
+ 1867              		.cfi_def_cfa_register 7
+ 1868 0006 3A60     		str	r2, [r7]
+ 1869 0008 1A46     		mov	r2, r3
+ 1870 000a 0346     		mov	r3, r0
+ 1871 000c FB71     		strb	r3, [r7, #7]
+ 1872 000e 0B46     		mov	r3, r1
+ 1873 0010 BB71     		strb	r3, [r7, #6]
+ 1874 0012 1346     		mov	r3, r2
+ 1875 0014 7B71     		strb	r3, [r7, #5]
+ 533:./Hardware/device/iic.c **** 	uint8_t i;
+ 534:./Hardware/device/iic.c **** 
+ 535:./Hardware/device/iic.c **** 	if(IIC_Start(bus) != IIC_OK)
+ 1876              		.loc 1 535 5
+ 1877 0016 3B7E     		ldrb	r3, [r7, #24]	@ zero_extendqisi2
+ 1878 0018 1846     		mov	r0, r3
+ 1879 001a FFF7FEFF 		bl	IIC_Start
+ 1880 001e 0346     		mov	r3, r0
+ 1881              		.loc 1 535 4
+ 1882 0020 022B     		cmp	r3, #2
+ 1883 0022 01D0     		beq	.L114
+ 536:./Hardware/device/iic.c **** 	return IIC_FAIL;
+ 1884              		.loc 1 536 9
+ 1885 0024 0323     		movs	r3, #3
+ 1886 0026 3EE0     		b	.L115
+ 1887              	.L114:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 43
+
+
+ 537:./Hardware/device/iic.c **** 
+ 538:./Hardware/device/iic.c **** 	IIC_SendByte(dev_addr | i2c_wr, bus);
+ 1888              		.loc 1 538 2
+ 1889 0028 3A7E     		ldrb	r2, [r7, #24]	@ zero_extendqisi2
+ 1890 002a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1891 002c 1146     		mov	r1, r2
+ 1892 002e 1846     		mov	r0, r3
+ 1893 0030 FFF7FEFF 		bl	IIC_SendByte
+ 539:./Hardware/device/iic.c **** 	if(IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1894              		.loc 1 539 5
+ 1895 0034 3B7E     		ldrb	r3, [r7, #24]	@ zero_extendqisi2
+ 1896 0036 1846     		mov	r0, r3
+ 1897 0038 FFF7FEFF 		bl	IIC_WaitAck
+ 1898 003c 0346     		mov	r3, r0
+ 1899              		.loc 1 539 4
+ 1900 003e 042B     		cmp	r3, #4
+ 1901 0040 01D0     		beq	.L116
+ 540:./Hardware/device/iic.c **** 	{
+ 541:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1902              		.loc 1 541 10
+ 1903 0042 0523     		movs	r3, #5
+ 1904 0044 2FE0     		b	.L115
+ 1905              	.L116:
+ 542:./Hardware/device/iic.c **** 	}
+ 543:./Hardware/device/iic.c **** 	
+ 544:./Hardware/device/iic.c **** 	IIC_SendByte(reg_addr, bus);
+ 1906              		.loc 1 544 2
+ 1907 0046 3A7E     		ldrb	r2, [r7, #24]	@ zero_extendqisi2
+ 1908 0048 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1909 004a 1146     		mov	r1, r2
+ 1910 004c 1846     		mov	r0, r3
+ 1911 004e FFF7FEFF 		bl	IIC_SendByte
+ 545:./Hardware/device/iic.c **** 	if(IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1912              		.loc 1 545 5
+ 1913 0052 3B7E     		ldrb	r3, [r7, #24]	@ zero_extendqisi2
+ 1914 0054 1846     		mov	r0, r3
+ 1915 0056 FFF7FEFF 		bl	IIC_WaitAck
+ 1916 005a 0346     		mov	r3, r0
+ 1917              		.loc 1 545 4
+ 1918 005c 042B     		cmp	r3, #4
+ 1919 005e 01D0     		beq	.L117
+ 546:./Hardware/device/iic.c **** 	{
+ 547:./Hardware/device/iic.c **** 		return SLAVE_NO_ACK;
+ 1920              		.loc 1 547 10
+ 1921 0060 0523     		movs	r3, #5
+ 1922 0062 20E0     		b	.L115
+ 1923              	.L117:
+ 548:./Hardware/device/iic.c **** 	}
+ 549:./Hardware/device/iic.c **** 	
+ 550:./Hardware/device/iic.c **** 	for (i = 0; i < length; i++)
+ 1924              		.loc 1 550 9
+ 1925 0064 0023     		movs	r3, #0
+ 1926 0066 FB73     		strb	r3, [r7, #15]
+ 1927              		.loc 1 550 2
+ 1928 0068 14E0     		b	.L118
+ 1929              	.L120:
+ 551:./Hardware/device/iic.c **** 	{
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 44
+
+
+ 552:./Hardware/device/iic.c **** 		IIC_SendByte(*(buf + i), bus);
+ 1930              		.loc 1 552 22
+ 1931 006a FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1932 006c 3A68     		ldr	r2, [r7]
+ 1933 006e 1344     		add	r3, r3, r2
+ 1934              		.loc 1 552 3
+ 1935 0070 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1936 0072 3A7E     		ldrb	r2, [r7, #24]	@ zero_extendqisi2
+ 1937 0074 1146     		mov	r1, r2
+ 1938 0076 1846     		mov	r0, r3
+ 1939 0078 FFF7FEFF 		bl	IIC_SendByte
+ 553:./Hardware/device/iic.c **** 		if(IIC_WaitAck(bus) != SLAVE_ACK) 
+ 1940              		.loc 1 553 6
+ 1941 007c 3B7E     		ldrb	r3, [r7, #24]	@ zero_extendqisi2
+ 1942 007e 1846     		mov	r0, r3
+ 1943 0080 FFF7FEFF 		bl	IIC_WaitAck
+ 1944 0084 0346     		mov	r3, r0
+ 1945              		.loc 1 553 5
+ 1946 0086 042B     		cmp	r3, #4
+ 1947 0088 01D0     		beq	.L119
+ 554:./Hardware/device/iic.c **** 		{
+ 555:./Hardware/device/iic.c **** 			return SLAVE_NO_ACK;
+ 1948              		.loc 1 555 11
+ 1949 008a 0523     		movs	r3, #5
+ 1950 008c 0BE0     		b	.L115
+ 1951              	.L119:
+ 550:./Hardware/device/iic.c **** 	{
+ 1952              		.loc 1 550 27 discriminator 2
+ 1953 008e FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1954 0090 0133     		adds	r3, r3, #1
+ 1955 0092 FB73     		strb	r3, [r7, #15]
+ 1956              	.L118:
+ 550:./Hardware/device/iic.c **** 	{
+ 1957              		.loc 1 550 2 discriminator 1
+ 1958 0094 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 1959 0096 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1960 0098 9A42     		cmp	r2, r3
+ 1961 009a E6D3     		bcc	.L120
+ 556:./Hardware/device/iic.c **** 		}
+ 557:./Hardware/device/iic.c **** 	}
+ 558:./Hardware/device/iic.c **** 	
+ 559:./Hardware/device/iic.c ****   IIC_Stop(bus);
+ 1962              		.loc 1 559 3
+ 1963 009c 3B7E     		ldrb	r3, [r7, #24]	@ zero_extendqisi2
+ 1964 009e 1846     		mov	r0, r3
+ 1965 00a0 FFF7FEFF 		bl	IIC_Stop
+ 560:./Hardware/device/iic.c **** 	
+ 561:./Hardware/device/iic.c **** 	return	IIC_OK;
+ 1966              		.loc 1 561 9
+ 1967 00a4 0223     		movs	r3, #2
+ 1968              	.L115:
+ 562:./Hardware/device/iic.c **** 
+ 563:./Hardware/device/iic.c **** }
+ 1969              		.loc 1 563 1
+ 1970 00a6 1846     		mov	r0, r3
+ 1971 00a8 1037     		adds	r7, r7, #16
+ 1972              	.LCFI95:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 45
+
+
+ 1973              		.cfi_def_cfa_offset 8
+ 1974 00aa BD46     		mov	sp, r7
+ 1975              	.LCFI96:
+ 1976              		.cfi_def_cfa_register 13
+ 1977              		@ sp needed
+ 1978 00ac 80BD     		pop	{r7, pc}
+ 1979              		.cfi_endproc
+ 1980              	.LFE50:
+ 1982              		.text
+ 1983              	.Letext0:
+ 1984              		.file 2 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 1985              		.file 3 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 1986              		.file 4 "./Libraries/CMSIS/stm32f10x.h"
+ 1987              		.file 5 "./Libraries/STM32F10x_StdPeriph_Driver/inc/stm32f10x_gpio.h"
+ 1988              		.file 6 "./Hardware/device/iic.h"
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 46
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 iic.c
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:16     .text.SET_SDA_H:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:24     .text.SET_SDA_H:00000000 SET_SDA_H
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:52     .text.SET_SDA_H:00000018 $d
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:56     .text.SET_SDA_H:00000028 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:106    .text.SET_SDA_H:00000054 $d
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:113    .text.SET_SDA_L:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:120    .text.SET_SDA_L:00000000 SET_SDA_L
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:147    .text.SET_SDA_L:00000018 $d
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:151    .text.SET_SDA_L:00000028 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:201    .text.SET_SDA_L:00000054 $d
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:208    .text.SET_SCL_H:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:215    .text.SET_SCL_H:00000000 SET_SCL_H
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:242    .text.SET_SCL_H:00000018 $d
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:246    .text.SET_SCL_H:00000028 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:296    .text.SET_SCL_H:00000054 $d
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:303    .text.SET_SCL_L:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:310    .text.SET_SCL_L:00000000 SET_SCL_L
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:337    .text.SET_SCL_L:00000018 $d
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:341    .text.SET_SCL_L:00000028 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:391    .text.SET_SCL_L:00000054 $d
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:398    .text.Read_SDA:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:405    .text.Read_SDA:00000000 Read_SDA
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:432    .text.Read_SDA:00000018 $d
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:436    .text.Read_SDA:00000028 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:520    .text.Read_SDA:00000088 $d
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:527    .text.IIC_Init:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:534    .text.IIC_Init:00000000 IIC_Init
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:704    .text.IIC_Init:000000f0 $d
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:712    .text.IIC_Delay:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:719    .text.IIC_Delay:00000000 IIC_Delay
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:743    .text.IIC_Stop:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:750    .text.IIC_Stop:00000000 IIC_Stop
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:799    .text.IIC_Start:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:806    .text.IIC_Start:00000000 IIC_Start
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:878    .text.IIC_Ack:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:885    .text.IIC_Ack:00000000 IIC_Ack
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:938    .text.IIC_NoAck:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:945    .text.IIC_NoAck:00000000 IIC_NoAck
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:998    .text.IIC_WaitAck:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1005   .text.IIC_WaitAck:00000000 IIC_WaitAck
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1088   .text.IIC_ReceiveByte:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1095   .text.IIC_ReceiveByte:00000000 IIC_ReceiveByte
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1182   .text.IIC_SendByte:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1189   .text.IIC_SendByte:00000000 IIC_SendByte
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1276   .text.RTC_ReadByte:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1283   .text.RTC_ReadByte:00000000 RTC_ReadByte
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1396   .text.IIC_read_byte:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1403   .text.IIC_read_byte:00000000 IIC_read_byte
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1542   .text.IIC_write_byte:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1549   .text.IIC_write_byte:00000000 IIC_write_byte
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1666   .text.IIC_read_multiple_bytes:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1673   .text.IIC_read_multiple_bytes:00000000 IIC_read_multiple_bytes
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1844   .text.IIC_write_multiple_bytes:00000000 $t
+C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s:1851   .text.IIC_write_multiple_bytes:00000000 IIC_write_multiple_bytes
+
+ARM GAS  C:\Users\86134\AppData\Local\Temp\ccNfOhbl.s 			page 47
+
+
+UNDEFINED SYMBOLS
+RCC_APB2PeriphClockCmd
+GPIO_Init
+Delay_us

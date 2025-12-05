@@ -1,0 +1,99 @@
+读：
+1，
+                           int startCol = 3; // 定义数据存放的起始列
+                           int endCol = 10; // 定义数据存放的结束列
+                           int currentCol = startCol; // 当前处理的列从起始列开始
+
+2，
+index(counter, 11); // 第11列的索引
+
+3，
+index(row, currentCol), binaryString);
+
+3，
+                                   currentCol++;
+                                   if (currentCol > endCol) {
+                                       currentCol = startCol;
+                                       row+=2;//隔一行存放数据
+                                   }
+
+
+
+                                   currentCol++;
+                                   if (currentCol > endCol) {
+                                       currentCol = startCol;
+                                       row++;//隔一行存放数据
+                                   }
+写：
+1，
+int col = 3; col < 11;
+
+2，
+index(31, 3))
+index(31, 8))
+index(33, 3))
+
+//////////////////////////////////////////////////////////////////////////////
+            QString binaryData;
+            QString HEXData; // 用于存储8个二进制数据的字符串
+            QString hexString; // 用于存储转换后的16进制数据
+            for (int row = 5; row <= 17; row += 2)----------------------------------------------修改
+            {
+                for (int col = 3; col < 11; col++)
+                {
+                    QString binaryValue = sd8563model111->datasd8563model111>index(row, col)).toString();
+                    binaryData += binaryValue;
+                    HEXData += binaryValue;
+
+                }
+
+                if (row % 2 != 0) // 只处理奇数行
+                {
+                    // 将8个二进制数据转换为16进制
+                    QByteArray bcdData;
+                    for (int i = 0; i < HEXData.length(); i += 8)
+                    {
+                        QString binary = HEXData.mid(i, 8);
+                        bool ok;
+                        int decimal = binary.toInt(&ok, 2);
+                        if (ok)
+                        {
+                            QString bcd = QString::number(decimal, 16).toUpper(); // 将转换后的16进制数据转换为大写形式
+                            hexString = bcd + 'H';
+                            bcdData.append(bcd.toInt(nullptr, 16));
+                            // 设置转换后的16进制数据到第12列
+                            sd8563model111>setDatasd8563model111>index(row, 11), hexString);
+                        }
+                     }
+                 }
+             }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+        connect(sd8563model111, &QSqlTableModel::dataChanged, [=](const QModelIndex &topLeft, const QModelIndex &bottomRight)
+        {
+            for (int row = topLeft.row(); row <= bottomRight.row(); ++row)
+            {
+                int column = 11; // 检查第12列（index为11）的数据变化
+                if (topLeft.column() <= column && bottomRight.column() >= column)
+                {
+                    for (int outerRow = 1; outerRow <= 63; outerRow += 2)
+                    {
+                        QString hexInput = (sd8563model111, >data(sd8563model111, >index(outerRow, 11)).toString();
+
+                        for (int col = 3; col < 11; col++)
+                        {
+                            if(hexInput != "0")
+                            {
+                                bool ok;
+                                int decimalValue = hexInput.toInt(&ok, 16); // 将16进制字符串转换为整数
+                                QString binaryValue1 = QString::number(decimalValue, 2).rightJustified(8, '0'); // 将整数转换为8位二进制字符串
+                                (sd8563model111, >setData(sd8563model111, >index(outerRow, col), binaryValue1.mid(col - 3, 1));
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
+

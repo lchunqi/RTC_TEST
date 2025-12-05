@@ -1,0 +1,846 @@
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"sd2201.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.I2C_SendBit,"ax",%progbits
+  16              		.align	1
+  17              		.global	I2C_SendBit
+  18              		.arch armv7-m
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.fpu softvfp
+  24              	I2C_SendBit:
+  25              	.LFB32:
+  26              		.file 1 "./Hardware/device/sd2201.c"
+   1:./Hardware/device/sd2201.c **** #include "sd2201.h"
+   2:./Hardware/device/sd2201.c **** 
+   3:./Hardware/device/sd2201.c **** //uint8_t Time_DutBuf[7];
+   4:./Hardware/device/sd2201.c **** 
+   5:./Hardware/device/sd2201.c **** void I2C_SendBit(uint8_t bitValue) {  
+  27              		.loc 1 5 36
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 8
+  30              		@ frame_needed = 1, uses_anonymous_args = 0
+  31 0000 80B5     		push	{r7, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 82B0     		sub	sp, sp, #8
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 16
+  39 0004 00AF     		add	r7, sp, #0
+  40              	.LCFI2:
+  41              		.cfi_def_cfa_register 7
+  42 0006 0346     		mov	r3, r0
+  43 0008 FB71     		strb	r3, [r7, #7]
+   6:./Hardware/device/sd2201.c ****     if (bitValue) 
+  44              		.loc 1 6 8
+  45 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+  46 000c 002B     		cmp	r3, #0
+  47 000e 04D0     		beq	.L2
+   7:./Hardware/device/sd2201.c **** 	{  
+   8:./Hardware/device/sd2201.c ****         GPIO_SetBits(GPIOB, GPIO_Pin_7); // 设置高电平  
+  48              		.loc 1 8 9
+  49 0010 8021     		movs	r1, #128
+  50 0012 0648     		ldr	r0, .L5
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 2
+
+
+  51 0014 FFF7FEFF 		bl	GPIO_SetBits
+   9:./Hardware/device/sd2201.c **** 		
+  10:./Hardware/device/sd2201.c ****     }else{  
+  11:./Hardware/device/sd2201.c **** 		
+  12:./Hardware/device/sd2201.c ****         GPIO_ResetBits(GPIOB, GPIO_Pin_7); // 设置低电平 
+  13:./Hardware/device/sd2201.c **** 		
+  14:./Hardware/device/sd2201.c ****     } 
+  15:./Hardware/device/sd2201.c **** 	
+  16:./Hardware/device/sd2201.c **** }
+  52              		.loc 1 16 1
+  53 0018 03E0     		b	.L4
+  54              	.L2:
+  12:./Hardware/device/sd2201.c **** 		
+  55              		.loc 1 12 9
+  56 001a 8021     		movs	r1, #128
+  57 001c 0348     		ldr	r0, .L5
+  58 001e FFF7FEFF 		bl	GPIO_ResetBits
+  59              	.L4:
+  60              		.loc 1 16 1
+  61 0022 00BF     		nop
+  62 0024 0837     		adds	r7, r7, #8
+  63              	.LCFI3:
+  64              		.cfi_def_cfa_offset 8
+  65 0026 BD46     		mov	sp, r7
+  66              	.LCFI4:
+  67              		.cfi_def_cfa_register 13
+  68              		@ sp needed
+  69 0028 80BD     		pop	{r7, pc}
+  70              	.L6:
+  71 002a 00BF     		.align	2
+  72              	.L5:
+  73 002c 000C0140 		.word	1073810432
+  74              		.cfi_endproc
+  75              	.LFE32:
+  77              		.section	.text.I2CReceiveByte,"ax",%progbits
+  78              		.align	1
+  79              		.global	I2CReceiveByte
+  80              		.syntax unified
+  81              		.thumb
+  82              		.thumb_func
+  83              		.fpu softvfp
+  85              	I2CReceiveByte:
+  86              	.LFB33:
+  17:./Hardware/device/sd2201.c **** 
+  18:./Hardware/device/sd2201.c **** //void I2CSebdByte(uint8_t val, uint8_t High_Flg,i2c_device_bus iic_x)
+  19:./Hardware/device/sd2201.c **** //{
+  20:./Hardware/device/sd2201.c **** //	uint8_t i,temp;
+  21:./Hardware/device/sd2201.c **** //	for (i = 0; i < 8; i++)
+  22:./Hardware/device/sd2201.c **** //	{
+  23:./Hardware/device/sd2201.c **** //	   SET_SCL_L(iic_x);
+  24:./Hardware/device/sd2201.c **** //	   IIC_Delay();
+  25:./Hardware/device/sd2201.c **** //		if (High_Flg)
+  26:./Hardware/device/sd2201.c **** //		{
+  27:./Hardware/device/sd2201.c **** //		  temp = val & 0x80;
+  28:./Hardware/device/sd2201.c **** //			val = val << 1;
+  29:./Hardware/device/sd2201.c **** //		}
+  30:./Hardware/device/sd2201.c **** //		else//MCU发送数据给从机时，scl低电平阶段准备数据，从低到高上升时发送数据。
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 3
+
+
+  31:./Hardware/device/sd2201.c **** //		{
+  32:./Hardware/device/sd2201.c **** //			temp = val & 0x01;
+  33:./Hardware/device/sd2201.c **** //			val = val >> 1;
+  34:./Hardware/device/sd2201.c **** //		}
+  35:./Hardware/device/sd2201.c **** //		I2C_SendBit(temp);
+  36:./Hardware/device/sd2201.c **** //		IIC_Delay();
+  37:./Hardware/device/sd2201.c **** //		SET_SCL_H(iic_x);
+  38:./Hardware/device/sd2201.c **** //		IIC_Delay();
+  39:./Hardware/device/sd2201.c **** //	}
+  40:./Hardware/device/sd2201.c **** //	SET_SCL_L(iic_x);
+  41:./Hardware/device/sd2201.c **** //	IIC_Delay();
+  42:./Hardware/device/sd2201.c **** //}
+  43:./Hardware/device/sd2201.c **** 
+  44:./Hardware/device/sd2201.c **** //uint8_t I2CReceiveByte(uint8_t High_Flg,i2c_device_bus iic_x)
+  45:./Hardware/device/sd2201.c **** //{
+  46:./Hardware/device/sd2201.c **** //	uint8_t temp = 0;
+  47:./Hardware/device/sd2201.c **** //	uint8_t ret = 0;
+  48:./Hardware/device/sd2201.c **** //	uint8_t i = 0;
+  49:./Hardware/device/sd2201.c **** 
+  50:./Hardware/device/sd2201.c **** //	SET_SDA_H(iic_x);
+  51:./Hardware/device/sd2201.c **** //	IIC_Delay();
+  52:./Hardware/device/sd2201.c **** //	for (i = 0; i < 8; i++)
+  53:./Hardware/device/sd2201.c **** //	{
+  54:./Hardware/device/sd2201.c **** //		SET_SCL_L(iic_x);
+  55:./Hardware/device/sd2201.c **** //		IIC_Delay();
+  56:./Hardware/device/sd2201.c **** //		temp = (GPIOB->IDR & GPIO_Pin_7) ? 1 : 0; 
+  57:./Hardware/device/sd2201.c **** //		if (High_Flg)
+  58:./Hardware/device/sd2201.c **** //		{	
+  59:./Hardware/device/sd2201.c **** //			ret = ret << 1;
+  60:./Hardware/device/sd2201.c **** //			ret = ret | temp;
+  61:./Hardware/device/sd2201.c **** //		}
+  62:./Hardware/device/sd2201.c **** //		else//Mcu接收从机数据时，scl高电平阶段准备数据，从高到低下降时接收数据。
+  63:./Hardware/device/sd2201.c **** //		{
+  64:./Hardware/device/sd2201.c **** //			temp = temp << 7;
+  65:./Hardware/device/sd2201.c **** //			ret = ret >> 1;	
+  66:./Hardware/device/sd2201.c **** //			ret = ret | temp;
+  67:./Hardware/device/sd2201.c **** //		}
+  68:./Hardware/device/sd2201.c **** //		IIC_Delay();
+  69:./Hardware/device/sd2201.c **** //		SET_SCL_L(iic_x);
+  70:./Hardware/device/sd2201.c **** //		IIC_Delay();
+  71:./Hardware/device/sd2201.c **** //	}
+  72:./Hardware/device/sd2201.c **** 
+  73:./Hardware/device/sd2201.c **** //	return ret;
+  74:./Hardware/device/sd2201.c **** //}
+  75:./Hardware/device/sd2201.c **** 
+  76:./Hardware/device/sd2201.c **** uint8_t I2CReceiveByte(uint8_t order,i2c_device_bus bus)
+  77:./Hardware/device/sd2201.c **** {
+  87              		.loc 1 77 1
+  88              		.cfi_startproc
+  89              		@ args = 0, pretend = 0, frame = 16
+  90              		@ frame_needed = 1, uses_anonymous_args = 0
+  91 0000 80B5     		push	{r7, lr}
+  92              	.LCFI5:
+  93              		.cfi_def_cfa_offset 8
+  94              		.cfi_offset 7, -8
+  95              		.cfi_offset 14, -4
+  96 0002 84B0     		sub	sp, sp, #16
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 4
+
+
+  97              	.LCFI6:
+  98              		.cfi_def_cfa_offset 24
+  99 0004 00AF     		add	r7, sp, #0
+ 100              	.LCFI7:
+ 101              		.cfi_def_cfa_register 7
+ 102 0006 0346     		mov	r3, r0
+ 103 0008 0A46     		mov	r2, r1
+ 104 000a FB71     		strb	r3, [r7, #7]
+ 105 000c 1346     		mov	r3, r2
+ 106 000e BB71     		strb	r3, [r7, #6]
+  78:./Hardware/device/sd2201.c **** 	uint8_t i=8;
+ 107              		.loc 1 78 10
+ 108 0010 0823     		movs	r3, #8
+ 109 0012 FB73     		strb	r3, [r7, #15]
+  79:./Hardware/device/sd2201.c **** 	uint8_t dat=0;
+ 110              		.loc 1 79 10
+ 111 0014 0023     		movs	r3, #0
+ 112 0016 BB73     		strb	r3, [r7, #14]
+  80:./Hardware/device/sd2201.c **** 	SET_SDA_H(bus);
+ 113              		.loc 1 80 2
+ 114 0018 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 115 001a 1846     		mov	r0, r3
+ 116 001c FFF7FEFF 		bl	SET_SDA_H
+  81:./Hardware/device/sd2201.c **** 	if(order)
+ 117              		.loc 1 81 4
+ 118 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 119 0022 002B     		cmp	r3, #0
+ 120 0024 3AD0     		beq	.L12
+  82:./Hardware/device/sd2201.c **** 	{
+  83:./Hardware/device/sd2201.c **** 		while(i--)
+ 121              		.loc 1 83 8
+ 122 0026 19E0     		b	.L9
+ 123              	.L10:
+  84:./Hardware/device/sd2201.c **** 		{
+  85:./Hardware/device/sd2201.c **** 			dat<<=1;
+ 124              		.loc 1 85 7
+ 125 0028 BB7B     		ldrb	r3, [r7, #14]
+ 126 002a 5B00     		lsls	r3, r3, #1
+ 127 002c BB73     		strb	r3, [r7, #14]
+  86:./Hardware/device/sd2201.c **** 			SET_SCL_L(bus);
+ 128              		.loc 1 86 4
+ 129 002e BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 130 0030 1846     		mov	r0, r3
+ 131 0032 FFF7FEFF 		bl	SET_SCL_L
+  87:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 132              		.loc 1 87 4
+ 133 0036 FFF7FEFF 		bl	IIC_Delay
+  88:./Hardware/device/sd2201.c **** 			SET_SCL_H(bus);
+ 134              		.loc 1 88 4
+ 135 003a BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 136 003c 1846     		mov	r0, r3
+ 137 003e FFF7FEFF 		bl	SET_SCL_H
+  89:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 138              		.loc 1 89 4
+ 139 0042 FFF7FEFF 		bl	IIC_Delay
+  90:./Hardware/device/sd2201.c **** 			if (Read_SDA(bus))
+ 140              		.loc 1 90 8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 5
+
+
+ 141 0046 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 142 0048 1846     		mov	r0, r3
+ 143 004a FFF7FEFF 		bl	Read_SDA
+ 144 004e 0346     		mov	r3, r0
+ 145              		.loc 1 90 7
+ 146 0050 002B     		cmp	r3, #0
+ 147 0052 03D0     		beq	.L9
+  91:./Hardware/device/sd2201.c **** 			{
+  92:./Hardware/device/sd2201.c **** 				dat|=0x01;
+ 148              		.loc 1 92 8
+ 149 0054 BB7B     		ldrb	r3, [r7, #14]
+ 150 0056 43F00103 		orr	r3, r3, #1
+ 151 005a BB73     		strb	r3, [r7, #14]
+ 152              	.L9:
+  83:./Hardware/device/sd2201.c **** 		{
+ 153              		.loc 1 83 10
+ 154 005c FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 155 005e 5A1E     		subs	r2, r3, #1
+ 156 0060 FA73     		strb	r2, [r7, #15]
+  83:./Hardware/device/sd2201.c **** 		{
+ 157              		.loc 1 83 8
+ 158 0062 002B     		cmp	r3, #0
+ 159 0064 E0D1     		bne	.L10
+ 160 0066 1EE0     		b	.L11
+ 161              	.L13:
+  93:./Hardware/device/sd2201.c **** 			}
+  94:./Hardware/device/sd2201.c **** 		}
+  95:./Hardware/device/sd2201.c **** 	}else{
+  96:./Hardware/device/sd2201.c **** 		while(i--)
+  97:./Hardware/device/sd2201.c **** 		{
+  98:./Hardware/device/sd2201.c **** 			dat>>=1;
+ 162              		.loc 1 98 7
+ 163 0068 BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 164 006a 5B08     		lsrs	r3, r3, #1
+ 165 006c BB73     		strb	r3, [r7, #14]
+  99:./Hardware/device/sd2201.c **** 			SET_SCL_L(bus);
+ 166              		.loc 1 99 4
+ 167 006e BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 168 0070 1846     		mov	r0, r3
+ 169 0072 FFF7FEFF 		bl	SET_SCL_L
+ 100:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 170              		.loc 1 100 4
+ 171 0076 FFF7FEFF 		bl	IIC_Delay
+ 101:./Hardware/device/sd2201.c **** 			SET_SCL_H(bus);
+ 172              		.loc 1 101 4
+ 173 007a BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 174 007c 1846     		mov	r0, r3
+ 175 007e FFF7FEFF 		bl	SET_SCL_H
+ 102:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 176              		.loc 1 102 4
+ 177 0082 FFF7FEFF 		bl	IIC_Delay
+ 103:./Hardware/device/sd2201.c **** 			if (Read_SDA(bus))
+ 178              		.loc 1 103 8
+ 179 0086 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 180 0088 1846     		mov	r0, r3
+ 181 008a FFF7FEFF 		bl	Read_SDA
+ 182 008e 0346     		mov	r3, r0
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 6
+
+
+ 183              		.loc 1 103 7
+ 184 0090 002B     		cmp	r3, #0
+ 185 0092 03D0     		beq	.L12
+ 104:./Hardware/device/sd2201.c **** 			{
+ 105:./Hardware/device/sd2201.c **** 				dat|=0x80;
+ 186              		.loc 1 105 8
+ 187 0094 BB7B     		ldrb	r3, [r7, #14]
+ 188 0096 63F07F03 		orn	r3, r3, #127
+ 189 009a BB73     		strb	r3, [r7, #14]
+ 190              	.L12:
+  96:./Hardware/device/sd2201.c **** 		{
+ 191              		.loc 1 96 10
+ 192 009c FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 193 009e 5A1E     		subs	r2, r3, #1
+ 194 00a0 FA73     		strb	r2, [r7, #15]
+  96:./Hardware/device/sd2201.c **** 		{
+ 195              		.loc 1 96 8
+ 196 00a2 002B     		cmp	r3, #0
+ 197 00a4 E0D1     		bne	.L13
+ 198              	.L11:
+ 106:./Hardware/device/sd2201.c **** 			}
+ 107:./Hardware/device/sd2201.c **** 		}
+ 108:./Hardware/device/sd2201.c **** 		
+ 109:./Hardware/device/sd2201.c **** 	}
+ 110:./Hardware/device/sd2201.c **** 	
+ 111:./Hardware/device/sd2201.c **** 	SET_SCL_L(bus);
+ 199              		.loc 1 111 2
+ 200 00a6 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 201 00a8 1846     		mov	r0, r3
+ 202 00aa FFF7FEFF 		bl	SET_SCL_L
+ 112:./Hardware/device/sd2201.c **** 	return dat;
+ 203              		.loc 1 112 9
+ 204 00ae BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 113:./Hardware/device/sd2201.c **** 	
+ 114:./Hardware/device/sd2201.c **** }
+ 205              		.loc 1 114 1
+ 206 00b0 1846     		mov	r0, r3
+ 207 00b2 1037     		adds	r7, r7, #16
+ 208              	.LCFI8:
+ 209              		.cfi_def_cfa_offset 8
+ 210 00b4 BD46     		mov	sp, r7
+ 211              	.LCFI9:
+ 212              		.cfi_def_cfa_register 13
+ 213              		@ sp needed
+ 214 00b6 80BD     		pop	{r7, pc}
+ 215              		.cfi_endproc
+ 216              	.LFE33:
+ 218              		.section	.text.I2CSendByte,"ax",%progbits
+ 219              		.align	1
+ 220              		.global	I2CSendByte
+ 221              		.syntax unified
+ 222              		.thumb
+ 223              		.thumb_func
+ 224              		.fpu softvfp
+ 226              	I2CSendByte:
+ 227              	.LFB34:
+ 115:./Hardware/device/sd2201.c **** 
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 7
+
+
+ 116:./Hardware/device/sd2201.c **** void I2CSendByte(uint8_t demand,uint8_t order,i2c_device_bus bus)
+ 117:./Hardware/device/sd2201.c **** {
+ 228              		.loc 1 117 1
+ 229              		.cfi_startproc
+ 230              		@ args = 0, pretend = 0, frame = 16
+ 231              		@ frame_needed = 1, uses_anonymous_args = 0
+ 232 0000 80B5     		push	{r7, lr}
+ 233              	.LCFI10:
+ 234              		.cfi_def_cfa_offset 8
+ 235              		.cfi_offset 7, -8
+ 236              		.cfi_offset 14, -4
+ 237 0002 84B0     		sub	sp, sp, #16
+ 238              	.LCFI11:
+ 239              		.cfi_def_cfa_offset 24
+ 240 0004 00AF     		add	r7, sp, #0
+ 241              	.LCFI12:
+ 242              		.cfi_def_cfa_register 7
+ 243 0006 0346     		mov	r3, r0
+ 244 0008 FB71     		strb	r3, [r7, #7]
+ 245 000a 0B46     		mov	r3, r1
+ 246 000c BB71     		strb	r3, [r7, #6]
+ 247 000e 1346     		mov	r3, r2
+ 248 0010 7B71     		strb	r3, [r7, #5]
+ 118:./Hardware/device/sd2201.c **** 	uint8_t i=8;
+ 249              		.loc 1 118 10
+ 250 0012 0823     		movs	r3, #8
+ 251 0014 FB73     		strb	r3, [r7, #15]
+ 119:./Hardware/device/sd2201.c **** 	if(order)
+ 252              		.loc 1 119 4
+ 253 0016 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 254 0018 002B     		cmp	r3, #0
+ 255 001a 3AD0     		beq	.L20
+ 120:./Hardware/device/sd2201.c **** 	{
+ 121:./Hardware/device/sd2201.c **** 		while(i--)
+ 256              		.loc 1 121 8
+ 257 001c 17E0     		b	.L17
+ 258              	.L18:
+ 122:./Hardware/device/sd2201.c **** 		{
+ 123:./Hardware/device/sd2201.c **** 			SET_SCL_L(bus);
+ 259              		.loc 1 123 4
+ 260 001e 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 261 0020 1846     		mov	r0, r3
+ 262 0022 FFF7FEFF 		bl	SET_SCL_L
+ 124:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 263              		.loc 1 124 4
+ 264 0026 FFF7FEFF 		bl	IIC_Delay
+ 125:./Hardware/device/sd2201.c **** 			I2C_SendBit(demand & 0x80);
+ 265              		.loc 1 125 4
+ 266 002a FB79     		ldrb	r3, [r7, #7]
+ 267 002c 23F07F03 		bic	r3, r3, #127
+ 268 0030 DBB2     		uxtb	r3, r3
+ 269 0032 1846     		mov	r0, r3
+ 270 0034 FFF7FEFF 		bl	I2C_SendBit
+ 126:./Hardware/device/sd2201.c **** 			demand<<=1;
+ 271              		.loc 1 126 10
+ 272 0038 FB79     		ldrb	r3, [r7, #7]
+ 273 003a 5B00     		lsls	r3, r3, #1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 8
+
+
+ 274 003c FB71     		strb	r3, [r7, #7]
+ 127:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 275              		.loc 1 127 4
+ 276 003e FFF7FEFF 		bl	IIC_Delay
+ 128:./Hardware/device/sd2201.c **** 			SET_SCL_H(bus);
+ 277              		.loc 1 128 4
+ 278 0042 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 279 0044 1846     		mov	r0, r3
+ 280 0046 FFF7FEFF 		bl	SET_SCL_H
+ 129:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 281              		.loc 1 129 4
+ 282 004a FFF7FEFF 		bl	IIC_Delay
+ 283              	.L17:
+ 121:./Hardware/device/sd2201.c **** 		{
+ 284              		.loc 1 121 10
+ 285 004e FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 286 0050 5A1E     		subs	r2, r3, #1
+ 287 0052 FA73     		strb	r2, [r7, #15]
+ 121:./Hardware/device/sd2201.c **** 		{
+ 288              		.loc 1 121 8
+ 289 0054 002B     		cmp	r3, #0
+ 290 0056 E2D1     		bne	.L18
+ 130:./Hardware/device/sd2201.c **** 		}
+ 131:./Hardware/device/sd2201.c **** 		SET_SCL_L(bus);
+ 291              		.loc 1 131 3
+ 292 0058 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 293 005a 1846     		mov	r0, r3
+ 294 005c FFF7FEFF 		bl	SET_SCL_L
+ 132:./Hardware/device/sd2201.c **** 	}else{
+ 133:./Hardware/device/sd2201.c **** 		while(i--)
+ 134:./Hardware/device/sd2201.c **** 		{
+ 135:./Hardware/device/sd2201.c **** 			SET_SCL_L(bus);
+ 136:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 137:./Hardware/device/sd2201.c **** 			I2C_SendBit(demand & 0x01);
+ 138:./Hardware/device/sd2201.c **** 			demand>>=1;
+ 139:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 140:./Hardware/device/sd2201.c **** 			SET_SCL_H(bus);
+ 141:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 142:./Hardware/device/sd2201.c **** 		}
+ 143:./Hardware/device/sd2201.c **** 		SET_SCL_L(bus);
+ 144:./Hardware/device/sd2201.c **** 	}
+ 145:./Hardware/device/sd2201.c **** 
+ 146:./Hardware/device/sd2201.c **** }
+ 295              		.loc 1 146 1
+ 296 0060 20E0     		b	.L22
+ 297              	.L21:
+ 135:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 298              		.loc 1 135 4
+ 299 0062 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 300 0064 1846     		mov	r0, r3
+ 301 0066 FFF7FEFF 		bl	SET_SCL_L
+ 136:./Hardware/device/sd2201.c **** 			I2C_SendBit(demand & 0x01);
+ 302              		.loc 1 136 4
+ 303 006a FFF7FEFF 		bl	IIC_Delay
+ 137:./Hardware/device/sd2201.c **** 			demand>>=1;
+ 304              		.loc 1 137 4
+ 305 006e FB79     		ldrb	r3, [r7, #7]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 9
+
+
+ 306 0070 03F00103 		and	r3, r3, #1
+ 307 0074 DBB2     		uxtb	r3, r3
+ 308 0076 1846     		mov	r0, r3
+ 309 0078 FFF7FEFF 		bl	I2C_SendBit
+ 138:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 310              		.loc 1 138 10
+ 311 007c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 312 007e 5B08     		lsrs	r3, r3, #1
+ 313 0080 FB71     		strb	r3, [r7, #7]
+ 139:./Hardware/device/sd2201.c **** 			SET_SCL_H(bus);
+ 314              		.loc 1 139 4
+ 315 0082 FFF7FEFF 		bl	IIC_Delay
+ 140:./Hardware/device/sd2201.c **** 			IIC_Delay();
+ 316              		.loc 1 140 4
+ 317 0086 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 318 0088 1846     		mov	r0, r3
+ 319 008a FFF7FEFF 		bl	SET_SCL_H
+ 141:./Hardware/device/sd2201.c **** 		}
+ 320              		.loc 1 141 4
+ 321 008e FFF7FEFF 		bl	IIC_Delay
+ 322              	.L20:
+ 133:./Hardware/device/sd2201.c **** 		{
+ 323              		.loc 1 133 10
+ 324 0092 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 325 0094 5A1E     		subs	r2, r3, #1
+ 326 0096 FA73     		strb	r2, [r7, #15]
+ 133:./Hardware/device/sd2201.c **** 		{
+ 327              		.loc 1 133 8
+ 328 0098 002B     		cmp	r3, #0
+ 329 009a E2D1     		bne	.L21
+ 143:./Hardware/device/sd2201.c **** 	}
+ 330              		.loc 1 143 3
+ 331 009c 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 332 009e 1846     		mov	r0, r3
+ 333 00a0 FFF7FEFF 		bl	SET_SCL_L
+ 334              	.L22:
+ 335              		.loc 1 146 1
+ 336 00a4 00BF     		nop
+ 337 00a6 1037     		adds	r7, r7, #16
+ 338              	.LCFI13:
+ 339              		.cfi_def_cfa_offset 8
+ 340 00a8 BD46     		mov	sp, r7
+ 341              	.LCFI14:
+ 342              		.cfi_def_cfa_register 13
+ 343              		@ sp needed
+ 344 00aa 80BD     		pop	{r7, pc}
+ 345              		.cfi_endproc
+ 346              	.LFE34:
+ 348              		.section	.rodata
+ 349              		.align	2
+ 350              	.LC0:
+ 351 0000 2564C4EA 		.ascii	"%d\304\352%d\324\302%d\310\325 \320\307\306\332%d %"
+ 351      2564D4C2 
+ 351      2564C8D5 
+ 351      20D0C7C6 
+ 351      DA256420 
+ 352 0015 64CAB125 		.ascii	"d\312\261%d\267\326%d\303\353\012\000"
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 10
+
+
+ 352      64B7D625 
+ 352      64C3EB0A 
+ 352      00
+ 353              		.section	.text.SD2201_ReadTimeDate,"ax",%progbits
+ 354              		.align	1
+ 355              		.global	SD2201_ReadTimeDate
+ 356              		.syntax unified
+ 357              		.thumb
+ 358              		.thumb_func
+ 359              		.fpu softvfp
+ 361              	SD2201_ReadTimeDate:
+ 362              	.LFB35:
+ 147:./Hardware/device/sd2201.c **** 
+ 148:./Hardware/device/sd2201.c **** 
+ 149:./Hardware/device/sd2201.c **** 
+ 150:./Hardware/device/sd2201.c **** //void ReadTime2200(uint8_t num,i2c_device_bus bus)
+ 151:./Hardware/device/sd2201.c **** //{
+ 152:./Hardware/device/sd2201.c **** //	uint8_t j = 0;
+ 153:./Hardware/device/sd2201.c **** //	uint8_t data2 = 0;
+ 154:./Hardware/device/sd2201.c **** //	
+ 155:./Hardware/device/sd2201.c **** //	IIC_Start(bus);
+ 156:./Hardware/device/sd2201.c **** 
+ 157:./Hardware/device/sd2201.c **** //	if (num == 7)
+ 158:./Hardware/device/sd2201.c **** //	{
+ 159:./Hardware/device/sd2201.c **** //		I2CSebdByte(0x65,1,bus);
+ 160:./Hardware/device/sd2201.c **** //	}
+ 161:./Hardware/device/sd2201.c **** //	else
+ 162:./Hardware/device/sd2201.c **** //	{
+ 163:./Hardware/device/sd2201.c **** //		I2CSebdByte(0x67,1,bus);
+ 164:./Hardware/device/sd2201.c **** //	}
+ 165:./Hardware/device/sd2201.c **** //  for (j = 0; j < num; j++)
+ 166:./Hardware/device/sd2201.c **** //  {
+ 167:./Hardware/device/sd2201.c **** //		data2 = I2CReceiveByte(0,bus);
+ 168:./Hardware/device/sd2201.c **** //		if (j < num - 1)
+ 169:./Hardware/device/sd2201.c **** //		{ 
+ 170:./Hardware/device/sd2201.c **** //		   IIC_Ack(bus);
+ 171:./Hardware/device/sd2201.c **** //		}
+ 172:./Hardware/device/sd2201.c **** //		if (num == 7)
+ 173:./Hardware/device/sd2201.c **** //		{
+ 174:./Hardware/device/sd2201.c **** //	    Time_DutBuf[6 - j] = data2;
+ 175:./Hardware/device/sd2201.c **** //		}
+ 176:./Hardware/device/sd2201.c **** //		else 
+ 177:./Hardware/device/sd2201.c **** //		{
+ 178:./Hardware/device/sd2201.c **** //			Time_DutBuf[2 - j] = data2;
+ 179:./Hardware/device/sd2201.c **** //		}
+ 180:./Hardware/device/sd2201.c **** //	  data2 = 0;
+ 181:./Hardware/device/sd2201.c **** //	}
+ 182:./Hardware/device/sd2201.c **** //	Time_DutBuf[4] &= 0x3F;	/*屏蔽小时寄存器第6位AM/PM*/
+ 183:./Hardware/device/sd2201.c **** //	IIC_NoAck(bus);	 
+ 184:./Hardware/device/sd2201.c **** //	IIC_Stop(bus);
+ 185:./Hardware/device/sd2201.c **** //}
+ 186:./Hardware/device/sd2201.c **** 
+ 187:./Hardware/device/sd2201.c **** //void Display_2200Time(void)
+ 188:./Hardware/device/sd2201.c **** //{
+ 189:./Hardware/device/sd2201.c **** //	ReadTime2200(7,IIC_TEST);
+ 190:./Hardware/device/sd2201.c **** //	
+ 191:./Hardware/device/sd2201.c **** 
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 11
+
+
+ 192:./Hardware/device/sd2201.c **** //	Usart_Printf("%d年%d月%d日 星期%d %d时%d分%d秒\n",bcd_to_dec(Time_DutBuf[0]),bcd_to_dec(Time_Dut
+ 193:./Hardware/device/sd2201.c **** 
+ 194:./Hardware/device/sd2201.c **** 
+ 195:./Hardware/device/sd2201.c **** //}
+ 196:./Hardware/device/sd2201.c **** 
+ 197:./Hardware/device/sd2201.c **** 
+ 198:./Hardware/device/sd2201.c **** uint8_t SD2201_ReadTimeDate(i2c_device_bus bus)
+ 199:./Hardware/device/sd2201.c **** {
+ 363              		.loc 1 199 1
+ 364              		.cfi_startproc
+ 365              		@ args = 0, pretend = 0, frame = 16
+ 366              		@ frame_needed = 1, uses_anonymous_args = 0
+ 367 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 368              	.LCFI15:
+ 369              		.cfi_def_cfa_offset 32
+ 370              		.cfi_offset 4, -32
+ 371              		.cfi_offset 5, -28
+ 372              		.cfi_offset 6, -24
+ 373              		.cfi_offset 7, -20
+ 374              		.cfi_offset 8, -16
+ 375              		.cfi_offset 9, -12
+ 376              		.cfi_offset 10, -8
+ 377              		.cfi_offset 14, -4
+ 378 0004 88B0     		sub	sp, sp, #32
+ 379              	.LCFI16:
+ 380              		.cfi_def_cfa_offset 64
+ 381 0006 04AF     		add	r7, sp, #16
+ 382              	.LCFI17:
+ 383              		.cfi_def_cfa 7, 48
+ 384 0008 0346     		mov	r3, r0
+ 385 000a FB71     		strb	r3, [r7, #7]
+ 200:./Hardware/device/sd2201.c **** 	uint8_t n;
+ 201:./Hardware/device/sd2201.c **** 	uint8_t sd2201_buf[7];
+ 202:./Hardware/device/sd2201.c **** 
+ 203:./Hardware/device/sd2201.c **** 	if(IIC_Start(bus) != IIC_OK)
+ 386              		.loc 1 203 5
+ 387 000c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 388 000e 1846     		mov	r0, r3
+ 389 0010 FFF7FEFF 		bl	IIC_Start
+ 390 0014 0346     		mov	r3, r0
+ 391              		.loc 1 203 4
+ 392 0016 022B     		cmp	r3, #2
+ 393 0018 01D0     		beq	.L24
+ 204:./Hardware/device/sd2201.c **** 	return IIC_FAIL;
+ 394              		.loc 1 204 9
+ 395 001a 0323     		movs	r3, #3
+ 396 001c 5EE0     		b	.L29
+ 397              	.L24:
+ 205:./Hardware/device/sd2201.c **** 	
+ 206:./Hardware/device/sd2201.c **** 	I2CSendByte(0x65,1,bus);
+ 398              		.loc 1 206 2
+ 399 001e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 400 0020 1A46     		mov	r2, r3
+ 401 0022 0121     		movs	r1, #1
+ 402 0024 6520     		movs	r0, #101
+ 403 0026 FFF7FEFF 		bl	I2CSendByte
+ 207:./Hardware/device/sd2201.c **** 	
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 12
+
+
+ 208:./Hardware/device/sd2201.c **** 	for(n=0;n<7;n++)
+ 404              		.loc 1 208 7
+ 405 002a 0023     		movs	r3, #0
+ 406 002c FB73     		strb	r3, [r7, #15]
+ 407              		.loc 1 208 2
+ 408 002e 16E0     		b	.L26
+ 409              	.L28:
+ 209:./Hardware/device/sd2201.c **** 	{
+ 210:./Hardware/device/sd2201.c **** 		sd2201_buf[n]=I2CReceiveByte(0,bus);
+ 410              		.loc 1 210 13
+ 411 0030 FC7B     		ldrb	r4, [r7, #15]	@ zero_extendqisi2
+ 412              		.loc 1 210 17
+ 413 0032 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 414 0034 1946     		mov	r1, r3
+ 415 0036 0020     		movs	r0, #0
+ 416 0038 FFF7FEFF 		bl	I2CReceiveByte
+ 417 003c 0346     		mov	r3, r0
+ 418 003e 1A46     		mov	r2, r3
+ 419              		.loc 1 210 16
+ 420 0040 07F11003 		add	r3, r7, #16
+ 421 0044 2344     		add	r3, r3, r4
+ 422 0046 03F8082C 		strb	r2, [r3, #-8]
+ 211:./Hardware/device/sd2201.c **** 		if(n!=6)
+ 423              		.loc 1 211 5
+ 424 004a FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 425 004c 062B     		cmp	r3, #6
+ 426 004e 03D0     		beq	.L27
+ 212:./Hardware/device/sd2201.c **** 		{
+ 213:./Hardware/device/sd2201.c **** 			IIC_Ack(bus);
+ 427              		.loc 1 213 4
+ 428 0050 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 429 0052 1846     		mov	r0, r3
+ 430 0054 FFF7FEFF 		bl	IIC_Ack
+ 431              	.L27:
+ 208:./Hardware/device/sd2201.c **** 	{
+ 432              		.loc 1 208 15 discriminator 2
+ 433 0058 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 434 005a 0133     		adds	r3, r3, #1
+ 435 005c FB73     		strb	r3, [r7, #15]
+ 436              	.L26:
+ 208:./Hardware/device/sd2201.c **** 	{
+ 437              		.loc 1 208 2 discriminator 1
+ 438 005e FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 439 0060 062B     		cmp	r3, #6
+ 440 0062 E5D9     		bls	.L28
+ 214:./Hardware/device/sd2201.c **** 		}
+ 215:./Hardware/device/sd2201.c **** 	
+ 216:./Hardware/device/sd2201.c **** 	}
+ 217:./Hardware/device/sd2201.c **** 	IIC_NoAck(bus);
+ 441              		.loc 1 217 2
+ 442 0064 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 443 0066 1846     		mov	r0, r3
+ 444 0068 FFF7FEFF 		bl	IIC_NoAck
+ 218:./Hardware/device/sd2201.c **** 	IIC_Stop(bus);
+ 445              		.loc 1 218 2
+ 446 006c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 447 006e 1846     		mov	r0, r3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 13
+
+
+ 448 0070 FFF7FEFF 		bl	IIC_Stop
+ 219:./Hardware/device/sd2201.c **** 	
+ 220:./Hardware/device/sd2201.c **** 	Usart_Printf("%d年%d月%d日 星期%d %d时%d分%d秒\n",bcd_to_dec(sd2201_buf[0]),bcd_to_dec(sd2201_buf[
+ 449              		.loc 1 220 52
+ 450 0074 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 451 0076 1846     		mov	r0, r3
+ 452 0078 FFF7FEFF 		bl	bcd_to_dec
+ 453 007c 0346     		mov	r3, r0
+ 454              		.loc 1 220 2
+ 455 007e 9846     		mov	r8, r3
+ 456              		.loc 1 220 78
+ 457 0080 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 458 0082 1846     		mov	r0, r3
+ 459 0084 FFF7FEFF 		bl	bcd_to_dec
+ 460 0088 0346     		mov	r3, r0
+ 461              		.loc 1 220 2
+ 462 008a 9946     		mov	r9, r3
+ 463              		.loc 1 220 104
+ 464 008c BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 465 008e 1846     		mov	r0, r3
+ 466 0090 FFF7FEFF 		bl	bcd_to_dec
+ 467 0094 0346     		mov	r3, r0
+ 468              		.loc 1 220 2
+ 469 0096 9A46     		mov	r10, r3
+ 470              		.loc 1 220 130
+ 471 0098 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 472 009a 1846     		mov	r0, r3
+ 473 009c FFF7FEFF 		bl	bcd_to_dec
+ 474 00a0 0346     		mov	r3, r0
+ 475              		.loc 1 220 2
+ 476 00a2 1C46     		mov	r4, r3
+ 477              		.loc 1 220 156
+ 478 00a4 3B7B     		ldrb	r3, [r7, #12]	@ zero_extendqisi2
+ 479 00a6 1846     		mov	r0, r3
+ 480 00a8 FFF7FEFF 		bl	bcd_to_dec
+ 481 00ac 0346     		mov	r3, r0
+ 482              		.loc 1 220 2
+ 483 00ae 1D46     		mov	r5, r3
+ 484              		.loc 1 220 182
+ 485 00b0 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 486 00b2 1846     		mov	r0, r3
+ 487 00b4 FFF7FEFF 		bl	bcd_to_dec
+ 488 00b8 0346     		mov	r3, r0
+ 489              		.loc 1 220 2
+ 490 00ba 1E46     		mov	r6, r3
+ 491              		.loc 1 220 208
+ 492 00bc BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 493 00be 1846     		mov	r0, r3
+ 494 00c0 FFF7FEFF 		bl	bcd_to_dec
+ 495 00c4 0346     		mov	r3, r0
+ 496              		.loc 1 220 2
+ 497 00c6 0393     		str	r3, [sp, #12]
+ 498 00c8 0296     		str	r6, [sp, #8]
+ 499 00ca 0195     		str	r5, [sp, #4]
+ 500 00cc 0094     		str	r4, [sp]
+ 501 00ce 5346     		mov	r3, r10
+ 502 00d0 4A46     		mov	r2, r9
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 14
+
+
+ 503 00d2 4146     		mov	r1, r8
+ 504 00d4 0448     		ldr	r0, .L30
+ 505 00d6 FFF7FEFF 		bl	Usart_Printf
+ 221:./Hardware/device/sd2201.c **** 
+ 222:./Hardware/device/sd2201.c **** 
+ 223:./Hardware/device/sd2201.c **** 	return TRUE;
+ 506              		.loc 1 223 9
+ 507 00da 0123     		movs	r3, #1
+ 508              	.L29:
+ 224:./Hardware/device/sd2201.c **** }
+ 509              		.loc 1 224 1 discriminator 1
+ 510 00dc 1846     		mov	r0, r3
+ 511 00de 1037     		adds	r7, r7, #16
+ 512              	.LCFI18:
+ 513              		.cfi_def_cfa_offset 32
+ 514 00e0 BD46     		mov	sp, r7
+ 515              	.LCFI19:
+ 516              		.cfi_def_cfa_register 13
+ 517              		@ sp needed
+ 518 00e2 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 519              	.L31:
+ 520 00e6 00BF     		.align	2
+ 521              	.L30:
+ 522 00e8 00000000 		.word	.LC0
+ 523              		.cfi_endproc
+ 524              	.LFE35:
+ 526              		.text
+ 527              	.Letext0:
+ 528              		.file 2 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 529              		.file 3 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 530              		.file 4 "./Libraries/CMSIS/stm32f10x.h"
+ 531              		.file 5 "./Hardware/device/iic.h"
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s 			page 15
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 sd2201.c
+C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s:16     .text.I2C_SendBit:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s:24     .text.I2C_SendBit:00000000 I2C_SendBit
+C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s:73     .text.I2C_SendBit:0000002c $d
+C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s:78     .text.I2CReceiveByte:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s:85     .text.I2CReceiveByte:00000000 I2CReceiveByte
+C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s:219    .text.I2CSendByte:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s:226    .text.I2CSendByte:00000000 I2CSendByte
+C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s:349    .rodata:00000000 $d
+C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s:354    .text.SD2201_ReadTimeDate:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s:361    .text.SD2201_ReadTimeDate:00000000 SD2201_ReadTimeDate
+C:\Users\86134\AppData\Local\Temp\cc3y5Oka.s:522    .text.SD2201_ReadTimeDate:000000e8 $d
+
+UNDEFINED SYMBOLS
+GPIO_SetBits
+GPIO_ResetBits
+SET_SDA_H
+SET_SCL_L
+IIC_Delay
+SET_SCL_H
+Read_SDA
+IIC_Start
+IIC_Ack
+IIC_NoAck
+IIC_Stop
+bcd_to_dec
+Usart_Printf

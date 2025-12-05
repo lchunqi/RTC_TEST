@@ -1,0 +1,66 @@
+串口识别指令：
+            QByteArray hexData;
+            hexData.append(0xBC);
+            hexData.append(0xCD);
+            uint16_t value = 1;
+            QByteArray valueBytes(reinterpret_cast<const char*>(&value), sizeof(value));
+            hexData.append(valueBytes);
+
+
+读寄存器延时等待：
+QTimer::singleShot(100, [&](){});
+
+
+
+写保护位置1：
+        if(text=="SD3068")
+        {
+            sd3068Modelselt();
+            QString binaryData;
+                    for (int row = 1; row <= 63; row +=2)
+                    {
+                        for (int col = 0; col < 8; col++)
+                        {
+                            QString binaryValue = sd3068model->data(sd3068model->index(row, col)).toString();
+                            binaryData += binaryValue;
+                        }
+                    }
+            // 判断特定单元格的值是否为1
+            if (sd3068model->data(sd3068model->index(31, 0)).toString() == "1" &&
+                sd3068model->data(sd3068model->index(31, 5)).toString() == "1" &&
+                sd3068model->data(sd3068model->index(33, 0)).toString() == "1"){
+                // 将二进制数据转换为BCD码并发送给单片机
+                   QByteArray bcdData;
+                   for (int i = 0; i < binaryData.length(); i += 8)
+                   {
+                       QString binary = binaryData.mid(i, 8);
+                       bool ok;
+                       int decimal = binary.toInt(&ok, 2);
+                       if (ok)
+                       {
+                           QString bcd = QString::number(decimal, 16);
+                           bcdData.append(bcd.toInt(nullptr, 16));
+                       }
+                   }
+
+                   QByteArray hexData;
+                   hexData.append(0xBC);
+                   hexData.append(0xCD);
+                   hexData.append(0xA4);
+                   serialPort->write(hexData);
+                   serialPort->write(bcdData);
+
+                   QMessageBox::information(this, "写寄存器", "写取寄存器成功！");
+                   qDebug()<<"写入数据："<<bcdData;
+                   qDebug()<<"写入数据："<<bcdData.size();
+
+            }else{
+
+                QMessageBox::information(this, "写寄存器", "写允许未打开：WRTC1,WRTC2,WRTC3未置1!");
+
+            }
+
+
+        }
+
+

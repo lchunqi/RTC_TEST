@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/jpg">
+        <file>picture/1.png</file>
+        <file>picture/2.jpg</file>
+        <file>picture/3.jpg</file>
+        <file>picture/interface.png</file>
+        <file>picture/wave-logo.jpg</file>
+        <file>picture/bat.png</file>
+        <file>picture/temp.png</file>
+        <file>picture/open.png</file>
+        <file>picture/enter.png</file>
+    </qresource>
+</RCC>

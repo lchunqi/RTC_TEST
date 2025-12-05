@@ -1,0 +1,234 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccbQg00k.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	get_rcc_clock
+  18              		.section	.bss.get_rcc_clock,"aw",%nobits
+  19              		.align	2
+  22              	get_rcc_clock:
+  23 0000 00000000 		.space	20
+  23      00000000 
+  23      00000000 
+  23      00000000 
+  23      00000000 
+  24              		.section	.rodata
+  25              		.align	2
+  26              	.LC0:
+  27 0000 56362E34 		.ascii	"V6.4\000"
+  27      00
+  28              		.section	.text.main,"ax",%progbits
+  29              		.align	1
+  30              		.global	main
+  31              		.syntax unified
+  32              		.thumb
+  33              		.thumb_func
+  35              	main:
+  36              	.LFB32:
+  37              		.file 1 "./User/Src/main.c"
+   1:./User/Src/main.c **** #include "stm32f10x.h"                  // Device header
+   2:./User/Src/main.c **** #include "Delay.h"
+   3:./User/Src/main.c **** #include "oled.h"
+   4:./User/Src/main.c **** #include "led.h"
+   5:./User/Src/main.c **** #include "beep.h"
+   6:./User/Src/main.c **** #include "key.h"
+   7:./User/Src/main.c **** #include "menu.h"
+   8:./User/Src/main.c **** #include "usart.h"
+   9:./User/Src/main.c **** #include "iic.h"
+  10:./User/Src/main.c **** #include "spi.h"
+  11:./User/Src/main.c **** #include "rtc.h"
+  12:./User/Src/main.c **** #include "cmd.h"
+  13:./User/Src/main.c **** #include "bus.h"
+  14:./User/Src/main.c **** #include "sd2201.h"
+  15:./User/Src/main.c **** #include "Product_Test.h"
+  16:./User/Src/main.c **** 
+  17:./User/Src/main.c **** 
+  18:./User/Src/main.c **** /**
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccbQg00k.s 			page 2
+
+
+  19:./User/Src/main.c ****   * �����ᶨ�壺
+  20:./User/Src/main.c ****   * ���Ͻ�Ϊ(0, 0)��
+  21:./User/Src/main.c ****   * ��������ΪX�ᣬȡֵ��Χ��0~127
+  22:./User/Src/main.c ****   * ��������ΪY�ᣬȡֵ��Χ��0~63
+  23:./User/Src/main.c ****   * 
+  24:./User/Src/main.c ****   *       0             X��           127 
+  25:./User/Src/main.c ****   *      .------------------------------->
+  26:./User/Src/main.c ****   *    0 |
+  27:./User/Src/main.c ****   *      |
+  28:./User/Src/main.c ****   *      |
+  29:./User/Src/main.c ****   *      |
+  30:./User/Src/main.c ****   *  Y�� |
+  31:./User/Src/main.c ****   *      |
+  32:./User/Src/main.c ****   *      |
+  33:./User/Src/main.c ****   *      |
+  34:./User/Src/main.c ****   *   63 |
+  35:./User/Src/main.c ****   *      v
+  36:./User/Src/main.c ****   * 
+  37:./User/Src/main.c ****   */
+  38:./User/Src/main.c **** 
+  39:./User/Src/main.c **** RCC_ClocksTypeDef get_rcc_clock;//��ȡϵͳʱ������
+  40:./User/Src/main.c **** 
+  41:./User/Src/main.c **** int main(void)
+  42:./User/Src/main.c **** {
+  38              		.loc 1 42 1
+  39              		.cfi_startproc
+  40              		@ args = 0, pretend = 0, frame = 0
+  41              		@ frame_needed = 1, uses_anonymous_args = 0
+  42 0000 80B5     		push	{r7, lr}
+  43              	.LCFI0:
+  44              		.cfi_def_cfa_offset 8
+  45              		.cfi_offset 7, -8
+  46              		.cfi_offset 14, -4
+  47 0002 82B0     		sub	sp, sp, #8
+  48              	.LCFI1:
+  49              		.cfi_def_cfa_offset 16
+  50 0004 02AF     		add	r7, sp, #8
+  51              	.LCFI2:
+  52              		.cfi_def_cfa 7, 8
+  43:./User/Src/main.c **** 
+  44:./User/Src/main.c **** 	RCC_GetClocksFreq(&get_rcc_clock);//�鿴ʱ��Ƶ��
+  53              		.loc 1 44 2
+  54 0006 1848     		ldr	r0, .L3
+  55 0008 FFF7FEFF 		bl	RCC_GetClocksFreq
+  45:./User/Src/main.c **** 	OLED_Init();
+  56              		.loc 1 45 2
+  57 000c FFF7FEFF 		bl	OLED_Init
+  46:./User/Src/main.c **** 	IIC_Init();
+  58              		.loc 1 46 2
+  59 0010 FFF7FEFF 		bl	IIC_Init
+  47:./User/Src/main.c **** 	SPI_init();
+  60              		.loc 1 47 2
+  61 0014 FFF7FEFF 		bl	SPI_init
+  48:./User/Src/main.c **** 	sd8902_config();
+  62              		.loc 1 48 2
+  63 0018 FFF7FEFF 		bl	sd8902_config
+  49:./User/Src/main.c **** 	Usart_Init();
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccbQg00k.s 			page 3
+
+
+  64              		.loc 1 49 2
+  65 001c FFF7FEFF 		bl	Usart_Init
+  50:./User/Src/main.c **** 	LED_GPIO_Config();
+  66              		.loc 1 50 2
+  67 0020 FFF7FEFF 		bl	LED_GPIO_Config
+  51:./User/Src/main.c **** 	Key_Init();
+  68              		.loc 1 51 2
+  69 0024 FFF7FEFF 		bl	Key_Init
+  52:./User/Src/main.c **** 	LED_Control(0);
+  70              		.loc 1 52 2
+  71 0028 0020     		movs	r0, #0
+  72 002a FFF7FEFF 		bl	LED_Control
+  53:./User/Src/main.c **** 	
+  54:./User/Src/main.c **** //	OLED_DrawLine(0, 0, 127, 63);    //������
+  55:./User/Src/main.c **** //	OLED_DrawLine(127, 0, 0, 63);
+  56:./User/Src/main.c **** //	OLED_Update();
+  57:./User/Src/main.c **** 	
+  58:./User/Src/main.c **** 	OLED_ShowImage(33, 0, 80, 60, wave_logo);
+  73              		.loc 1 58 2
+  74 002e 0F4B     		ldr	r3, .L3+4
+  75 0030 0093     		str	r3, [sp]
+  76 0032 3C23     		movs	r3, #60
+  77 0034 5022     		movs	r2, #80
+  78 0036 0021     		movs	r1, #0
+  79 0038 2120     		movs	r0, #33
+  80 003a FFF7FEFF 		bl	OLED_ShowImage
+  59:./User/Src/main.c **** 	OLED_ShowString(101,55,"V6.4",6);
+  81              		.loc 1 59 2
+  82 003e 0623     		movs	r3, #6
+  83 0040 0B4A     		ldr	r2, .L3+8
+  84 0042 3721     		movs	r1, #55
+  85 0044 6520     		movs	r0, #101
+  86 0046 FFF7FEFF 		bl	OLED_ShowString
+  60:./User/Src/main.c **** 	
+  61:./User/Src/main.c **** 	OLED_Update();
+  87              		.loc 1 61 2
+  88 004a FFF7FEFF 		bl	OLED_Update
+  62:./User/Src/main.c **** 	Delay_ms(800);	
+  89              		.loc 1 62 2
+  90 004e 4FF44870 		mov	r0, #800
+  91 0052 FFF7FEFF 		bl	Delay_ms
+  63:./User/Src/main.c **** 	OLED_Clear();
+  92              		.loc 1 63 2
+  93 0056 FFF7FEFF 		bl	OLED_Clear
+  94              	.L2:
+  64:./User/Src/main.c **** 	// Usart_Printf("sd2405ʱ����ʾ\r\n");
+  65:./User/Src/main.c **** 	while (1)
+  66:./User/Src/main.c **** 	{	
+  67:./User/Src/main.c **** /*********************************************************/
+  68:./User/Src/main.c **** 		Menu_Run();
+  95              		.loc 1 68 3 discriminator 1
+  96 005a FFF7FEFF 		bl	Menu_Run
+  69:./User/Src/main.c **** 		
+  70:./User/Src/main.c **** 		COMMAND();
+  97              		.loc 1 70 3 discriminator 1
+  98 005e FFF7FEFF 		bl	COMMAND
+  71:./User/Src/main.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccbQg00k.s 			page 4
+
+
+  72:./User/Src/main.c **** 		Bus_ReceData();
+  99              		.loc 1 72 3 discriminator 1
+ 100 0062 FFF7FEFF 		bl	Bus_ReceData
+  68:./User/Src/main.c **** 		
+ 101              		.loc 1 68 3 discriminator 1
+ 102 0066 F8E7     		b	.L2
+ 103              	.L4:
+ 104              		.align	2
+ 105              	.L3:
+ 106 0068 00000000 		.word	get_rcc_clock
+ 107 006c 00000000 		.word	wave_logo
+ 108 0070 00000000 		.word	.LC0
+ 109              		.cfi_endproc
+ 110              	.LFE32:
+ 112              		.text
+ 113              	.Letext0:
+ 114              		.file 2 "f:\\stm32\310\355\274\376\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2
+ 115              		.file 3 "f:\\stm32\310\355\274\376\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2
+ 116              		.file 4 "./Libraries/STM32F10x_StdPeriph_Driver/inc/stm32f10x_rcc.h"
+ 117              		.file 5 "./Hardware/hardware/OLED_Data.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccbQg00k.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccbQg00k.s:22     .bss.get_rcc_clock:00000000 get_rcc_clock
+C:\Users\ADMINI~1\AppData\Local\Temp\ccbQg00k.s:19     .bss.get_rcc_clock:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccbQg00k.s:25     .rodata:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccbQg00k.s:29     .text.main:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccbQg00k.s:35     .text.main:00000000 main
+C:\Users\ADMINI~1\AppData\Local\Temp\ccbQg00k.s:106    .text.main:00000068 $d
+
+UNDEFINED SYMBOLS
+RCC_GetClocksFreq
+OLED_Init
+IIC_Init
+SPI_init
+sd8902_config
+Usart_Init
+LED_GPIO_Config
+Key_Init
+LED_Control
+OLED_ShowImage
+OLED_ShowString
+OLED_Update
+Delay_ms
+OLED_Clear
+Menu_Run
+COMMAND
+Bus_ReceData
+wave_logo

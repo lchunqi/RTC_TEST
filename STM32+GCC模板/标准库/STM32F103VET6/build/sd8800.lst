@@ -1,0 +1,3680 @@
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"sd8800.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.global	sd8800_temp
+  16              		.section	.bss.sd8800_temp,"aw",%nobits
+  19              	sd8800_temp:
+  20 0000 00       		.space	1
+  21              		.global	sd8800_vbat
+  22              		.section	.bss.sd8800_vbat,"aw",%nobits
+  23              		.align	3
+  26              	sd8800_vbat:
+  27 0000 00000000 		.space	8
+  27      00000000 
+  28              		.section	.text.SD8800_read_addr,"ax",%progbits
+  29              		.align	1
+  30              		.global	SD8800_read_addr
+  31              		.arch armv7-m
+  32              		.syntax unified
+  33              		.thumb
+  34              		.thumb_func
+  35              		.fpu softvfp
+  37              	SD8800_read_addr:
+  38              	.LFB32:
+  39              		.file 1 "./Hardware/device/sd8800.c"
+   1:./Hardware/device/sd8800.c **** #include "sd8800.h"
+   2:./Hardware/device/sd8800.c **** 
+   3:./Hardware/device/sd8800.c **** uint8_t  sd8800_temp;
+   4:./Hardware/device/sd8800.c **** double  sd8800_vbat;
+   5:./Hardware/device/sd8800.c **** 
+   6:./Hardware/device/sd8800.c **** 
+   7:./Hardware/device/sd8800.c **** //rtc¶Áaddr
+   8:./Hardware/device/sd8800.c **** rtc_exit_code SD8800_read_addr(uint8_t reg_addr, uint8_t *read_buf, uint8_t length, i2c_device_bus 
+   9:./Hardware/device/sd8800.c **** {
+  40              		.loc 1 9 1
+  41              		.cfi_startproc
+  42              		@ args = 0, pretend = 0, frame = 8
+  43              		@ frame_needed = 1, uses_anonymous_args = 0
+  44 0000 80B5     		push	{r7, lr}
+  45              	.LCFI0:
+  46              		.cfi_def_cfa_offset 8
+  47              		.cfi_offset 7, -8
+  48              		.cfi_offset 14, -4
+  49 0002 84B0     		sub	sp, sp, #16
+  50              	.LCFI1:
+  51              		.cfi_def_cfa_offset 24
+  52 0004 02AF     		add	r7, sp, #8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 2
+
+
+  53              	.LCFI2:
+  54              		.cfi_def_cfa 7, 16
+  55 0006 3960     		str	r1, [r7]
+  56 0008 1146     		mov	r1, r2
+  57 000a 1A46     		mov	r2, r3
+  58 000c 0346     		mov	r3, r0
+  59 000e FB71     		strb	r3, [r7, #7]
+  60 0010 0B46     		mov	r3, r1
+  61 0012 BB71     		strb	r3, [r7, #6]
+  62 0014 1346     		mov	r3, r2
+  63 0016 7B71     		strb	r3, [r7, #5]
+  10:./Hardware/device/sd8800.c **** 	if(IIC_read_multiple_bytes(0x64,reg_addr,read_buf,length,bus)!=IIC_OK)
+  64              		.loc 1 10 5
+  65 0018 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+  66 001a F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+  67 001c 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+  68 001e 0093     		str	r3, [sp]
+  69 0020 1346     		mov	r3, r2
+  70 0022 3A68     		ldr	r2, [r7]
+  71 0024 6420     		movs	r0, #100
+  72 0026 FFF7FEFF 		bl	IIC_read_multiple_bytes
+  73 002a 0346     		mov	r3, r0
+  74              		.loc 1 10 4
+  75 002c 022B     		cmp	r3, #2
+  76 002e 01D0     		beq	.L2
+  11:./Hardware/device/sd8800.c **** 	{
+  12:./Hardware/device/sd8800.c **** 		return RTC_NOACK;
+  77              		.loc 1 12 10
+  78 0030 0723     		movs	r3, #7
+  79 0032 00E0     		b	.L3
+  80              	.L2:
+  13:./Hardware/device/sd8800.c **** 	}
+  14:./Hardware/device/sd8800.c **** 	return RTC_OK;
+  81              		.loc 1 14 9
+  82 0034 0623     		movs	r3, #6
+  83              	.L3:
+  15:./Hardware/device/sd8800.c **** }
+  84              		.loc 1 15 1
+  85 0036 1846     		mov	r0, r3
+  86 0038 0837     		adds	r7, r7, #8
+  87              	.LCFI3:
+  88              		.cfi_def_cfa_offset 8
+  89 003a BD46     		mov	sp, r7
+  90              	.LCFI4:
+  91              		.cfi_def_cfa_register 13
+  92              		@ sp needed
+  93 003c 80BD     		pop	{r7, pc}
+  94              		.cfi_endproc
+  95              	.LFE32:
+  97              		.section	.text.SD8800_write_addr,"ax",%progbits
+  98              		.align	1
+  99              		.global	SD8800_write_addr
+ 100              		.syntax unified
+ 101              		.thumb
+ 102              		.thumb_func
+ 103              		.fpu softvfp
+ 105              	SD8800_write_addr:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 3
+
+
+ 106              	.LFB33:
+  16:./Hardware/device/sd8800.c **** 
+  17:./Hardware/device/sd8800.c **** //rtcÐ´addr
+  18:./Hardware/device/sd8800.c **** rtc_exit_code SD8800_write_addr(uint8_t reg_addr, uint8_t *write_buf, uint8_t length, i2c_device_bu
+  19:./Hardware/device/sd8800.c **** {
+ 107              		.loc 1 19 1
+ 108              		.cfi_startproc
+ 109              		@ args = 0, pretend = 0, frame = 8
+ 110              		@ frame_needed = 1, uses_anonymous_args = 0
+ 111 0000 80B5     		push	{r7, lr}
+ 112              	.LCFI5:
+ 113              		.cfi_def_cfa_offset 8
+ 114              		.cfi_offset 7, -8
+ 115              		.cfi_offset 14, -4
+ 116 0002 84B0     		sub	sp, sp, #16
+ 117              	.LCFI6:
+ 118              		.cfi_def_cfa_offset 24
+ 119 0004 02AF     		add	r7, sp, #8
+ 120              	.LCFI7:
+ 121              		.cfi_def_cfa 7, 16
+ 122 0006 3960     		str	r1, [r7]
+ 123 0008 1146     		mov	r1, r2
+ 124 000a 1A46     		mov	r2, r3
+ 125 000c 0346     		mov	r3, r0
+ 126 000e FB71     		strb	r3, [r7, #7]
+ 127 0010 0B46     		mov	r3, r1
+ 128 0012 BB71     		strb	r3, [r7, #6]
+ 129 0014 1346     		mov	r3, r2
+ 130 0016 7B71     		strb	r3, [r7, #5]
+  20:./Hardware/device/sd8800.c **** 	if(IIC_write_multiple_bytes(0x64,reg_addr,write_buf,length,bus)!=IIC_OK)
+ 131              		.loc 1 20 5
+ 132 0018 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 133 001a F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 134 001c 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 135 001e 0093     		str	r3, [sp]
+ 136 0020 1346     		mov	r3, r2
+ 137 0022 3A68     		ldr	r2, [r7]
+ 138 0024 6420     		movs	r0, #100
+ 139 0026 FFF7FEFF 		bl	IIC_write_multiple_bytes
+ 140 002a 0346     		mov	r3, r0
+ 141              		.loc 1 20 4
+ 142 002c 022B     		cmp	r3, #2
+ 143 002e 01D0     		beq	.L5
+  21:./Hardware/device/sd8800.c **** 	{
+  22:./Hardware/device/sd8800.c **** 		return RTC_NOACK;
+ 144              		.loc 1 22 10
+ 145 0030 0723     		movs	r3, #7
+ 146 0032 00E0     		b	.L6
+ 147              	.L5:
+  23:./Hardware/device/sd8800.c **** 	}
+  24:./Hardware/device/sd8800.c **** 	return RTC_OK;
+ 148              		.loc 1 24 9
+ 149 0034 0623     		movs	r3, #6
+ 150              	.L6:
+  25:./Hardware/device/sd8800.c **** }
+ 151              		.loc 1 25 1
+ 152 0036 1846     		mov	r0, r3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 4
+
+
+ 153 0038 0837     		adds	r7, r7, #8
+ 154              	.LCFI8:
+ 155              		.cfi_def_cfa_offset 8
+ 156 003a BD46     		mov	sp, r7
+ 157              	.LCFI9:
+ 158              		.cfi_def_cfa_register 13
+ 159              		@ sp needed
+ 160 003c 80BD     		pop	{r7, pc}
+ 161              		.cfi_endproc
+ 162              	.LFE33:
+ 164              		.section	.text.SD8800_ReadTimeDate,"ax",%progbits
+ 165              		.align	1
+ 166              		.global	SD8800_ReadTimeDate
+ 167              		.syntax unified
+ 168              		.thumb
+ 169              		.thumb_func
+ 170              		.fpu softvfp
+ 172              	SD8800_ReadTimeDate:
+ 173              	.LFB34:
+  26:./Hardware/device/sd8800.c **** 
+  27:./Hardware/device/sd8800.c **** 
+  28:./Hardware/device/sd8800.c **** rtc_exit_code SD8800_ReadTimeDate(rtc_time *time, i2c_device_bus IIC_x)
+  29:./Hardware/device/sd8800.c **** {
+ 174              		.loc 1 29 1
+ 175              		.cfi_startproc
+ 176              		@ args = 0, pretend = 0, frame = 16
+ 177              		@ frame_needed = 1, uses_anonymous_args = 0
+ 178 0000 80B5     		push	{r7, lr}
+ 179              	.LCFI10:
+ 180              		.cfi_def_cfa_offset 8
+ 181              		.cfi_offset 7, -8
+ 182              		.cfi_offset 14, -4
+ 183 0002 84B0     		sub	sp, sp, #16
+ 184              	.LCFI11:
+ 185              		.cfi_def_cfa_offset 24
+ 186 0004 00AF     		add	r7, sp, #0
+ 187              	.LCFI12:
+ 188              		.cfi_def_cfa_register 7
+ 189 0006 7860     		str	r0, [r7, #4]
+ 190 0008 0B46     		mov	r3, r1
+ 191 000a FB70     		strb	r3, [r7, #3]
+  30:./Hardware/device/sd8800.c **** 	uint8_t buf[7];
+  31:./Hardware/device/sd8800.c **** 
+  32:./Hardware/device/sd8800.c **** 	if(SD8800_read_addr(0x00,buf,7,IIC_x)!=RTC_OK)
+ 192              		.loc 1 32 5
+ 193 000c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 194 000e 07F10801 		add	r1, r7, #8
+ 195 0012 0722     		movs	r2, #7
+ 196 0014 0020     		movs	r0, #0
+ 197 0016 FFF7FEFF 		bl	SD8800_read_addr
+ 198 001a 0346     		mov	r3, r0
+ 199              		.loc 1 32 4
+ 200 001c 062B     		cmp	r3, #6
+ 201 001e 01D0     		beq	.L8
+  33:./Hardware/device/sd8800.c **** 	{
+  34:./Hardware/device/sd8800.c **** 		return RTC_FAIL;
+ 202              		.loc 1 34 10
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 5
+
+
+ 203 0020 0823     		movs	r3, #8
+ 204 0022 38E0     		b	.L10
+ 205              	.L8:
+  35:./Hardware/device/sd8800.c **** 	}
+  36:./Hardware/device/sd8800.c **** 	
+  37:./Hardware/device/sd8800.c **** 	time->second=bcd_to_dec(buf[0]);
+ 206              		.loc 1 37 15
+ 207 0024 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 208 0026 1846     		mov	r0, r3
+ 209 0028 FFF7FEFF 		bl	bcd_to_dec
+ 210 002c 0346     		mov	r3, r0
+ 211 002e 1A46     		mov	r2, r3
+ 212              		.loc 1 37 14
+ 213 0030 7B68     		ldr	r3, [r7, #4]
+ 214 0032 1A70     		strb	r2, [r3]
+  38:./Hardware/device/sd8800.c **** 	time->minute=bcd_to_dec(buf[1]);
+ 215              		.loc 1 38 15
+ 216 0034 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 217 0036 1846     		mov	r0, r3
+ 218 0038 FFF7FEFF 		bl	bcd_to_dec
+ 219 003c 0346     		mov	r3, r0
+ 220 003e 1A46     		mov	r2, r3
+ 221              		.loc 1 38 14
+ 222 0040 7B68     		ldr	r3, [r7, #4]
+ 223 0042 5A70     		strb	r2, [r3, #1]
+  39:./Hardware/device/sd8800.c **** 	time->hour=bcd_to_dec(buf[2]);
+ 224              		.loc 1 39 13
+ 225 0044 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 226 0046 1846     		mov	r0, r3
+ 227 0048 FFF7FEFF 		bl	bcd_to_dec
+ 228 004c 0346     		mov	r3, r0
+ 229 004e 1A46     		mov	r2, r3
+ 230              		.loc 1 39 12
+ 231 0050 7B68     		ldr	r3, [r7, #4]
+ 232 0052 9A70     		strb	r2, [r3, #2]
+  40:./Hardware/device/sd8800.c **** 	time->week=bcd_to_dec(buf[3]);	
+ 233              		.loc 1 40 13
+ 234 0054 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 235 0056 1846     		mov	r0, r3
+ 236 0058 FFF7FEFF 		bl	bcd_to_dec
+ 237 005c 0346     		mov	r3, r0
+ 238 005e 1A46     		mov	r2, r3
+ 239              		.loc 1 40 12
+ 240 0060 7B68     		ldr	r3, [r7, #4]
+ 241 0062 DA70     		strb	r2, [r3, #3]
+  41:./Hardware/device/sd8800.c **** 	time->day=bcd_to_dec(buf[4]);
+ 242              		.loc 1 41 12
+ 243 0064 3B7B     		ldrb	r3, [r7, #12]	@ zero_extendqisi2
+ 244 0066 1846     		mov	r0, r3
+ 245 0068 FFF7FEFF 		bl	bcd_to_dec
+ 246 006c 0346     		mov	r3, r0
+ 247 006e 1A46     		mov	r2, r3
+ 248              		.loc 1 41 11
+ 249 0070 7B68     		ldr	r3, [r7, #4]
+ 250 0072 1A71     		strb	r2, [r3, #4]
+  42:./Hardware/device/sd8800.c **** 	time->month=bcd_to_dec(buf[5]);	
+ 251              		.loc 1 42 14
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 6
+
+
+ 252 0074 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 253 0076 1846     		mov	r0, r3
+ 254 0078 FFF7FEFF 		bl	bcd_to_dec
+ 255 007c 0346     		mov	r3, r0
+ 256 007e 1A46     		mov	r2, r3
+ 257              		.loc 1 42 13
+ 258 0080 7B68     		ldr	r3, [r7, #4]
+ 259 0082 5A71     		strb	r2, [r3, #5]
+  43:./Hardware/device/sd8800.c **** 	time->year=bcd_to_dec(buf[6]);
+ 260              		.loc 1 43 13
+ 261 0084 BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 262 0086 1846     		mov	r0, r3
+ 263 0088 FFF7FEFF 		bl	bcd_to_dec
+ 264 008c 0346     		mov	r3, r0
+ 265 008e 1A46     		mov	r2, r3
+ 266              		.loc 1 43 12
+ 267 0090 7B68     		ldr	r3, [r7, #4]
+ 268 0092 9A71     		strb	r2, [r3, #6]
+  44:./Hardware/device/sd8800.c **** 		
+  45:./Hardware/device/sd8800.c **** 	return RTC_OK;
+ 269              		.loc 1 45 9
+ 270 0094 0623     		movs	r3, #6
+ 271              	.L10:
+  46:./Hardware/device/sd8800.c **** 
+  47:./Hardware/device/sd8800.c **** }
+ 272              		.loc 1 47 1 discriminator 1
+ 273 0096 1846     		mov	r0, r3
+ 274 0098 1037     		adds	r7, r7, #16
+ 275              	.LCFI13:
+ 276              		.cfi_def_cfa_offset 8
+ 277 009a BD46     		mov	sp, r7
+ 278              	.LCFI14:
+ 279              		.cfi_def_cfa_register 13
+ 280              		@ sp needed
+ 281 009c 80BD     		pop	{r7, pc}
+ 282              		.cfi_endproc
+ 283              	.LFE34:
+ 285              		.section	.text.SD8800_WriteTimeDate,"ax",%progbits
+ 286              		.align	1
+ 287              		.global	SD8800_WriteTimeDate
+ 288              		.syntax unified
+ 289              		.thumb
+ 290              		.thumb_func
+ 291              		.fpu softvfp
+ 293              	SD8800_WriteTimeDate:
+ 294              	.LFB35:
+  48:./Hardware/device/sd8800.c **** 
+  49:./Hardware/device/sd8800.c **** rtc_exit_code SD8800_WriteTimeDate(rtc_time *time, i2c_device_bus IIC_x)
+  50:./Hardware/device/sd8800.c **** {
+ 295              		.loc 1 50 1
+ 296              		.cfi_startproc
+ 297              		@ args = 0, pretend = 0, frame = 16
+ 298              		@ frame_needed = 1, uses_anonymous_args = 0
+ 299 0000 80B5     		push	{r7, lr}
+ 300              	.LCFI15:
+ 301              		.cfi_def_cfa_offset 8
+ 302              		.cfi_offset 7, -8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 7
+
+
+ 303              		.cfi_offset 14, -4
+ 304 0002 84B0     		sub	sp, sp, #16
+ 305              	.LCFI16:
+ 306              		.cfi_def_cfa_offset 24
+ 307 0004 00AF     		add	r7, sp, #0
+ 308              	.LCFI17:
+ 309              		.cfi_def_cfa_register 7
+ 310 0006 7860     		str	r0, [r7, #4]
+ 311 0008 0B46     		mov	r3, r1
+ 312 000a FB70     		strb	r3, [r7, #3]
+  51:./Hardware/device/sd8800.c **** 	uint8_t buf[7];
+  52:./Hardware/device/sd8800.c **** 
+  53:./Hardware/device/sd8800.c **** 	buf[0]=dec_to_bcd(time->second);
+ 313              		.loc 1 53 9
+ 314 000c 7B68     		ldr	r3, [r7, #4]
+ 315 000e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 316 0010 1846     		mov	r0, r3
+ 317 0012 FFF7FEFF 		bl	dec_to_bcd
+ 318 0016 0346     		mov	r3, r0
+ 319              		.loc 1 53 8
+ 320 0018 3B72     		strb	r3, [r7, #8]
+  54:./Hardware/device/sd8800.c **** 	buf[1]=dec_to_bcd(time->minute);
+ 321              		.loc 1 54 9
+ 322 001a 7B68     		ldr	r3, [r7, #4]
+ 323 001c 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 324 001e 1846     		mov	r0, r3
+ 325 0020 FFF7FEFF 		bl	dec_to_bcd
+ 326 0024 0346     		mov	r3, r0
+ 327              		.loc 1 54 8
+ 328 0026 7B72     		strb	r3, [r7, #9]
+  55:./Hardware/device/sd8800.c **** 	buf[2]=dec_to_bcd(time->hour);
+ 329              		.loc 1 55 9
+ 330 0028 7B68     		ldr	r3, [r7, #4]
+ 331 002a 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 332 002c 1846     		mov	r0, r3
+ 333 002e FFF7FEFF 		bl	dec_to_bcd
+ 334 0032 0346     		mov	r3, r0
+ 335              		.loc 1 55 8
+ 336 0034 BB72     		strb	r3, [r7, #10]
+  56:./Hardware/device/sd8800.c **** 	buf[3]=dec_to_bcd(time->week);
+ 337              		.loc 1 56 9
+ 338 0036 7B68     		ldr	r3, [r7, #4]
+ 339 0038 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 340 003a 1846     		mov	r0, r3
+ 341 003c FFF7FEFF 		bl	dec_to_bcd
+ 342 0040 0346     		mov	r3, r0
+ 343              		.loc 1 56 8
+ 344 0042 FB72     		strb	r3, [r7, #11]
+  57:./Hardware/device/sd8800.c **** 	buf[4]=dec_to_bcd(time->day);
+ 345              		.loc 1 57 9
+ 346 0044 7B68     		ldr	r3, [r7, #4]
+ 347 0046 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 348 0048 1846     		mov	r0, r3
+ 349 004a FFF7FEFF 		bl	dec_to_bcd
+ 350 004e 0346     		mov	r3, r0
+ 351              		.loc 1 57 8
+ 352 0050 3B73     		strb	r3, [r7, #12]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 8
+
+
+  58:./Hardware/device/sd8800.c **** 	buf[5]=dec_to_bcd(time->month);
+ 353              		.loc 1 58 9
+ 354 0052 7B68     		ldr	r3, [r7, #4]
+ 355 0054 5B79     		ldrb	r3, [r3, #5]	@ zero_extendqisi2
+ 356 0056 1846     		mov	r0, r3
+ 357 0058 FFF7FEFF 		bl	dec_to_bcd
+ 358 005c 0346     		mov	r3, r0
+ 359              		.loc 1 58 8
+ 360 005e 7B73     		strb	r3, [r7, #13]
+  59:./Hardware/device/sd8800.c **** 	buf[6]=dec_to_bcd(time->year);
+ 361              		.loc 1 59 9
+ 362 0060 7B68     		ldr	r3, [r7, #4]
+ 363 0062 9B79     		ldrb	r3, [r3, #6]	@ zero_extendqisi2
+ 364 0064 1846     		mov	r0, r3
+ 365 0066 FFF7FEFF 		bl	dec_to_bcd
+ 366 006a 0346     		mov	r3, r0
+ 367              		.loc 1 59 8
+ 368 006c BB73     		strb	r3, [r7, #14]
+  60:./Hardware/device/sd8800.c **** 
+  61:./Hardware/device/sd8800.c **** 	if(SD8800_write_addr(0x00,buf,7,IIC_x)!=RTC_OK)
+ 369              		.loc 1 61 5
+ 370 006e FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 371 0070 07F10801 		add	r1, r7, #8
+ 372 0074 0722     		movs	r2, #7
+ 373 0076 0020     		movs	r0, #0
+ 374 0078 FFF7FEFF 		bl	SD8800_write_addr
+ 375 007c 0346     		mov	r3, r0
+ 376              		.loc 1 61 4
+ 377 007e 062B     		cmp	r3, #6
+ 378 0080 01D0     		beq	.L12
+  62:./Hardware/device/sd8800.c **** 	{
+  63:./Hardware/device/sd8800.c **** 		return RTC_FAIL;
+ 379              		.loc 1 63 10
+ 380 0082 0823     		movs	r3, #8
+ 381 0084 00E0     		b	.L14
+ 382              	.L12:
+  64:./Hardware/device/sd8800.c **** 	}
+  65:./Hardware/device/sd8800.c **** 	
+  66:./Hardware/device/sd8800.c **** 	return RTC_OK;
+ 383              		.loc 1 66 9
+ 384 0086 0623     		movs	r3, #6
+ 385              	.L14:
+  67:./Hardware/device/sd8800.c **** 	
+  68:./Hardware/device/sd8800.c **** }
+ 386              		.loc 1 68 1 discriminator 1
+ 387 0088 1846     		mov	r0, r3
+ 388 008a 1037     		adds	r7, r7, #16
+ 389              	.LCFI18:
+ 390              		.cfi_def_cfa_offset 8
+ 391 008c BD46     		mov	sp, r7
+ 392              	.LCFI19:
+ 393              		.cfi_def_cfa_register 13
+ 394              		@ sp needed
+ 395 008e 80BD     		pop	{r7, pc}
+ 396              		.cfi_endproc
+ 397              	.LFE35:
+ 399              		.section	.text.sd8800_idbuff,"ax",%progbits
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 9
+
+
+ 400              		.align	1
+ 401              		.global	sd8800_idbuff
+ 402              		.syntax unified
+ 403              		.thumb
+ 404              		.thumb_func
+ 405              		.fpu softvfp
+ 407              	sd8800_idbuff:
+ 408              	.LFB36:
+  69:./Hardware/device/sd8800.c **** 
+  70:./Hardware/device/sd8800.c **** //¶ÁÈ¡Ð¾Æ¬idÂë
+  71:./Hardware/device/sd8800.c **** uint8_t sd8800_idbuff(uint8_t *Data, i2c_device_bus IIC_x)
+  72:./Hardware/device/sd8800.c **** {
+ 409              		.loc 1 72 1
+ 410              		.cfi_startproc
+ 411              		@ args = 0, pretend = 0, frame = 8
+ 412              		@ frame_needed = 1, uses_anonymous_args = 0
+ 413 0000 80B5     		push	{r7, lr}
+ 414              	.LCFI20:
+ 415              		.cfi_def_cfa_offset 8
+ 416              		.cfi_offset 7, -8
+ 417              		.cfi_offset 14, -4
+ 418 0002 84B0     		sub	sp, sp, #16
+ 419              	.LCFI21:
+ 420              		.cfi_def_cfa_offset 24
+ 421 0004 02AF     		add	r7, sp, #8
+ 422              	.LCFI22:
+ 423              		.cfi_def_cfa 7, 16
+ 424 0006 7860     		str	r0, [r7, #4]
+ 425 0008 0B46     		mov	r3, r1
+ 426 000a FB70     		strb	r3, [r7, #3]
+  73:./Hardware/device/sd8800.c **** 	if(IIC_read_multiple_bytes(0x64,0xB2,Data,8,IIC_x)!=IIC_OK)
+ 427              		.loc 1 73 5
+ 428 000c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 429 000e 0093     		str	r3, [sp]
+ 430 0010 0823     		movs	r3, #8
+ 431 0012 7A68     		ldr	r2, [r7, #4]
+ 432 0014 B221     		movs	r1, #178
+ 433 0016 6420     		movs	r0, #100
+ 434 0018 FFF7FEFF 		bl	IIC_read_multiple_bytes
+ 435 001c 0346     		mov	r3, r0
+ 436              		.loc 1 73 4
+ 437 001e 022B     		cmp	r3, #2
+ 438 0020 01D0     		beq	.L16
+  74:./Hardware/device/sd8800.c **** 		return SLAVE_NO_ACK;
+ 439              		.loc 1 74 10
+ 440 0022 0523     		movs	r3, #5
+ 441 0024 00E0     		b	.L17
+ 442              	.L16:
+  75:./Hardware/device/sd8800.c **** 
+  76:./Hardware/device/sd8800.c **** 	return TRUE;
+ 443              		.loc 1 76 9
+ 444 0026 0123     		movs	r3, #1
+ 445              	.L17:
+  77:./Hardware/device/sd8800.c **** }
+ 446              		.loc 1 77 1
+ 447 0028 1846     		mov	r0, r3
+ 448 002a 0837     		adds	r7, r7, #8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 10
+
+
+ 449              	.LCFI23:
+ 450              		.cfi_def_cfa_offset 8
+ 451 002c BD46     		mov	sp, r7
+ 452              	.LCFI24:
+ 453              		.cfi_def_cfa_register 13
+ 454              		@ sp needed
+ 455 002e 80BD     		pop	{r7, pc}
+ 456              		.cfi_endproc
+ 457              	.LFE36:
+ 459              		.section	.rodata
+ 460              		.align	2
+ 461              	.LC0:
+ 462 0000 494400   		.ascii	"ID\000"
+ 463 0003 00       		.align	2
+ 464              	.LC1:
+ 465 0004 3A00     		.ascii	":\000"
+ 466              		.section	.text.sd8800_id_show,"ax",%progbits
+ 467              		.align	1
+ 468              		.global	sd8800_id_show
+ 469              		.syntax unified
+ 470              		.thumb
+ 471              		.thumb_func
+ 472              		.fpu softvfp
+ 474              	sd8800_id_show:
+ 475              	.LFB37:
+  78:./Hardware/device/sd8800.c **** 
+  79:./Hardware/device/sd8800.c **** uint8_t sd8800_id_show(i2c_device_bus IIC_x)
+  80:./Hardware/device/sd8800.c **** {
+ 476              		.loc 1 80 1
+ 477              		.cfi_startproc
+ 478              		@ args = 0, pretend = 0, frame = 24
+ 479              		@ frame_needed = 1, uses_anonymous_args = 0
+ 480 0000 80B5     		push	{r7, lr}
+ 481              	.LCFI25:
+ 482              		.cfi_def_cfa_offset 8
+ 483              		.cfi_offset 7, -8
+ 484              		.cfi_offset 14, -4
+ 485 0002 88B0     		sub	sp, sp, #32
+ 486              	.LCFI26:
+ 487              		.cfi_def_cfa_offset 40
+ 488 0004 02AF     		add	r7, sp, #8
+ 489              	.LCFI27:
+ 490              		.cfi_def_cfa 7, 32
+ 491 0006 0346     		mov	r3, r0
+ 492 0008 FB71     		strb	r3, [r7, #7]
+  81:./Hardware/device/sd8800.c **** 		uint8_t ifbuff[8];
+  82:./Hardware/device/sd8800.c **** 				
+  83:./Hardware/device/sd8800.c **** 		if(sd8800_idbuff(ifbuff,IIC_x)!=TRUE)
+ 493              		.loc 1 83 6
+ 494 000a FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 495 000c 07F10803 		add	r3, r7, #8
+ 496 0010 1146     		mov	r1, r2
+ 497 0012 1846     		mov	r0, r3
+ 498 0014 FFF7FEFF 		bl	sd8800_idbuff
+ 499 0018 0346     		mov	r3, r0
+ 500              		.loc 1 83 5
+ 501 001a 012B     		cmp	r3, #1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 11
+
+
+ 502 001c 01D0     		beq	.L19
+  84:./Hardware/device/sd8800.c **** 			return FALSE;
+ 503              		.loc 1 84 11
+ 504 001e 0023     		movs	r3, #0
+ 505 0020 BCE0     		b	.L21
+ 506              	.L19:
+  85:./Hardware/device/sd8800.c **** 
+  86:./Hardware/device/sd8800.c **** 	uint8_t id0 = ((ifbuff[0] & 0xF0) >> 4) * 10 + (ifbuff[0] & 0x0F);
+ 507              		.loc 1 86 24
+ 508 0022 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 509              		.loc 1 86 36
+ 510 0024 1B09     		lsrs	r3, r3, #4
+ 511 0026 DBB2     		uxtb	r3, r3
+ 512              		.loc 1 86 47
+ 513 0028 1A46     		mov	r2, r3
+ 514 002a 9200     		lsls	r2, r2, #2
+ 515 002c 1344     		add	r3, r3, r2
+ 516 002e 5B00     		lsls	r3, r3, #1
+ 517 0030 DAB2     		uxtb	r2, r3
+ 518              		.loc 1 86 56
+ 519 0032 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 520              		.loc 1 86 60
+ 521 0034 03F00F03 		and	r3, r3, #15
+ 522 0038 DBB2     		uxtb	r3, r3
+ 523              		.loc 1 86 10
+ 524 003a 1344     		add	r3, r3, r2
+ 525 003c FB75     		strb	r3, [r7, #23]
+  87:./Hardware/device/sd8800.c **** 	uint8_t id1 = ((ifbuff[1] & 0xF0) >> 4) * 10 + (ifbuff[1] & 0x0F);
+ 526              		.loc 1 87 24
+ 527 003e 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 528              		.loc 1 87 36
+ 529 0040 1B09     		lsrs	r3, r3, #4
+ 530 0042 DBB2     		uxtb	r3, r3
+ 531              		.loc 1 87 47
+ 532 0044 1A46     		mov	r2, r3
+ 533 0046 9200     		lsls	r2, r2, #2
+ 534 0048 1344     		add	r3, r3, r2
+ 535 004a 5B00     		lsls	r3, r3, #1
+ 536 004c DAB2     		uxtb	r2, r3
+ 537              		.loc 1 87 56
+ 538 004e 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 539              		.loc 1 87 60
+ 540 0050 03F00F03 		and	r3, r3, #15
+ 541 0054 DBB2     		uxtb	r3, r3
+ 542              		.loc 1 87 10
+ 543 0056 1344     		add	r3, r3, r2
+ 544 0058 BB75     		strb	r3, [r7, #22]
+  88:./Hardware/device/sd8800.c **** 	uint8_t id2 = ((ifbuff[2] & 0xF0) >> 4) * 10 + (ifbuff[2] & 0x0F);
+ 545              		.loc 1 88 24
+ 546 005a BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 547              		.loc 1 88 36
+ 548 005c 1B09     		lsrs	r3, r3, #4
+ 549 005e DBB2     		uxtb	r3, r3
+ 550              		.loc 1 88 47
+ 551 0060 1A46     		mov	r2, r3
+ 552 0062 9200     		lsls	r2, r2, #2
+ 553 0064 1344     		add	r3, r3, r2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 12
+
+
+ 554 0066 5B00     		lsls	r3, r3, #1
+ 555 0068 DAB2     		uxtb	r2, r3
+ 556              		.loc 1 88 56
+ 557 006a BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 558              		.loc 1 88 60
+ 559 006c 03F00F03 		and	r3, r3, #15
+ 560 0070 DBB2     		uxtb	r3, r3
+ 561              		.loc 1 88 10
+ 562 0072 1344     		add	r3, r3, r2
+ 563 0074 7B75     		strb	r3, [r7, #21]
+  89:./Hardware/device/sd8800.c **** 	uint8_t id3 = ((ifbuff[3] & 0xF0) >> 4) * 10 + (ifbuff[3] & 0x0F);
+ 564              		.loc 1 89 24
+ 565 0076 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 566              		.loc 1 89 36
+ 567 0078 1B09     		lsrs	r3, r3, #4
+ 568 007a DBB2     		uxtb	r3, r3
+ 569              		.loc 1 89 47
+ 570 007c 1A46     		mov	r2, r3
+ 571 007e 9200     		lsls	r2, r2, #2
+ 572 0080 1344     		add	r3, r3, r2
+ 573 0082 5B00     		lsls	r3, r3, #1
+ 574 0084 DAB2     		uxtb	r2, r3
+ 575              		.loc 1 89 56
+ 576 0086 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 577              		.loc 1 89 60
+ 578 0088 03F00F03 		and	r3, r3, #15
+ 579 008c DBB2     		uxtb	r3, r3
+ 580              		.loc 1 89 10
+ 581 008e 1344     		add	r3, r3, r2
+ 582 0090 3B75     		strb	r3, [r7, #20]
+  90:./Hardware/device/sd8800.c **** 	uint8_t id4 = ((ifbuff[4] & 0xF0) >> 4) * 10 + (ifbuff[4] & 0x0F);
+ 583              		.loc 1 90 24
+ 584 0092 3B7B     		ldrb	r3, [r7, #12]	@ zero_extendqisi2
+ 585              		.loc 1 90 36
+ 586 0094 1B09     		lsrs	r3, r3, #4
+ 587 0096 DBB2     		uxtb	r3, r3
+ 588              		.loc 1 90 47
+ 589 0098 1A46     		mov	r2, r3
+ 590 009a 9200     		lsls	r2, r2, #2
+ 591 009c 1344     		add	r3, r3, r2
+ 592 009e 5B00     		lsls	r3, r3, #1
+ 593 00a0 DAB2     		uxtb	r2, r3
+ 594              		.loc 1 90 56
+ 595 00a2 3B7B     		ldrb	r3, [r7, #12]	@ zero_extendqisi2
+ 596              		.loc 1 90 60
+ 597 00a4 03F00F03 		and	r3, r3, #15
+ 598 00a8 DBB2     		uxtb	r3, r3
+ 599              		.loc 1 90 10
+ 600 00aa 1344     		add	r3, r3, r2
+ 601 00ac FB74     		strb	r3, [r7, #19]
+  91:./Hardware/device/sd8800.c **** 	uint8_t id5 = ((ifbuff[5] & 0xF0) >> 4) * 10 + (ifbuff[5] & 0x0F);
+ 602              		.loc 1 91 24
+ 603 00ae 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 604              		.loc 1 91 36
+ 605 00b0 1B09     		lsrs	r3, r3, #4
+ 606 00b2 DBB2     		uxtb	r3, r3
+ 607              		.loc 1 91 47
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 13
+
+
+ 608 00b4 1A46     		mov	r2, r3
+ 609 00b6 9200     		lsls	r2, r2, #2
+ 610 00b8 1344     		add	r3, r3, r2
+ 611 00ba 5B00     		lsls	r3, r3, #1
+ 612 00bc DAB2     		uxtb	r2, r3
+ 613              		.loc 1 91 56
+ 614 00be 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 615              		.loc 1 91 60
+ 616 00c0 03F00F03 		and	r3, r3, #15
+ 617 00c4 DBB2     		uxtb	r3, r3
+ 618              		.loc 1 91 10
+ 619 00c6 1344     		add	r3, r3, r2
+ 620 00c8 BB74     		strb	r3, [r7, #18]
+  92:./Hardware/device/sd8800.c **** 	uint8_t id6 = ((ifbuff[6] & 0xF0) >> 4) * 10 + (ifbuff[6] & 0x0F);
+ 621              		.loc 1 92 24
+ 622 00ca BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 623              		.loc 1 92 36
+ 624 00cc 1B09     		lsrs	r3, r3, #4
+ 625 00ce DBB2     		uxtb	r3, r3
+ 626              		.loc 1 92 47
+ 627 00d0 1A46     		mov	r2, r3
+ 628 00d2 9200     		lsls	r2, r2, #2
+ 629 00d4 1344     		add	r3, r3, r2
+ 630 00d6 5B00     		lsls	r3, r3, #1
+ 631 00d8 DAB2     		uxtb	r2, r3
+ 632              		.loc 1 92 56
+ 633 00da BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 634              		.loc 1 92 60
+ 635 00dc 03F00F03 		and	r3, r3, #15
+ 636 00e0 DBB2     		uxtb	r3, r3
+ 637              		.loc 1 92 10
+ 638 00e2 1344     		add	r3, r3, r2
+ 639 00e4 7B74     		strb	r3, [r7, #17]
+  93:./Hardware/device/sd8800.c **** 	uint8_t id7 = ((ifbuff[7] & 0xF0) >> 4) * 10 + (ifbuff[7] & 0x0F);
+ 640              		.loc 1 93 24
+ 641 00e6 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 642              		.loc 1 93 36
+ 643 00e8 1B09     		lsrs	r3, r3, #4
+ 644 00ea DBB2     		uxtb	r3, r3
+ 645              		.loc 1 93 47
+ 646 00ec 1A46     		mov	r2, r3
+ 647 00ee 9200     		lsls	r2, r2, #2
+ 648 00f0 1344     		add	r3, r3, r2
+ 649 00f2 5B00     		lsls	r3, r3, #1
+ 650 00f4 DAB2     		uxtb	r2, r3
+ 651              		.loc 1 93 56
+ 652 00f6 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 653              		.loc 1 93 60
+ 654 00f8 03F00F03 		and	r3, r3, #15
+ 655 00fc DBB2     		uxtb	r3, r3
+ 656              		.loc 1 93 10
+ 657 00fe 1344     		add	r3, r3, r2
+ 658 0100 3B74     		strb	r3, [r7, #16]
+  94:./Hardware/device/sd8800.c **** 
+  95:./Hardware/device/sd8800.c **** 	OLED_ShowString(0,55,"ID",6);
+ 659              		.loc 1 95 2
+ 660 0102 0623     		movs	r3, #6
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 14
+
+
+ 661 0104 274A     		ldr	r2, .L22
+ 662 0106 3721     		movs	r1, #55
+ 663 0108 0020     		movs	r0, #0
+ 664 010a FFF7FEFF 		bl	OLED_ShowString
+  96:./Hardware/device/sd8800.c **** 	OLED_ShowString(12,55,":",6);
+ 665              		.loc 1 96 2
+ 666 010e 0623     		movs	r3, #6
+ 667 0110 254A     		ldr	r2, .L22+4
+ 668 0112 3721     		movs	r1, #55
+ 669 0114 0C20     		movs	r0, #12
+ 670 0116 FFF7FEFF 		bl	OLED_ShowString
+  97:./Hardware/device/sd8800.c **** 	
+  98:./Hardware/device/sd8800.c **** 	OLED_ShowNum(17,55,id0,2,6);
+ 671              		.loc 1 98 2
+ 672 011a FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 673 011c 0623     		movs	r3, #6
+ 674 011e 0093     		str	r3, [sp]
+ 675 0120 0223     		movs	r3, #2
+ 676 0122 3721     		movs	r1, #55
+ 677 0124 1120     		movs	r0, #17
+ 678 0126 FFF7FEFF 		bl	OLED_ShowNum
+  99:./Hardware/device/sd8800.c **** 	OLED_ShowNum(31,55,id1,2,6);
+ 679              		.loc 1 99 2
+ 680 012a BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 681 012c 0623     		movs	r3, #6
+ 682 012e 0093     		str	r3, [sp]
+ 683 0130 0223     		movs	r3, #2
+ 684 0132 3721     		movs	r1, #55
+ 685 0134 1F20     		movs	r0, #31
+ 686 0136 FFF7FEFF 		bl	OLED_ShowNum
+ 100:./Hardware/device/sd8800.c **** 	OLED_ShowNum(45,55,id2,2,6);
+ 687              		.loc 1 100 2
+ 688 013a 7A7D     		ldrb	r2, [r7, #21]	@ zero_extendqisi2
+ 689 013c 0623     		movs	r3, #6
+ 690 013e 0093     		str	r3, [sp]
+ 691 0140 0223     		movs	r3, #2
+ 692 0142 3721     		movs	r1, #55
+ 693 0144 2D20     		movs	r0, #45
+ 694 0146 FFF7FEFF 		bl	OLED_ShowNum
+ 101:./Hardware/device/sd8800.c **** 	OLED_ShowNum(60,55,id3,2,6);
+ 695              		.loc 1 101 2
+ 696 014a 3A7D     		ldrb	r2, [r7, #20]	@ zero_extendqisi2
+ 697 014c 0623     		movs	r3, #6
+ 698 014e 0093     		str	r3, [sp]
+ 699 0150 0223     		movs	r3, #2
+ 700 0152 3721     		movs	r1, #55
+ 701 0154 3C20     		movs	r0, #60
+ 702 0156 FFF7FEFF 		bl	OLED_ShowNum
+ 102:./Hardware/device/sd8800.c **** 	OLED_ShowNum(74,55,id4,2,6);
+ 703              		.loc 1 102 2
+ 704 015a FA7C     		ldrb	r2, [r7, #19]	@ zero_extendqisi2
+ 705 015c 0623     		movs	r3, #6
+ 706 015e 0093     		str	r3, [sp]
+ 707 0160 0223     		movs	r3, #2
+ 708 0162 3721     		movs	r1, #55
+ 709 0164 4A20     		movs	r0, #74
+ 710 0166 FFF7FEFF 		bl	OLED_ShowNum
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 15
+
+
+ 103:./Hardware/device/sd8800.c **** 	OLED_ShowNum(88,55,id5,2,6);
+ 711              		.loc 1 103 2
+ 712 016a BA7C     		ldrb	r2, [r7, #18]	@ zero_extendqisi2
+ 713 016c 0623     		movs	r3, #6
+ 714 016e 0093     		str	r3, [sp]
+ 715 0170 0223     		movs	r3, #2
+ 716 0172 3721     		movs	r1, #55
+ 717 0174 5820     		movs	r0, #88
+ 718 0176 FFF7FEFF 		bl	OLED_ShowNum
+ 104:./Hardware/device/sd8800.c **** 	OLED_ShowNum(102,55,id6,2,6);
+ 719              		.loc 1 104 2
+ 720 017a 7A7C     		ldrb	r2, [r7, #17]	@ zero_extendqisi2
+ 721 017c 0623     		movs	r3, #6
+ 722 017e 0093     		str	r3, [sp]
+ 723 0180 0223     		movs	r3, #2
+ 724 0182 3721     		movs	r1, #55
+ 725 0184 6620     		movs	r0, #102
+ 726 0186 FFF7FEFF 		bl	OLED_ShowNum
+ 105:./Hardware/device/sd8800.c **** 	OLED_ShowNum(116,55,id7,2,6);
+ 727              		.loc 1 105 2
+ 728 018a 3A7C     		ldrb	r2, [r7, #16]	@ zero_extendqisi2
+ 729 018c 0623     		movs	r3, #6
+ 730 018e 0093     		str	r3, [sp]
+ 731 0190 0223     		movs	r3, #2
+ 732 0192 3721     		movs	r1, #55
+ 733 0194 7420     		movs	r0, #116
+ 734 0196 FFF7FEFF 		bl	OLED_ShowNum
+ 106:./Hardware/device/sd8800.c **** 
+ 107:./Hardware/device/sd8800.c **** 	return 0;
+ 735              		.loc 1 107 9
+ 736 019a 0023     		movs	r3, #0
+ 737              	.L21:
+ 108:./Hardware/device/sd8800.c **** 
+ 109:./Hardware/device/sd8800.c **** }
+ 738              		.loc 1 109 1 discriminator 1
+ 739 019c 1846     		mov	r0, r3
+ 740 019e 1837     		adds	r7, r7, #24
+ 741              	.LCFI28:
+ 742              		.cfi_def_cfa_offset 8
+ 743 01a0 BD46     		mov	sp, r7
+ 744              	.LCFI29:
+ 745              		.cfi_def_cfa_register 13
+ 746              		@ sp needed
+ 747 01a2 80BD     		pop	{r7, pc}
+ 748              	.L23:
+ 749              		.align	2
+ 750              	.L22:
+ 751 01a4 00000000 		.word	.LC0
+ 752 01a8 04000000 		.word	.LC1
+ 753              		.cfi_endproc
+ 754              	.LFE37:
+ 756              		.global	__aeabi_i2d
+ 757              		.global	__aeabi_dsub
+ 758              		.global	__aeabi_ddiv
+ 759              		.global	__aeabi_d2uiz
+ 760              		.section	.text.sd8800_ReadTemp,"ax",%progbits
+ 761              		.align	1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 16
+
+
+ 762              		.global	sd8800_ReadTemp
+ 763              		.syntax unified
+ 764              		.thumb
+ 765              		.thumb_func
+ 766              		.fpu softvfp
+ 768              	sd8800_ReadTemp:
+ 769              	.LFB38:
+ 110:./Hardware/device/sd8800.c **** 
+ 111:./Hardware/device/sd8800.c **** uint8_t sd8800_ReadTemp(i2c_device_bus IIC_x)
+ 112:./Hardware/device/sd8800.c **** {
+ 770              		.loc 1 112 1
+ 771              		.cfi_startproc
+ 772              		@ args = 0, pretend = 0, frame = 16
+ 773              		@ frame_needed = 1, uses_anonymous_args = 0
+ 774 0000 80B5     		push	{r7, lr}
+ 775              	.LCFI30:
+ 776              		.cfi_def_cfa_offset 8
+ 777              		.cfi_offset 7, -8
+ 778              		.cfi_offset 14, -4
+ 779 0002 84B0     		sub	sp, sp, #16
+ 780              	.LCFI31:
+ 781              		.cfi_def_cfa_offset 24
+ 782 0004 00AF     		add	r7, sp, #0
+ 783              	.LCFI32:
+ 784              		.cfi_def_cfa_register 7
+ 785 0006 0346     		mov	r3, r0
+ 786 0008 FB71     		strb	r3, [r7, #7]
+ 113:./Hardware/device/sd8800.c **** 	uint8_t	Temp2;
+ 114:./Hardware/device/sd8800.c **** 	
+ 115:./Hardware/device/sd8800.c **** 	uint8_t buf = 0x10;
+ 787              		.loc 1 115 10
+ 788 000a 1023     		movs	r3, #16
+ 789 000c BB73     		strb	r3, [r7, #14]
+ 116:./Hardware/device/sd8800.c **** 	if(SD8800_write_addr(0x57,&buf,1,IIC_x)!=RTC_OK)
+ 790              		.loc 1 116 5
+ 791 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 792 0010 07F10E01 		add	r1, r7, #14
+ 793 0014 0122     		movs	r2, #1
+ 794 0016 5720     		movs	r0, #87
+ 795 0018 FFF7FEFF 		bl	SD8800_write_addr
+ 796 001c 0346     		mov	r3, r0
+ 797              		.loc 1 116 4
+ 798 001e 062B     		cmp	r3, #6
+ 799 0020 01D0     		beq	.L25
+ 117:./Hardware/device/sd8800.c **** 		return RTC_NOACK;
+ 800              		.loc 1 117 10
+ 801 0022 0723     		movs	r3, #7
+ 802 0024 2AE0     		b	.L27
+ 803              	.L25:
+ 118:./Hardware/device/sd8800.c **** 	
+ 119:./Hardware/device/sd8800.c **** 	Temp2 = RTC_ReadByte(0x17,IIC_x);
+ 804              		.loc 1 119 10
+ 805 0026 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 806 0028 1946     		mov	r1, r3
+ 807 002a 1720     		movs	r0, #23
+ 808 002c FFF7FEFF 		bl	RTC_ReadByte
+ 809 0030 0346     		mov	r3, r0
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 17
+
+
+ 810 0032 FB73     		strb	r3, [r7, #15]
+ 120:./Hardware/device/sd8800.c **** 	
+ 121:./Hardware/device/sd8800.c **** 	sd8800_temp = ((Temp2 *2)-187.19)/3.218;
+ 811              		.loc 1 121 24
+ 812 0034 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 813 0036 5B00     		lsls	r3, r3, #1
+ 814              		.loc 1 121 27
+ 815 0038 1846     		mov	r0, r3
+ 816 003a FFF7FEFF 		bl	__aeabi_i2d
+ 817 003e 12A3     		adr	r3, .L28
+ 818 0040 D3E90023 		ldrd	r2, [r3]
+ 819 0044 FFF7FEFF 		bl	__aeabi_dsub
+ 820 0048 0246     		mov	r2, r0
+ 821 004a 0B46     		mov	r3, r1
+ 822 004c 1046     		mov	r0, r2
+ 823 004e 1946     		mov	r1, r3
+ 824              		.loc 1 121 35
+ 825 0050 0FA3     		adr	r3, .L28+8
+ 826 0052 D3E90023 		ldrd	r2, [r3]
+ 827 0056 FFF7FEFF 		bl	__aeabi_ddiv
+ 828 005a 0246     		mov	r2, r0
+ 829 005c 0B46     		mov	r3, r1
+ 830              		.loc 1 121 14
+ 831 005e 1046     		mov	r0, r2
+ 832 0060 1946     		mov	r1, r3
+ 833 0062 FFF7FEFF 		bl	__aeabi_d2uiz
+ 834 0066 0346     		mov	r3, r0
+ 835 0068 DAB2     		uxtb	r2, r3
+ 836 006a 0B4B     		ldr	r3, .L28+16
+ 837 006c 1A70     		strb	r2, [r3]
+ 122:./Hardware/device/sd8800.c **** 	bcd_to_dec(sd8800_temp);
+ 838              		.loc 1 122 2
+ 839 006e 0A4B     		ldr	r3, .L28+16
+ 840 0070 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 841 0072 1846     		mov	r0, r3
+ 842 0074 FFF7FEFF 		bl	bcd_to_dec
+ 123:./Hardware/device/sd8800.c **** 		
+ 124:./Hardware/device/sd8800.c **** 	return sd8800_temp;
+ 843              		.loc 1 124 9
+ 844 0078 074B     		ldr	r3, .L28+16
+ 845 007a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 846              	.L27:
+ 125:./Hardware/device/sd8800.c **** 
+ 126:./Hardware/device/sd8800.c **** }
+ 847              		.loc 1 126 1 discriminator 1
+ 848 007c 1846     		mov	r0, r3
+ 849 007e 1037     		adds	r7, r7, #16
+ 850              	.LCFI33:
+ 851              		.cfi_def_cfa_offset 8
+ 852 0080 BD46     		mov	sp, r7
+ 853              	.LCFI34:
+ 854              		.cfi_def_cfa_register 13
+ 855              		@ sp needed
+ 856 0082 80BD     		pop	{r7, pc}
+ 857              	.L29:
+ 858 0084 AFF30080 		.align	3
+ 859              	.L28:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 18
+
+
+ 860 0088 AE47E17A 		.word	2061584302
+ 861 008c 14666740 		.word	1080518164
+ 862 0090 5839B4C8 		.word	-927712936
+ 863 0094 76BE0940 		.word	1074380406
+ 864 0098 00000000 		.word	sd8800_temp
+ 865              		.cfi_endproc
+ 866              	.LFE38:
+ 868              		.section	.text.sd8800_ReadVbat,"ax",%progbits
+ 869              		.align	1
+ 870              		.global	sd8800_ReadVbat
+ 871              		.syntax unified
+ 872              		.thumb
+ 873              		.thumb_func
+ 874              		.fpu softvfp
+ 876              	sd8800_ReadVbat:
+ 877              	.LFB39:
+ 127:./Hardware/device/sd8800.c **** 
+ 128:./Hardware/device/sd8800.c **** uint8_t sd8800_ReadVbat(i2c_device_bus IIC_x)
+ 129:./Hardware/device/sd8800.c **** {
+ 878              		.loc 1 129 1
+ 879              		.cfi_startproc
+ 880              		@ args = 0, pretend = 0, frame = 16
+ 881              		@ frame_needed = 1, uses_anonymous_args = 0
+ 882 0000 80B5     		push	{r7, lr}
+ 883              	.LCFI35:
+ 884              		.cfi_def_cfa_offset 8
+ 885              		.cfi_offset 7, -8
+ 886              		.cfi_offset 14, -4
+ 887 0002 84B0     		sub	sp, sp, #16
+ 888              	.LCFI36:
+ 889              		.cfi_def_cfa_offset 24
+ 890 0004 00AF     		add	r7, sp, #0
+ 891              	.LCFI37:
+ 892              		.cfi_def_cfa_register 7
+ 893 0006 0346     		mov	r3, r0
+ 894 0008 FB71     		strb	r3, [r7, #7]
+ 130:./Hardware/device/sd8800.c **** 	uint8_t	Vbatbit8,Vbatlow7;
+ 131:./Hardware/device/sd8800.c **** 	
+ 132:./Hardware/device/sd8800.c **** 	uint8_t buf = 0x10;
+ 895              		.loc 1 132 10
+ 896 000a 1023     		movs	r3, #16
+ 897 000c 7B73     		strb	r3, [r7, #13]
+ 133:./Hardware/device/sd8800.c **** 	if(SD8800_write_addr(0x59,&buf,1,IIC_x)!=RTC_OK)
+ 898              		.loc 1 133 5
+ 899 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 900 0010 07F10D01 		add	r1, r7, #13
+ 901 0014 0122     		movs	r2, #1
+ 902 0016 5920     		movs	r0, #89
+ 903 0018 FFF7FEFF 		bl	SD8800_write_addr
+ 904 001c 0346     		mov	r3, r0
+ 905              		.loc 1 133 4
+ 906 001e 062B     		cmp	r3, #6
+ 907 0020 01D0     		beq	.L31
+ 134:./Hardware/device/sd8800.c **** 		return RTC_NOACK;
+ 908              		.loc 1 134 10
+ 909 0022 0723     		movs	r3, #7
+ 910 0024 40E0     		b	.L33
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 19
+
+
+ 911              	.L31:
+ 135:./Hardware/device/sd8800.c **** 	
+ 136:./Hardware/device/sd8800.c **** 	Vbatbit8 = RTC_ReadByte(0x5A,IIC_x);
+ 912              		.loc 1 136 13
+ 913 0026 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 914 0028 1946     		mov	r1, r3
+ 915 002a 5A20     		movs	r0, #90
+ 916 002c FFF7FEFF 		bl	RTC_ReadByte
+ 917 0030 0346     		mov	r3, r0
+ 918 0032 FB73     		strb	r3, [r7, #15]
+ 137:./Hardware/device/sd8800.c **** 	Vbatlow7 = RTC_ReadByte(0x5B,IIC_x);
+ 919              		.loc 1 137 13
+ 920 0034 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 921 0036 1946     		mov	r1, r3
+ 922 0038 5B20     		movs	r0, #91
+ 923 003a FFF7FEFF 		bl	RTC_ReadByte
+ 924 003e 0346     		mov	r3, r0
+ 925 0040 BB73     		strb	r3, [r7, #14]
+ 138:./Hardware/device/sd8800.c **** 	
+ 139:./Hardware/device/sd8800.c **** 	sd8800_vbat = ((Vbatbit8&0x80)>>7)*255+Vbatlow7;
+ 926              		.loc 1 139 32
+ 927 0042 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 928 0044 DB09     		lsrs	r3, r3, #7
+ 929 0046 DBB2     		uxtb	r3, r3
+ 930 0048 1A46     		mov	r2, r3
+ 931              		.loc 1 139 36
+ 932 004a 1346     		mov	r3, r2
+ 933 004c 1B02     		lsls	r3, r3, #8
+ 934 004e 9A1A     		subs	r2, r3, r2
+ 935              		.loc 1 139 40
+ 936 0050 BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 937 0052 1344     		add	r3, r3, r2
+ 938              		.loc 1 139 14
+ 939 0054 1846     		mov	r0, r3
+ 940 0056 FFF7FEFF 		bl	__aeabi_i2d
+ 941 005a 0246     		mov	r2, r0
+ 942 005c 0B46     		mov	r3, r1
+ 943 005e 1449     		ldr	r1, .L34
+ 944 0060 C1E90023 		strd	r2, [r1]
+ 140:./Hardware/device/sd8800.c **** 	
+ 141:./Hardware/device/sd8800.c **** 	sd8800_vbat = sd8800_vbat/100;
+ 945              		.loc 1 141 27
+ 946 0064 124B     		ldr	r3, .L34
+ 947 0066 D3E90001 		ldrd	r0, [r3]
+ 948 006a 4FF00002 		mov	r2, #0
+ 949 006e 114B     		ldr	r3, .L34+4
+ 950 0070 FFF7FEFF 		bl	__aeabi_ddiv
+ 951 0074 0246     		mov	r2, r0
+ 952 0076 0B46     		mov	r3, r1
+ 953              		.loc 1 141 14
+ 954 0078 0D49     		ldr	r1, .L34
+ 955 007a C1E90023 		strd	r2, [r1]
+ 142:./Hardware/device/sd8800.c **** 	bcd_to_dec(sd8800_vbat);
+ 956              		.loc 1 142 2
+ 957 007e 0C4B     		ldr	r3, .L34
+ 958 0080 D3E90023 		ldrd	r2, [r3]
+ 959 0084 1046     		mov	r0, r2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 20
+
+
+ 960 0086 1946     		mov	r1, r3
+ 961 0088 FFF7FEFF 		bl	__aeabi_d2uiz
+ 962 008c 0346     		mov	r3, r0
+ 963 008e DBB2     		uxtb	r3, r3
+ 964 0090 1846     		mov	r0, r3
+ 965 0092 FFF7FEFF 		bl	bcd_to_dec
+ 143:./Hardware/device/sd8800.c **** 
+ 144:./Hardware/device/sd8800.c **** 	return sd8800_vbat;
+ 966              		.loc 1 144 9
+ 967 0096 064B     		ldr	r3, .L34
+ 968 0098 D3E90023 		ldrd	r2, [r3]
+ 969 009c 1046     		mov	r0, r2
+ 970 009e 1946     		mov	r1, r3
+ 971 00a0 FFF7FEFF 		bl	__aeabi_d2uiz
+ 972 00a4 0346     		mov	r3, r0
+ 973 00a6 DBB2     		uxtb	r3, r3
+ 974              	.L33:
+ 145:./Hardware/device/sd8800.c **** 	
+ 146:./Hardware/device/sd8800.c **** }
+ 975              		.loc 1 146 1 discriminator 1
+ 976 00a8 1846     		mov	r0, r3
+ 977 00aa 1037     		adds	r7, r7, #16
+ 978              	.LCFI38:
+ 979              		.cfi_def_cfa_offset 8
+ 980 00ac BD46     		mov	sp, r7
+ 981              	.LCFI39:
+ 982              		.cfi_def_cfa_register 13
+ 983              		@ sp needed
+ 984 00ae 80BD     		pop	{r7, pc}
+ 985              	.L35:
+ 986              		.align	2
+ 987              	.L34:
+ 988 00b0 00000000 		.word	sd8800_vbat
+ 989 00b4 00005940 		.word	1079574528
+ 990              		.cfi_endproc
+ 991              	.LFE39:
+ 993              		.section	.text.sd8800_VbatQuan,"ax",%progbits
+ 994              		.align	1
+ 995              		.global	sd8800_VbatQuan
+ 996              		.syntax unified
+ 997              		.thumb
+ 998              		.thumb_func
+ 999              		.fpu softvfp
+ 1001              	sd8800_VbatQuan:
+ 1002              	.LFB40:
+ 147:./Hardware/device/sd8800.c **** 
+ 148:./Hardware/device/sd8800.c **** //¶ÁÈ¡vbatµçÑ¹ºÍÉÏÎ»»úÊ¹ÓÃ
+ 149:./Hardware/device/sd8800.c **** uint8_t sd8800_VbatQuan(uint8_t *data,i2c_device_bus IIC_x)
+ 150:./Hardware/device/sd8800.c **** {
+ 1003              		.loc 1 150 1
+ 1004              		.cfi_startproc
+ 1005              		@ args = 0, pretend = 0, frame = 16
+ 1006              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1007 0000 80B5     		push	{r7, lr}
+ 1008              	.LCFI40:
+ 1009              		.cfi_def_cfa_offset 8
+ 1010              		.cfi_offset 7, -8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 21
+
+
+ 1011              		.cfi_offset 14, -4
+ 1012 0002 84B0     		sub	sp, sp, #16
+ 1013              	.LCFI41:
+ 1014              		.cfi_def_cfa_offset 24
+ 1015 0004 00AF     		add	r7, sp, #0
+ 1016              	.LCFI42:
+ 1017              		.cfi_def_cfa_register 7
+ 1018 0006 7860     		str	r0, [r7, #4]
+ 1019 0008 0B46     		mov	r3, r1
+ 1020 000a FB70     		strb	r3, [r7, #3]
+ 151:./Hardware/device/sd8800.c **** 	uint8_t time = 5;
+ 1021              		.loc 1 151 10
+ 1022 000c 0523     		movs	r3, #5
+ 1023 000e FB73     		strb	r3, [r7, #15]
+ 152:./Hardware/device/sd8800.c **** 	
+ 153:./Hardware/device/sd8800.c **** 	uint8_t buf = 0x10;
+ 1024              		.loc 1 153 10
+ 1025 0010 1023     		movs	r3, #16
+ 1026 0012 BB73     		strb	r3, [r7, #14]
+ 154:./Hardware/device/sd8800.c **** 	if(SD8800_write_addr(0x59,&buf,1,IIC_x)!=RTC_OK)
+ 1027              		.loc 1 154 5
+ 1028 0014 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1029 0016 07F10E01 		add	r1, r7, #14
+ 1030 001a 0122     		movs	r2, #1
+ 1031 001c 5920     		movs	r0, #89
+ 1032 001e FFF7FEFF 		bl	SD8800_write_addr
+ 1033 0022 0346     		mov	r3, r0
+ 1034              		.loc 1 154 4
+ 1035 0024 062B     		cmp	r3, #6
+ 1036 0026 0CD0     		beq	.L42
+ 155:./Hardware/device/sd8800.c **** 		return RTC_NOACK;
+ 1037              		.loc 1 155 10
+ 1038 0028 0723     		movs	r3, #7
+ 1039 002a 11E0     		b	.L41
+ 1040              	.L40:
+ 156:./Hardware/device/sd8800.c **** 	
+ 157:./Hardware/device/sd8800.c **** 	while(time--)
+ 158:./Hardware/device/sd8800.c **** 	{
+ 159:./Hardware/device/sd8800.c **** 		Delay_ms(1);
+ 1041              		.loc 1 159 3
+ 1042 002c 0120     		movs	r0, #1
+ 1043 002e FFF7FEFF 		bl	Delay_ms
+ 160:./Hardware/device/sd8800.c **** 		
+ 161:./Hardware/device/sd8800.c **** 		SD8800_read_addr(0x5A,data,2,IIC_x);
+ 1044              		.loc 1 161 3
+ 1045 0032 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1046 0034 0222     		movs	r2, #2
+ 1047 0036 7968     		ldr	r1, [r7, #4]
+ 1048 0038 5A20     		movs	r0, #90
+ 1049 003a FFF7FEFF 		bl	SD8800_read_addr
+ 162:./Hardware/device/sd8800.c **** 			return TRUE;
+ 1050              		.loc 1 162 11
+ 1051 003e 0123     		movs	r3, #1
+ 1052 0040 06E0     		b	.L41
+ 1053              	.L42:
+ 157:./Hardware/device/sd8800.c **** 	{
+ 1054              		.loc 1 157 7
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 22
+
+
+ 1055 0042 00BF     		nop
+ 157:./Hardware/device/sd8800.c **** 	{
+ 1056              		.loc 1 157 12
+ 1057 0044 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1058 0046 5A1E     		subs	r2, r3, #1
+ 1059 0048 FA73     		strb	r2, [r7, #15]
+ 157:./Hardware/device/sd8800.c **** 	{
+ 1060              		.loc 1 157 7
+ 1061 004a 002B     		cmp	r3, #0
+ 1062 004c EED1     		bne	.L40
+ 163:./Hardware/device/sd8800.c **** 		
+ 164:./Hardware/device/sd8800.c **** 	}
+ 165:./Hardware/device/sd8800.c **** 	
+ 166:./Hardware/device/sd8800.c **** 	return FALSE;	
+ 1063              		.loc 1 166 9
+ 1064 004e 0023     		movs	r3, #0
+ 1065              	.L41:
+ 167:./Hardware/device/sd8800.c **** 
+ 168:./Hardware/device/sd8800.c **** }
+ 1066              		.loc 1 168 1 discriminator 1
+ 1067 0050 1846     		mov	r0, r3
+ 1068 0052 1037     		adds	r7, r7, #16
+ 1069              	.LCFI43:
+ 1070              		.cfi_def_cfa_offset 8
+ 1071 0054 BD46     		mov	sp, r7
+ 1072              	.LCFI44:
+ 1073              		.cfi_def_cfa_register 13
+ 1074              		@ sp needed
+ 1075 0056 80BD     		pop	{r7, pc}
+ 1076              		.cfi_endproc
+ 1077              	.LFE40:
+ 1079              		.section	.text.sd8800_f32768,"ax",%progbits
+ 1080              		.align	1
+ 1081              		.global	sd8800_f32768
+ 1082              		.syntax unified
+ 1083              		.thumb
+ 1084              		.thumb_func
+ 1085              		.fpu softvfp
+ 1087              	sd8800_f32768:
+ 1088              	.LFB41:
+ 169:./Hardware/device/sd8800.c **** 
+ 170:./Hardware/device/sd8800.c **** 
+ 171:./Hardware/device/sd8800.c **** 
+ 172:./Hardware/device/sd8800.c **** 
+ 173:./Hardware/device/sd8800.c **** rtc_exit_code sd8800_f32768(i2c_device_bus IIC_x)
+ 174:./Hardware/device/sd8800.c **** {	
+ 1089              		.loc 1 174 1
+ 1090              		.cfi_startproc
+ 1091              		@ args = 0, pretend = 0, frame = 16
+ 1092              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1093 0000 80B5     		push	{r7, lr}
+ 1094              	.LCFI45:
+ 1095              		.cfi_def_cfa_offset 8
+ 1096              		.cfi_offset 7, -8
+ 1097              		.cfi_offset 14, -4
+ 1098 0002 84B0     		sub	sp, sp, #16
+ 1099              	.LCFI46:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 23
+
+
+ 1100              		.cfi_def_cfa_offset 24
+ 1101 0004 00AF     		add	r7, sp, #0
+ 1102              	.LCFI47:
+ 1103              		.cfi_def_cfa_register 7
+ 1104 0006 0346     		mov	r3, r0
+ 1105 0008 FB71     		strb	r3, [r7, #7]
+ 175:./Hardware/device/sd8800.c **** 		sd8800_fctr(1);
+ 1106              		.loc 1 175 3
+ 1107 000a 0122     		movs	r2, #1
+ 1108 000c 0821     		movs	r1, #8
+ 1109 000e 0848     		ldr	r0, .L45
+ 1110 0010 FFF7FEFF 		bl	GPIO_WriteBit
+ 176:./Hardware/device/sd8800.c **** 	
+ 177:./Hardware/device/sd8800.c **** 		uint8_t buf=0x0C;
+ 1111              		.loc 1 177 11
+ 1112 0014 0C23     		movs	r3, #12
+ 1113 0016 FB73     		strb	r3, [r7, #15]
+ 178:./Hardware/device/sd8800.c **** 		SD8800_write_addr(0x0D,&buf,1,IIC_x);
+ 1114              		.loc 1 178 3
+ 1115 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1116 001a 07F10F01 		add	r1, r7, #15
+ 1117 001e 0122     		movs	r2, #1
+ 1118 0020 0D20     		movs	r0, #13
+ 1119 0022 FFF7FEFF 		bl	SD8800_write_addr
+ 179:./Hardware/device/sd8800.c **** 	
+ 180:./Hardware/device/sd8800.c **** 		return RTC_OK;
+ 1120              		.loc 1 180 10
+ 1121 0026 0623     		movs	r3, #6
+ 181:./Hardware/device/sd8800.c **** 
+ 182:./Hardware/device/sd8800.c **** }
+ 1122              		.loc 1 182 1
+ 1123 0028 1846     		mov	r0, r3
+ 1124 002a 1037     		adds	r7, r7, #16
+ 1125              	.LCFI48:
+ 1126              		.cfi_def_cfa_offset 8
+ 1127 002c BD46     		mov	sp, r7
+ 1128              	.LCFI49:
+ 1129              		.cfi_def_cfa_register 13
+ 1130              		@ sp needed
+ 1131 002e 80BD     		pop	{r7, pc}
+ 1132              	.L46:
+ 1133              		.align	2
+ 1134              	.L45:
+ 1135 0030 00100140 		.word	1073811456
+ 1136              		.cfi_endproc
+ 1137              	.LFE41:
+ 1139              		.section	.text.sd8800_f32768_off,"ax",%progbits
+ 1140              		.align	1
+ 1141              		.global	sd8800_f32768_off
+ 1142              		.syntax unified
+ 1143              		.thumb
+ 1144              		.thumb_func
+ 1145              		.fpu softvfp
+ 1147              	sd8800_f32768_off:
+ 1148              	.LFB42:
+ 183:./Hardware/device/sd8800.c **** 
+ 184:./Hardware/device/sd8800.c **** rtc_exit_code sd8800_f32768_off(i2c_device_bus IIC_x)
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 24
+
+
+ 185:./Hardware/device/sd8800.c **** {
+ 1149              		.loc 1 185 1
+ 1150              		.cfi_startproc
+ 1151              		@ args = 0, pretend = 0, frame = 16
+ 1152              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1153 0000 80B5     		push	{r7, lr}
+ 1154              	.LCFI50:
+ 1155              		.cfi_def_cfa_offset 8
+ 1156              		.cfi_offset 7, -8
+ 1157              		.cfi_offset 14, -4
+ 1158 0002 84B0     		sub	sp, sp, #16
+ 1159              	.LCFI51:
+ 1160              		.cfi_def_cfa_offset 24
+ 1161 0004 00AF     		add	r7, sp, #0
+ 1162              	.LCFI52:
+ 1163              		.cfi_def_cfa_register 7
+ 1164 0006 0346     		mov	r3, r0
+ 1165 0008 FB71     		strb	r3, [r7, #7]
+ 186:./Hardware/device/sd8800.c **** 		sd8800_fctr(0);
+ 1166              		.loc 1 186 3
+ 1167 000a 0022     		movs	r2, #0
+ 1168 000c 0821     		movs	r1, #8
+ 1169 000e 0848     		ldr	r0, .L49
+ 1170 0010 FFF7FEFF 		bl	GPIO_WriteBit
+ 187:./Hardware/device/sd8800.c **** 
+ 188:./Hardware/device/sd8800.c **** 		uint8_t buf=0x0C;
+ 1171              		.loc 1 188 11
+ 1172 0014 0C23     		movs	r3, #12
+ 1173 0016 FB73     		strb	r3, [r7, #15]
+ 189:./Hardware/device/sd8800.c **** 		SD8800_write_addr(0x0D,&buf,1,IIC_x);
+ 1174              		.loc 1 189 3
+ 1175 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1176 001a 07F10F01 		add	r1, r7, #15
+ 1177 001e 0122     		movs	r2, #1
+ 1178 0020 0D20     		movs	r0, #13
+ 1179 0022 FFF7FEFF 		bl	SD8800_write_addr
+ 190:./Hardware/device/sd8800.c **** 	
+ 191:./Hardware/device/sd8800.c **** 		return RTC_OK;
+ 1180              		.loc 1 191 10
+ 1181 0026 0623     		movs	r3, #6
+ 192:./Hardware/device/sd8800.c **** }
+ 1182              		.loc 1 192 1
+ 1183 0028 1846     		mov	r0, r3
+ 1184 002a 1037     		adds	r7, r7, #16
+ 1185              	.LCFI53:
+ 1186              		.cfi_def_cfa_offset 8
+ 1187 002c BD46     		mov	sp, r7
+ 1188              	.LCFI54:
+ 1189              		.cfi_def_cfa_register 13
+ 1190              		@ sp needed
+ 1191 002e 80BD     		pop	{r7, pc}
+ 1192              	.L50:
+ 1193              		.align	2
+ 1194              	.L49:
+ 1195 0030 00100140 		.word	1073811456
+ 1196              		.cfi_endproc
+ 1197              	.LFE42:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 25
+
+
+ 1199              		.section	.text.sd8800_f1024,"ax",%progbits
+ 1200              		.align	1
+ 1201              		.global	sd8800_f1024
+ 1202              		.syntax unified
+ 1203              		.thumb
+ 1204              		.thumb_func
+ 1205              		.fpu softvfp
+ 1207              	sd8800_f1024:
+ 1208              	.LFB43:
+ 193:./Hardware/device/sd8800.c **** 
+ 194:./Hardware/device/sd8800.c **** rtc_exit_code sd8800_f1024(i2c_device_bus IIC_x)
+ 195:./Hardware/device/sd8800.c **** {	
+ 1209              		.loc 1 195 1
+ 1210              		.cfi_startproc
+ 1211              		@ args = 0, pretend = 0, frame = 16
+ 1212              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1213 0000 80B5     		push	{r7, lr}
+ 1214              	.LCFI55:
+ 1215              		.cfi_def_cfa_offset 8
+ 1216              		.cfi_offset 7, -8
+ 1217              		.cfi_offset 14, -4
+ 1218 0002 84B0     		sub	sp, sp, #16
+ 1219              	.LCFI56:
+ 1220              		.cfi_def_cfa_offset 24
+ 1221 0004 00AF     		add	r7, sp, #0
+ 1222              	.LCFI57:
+ 1223              		.cfi_def_cfa_register 7
+ 1224 0006 0346     		mov	r3, r0
+ 1225 0008 FB71     		strb	r3, [r7, #7]
+ 196:./Hardware/device/sd8800.c **** 		sd8800_fctr(1);
+ 1226              		.loc 1 196 3
+ 1227 000a 0122     		movs	r2, #1
+ 1228 000c 0821     		movs	r1, #8
+ 1229 000e 0848     		ldr	r0, .L53
+ 1230 0010 FFF7FEFF 		bl	GPIO_WriteBit
+ 197:./Hardware/device/sd8800.c **** 	
+ 198:./Hardware/device/sd8800.c **** 		uint8_t buf=0x04;
+ 1231              		.loc 1 198 11
+ 1232 0014 0423     		movs	r3, #4
+ 1233 0016 FB73     		strb	r3, [r7, #15]
+ 199:./Hardware/device/sd8800.c **** 		SD8800_write_addr(0x0D,&buf,1,IIC_x);
+ 1234              		.loc 1 199 3
+ 1235 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1236 001a 07F10F01 		add	r1, r7, #15
+ 1237 001e 0122     		movs	r2, #1
+ 1238 0020 0D20     		movs	r0, #13
+ 1239 0022 FFF7FEFF 		bl	SD8800_write_addr
+ 200:./Hardware/device/sd8800.c **** 	
+ 201:./Hardware/device/sd8800.c **** 		return RTC_OK;
+ 1240              		.loc 1 201 10
+ 1241 0026 0623     		movs	r3, #6
+ 202:./Hardware/device/sd8800.c **** 
+ 203:./Hardware/device/sd8800.c **** }
+ 1242              		.loc 1 203 1
+ 1243 0028 1846     		mov	r0, r3
+ 1244 002a 1037     		adds	r7, r7, #16
+ 1245              	.LCFI58:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 26
+
+
+ 1246              		.cfi_def_cfa_offset 8
+ 1247 002c BD46     		mov	sp, r7
+ 1248              	.LCFI59:
+ 1249              		.cfi_def_cfa_register 13
+ 1250              		@ sp needed
+ 1251 002e 80BD     		pop	{r7, pc}
+ 1252              	.L54:
+ 1253              		.align	2
+ 1254              	.L53:
+ 1255 0030 00100140 		.word	1073811456
+ 1256              		.cfi_endproc
+ 1257              	.LFE43:
+ 1259              		.section	.text.sd8800_f1024_off,"ax",%progbits
+ 1260              		.align	1
+ 1261              		.global	sd8800_f1024_off
+ 1262              		.syntax unified
+ 1263              		.thumb
+ 1264              		.thumb_func
+ 1265              		.fpu softvfp
+ 1267              	sd8800_f1024_off:
+ 1268              	.LFB44:
+ 204:./Hardware/device/sd8800.c **** 
+ 205:./Hardware/device/sd8800.c **** rtc_exit_code sd8800_f1024_off(i2c_device_bus IIC_x)
+ 206:./Hardware/device/sd8800.c **** {
+ 1269              		.loc 1 206 1
+ 1270              		.cfi_startproc
+ 1271              		@ args = 0, pretend = 0, frame = 16
+ 1272              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1273 0000 80B5     		push	{r7, lr}
+ 1274              	.LCFI60:
+ 1275              		.cfi_def_cfa_offset 8
+ 1276              		.cfi_offset 7, -8
+ 1277              		.cfi_offset 14, -4
+ 1278 0002 84B0     		sub	sp, sp, #16
+ 1279              	.LCFI61:
+ 1280              		.cfi_def_cfa_offset 24
+ 1281 0004 00AF     		add	r7, sp, #0
+ 1282              	.LCFI62:
+ 1283              		.cfi_def_cfa_register 7
+ 1284 0006 0346     		mov	r3, r0
+ 1285 0008 FB71     		strb	r3, [r7, #7]
+ 207:./Hardware/device/sd8800.c **** 		sd8800_fctr(0);
+ 1286              		.loc 1 207 3
+ 1287 000a 0022     		movs	r2, #0
+ 1288 000c 0821     		movs	r1, #8
+ 1289 000e 0848     		ldr	r0, .L57
+ 1290 0010 FFF7FEFF 		bl	GPIO_WriteBit
+ 208:./Hardware/device/sd8800.c **** 
+ 209:./Hardware/device/sd8800.c **** 		uint8_t buf=0x04;
+ 1291              		.loc 1 209 11
+ 1292 0014 0423     		movs	r3, #4
+ 1293 0016 FB73     		strb	r3, [r7, #15]
+ 210:./Hardware/device/sd8800.c **** 		SD8800_write_addr(0x0D,&buf,1,IIC_x);
+ 1294              		.loc 1 210 3
+ 1295 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1296 001a 07F10F01 		add	r1, r7, #15
+ 1297 001e 0122     		movs	r2, #1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 27
+
+
+ 1298 0020 0D20     		movs	r0, #13
+ 1299 0022 FFF7FEFF 		bl	SD8800_write_addr
+ 211:./Hardware/device/sd8800.c **** 	
+ 212:./Hardware/device/sd8800.c **** 		return RTC_OK;
+ 1300              		.loc 1 212 10
+ 1301 0026 0623     		movs	r3, #6
+ 213:./Hardware/device/sd8800.c **** }
+ 1302              		.loc 1 213 1
+ 1303 0028 1846     		mov	r0, r3
+ 1304 002a 1037     		adds	r7, r7, #16
+ 1305              	.LCFI63:
+ 1306              		.cfi_def_cfa_offset 8
+ 1307 002c BD46     		mov	sp, r7
+ 1308              	.LCFI64:
+ 1309              		.cfi_def_cfa_register 13
+ 1310              		@ sp needed
+ 1311 002e 80BD     		pop	{r7, pc}
+ 1312              	.L58:
+ 1313              		.align	2
+ 1314              	.L57:
+ 1315 0030 00100140 		.word	1073811456
+ 1316              		.cfi_endproc
+ 1317              	.LFE44:
+ 1319              		.section	.text.sd8800_f1,"ax",%progbits
+ 1320              		.align	1
+ 1321              		.global	sd8800_f1
+ 1322              		.syntax unified
+ 1323              		.thumb
+ 1324              		.thumb_func
+ 1325              		.fpu softvfp
+ 1327              	sd8800_f1:
+ 1328              	.LFB45:
+ 214:./Hardware/device/sd8800.c **** 
+ 215:./Hardware/device/sd8800.c **** rtc_exit_code sd8800_f1(i2c_device_bus IIC_x)
+ 216:./Hardware/device/sd8800.c **** {	
+ 1329              		.loc 1 216 1
+ 1330              		.cfi_startproc
+ 1331              		@ args = 0, pretend = 0, frame = 16
+ 1332              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1333 0000 80B5     		push	{r7, lr}
+ 1334              	.LCFI65:
+ 1335              		.cfi_def_cfa_offset 8
+ 1336              		.cfi_offset 7, -8
+ 1337              		.cfi_offset 14, -4
+ 1338 0002 84B0     		sub	sp, sp, #16
+ 1339              	.LCFI66:
+ 1340              		.cfi_def_cfa_offset 24
+ 1341 0004 00AF     		add	r7, sp, #0
+ 1342              	.LCFI67:
+ 1343              		.cfi_def_cfa_register 7
+ 1344 0006 0346     		mov	r3, r0
+ 1345 0008 FB71     		strb	r3, [r7, #7]
+ 217:./Hardware/device/sd8800.c **** 		sd8800_fctr(1);
+ 1346              		.loc 1 217 3
+ 1347 000a 0122     		movs	r2, #1
+ 1348 000c 0821     		movs	r1, #8
+ 1349 000e 0848     		ldr	r0, .L61
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 28
+
+
+ 1350 0010 FFF7FEFF 		bl	GPIO_WriteBit
+ 218:./Hardware/device/sd8800.c **** 	
+ 219:./Hardware/device/sd8800.c **** 		uint8_t buf=0x08;
+ 1351              		.loc 1 219 11
+ 1352 0014 0823     		movs	r3, #8
+ 1353 0016 FB73     		strb	r3, [r7, #15]
+ 220:./Hardware/device/sd8800.c **** 		SD8800_write_addr(0x0D,&buf,1,IIC_x);
+ 1354              		.loc 1 220 3
+ 1355 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1356 001a 07F10F01 		add	r1, r7, #15
+ 1357 001e 0122     		movs	r2, #1
+ 1358 0020 0D20     		movs	r0, #13
+ 1359 0022 FFF7FEFF 		bl	SD8800_write_addr
+ 221:./Hardware/device/sd8800.c **** 	
+ 222:./Hardware/device/sd8800.c **** 		return RTC_OK;
+ 1360              		.loc 1 222 10
+ 1361 0026 0623     		movs	r3, #6
+ 223:./Hardware/device/sd8800.c **** 
+ 224:./Hardware/device/sd8800.c **** }
+ 1362              		.loc 1 224 1
+ 1363 0028 1846     		mov	r0, r3
+ 1364 002a 1037     		adds	r7, r7, #16
+ 1365              	.LCFI68:
+ 1366              		.cfi_def_cfa_offset 8
+ 1367 002c BD46     		mov	sp, r7
+ 1368              	.LCFI69:
+ 1369              		.cfi_def_cfa_register 13
+ 1370              		@ sp needed
+ 1371 002e 80BD     		pop	{r7, pc}
+ 1372              	.L62:
+ 1373              		.align	2
+ 1374              	.L61:
+ 1375 0030 00100140 		.word	1073811456
+ 1376              		.cfi_endproc
+ 1377              	.LFE45:
+ 1379              		.section	.text.sd8800_f1_off,"ax",%progbits
+ 1380              		.align	1
+ 1381              		.global	sd8800_f1_off
+ 1382              		.syntax unified
+ 1383              		.thumb
+ 1384              		.thumb_func
+ 1385              		.fpu softvfp
+ 1387              	sd8800_f1_off:
+ 1388              	.LFB46:
+ 225:./Hardware/device/sd8800.c **** 
+ 226:./Hardware/device/sd8800.c **** rtc_exit_code sd8800_f1_off(i2c_device_bus IIC_x)
+ 227:./Hardware/device/sd8800.c **** {
+ 1389              		.loc 1 227 1
+ 1390              		.cfi_startproc
+ 1391              		@ args = 0, pretend = 0, frame = 16
+ 1392              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1393 0000 80B5     		push	{r7, lr}
+ 1394              	.LCFI70:
+ 1395              		.cfi_def_cfa_offset 8
+ 1396              		.cfi_offset 7, -8
+ 1397              		.cfi_offset 14, -4
+ 1398 0002 84B0     		sub	sp, sp, #16
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 29
+
+
+ 1399              	.LCFI71:
+ 1400              		.cfi_def_cfa_offset 24
+ 1401 0004 00AF     		add	r7, sp, #0
+ 1402              	.LCFI72:
+ 1403              		.cfi_def_cfa_register 7
+ 1404 0006 0346     		mov	r3, r0
+ 1405 0008 FB71     		strb	r3, [r7, #7]
+ 228:./Hardware/device/sd8800.c **** 		sd8800_fctr(0);
+ 1406              		.loc 1 228 3
+ 1407 000a 0022     		movs	r2, #0
+ 1408 000c 0821     		movs	r1, #8
+ 1409 000e 0848     		ldr	r0, .L65
+ 1410 0010 FFF7FEFF 		bl	GPIO_WriteBit
+ 229:./Hardware/device/sd8800.c **** 
+ 230:./Hardware/device/sd8800.c **** 		uint8_t buf=0x08;
+ 1411              		.loc 1 230 11
+ 1412 0014 0823     		movs	r3, #8
+ 1413 0016 FB73     		strb	r3, [r7, #15]
+ 231:./Hardware/device/sd8800.c **** 		SD8800_write_addr(0x0D,&buf,1,IIC_x);
+ 1414              		.loc 1 231 3
+ 1415 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1416 001a 07F10F01 		add	r1, r7, #15
+ 1417 001e 0122     		movs	r2, #1
+ 1418 0020 0D20     		movs	r0, #13
+ 1419 0022 FFF7FEFF 		bl	SD8800_write_addr
+ 232:./Hardware/device/sd8800.c **** 	
+ 233:./Hardware/device/sd8800.c **** 		return RTC_OK;
+ 1420              		.loc 1 233 10
+ 1421 0026 0623     		movs	r3, #6
+ 234:./Hardware/device/sd8800.c **** }
+ 1422              		.loc 1 234 1
+ 1423 0028 1846     		mov	r0, r3
+ 1424 002a 1037     		adds	r7, r7, #16
+ 1425              	.LCFI73:
+ 1426              		.cfi_def_cfa_offset 8
+ 1427 002c BD46     		mov	sp, r7
+ 1428              	.LCFI74:
+ 1429              		.cfi_def_cfa_register 13
+ 1430              		@ sp needed
+ 1431 002e 80BD     		pop	{r7, pc}
+ 1432              	.L66:
+ 1433              		.align	2
+ 1434              	.L65:
+ 1435 0030 00100140 		.word	1073811456
+ 1436              		.cfi_endproc
+ 1437              	.LFE46:
+ 1439              		.section	.text.sd8800_and_std,"ax",%progbits
+ 1440              		.align	1
+ 1441              		.global	sd8800_and_std
+ 1442              		.syntax unified
+ 1443              		.thumb
+ 1444              		.thumb_func
+ 1445              		.fpu softvfp
+ 1447              	sd8800_and_std:
+ 1448              	.LFB47:
+ 235:./Hardware/device/sd8800.c **** 
+ 236:./Hardware/device/sd8800.c **** uint8_t sd8800_and_std(void)
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 30
+
+
+ 237:./Hardware/device/sd8800.c **** {
+ 1449              		.loc 1 237 1
+ 1450              		.cfi_startproc
+ 1451              		@ args = 0, pretend = 0, frame = 24
+ 1452              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1453 0000 80B5     		push	{r7, lr}
+ 1454              	.LCFI75:
+ 1455              		.cfi_def_cfa_offset 8
+ 1456              		.cfi_offset 7, -8
+ 1457              		.cfi_offset 14, -4
+ 1458 0002 88B0     		sub	sp, sp, #32
+ 1459              	.LCFI76:
+ 1460              		.cfi_def_cfa_offset 40
+ 1461 0004 02AF     		add	r7, sp, #8
+ 1462              	.LCFI77:
+ 1463              		.cfi_def_cfa 7, 32
+ 238:./Hardware/device/sd8800.c **** 	uint8_t year_h,year_l;
+ 239:./Hardware/device/sd8800.c **** 	uint8_t month_h,month_l;
+ 240:./Hardware/device/sd8800.c **** 	uint8_t day_h,day_l;
+ 241:./Hardware/device/sd8800.c **** 	uint8_t week;
+ 242:./Hardware/device/sd8800.c **** 	uint8_t hour_h,hour_l;
+ 243:./Hardware/device/sd8800.c **** 	uint8_t minute_h,minute_l;
+ 244:./Hardware/device/sd8800.c **** 	uint8_t second_h,second_l;
+ 245:./Hardware/device/sd8800.c **** 	
+ 246:./Hardware/device/sd8800.c **** 	rtc_time time_buf;
+ 247:./Hardware/device/sd8800.c **** 	
+ 248:./Hardware/device/sd8800.c **** 	sd2405showtime();
+ 1464              		.loc 1 248 2
+ 1465 0006 FFF7FEFF 		bl	sd2405showtime
+ 249:./Hardware/device/sd8800.c **** 	Test_Line();
+ 1466              		.loc 1 249 2
+ 1467 000a FFF7FEFF 		bl	Test_Line
+ 250:./Hardware/device/sd8800.c **** 	
+ 251:./Hardware/device/sd8800.c **** 	if(SD8800_ReadTimeDate(&time_buf,IIC_TEST)!=RTC_FAIL)
+ 1468              		.loc 1 251 5
+ 1469 000e 3B1D     		adds	r3, r7, #4
+ 1470 0010 0021     		movs	r1, #0
+ 1471 0012 1846     		mov	r0, r3
+ 1472 0014 FFF7FEFF 		bl	SD8800_ReadTimeDate
+ 1473 0018 0346     		mov	r3, r0
+ 1474              		.loc 1 251 4
+ 1475 001a 082B     		cmp	r3, #8
+ 1476 001c 00F0F080 		beq	.L68
+ 252:./Hardware/device/sd8800.c **** 	{
+ 253:./Hardware/device/sd8800.c **** 		year_h = time_buf.year / 10;
+ 1477              		.loc 1 253 20
+ 1478 0020 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 1479              		.loc 1 253 10
+ 1480 0022 7B4A     		ldr	r2, .L71
+ 1481 0024 A2FB0323 		umull	r2, r3, r2, r3
+ 1482 0028 DB08     		lsrs	r3, r3, #3
+ 1483 002a FB75     		strb	r3, [r7, #23]
+ 254:./Hardware/device/sd8800.c **** 		year_l = time_buf.year % 10;  //Äê
+ 1484              		.loc 1 254 20
+ 1485 002c BA7A     		ldrb	r2, [r7, #10]	@ zero_extendqisi2
+ 1486              		.loc 1 254 10
+ 1487 002e 784B     		ldr	r3, .L71
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 31
+
+
+ 1488 0030 A3FB0213 		umull	r1, r3, r3, r2
+ 1489 0034 D908     		lsrs	r1, r3, #3
+ 1490 0036 0B46     		mov	r3, r1
+ 1491 0038 9B00     		lsls	r3, r3, #2
+ 1492 003a 0B44     		add	r3, r3, r1
+ 1493 003c 5B00     		lsls	r3, r3, #1
+ 1494 003e D31A     		subs	r3, r2, r3
+ 1495 0040 BB75     		strb	r3, [r7, #22]
+ 255:./Hardware/device/sd8800.c **** 
+ 256:./Hardware/device/sd8800.c **** 		month_h = time_buf.month / 10;
+ 1496              		.loc 1 256 21
+ 1497 0042 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 1498              		.loc 1 256 11
+ 1499 0044 724A     		ldr	r2, .L71
+ 1500 0046 A2FB0323 		umull	r2, r3, r2, r3
+ 1501 004a DB08     		lsrs	r3, r3, #3
+ 1502 004c 7B75     		strb	r3, [r7, #21]
+ 257:./Hardware/device/sd8800.c **** 		month_l = time_buf.month % 10;  //ÔÂ
+ 1503              		.loc 1 257 21
+ 1504 004e 7A7A     		ldrb	r2, [r7, #9]	@ zero_extendqisi2
+ 1505              		.loc 1 257 11
+ 1506 0050 6F4B     		ldr	r3, .L71
+ 1507 0052 A3FB0213 		umull	r1, r3, r3, r2
+ 1508 0056 D908     		lsrs	r1, r3, #3
+ 1509 0058 0B46     		mov	r3, r1
+ 1510 005a 9B00     		lsls	r3, r3, #2
+ 1511 005c 0B44     		add	r3, r3, r1
+ 1512 005e 5B00     		lsls	r3, r3, #1
+ 1513 0060 D31A     		subs	r3, r2, r3
+ 1514 0062 3B75     		strb	r3, [r7, #20]
+ 258:./Hardware/device/sd8800.c **** 
+ 259:./Hardware/device/sd8800.c **** 		day_h = time_buf.day / 10;
+ 1515              		.loc 1 259 19
+ 1516 0064 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 1517              		.loc 1 259 9
+ 1518 0066 6A4A     		ldr	r2, .L71
+ 1519 0068 A2FB0323 		umull	r2, r3, r2, r3
+ 1520 006c DB08     		lsrs	r3, r3, #3
+ 1521 006e FB74     		strb	r3, [r7, #19]
+ 260:./Hardware/device/sd8800.c **** 		day_l = time_buf.day % 10;  //ÈÕ
+ 1522              		.loc 1 260 19
+ 1523 0070 3A7A     		ldrb	r2, [r7, #8]	@ zero_extendqisi2
+ 1524              		.loc 1 260 9
+ 1525 0072 674B     		ldr	r3, .L71
+ 1526 0074 A3FB0213 		umull	r1, r3, r3, r2
+ 1527 0078 D908     		lsrs	r1, r3, #3
+ 1528 007a 0B46     		mov	r3, r1
+ 1529 007c 9B00     		lsls	r3, r3, #2
+ 1530 007e 0B44     		add	r3, r3, r1
+ 1531 0080 5B00     		lsls	r3, r3, #1
+ 1532 0082 D31A     		subs	r3, r2, r3
+ 1533 0084 BB74     		strb	r3, [r7, #18]
+ 261:./Hardware/device/sd8800.c **** 
+ 262:./Hardware/device/sd8800.c **** 		week  = time_buf.week;
+ 1534              		.loc 1 262 9
+ 1535 0086 FB79     		ldrb	r3, [r7, #7]
+ 1536 0088 7B74     		strb	r3, [r7, #17]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 32
+
+
+ 263:./Hardware/device/sd8800.c **** 
+ 264:./Hardware/device/sd8800.c **** 		hour_h = time_buf.hour / 10;
+ 1537              		.loc 1 264 20
+ 1538 008a BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1539              		.loc 1 264 10
+ 1540 008c 604A     		ldr	r2, .L71
+ 1541 008e A2FB0323 		umull	r2, r3, r2, r3
+ 1542 0092 DB08     		lsrs	r3, r3, #3
+ 1543 0094 3B74     		strb	r3, [r7, #16]
+ 265:./Hardware/device/sd8800.c **** 		hour_l = time_buf.hour % 10;  //Ê±
+ 1544              		.loc 1 265 20
+ 1545 0096 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 1546              		.loc 1 265 10
+ 1547 0098 5D4B     		ldr	r3, .L71
+ 1548 009a A3FB0213 		umull	r1, r3, r3, r2
+ 1549 009e D908     		lsrs	r1, r3, #3
+ 1550 00a0 0B46     		mov	r3, r1
+ 1551 00a2 9B00     		lsls	r3, r3, #2
+ 1552 00a4 0B44     		add	r3, r3, r1
+ 1553 00a6 5B00     		lsls	r3, r3, #1
+ 1554 00a8 D31A     		subs	r3, r2, r3
+ 1555 00aa FB73     		strb	r3, [r7, #15]
+ 266:./Hardware/device/sd8800.c **** 
+ 267:./Hardware/device/sd8800.c **** 		minute_h = time_buf.minute / 10;
+ 1556              		.loc 1 267 22
+ 1557 00ac 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1558              		.loc 1 267 12
+ 1559 00ae 584A     		ldr	r2, .L71
+ 1560 00b0 A2FB0323 		umull	r2, r3, r2, r3
+ 1561 00b4 DB08     		lsrs	r3, r3, #3
+ 1562 00b6 BB73     		strb	r3, [r7, #14]
+ 268:./Hardware/device/sd8800.c **** 		minute_l = time_buf.minute % 10;  //·Ö
+ 1563              		.loc 1 268 22
+ 1564 00b8 7A79     		ldrb	r2, [r7, #5]	@ zero_extendqisi2
+ 1565              		.loc 1 268 12
+ 1566 00ba 554B     		ldr	r3, .L71
+ 1567 00bc A3FB0213 		umull	r1, r3, r3, r2
+ 1568 00c0 D908     		lsrs	r1, r3, #3
+ 1569 00c2 0B46     		mov	r3, r1
+ 1570 00c4 9B00     		lsls	r3, r3, #2
+ 1571 00c6 0B44     		add	r3, r3, r1
+ 1572 00c8 5B00     		lsls	r3, r3, #1
+ 1573 00ca D31A     		subs	r3, r2, r3
+ 1574 00cc 7B73     		strb	r3, [r7, #13]
+ 269:./Hardware/device/sd8800.c **** 
+ 270:./Hardware/device/sd8800.c **** 		second_h = time_buf.second / 10;
+ 1575              		.loc 1 270 22
+ 1576 00ce 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 1577              		.loc 1 270 12
+ 1578 00d0 4F4A     		ldr	r2, .L71
+ 1579 00d2 A2FB0323 		umull	r2, r3, r2, r3
+ 1580 00d6 DB08     		lsrs	r3, r3, #3
+ 1581 00d8 3B73     		strb	r3, [r7, #12]
+ 271:./Hardware/device/sd8800.c **** 		second_l = time_buf.second % 10; //Ãë
+ 1582              		.loc 1 271 22
+ 1583 00da 3A79     		ldrb	r2, [r7, #4]	@ zero_extendqisi2
+ 1584              		.loc 1 271 12
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 33
+
+
+ 1585 00dc 4C4B     		ldr	r3, .L71
+ 1586 00de A3FB0213 		umull	r1, r3, r3, r2
+ 1587 00e2 D908     		lsrs	r1, r3, #3
+ 1588 00e4 0B46     		mov	r3, r1
+ 1589 00e6 9B00     		lsls	r3, r3, #2
+ 1590 00e8 0B44     		add	r3, r3, r1
+ 1591 00ea 5B00     		lsls	r3, r3, #1
+ 1592 00ec D31A     		subs	r3, r2, r3
+ 1593 00ee FB72     		strb	r3, [r7, #11]
+ 272:./Hardware/device/sd8800.c **** 
+ 273:./Hardware/device/sd8800.c **** 		OLED_ShowNum(30,42,year_h,1,OLED_6X8);//Ïà¸ôÏÔÊ¾µÄÊý¾ÝXÖá¼ä¸ô7¸ö×ø±ê£¬Ïà¸ôÏÔÊ¾µÄÊý¾ÝYÖá¼ä¸ô15¸ö×ø
+ 1594              		.loc 1 273 3
+ 1595 00f0 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1596 00f2 0623     		movs	r3, #6
+ 1597 00f4 0093     		str	r3, [sp]
+ 1598 00f6 0123     		movs	r3, #1
+ 1599 00f8 2A21     		movs	r1, #42
+ 1600 00fa 1E20     		movs	r0, #30
+ 1601 00fc FFF7FEFF 		bl	OLED_ShowNum
+ 274:./Hardware/device/sd8800.c **** 		OLED_ShowNum(37,42,year_l,1,OLED_6X8);
+ 1602              		.loc 1 274 3
+ 1603 0100 BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 1604 0102 0623     		movs	r3, #6
+ 1605 0104 0093     		str	r3, [sp]
+ 1606 0106 0123     		movs	r3, #1
+ 1607 0108 2A21     		movs	r1, #42
+ 1608 010a 2520     		movs	r0, #37
+ 1609 010c FFF7FEFF 		bl	OLED_ShowNum
+ 275:./Hardware/device/sd8800.c **** 		OLED_ShowChar(44,42,'-',OLED_6X8);
+ 1610              		.loc 1 275 3
+ 1611 0110 0623     		movs	r3, #6
+ 1612 0112 2D22     		movs	r2, #45
+ 1613 0114 2A21     		movs	r1, #42
+ 1614 0116 2C20     		movs	r0, #44
+ 1615 0118 FFF7FEFF 		bl	OLED_ShowChar
+ 276:./Hardware/device/sd8800.c **** 		OLED_ShowNum(51,42,month_h,1,OLED_6X8);
+ 1616              		.loc 1 276 3
+ 1617 011c 7A7D     		ldrb	r2, [r7, #21]	@ zero_extendqisi2
+ 1618 011e 0623     		movs	r3, #6
+ 1619 0120 0093     		str	r3, [sp]
+ 1620 0122 0123     		movs	r3, #1
+ 1621 0124 2A21     		movs	r1, #42
+ 1622 0126 3320     		movs	r0, #51
+ 1623 0128 FFF7FEFF 		bl	OLED_ShowNum
+ 277:./Hardware/device/sd8800.c **** 		OLED_ShowNum(58,42,month_l,1,OLED_6X8);
+ 1624              		.loc 1 277 3
+ 1625 012c 3A7D     		ldrb	r2, [r7, #20]	@ zero_extendqisi2
+ 1626 012e 0623     		movs	r3, #6
+ 1627 0130 0093     		str	r3, [sp]
+ 1628 0132 0123     		movs	r3, #1
+ 1629 0134 2A21     		movs	r1, #42
+ 1630 0136 3A20     		movs	r0, #58
+ 1631 0138 FFF7FEFF 		bl	OLED_ShowNum
+ 278:./Hardware/device/sd8800.c **** 		OLED_ShowChar(65,42,'-',OLED_6X8);
+ 1632              		.loc 1 278 3
+ 1633 013c 0623     		movs	r3, #6
+ 1634 013e 2D22     		movs	r2, #45
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 34
+
+
+ 1635 0140 2A21     		movs	r1, #42
+ 1636 0142 4120     		movs	r0, #65
+ 1637 0144 FFF7FEFF 		bl	OLED_ShowChar
+ 279:./Hardware/device/sd8800.c **** 		OLED_ShowNum(72,42,day_h,1,OLED_6X8);
+ 1638              		.loc 1 279 3
+ 1639 0148 FA7C     		ldrb	r2, [r7, #19]	@ zero_extendqisi2
+ 1640 014a 0623     		movs	r3, #6
+ 1641 014c 0093     		str	r3, [sp]
+ 1642 014e 0123     		movs	r3, #1
+ 1643 0150 2A21     		movs	r1, #42
+ 1644 0152 4820     		movs	r0, #72
+ 1645 0154 FFF7FEFF 		bl	OLED_ShowNum
+ 280:./Hardware/device/sd8800.c **** 		OLED_ShowNum(79,42,day_l,1,OLED_6X8);
+ 1646              		.loc 1 280 3
+ 1647 0158 BA7C     		ldrb	r2, [r7, #18]	@ zero_extendqisi2
+ 1648 015a 0623     		movs	r3, #6
+ 1649 015c 0093     		str	r3, [sp]
+ 1650 015e 0123     		movs	r3, #1
+ 1651 0160 2A21     		movs	r1, #42
+ 1652 0162 4F20     		movs	r0, #79
+ 1653 0164 FFF7FEFF 		bl	OLED_ShowNum
+ 281:./Hardware/device/sd8800.c **** 		OLED_ShowChar(90,42,'W',OLED_6X8);
+ 1654              		.loc 1 281 3
+ 1655 0168 0623     		movs	r3, #6
+ 1656 016a 5722     		movs	r2, #87
+ 1657 016c 2A21     		movs	r1, #42
+ 1658 016e 5A20     		movs	r0, #90
+ 1659 0170 FFF7FEFF 		bl	OLED_ShowChar
+ 282:./Hardware/device/sd8800.c **** 		OLED_ShowNum(99,42,week,1,OLED_6X8);
+ 1660              		.loc 1 282 3
+ 1661 0174 7A7C     		ldrb	r2, [r7, #17]	@ zero_extendqisi2
+ 1662 0176 0623     		movs	r3, #6
+ 1663 0178 0093     		str	r3, [sp]
+ 1664 017a 0123     		movs	r3, #1
+ 1665 017c 2A21     		movs	r1, #42
+ 1666 017e 6320     		movs	r0, #99
+ 1667 0180 FFF7FEFF 		bl	OLED_ShowNum
+ 283:./Hardware/device/sd8800.c **** 
+ 284:./Hardware/device/sd8800.c **** 		OLED_ShowNum(35,53,hour_h,1,OLED_6X8);
+ 1668              		.loc 1 284 3
+ 1669 0184 3A7C     		ldrb	r2, [r7, #16]	@ zero_extendqisi2
+ 1670 0186 0623     		movs	r3, #6
+ 1671 0188 0093     		str	r3, [sp]
+ 1672 018a 0123     		movs	r3, #1
+ 1673 018c 3521     		movs	r1, #53
+ 1674 018e 2320     		movs	r0, #35
+ 1675 0190 FFF7FEFF 		bl	OLED_ShowNum
+ 285:./Hardware/device/sd8800.c **** 		OLED_ShowNum(42,53,hour_l,1,OLED_6X8);
+ 1676              		.loc 1 285 3
+ 1677 0194 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 1678 0196 0623     		movs	r3, #6
+ 1679 0198 0093     		str	r3, [sp]
+ 1680 019a 0123     		movs	r3, #1
+ 1681 019c 3521     		movs	r1, #53
+ 1682 019e 2A20     		movs	r0, #42
+ 1683 01a0 FFF7FEFF 		bl	OLED_ShowNum
+ 286:./Hardware/device/sd8800.c **** 		OLED_ShowChar(49,53,':',OLED_6X8);
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 35
+
+
+ 1684              		.loc 1 286 3
+ 1685 01a4 0623     		movs	r3, #6
+ 1686 01a6 3A22     		movs	r2, #58
+ 1687 01a8 3521     		movs	r1, #53
+ 1688 01aa 3120     		movs	r0, #49
+ 1689 01ac FFF7FEFF 		bl	OLED_ShowChar
+ 287:./Hardware/device/sd8800.c **** 		OLED_ShowNum(56,53,minute_h,1,OLED_6X8);
+ 1690              		.loc 1 287 3
+ 1691 01b0 BA7B     		ldrb	r2, [r7, #14]	@ zero_extendqisi2
+ 1692 01b2 0623     		movs	r3, #6
+ 1693 01b4 0093     		str	r3, [sp]
+ 1694 01b6 0123     		movs	r3, #1
+ 1695 01b8 3521     		movs	r1, #53
+ 1696 01ba 3820     		movs	r0, #56
+ 1697 01bc FFF7FEFF 		bl	OLED_ShowNum
+ 288:./Hardware/device/sd8800.c **** 		OLED_ShowNum(63,53,minute_l,1,OLED_6X8);
+ 1698              		.loc 1 288 3
+ 1699 01c0 7A7B     		ldrb	r2, [r7, #13]	@ zero_extendqisi2
+ 1700 01c2 0623     		movs	r3, #6
+ 1701 01c4 0093     		str	r3, [sp]
+ 1702 01c6 0123     		movs	r3, #1
+ 1703 01c8 3521     		movs	r1, #53
+ 1704 01ca 3F20     		movs	r0, #63
+ 1705 01cc FFF7FEFF 		bl	OLED_ShowNum
+ 289:./Hardware/device/sd8800.c **** 		OLED_ShowChar(70,53,':',OLED_6X8);
+ 1706              		.loc 1 289 3
+ 1707 01d0 0623     		movs	r3, #6
+ 1708 01d2 3A22     		movs	r2, #58
+ 1709 01d4 3521     		movs	r1, #53
+ 1710 01d6 4620     		movs	r0, #70
+ 1711 01d8 FFF7FEFF 		bl	OLED_ShowChar
+ 290:./Hardware/device/sd8800.c **** 		OLED_ShowNum(77,53,second_h,1,OLED_6X8);
+ 1712              		.loc 1 290 3
+ 1713 01dc 3A7B     		ldrb	r2, [r7, #12]	@ zero_extendqisi2
+ 1714 01de 0623     		movs	r3, #6
+ 1715 01e0 0093     		str	r3, [sp]
+ 1716 01e2 0123     		movs	r3, #1
+ 1717 01e4 3521     		movs	r1, #53
+ 1718 01e6 4D20     		movs	r0, #77
+ 1719 01e8 FFF7FEFF 		bl	OLED_ShowNum
+ 291:./Hardware/device/sd8800.c **** 		OLED_ShowNum(84,53,second_l,1,OLED_6X8);
+ 1720              		.loc 1 291 3
+ 1721 01ec FA7A     		ldrb	r2, [r7, #11]	@ zero_extendqisi2
+ 1722 01ee 0623     		movs	r3, #6
+ 1723 01f0 0093     		str	r3, [sp]
+ 1724 01f2 0123     		movs	r3, #1
+ 1725 01f4 3521     		movs	r1, #53
+ 1726 01f6 5420     		movs	r0, #84
+ 1727 01f8 FFF7FEFF 		bl	OLED_ShowNum
+ 292:./Hardware/device/sd8800.c **** 
+ 293:./Hardware/device/sd8800.c **** 		return RTC_OK;
+ 1728              		.loc 1 293 10
+ 1729 01fc 0623     		movs	r3, #6
+ 1730 01fe 02E0     		b	.L70
+ 1731              	.L68:
+ 294:./Hardware/device/sd8800.c **** 	}else{
+ 295:./Hardware/device/sd8800.c **** 		NO_ACK_Test_Line();
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 36
+
+
+ 1732              		.loc 1 295 3
+ 1733 0200 FFF7FEFF 		bl	NO_ACK_Test_Line
+ 296:./Hardware/device/sd8800.c **** 	}
+ 297:./Hardware/device/sd8800.c **** 	
+ 298:./Hardware/device/sd8800.c **** 	return TRUE;
+ 1734              		.loc 1 298 9
+ 1735 0204 0123     		movs	r3, #1
+ 1736              	.L70:
+ 299:./Hardware/device/sd8800.c **** 
+ 300:./Hardware/device/sd8800.c **** }
+ 1737              		.loc 1 300 1 discriminator 1
+ 1738 0206 1846     		mov	r0, r3
+ 1739 0208 1837     		adds	r7, r7, #24
+ 1740              	.LCFI78:
+ 1741              		.cfi_def_cfa_offset 8
+ 1742 020a BD46     		mov	sp, r7
+ 1743              	.LCFI79:
+ 1744              		.cfi_def_cfa_register 13
+ 1745              		@ sp needed
+ 1746 020c 80BD     		pop	{r7, pc}
+ 1747              	.L72:
+ 1748 020e 00BF     		.align	2
+ 1749              	.L71:
+ 1750 0210 CDCCCCCC 		.word	-858993459
+ 1751              		.cfi_endproc
+ 1752              	.LFE47:
+ 1754              		.section	.rodata
+ 1755 0006 0000     		.align	2
+ 1756              	.LC2:
+ 1757 0008 56626174 		.ascii	"Vbat:\000"
+ 1757      3A00
+ 1758 000e 0000     		.align	2
+ 1759              	.LC3:
+ 1760 0010 54656D70 		.ascii	"Temp:\000"
+ 1760      3A00
+ 1761 0016 0000     		.align	2
+ 1762              	.LC4:
+ 1763 0018 54455354 		.ascii	"TEST IC\000"
+ 1763      20494300 
+ 1764              		.section	.text.sd8800_time_show,"ax",%progbits
+ 1765              		.align	1
+ 1766              		.global	sd8800_time_show
+ 1767              		.syntax unified
+ 1768              		.thumb
+ 1769              		.thumb_func
+ 1770              		.fpu softvfp
+ 1772              	sd8800_time_show:
+ 1773              	.LFB48:
+ 301:./Hardware/device/sd8800.c **** 
+ 302:./Hardware/device/sd8800.c **** uint8_t sd8800_time_show(void)
+ 303:./Hardware/device/sd8800.c **** {
+ 1774              		.loc 1 303 1
+ 1775              		.cfi_startproc
+ 1776              		@ args = 0, pretend = 0, frame = 24
+ 1777              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1778 0000 80B5     		push	{r7, lr}
+ 1779              	.LCFI80:
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 37
+
+
+ 1780              		.cfi_def_cfa_offset 8
+ 1781              		.cfi_offset 7, -8
+ 1782              		.cfi_offset 14, -4
+ 1783 0002 8AB0     		sub	sp, sp, #40
+ 1784              	.LCFI81:
+ 1785              		.cfi_def_cfa_offset 48
+ 1786 0004 04AF     		add	r7, sp, #16
+ 1787              	.LCFI82:
+ 1788              		.cfi_def_cfa 7, 32
+ 304:./Hardware/device/sd8800.c **** 	uint8_t year_h,year_l;
+ 305:./Hardware/device/sd8800.c **** 	uint8_t month_h,month_l;
+ 306:./Hardware/device/sd8800.c **** 	uint8_t day_h,day_l;
+ 307:./Hardware/device/sd8800.c **** 	uint8_t week;
+ 308:./Hardware/device/sd8800.c **** 	uint8_t hour_h,hour_l;
+ 309:./Hardware/device/sd8800.c **** 	uint8_t minute_h,minute_l;
+ 310:./Hardware/device/sd8800.c **** 	uint8_t second_h,second_l;
+ 311:./Hardware/device/sd8800.c **** 	
+ 312:./Hardware/device/sd8800.c **** 	rtc_time time_bufstd;
+ 313:./Hardware/device/sd8800.c **** 	
+ 314:./Hardware/device/sd8800.c **** 	if(SD8800_ReadTimeDate(&time_bufstd,IIC_TEST)!=RTC_FAIL)
+ 1789              		.loc 1 314 5
+ 1790 0006 3B1D     		adds	r3, r7, #4
+ 1791 0008 0021     		movs	r1, #0
+ 1792 000a 1846     		mov	r0, r3
+ 1793 000c FFF7FEFF 		bl	SD8800_ReadTimeDate
+ 1794 0010 0346     		mov	r3, r0
+ 1795              		.loc 1 314 4
+ 1796 0012 082B     		cmp	r3, #8
+ 1797 0014 00F0AA81 		beq	.L74
+ 315:./Hardware/device/sd8800.c **** 	{
+ 316:./Hardware/device/sd8800.c **** 		year_h = time_bufstd.year / 10;
+ 1798              		.loc 1 316 23
+ 1799 0018 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 1800              		.loc 1 316 10
+ 1801 001a CE4A     		ldr	r2, .L77
+ 1802 001c A2FB0323 		umull	r2, r3, r2, r3
+ 1803 0020 DB08     		lsrs	r3, r3, #3
+ 1804 0022 FB75     		strb	r3, [r7, #23]
+ 317:./Hardware/device/sd8800.c **** 		year_l = time_bufstd.year % 10;  //Äê
+ 1805              		.loc 1 317 23
+ 1806 0024 BA7A     		ldrb	r2, [r7, #10]	@ zero_extendqisi2
+ 1807              		.loc 1 317 10
+ 1808 0026 CB4B     		ldr	r3, .L77
+ 1809 0028 A3FB0213 		umull	r1, r3, r3, r2
+ 1810 002c D908     		lsrs	r1, r3, #3
+ 1811 002e 0B46     		mov	r3, r1
+ 1812 0030 9B00     		lsls	r3, r3, #2
+ 1813 0032 0B44     		add	r3, r3, r1
+ 1814 0034 5B00     		lsls	r3, r3, #1
+ 1815 0036 D31A     		subs	r3, r2, r3
+ 1816 0038 BB75     		strb	r3, [r7, #22]
+ 318:./Hardware/device/sd8800.c **** 
+ 319:./Hardware/device/sd8800.c **** 		month_h = time_bufstd.month / 10;
+ 1817              		.loc 1 319 24
+ 1818 003a 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 1819              		.loc 1 319 11
+ 1820 003c C54A     		ldr	r2, .L77
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 38
+
+
+ 1821 003e A2FB0323 		umull	r2, r3, r2, r3
+ 1822 0042 DB08     		lsrs	r3, r3, #3
+ 1823 0044 7B75     		strb	r3, [r7, #21]
+ 320:./Hardware/device/sd8800.c **** 		month_l = time_bufstd.month % 10;  //ÔÂ
+ 1824              		.loc 1 320 24
+ 1825 0046 7A7A     		ldrb	r2, [r7, #9]	@ zero_extendqisi2
+ 1826              		.loc 1 320 11
+ 1827 0048 C24B     		ldr	r3, .L77
+ 1828 004a A3FB0213 		umull	r1, r3, r3, r2
+ 1829 004e D908     		lsrs	r1, r3, #3
+ 1830 0050 0B46     		mov	r3, r1
+ 1831 0052 9B00     		lsls	r3, r3, #2
+ 1832 0054 0B44     		add	r3, r3, r1
+ 1833 0056 5B00     		lsls	r3, r3, #1
+ 1834 0058 D31A     		subs	r3, r2, r3
+ 1835 005a 3B75     		strb	r3, [r7, #20]
+ 321:./Hardware/device/sd8800.c **** 
+ 322:./Hardware/device/sd8800.c **** 		day_h = time_bufstd.day / 10;
+ 1836              		.loc 1 322 22
+ 1837 005c 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 1838              		.loc 1 322 9
+ 1839 005e BD4A     		ldr	r2, .L77
+ 1840 0060 A2FB0323 		umull	r2, r3, r2, r3
+ 1841 0064 DB08     		lsrs	r3, r3, #3
+ 1842 0066 FB74     		strb	r3, [r7, #19]
+ 323:./Hardware/device/sd8800.c **** 		day_l = time_bufstd.day % 10;  //ÈÕ
+ 1843              		.loc 1 323 22
+ 1844 0068 3A7A     		ldrb	r2, [r7, #8]	@ zero_extendqisi2
+ 1845              		.loc 1 323 9
+ 1846 006a BA4B     		ldr	r3, .L77
+ 1847 006c A3FB0213 		umull	r1, r3, r3, r2
+ 1848 0070 D908     		lsrs	r1, r3, #3
+ 1849 0072 0B46     		mov	r3, r1
+ 1850 0074 9B00     		lsls	r3, r3, #2
+ 1851 0076 0B44     		add	r3, r3, r1
+ 1852 0078 5B00     		lsls	r3, r3, #1
+ 1853 007a D31A     		subs	r3, r2, r3
+ 1854 007c BB74     		strb	r3, [r7, #18]
+ 324:./Hardware/device/sd8800.c **** 
+ 325:./Hardware/device/sd8800.c **** 		week  = time_bufstd.week;
+ 1855              		.loc 1 325 9
+ 1856 007e FB79     		ldrb	r3, [r7, #7]
+ 1857 0080 7B74     		strb	r3, [r7, #17]
+ 326:./Hardware/device/sd8800.c **** 		
+ 327:./Hardware/device/sd8800.c **** 		hour_h = time_bufstd.hour / 10;
+ 1858              		.loc 1 327 23
+ 1859 0082 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1860              		.loc 1 327 10
+ 1861 0084 B34A     		ldr	r2, .L77
+ 1862 0086 A2FB0323 		umull	r2, r3, r2, r3
+ 1863 008a DB08     		lsrs	r3, r3, #3
+ 1864 008c 3B74     		strb	r3, [r7, #16]
+ 328:./Hardware/device/sd8800.c **** 		hour_l = time_bufstd.hour % 10;  //Ê±
+ 1865              		.loc 1 328 23
+ 1866 008e BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 1867              		.loc 1 328 10
+ 1868 0090 B04B     		ldr	r3, .L77
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 39
+
+
+ 1869 0092 A3FB0213 		umull	r1, r3, r3, r2
+ 1870 0096 D908     		lsrs	r1, r3, #3
+ 1871 0098 0B46     		mov	r3, r1
+ 1872 009a 9B00     		lsls	r3, r3, #2
+ 1873 009c 0B44     		add	r3, r3, r1
+ 1874 009e 5B00     		lsls	r3, r3, #1
+ 1875 00a0 D31A     		subs	r3, r2, r3
+ 1876 00a2 FB73     		strb	r3, [r7, #15]
+ 329:./Hardware/device/sd8800.c **** 
+ 330:./Hardware/device/sd8800.c **** 		minute_h = time_bufstd.minute / 10;
+ 1877              		.loc 1 330 25
+ 1878 00a4 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 1879              		.loc 1 330 12
+ 1880 00a6 AB4A     		ldr	r2, .L77
+ 1881 00a8 A2FB0323 		umull	r2, r3, r2, r3
+ 1882 00ac DB08     		lsrs	r3, r3, #3
+ 1883 00ae BB73     		strb	r3, [r7, #14]
+ 331:./Hardware/device/sd8800.c **** 		minute_l = time_bufstd.minute % 10;  //·Ö
+ 1884              		.loc 1 331 25
+ 1885 00b0 7A79     		ldrb	r2, [r7, #5]	@ zero_extendqisi2
+ 1886              		.loc 1 331 12
+ 1887 00b2 A84B     		ldr	r3, .L77
+ 1888 00b4 A3FB0213 		umull	r1, r3, r3, r2
+ 1889 00b8 D908     		lsrs	r1, r3, #3
+ 1890 00ba 0B46     		mov	r3, r1
+ 1891 00bc 9B00     		lsls	r3, r3, #2
+ 1892 00be 0B44     		add	r3, r3, r1
+ 1893 00c0 5B00     		lsls	r3, r3, #1
+ 1894 00c2 D31A     		subs	r3, r2, r3
+ 1895 00c4 7B73     		strb	r3, [r7, #13]
+ 332:./Hardware/device/sd8800.c **** 
+ 333:./Hardware/device/sd8800.c **** 		second_h = time_bufstd.second / 10;
+ 1896              		.loc 1 333 25
+ 1897 00c6 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 1898              		.loc 1 333 12
+ 1899 00c8 A24A     		ldr	r2, .L77
+ 1900 00ca A2FB0323 		umull	r2, r3, r2, r3
+ 1901 00ce DB08     		lsrs	r3, r3, #3
+ 1902 00d0 3B73     		strb	r3, [r7, #12]
+ 334:./Hardware/device/sd8800.c **** 		second_l = time_bufstd.second % 10; //Ãë
+ 1903              		.loc 1 334 25
+ 1904 00d2 3A79     		ldrb	r2, [r7, #4]	@ zero_extendqisi2
+ 1905              		.loc 1 334 12
+ 1906 00d4 9F4B     		ldr	r3, .L77
+ 1907 00d6 A3FB0213 		umull	r1, r3, r3, r2
+ 1908 00da D908     		lsrs	r1, r3, #3
+ 1909 00dc 0B46     		mov	r3, r1
+ 1910 00de 9B00     		lsls	r3, r3, #2
+ 1911 00e0 0B44     		add	r3, r3, r1
+ 1912 00e2 5B00     		lsls	r3, r3, #1
+ 1913 00e4 D31A     		subs	r3, r2, r3
+ 1914 00e6 FB72     		strb	r3, [r7, #11]
+ 335:./Hardware/device/sd8800.c **** 		
+ 336:./Hardware/device/sd8800.c **** 		OLED_ShowNum(30,8,year_h,1,8);//Ïà¸ôÏÔÊ¾µÄÊý¾ÝXÖá¼ä¸ô7¸ö×ø±ê£¬Ïà¸ôÏÔÊ¾µÄÊý¾ÝYÖá¼ä¸ô15¸ö×ø±ê
+ 1915              		.loc 1 336 3
+ 1916 00e8 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1917 00ea 0823     		movs	r3, #8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 40
+
+
+ 1918 00ec 0093     		str	r3, [sp]
+ 1919 00ee 0123     		movs	r3, #1
+ 1920 00f0 0821     		movs	r1, #8
+ 1921 00f2 1E20     		movs	r0, #30
+ 1922 00f4 FFF7FEFF 		bl	OLED_ShowNum
+ 337:./Hardware/device/sd8800.c **** 		OLED_ShowNum(37,8,year_l,1,8);
+ 1923              		.loc 1 337 3
+ 1924 00f8 BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 1925 00fa 0823     		movs	r3, #8
+ 1926 00fc 0093     		str	r3, [sp]
+ 1927 00fe 0123     		movs	r3, #1
+ 1928 0100 0821     		movs	r1, #8
+ 1929 0102 2520     		movs	r0, #37
+ 1930 0104 FFF7FEFF 		bl	OLED_ShowNum
+ 338:./Hardware/device/sd8800.c **** 		OLED_ShowChar(44,8,'-',8);
+ 1931              		.loc 1 338 3
+ 1932 0108 0823     		movs	r3, #8
+ 1933 010a 2D22     		movs	r2, #45
+ 1934 010c 0821     		movs	r1, #8
+ 1935 010e 2C20     		movs	r0, #44
+ 1936 0110 FFF7FEFF 		bl	OLED_ShowChar
+ 339:./Hardware/device/sd8800.c **** 		OLED_ShowNum(51,8,month_h,1,8);
+ 1937              		.loc 1 339 3
+ 1938 0114 7A7D     		ldrb	r2, [r7, #21]	@ zero_extendqisi2
+ 1939 0116 0823     		movs	r3, #8
+ 1940 0118 0093     		str	r3, [sp]
+ 1941 011a 0123     		movs	r3, #1
+ 1942 011c 0821     		movs	r1, #8
+ 1943 011e 3320     		movs	r0, #51
+ 1944 0120 FFF7FEFF 		bl	OLED_ShowNum
+ 340:./Hardware/device/sd8800.c **** 		OLED_ShowNum(58,8,month_l,1,8);
+ 1945              		.loc 1 340 3
+ 1946 0124 3A7D     		ldrb	r2, [r7, #20]	@ zero_extendqisi2
+ 1947 0126 0823     		movs	r3, #8
+ 1948 0128 0093     		str	r3, [sp]
+ 1949 012a 0123     		movs	r3, #1
+ 1950 012c 0821     		movs	r1, #8
+ 1951 012e 3A20     		movs	r0, #58
+ 1952 0130 FFF7FEFF 		bl	OLED_ShowNum
+ 341:./Hardware/device/sd8800.c **** 		OLED_ShowChar(65,8,'-',8);
+ 1953              		.loc 1 341 3
+ 1954 0134 0823     		movs	r3, #8
+ 1955 0136 2D22     		movs	r2, #45
+ 1956 0138 0821     		movs	r1, #8
+ 1957 013a 4120     		movs	r0, #65
+ 1958 013c FFF7FEFF 		bl	OLED_ShowChar
+ 342:./Hardware/device/sd8800.c **** 		OLED_ShowNum(72,8,day_h,1,8);
+ 1959              		.loc 1 342 3
+ 1960 0140 FA7C     		ldrb	r2, [r7, #19]	@ zero_extendqisi2
+ 1961 0142 0823     		movs	r3, #8
+ 1962 0144 0093     		str	r3, [sp]
+ 1963 0146 0123     		movs	r3, #1
+ 1964 0148 0821     		movs	r1, #8
+ 1965 014a 4820     		movs	r0, #72
+ 1966 014c FFF7FEFF 		bl	OLED_ShowNum
+ 343:./Hardware/device/sd8800.c **** 		OLED_ShowNum(79,8,day_l,1,8);
+ 1967              		.loc 1 343 3
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 41
+
+
+ 1968 0150 BA7C     		ldrb	r2, [r7, #18]	@ zero_extendqisi2
+ 1969 0152 0823     		movs	r3, #8
+ 1970 0154 0093     		str	r3, [sp]
+ 1971 0156 0123     		movs	r3, #1
+ 1972 0158 0821     		movs	r1, #8
+ 1973 015a 4F20     		movs	r0, #79
+ 1974 015c FFF7FEFF 		bl	OLED_ShowNum
+ 344:./Hardware/device/sd8800.c **** 		OLED_ShowChar(90,8,'W',8);
+ 1975              		.loc 1 344 3
+ 1976 0160 0823     		movs	r3, #8
+ 1977 0162 5722     		movs	r2, #87
+ 1978 0164 0821     		movs	r1, #8
+ 1979 0166 5A20     		movs	r0, #90
+ 1980 0168 FFF7FEFF 		bl	OLED_ShowChar
+ 345:./Hardware/device/sd8800.c **** 		OLED_ShowNum(99,8,week,1,8);
+ 1981              		.loc 1 345 3
+ 1982 016c 7A7C     		ldrb	r2, [r7, #17]	@ zero_extendqisi2
+ 1983 016e 0823     		movs	r3, #8
+ 1984 0170 0093     		str	r3, [sp]
+ 1985 0172 0123     		movs	r3, #1
+ 1986 0174 0821     		movs	r1, #8
+ 1987 0176 6320     		movs	r0, #99
+ 1988 0178 FFF7FEFF 		bl	OLED_ShowNum
+ 346:./Hardware/device/sd8800.c **** 		
+ 347:./Hardware/device/sd8800.c **** 		OLED_ShowNum(35,22,hour_h,1,8);
+ 1989              		.loc 1 347 3
+ 1990 017c 3A7C     		ldrb	r2, [r7, #16]	@ zero_extendqisi2
+ 1991 017e 0823     		movs	r3, #8
+ 1992 0180 0093     		str	r3, [sp]
+ 1993 0182 0123     		movs	r3, #1
+ 1994 0184 1621     		movs	r1, #22
+ 1995 0186 2320     		movs	r0, #35
+ 1996 0188 FFF7FEFF 		bl	OLED_ShowNum
+ 348:./Hardware/device/sd8800.c **** 		OLED_ShowNum(42,22,hour_l,1,8);
+ 1997              		.loc 1 348 3
+ 1998 018c FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 1999 018e 0823     		movs	r3, #8
+ 2000 0190 0093     		str	r3, [sp]
+ 2001 0192 0123     		movs	r3, #1
+ 2002 0194 1621     		movs	r1, #22
+ 2003 0196 2A20     		movs	r0, #42
+ 2004 0198 FFF7FEFF 		bl	OLED_ShowNum
+ 349:./Hardware/device/sd8800.c **** 		OLED_ShowChar(49,22,':',8);
+ 2005              		.loc 1 349 3
+ 2006 019c 0823     		movs	r3, #8
+ 2007 019e 3A22     		movs	r2, #58
+ 2008 01a0 1621     		movs	r1, #22
+ 2009 01a2 3120     		movs	r0, #49
+ 2010 01a4 FFF7FEFF 		bl	OLED_ShowChar
+ 350:./Hardware/device/sd8800.c **** 		OLED_ShowNum(56,22,minute_h,1,8);
+ 2011              		.loc 1 350 3
+ 2012 01a8 BA7B     		ldrb	r2, [r7, #14]	@ zero_extendqisi2
+ 2013 01aa 0823     		movs	r3, #8
+ 2014 01ac 0093     		str	r3, [sp]
+ 2015 01ae 0123     		movs	r3, #1
+ 2016 01b0 1621     		movs	r1, #22
+ 2017 01b2 3820     		movs	r0, #56
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 42
+
+
+ 2018 01b4 FFF7FEFF 		bl	OLED_ShowNum
+ 351:./Hardware/device/sd8800.c **** 		OLED_ShowNum(63,22,minute_l,1,8);
+ 2019              		.loc 1 351 3
+ 2020 01b8 7A7B     		ldrb	r2, [r7, #13]	@ zero_extendqisi2
+ 2021 01ba 0823     		movs	r3, #8
+ 2022 01bc 0093     		str	r3, [sp]
+ 2023 01be 0123     		movs	r3, #1
+ 2024 01c0 1621     		movs	r1, #22
+ 2025 01c2 3F20     		movs	r0, #63
+ 2026 01c4 FFF7FEFF 		bl	OLED_ShowNum
+ 352:./Hardware/device/sd8800.c **** 		OLED_ShowChar(70,22,':',8);
+ 2027              		.loc 1 352 3
+ 2028 01c8 0823     		movs	r3, #8
+ 2029 01ca 3A22     		movs	r2, #58
+ 2030 01cc 1621     		movs	r1, #22
+ 2031 01ce 4620     		movs	r0, #70
+ 2032 01d0 FFF7FEFF 		bl	OLED_ShowChar
+ 353:./Hardware/device/sd8800.c **** 		OLED_ShowNum(77,22,second_h,1,8);
+ 2033              		.loc 1 353 3
+ 2034 01d4 3A7B     		ldrb	r2, [r7, #12]	@ zero_extendqisi2
+ 2035 01d6 0823     		movs	r3, #8
+ 2036 01d8 0093     		str	r3, [sp]
+ 2037 01da 0123     		movs	r3, #1
+ 2038 01dc 1621     		movs	r1, #22
+ 2039 01de 4D20     		movs	r0, #77
+ 2040 01e0 FFF7FEFF 		bl	OLED_ShowNum
+ 354:./Hardware/device/sd8800.c **** 		OLED_ShowNum(84,22,second_l,1,8);
+ 2041              		.loc 1 354 3
+ 2042 01e4 FA7A     		ldrb	r2, [r7, #11]	@ zero_extendqisi2
+ 2043 01e6 0823     		movs	r3, #8
+ 2044 01e8 0093     		str	r3, [sp]
+ 2045 01ea 0123     		movs	r3, #1
+ 2046 01ec 1621     		movs	r1, #22
+ 2047 01ee 5420     		movs	r0, #84
+ 2048 01f0 FFF7FEFF 		bl	OLED_ShowNum
+ 355:./Hardware/device/sd8800.c **** 	
+ 356:./Hardware/device/sd8800.c **** 		sd8800_id_show(IIC_TEST);
+ 2049              		.loc 1 356 3
+ 2050 01f4 0020     		movs	r0, #0
+ 2051 01f6 FFF7FEFF 		bl	sd8800_id_show
+ 357:./Hardware/device/sd8800.c ****  
+ 358:./Hardware/device/sd8800.c **** 		sd8800_ReadTemp(IIC_TEST);
+ 2052              		.loc 1 358 3
+ 2053 01fa 0020     		movs	r0, #0
+ 2054 01fc FFF7FEFF 		bl	sd8800_ReadTemp
+ 359:./Hardware/device/sd8800.c **** 		sd8800_ReadVbat(IIC_TEST);
+ 2055              		.loc 1 359 3
+ 2056 0200 0020     		movs	r0, #0
+ 2057 0202 FFF7FEFF 		bl	sd8800_ReadVbat
+ 360:./Hardware/device/sd8800.c **** 
+ 361:./Hardware/device/sd8800.c **** 		OLED_ShowNum(36,43,sd8800_temp,2,6);
+ 2058              		.loc 1 361 3
+ 2059 0206 544B     		ldr	r3, .L77+4
+ 2060 0208 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 2061 020a 1A46     		mov	r2, r3
+ 2062 020c 0623     		movs	r3, #6
+ 2063 020e 0093     		str	r3, [sp]
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 43
+
+
+ 2064 0210 0223     		movs	r3, #2
+ 2065 0212 2B21     		movs	r1, #43
+ 2066 0214 2420     		movs	r0, #36
+ 2067 0216 FFF7FEFF 		bl	OLED_ShowNum
+ 362:./Hardware/device/sd8800.c **** 		OLED_ShowChar(49,43,'C',6);
+ 2068              		.loc 1 362 3
+ 2069 021a 0623     		movs	r3, #6
+ 2070 021c 4322     		movs	r2, #67
+ 2071 021e 2B21     		movs	r1, #43
+ 2072 0220 3120     		movs	r0, #49
+ 2073 0222 FFF7FEFF 		bl	OLED_ShowChar
+ 363:./Hardware/device/sd8800.c **** 		OLED_DrawPoint(49,41);
+ 2074              		.loc 1 363 3
+ 2075 0226 2921     		movs	r1, #41
+ 2076 0228 3120     		movs	r0, #49
+ 2077 022a FFF7FEFF 		bl	OLED_DrawPoint
+ 364:./Hardware/device/sd8800.c **** 			
+ 365:./Hardware/device/sd8800.c **** 		OLED_ShowString(68,43,"Vbat:",6);		
+ 2078              		.loc 1 365 3
+ 2079 022e 0623     		movs	r3, #6
+ 2080 0230 4A4A     		ldr	r2, .L77+8
+ 2081 0232 2B21     		movs	r1, #43
+ 2082 0234 4420     		movs	r0, #68
+ 2083 0236 FFF7FEFF 		bl	OLED_ShowString
+ 366:./Hardware/device/sd8800.c **** 		OLED_ShowFloatNum(92,43,sd8800_vbat,1,2,6);
+ 2084              		.loc 1 366 3
+ 2085 023a 494B     		ldr	r3, .L77+12
+ 2086 023c D3E90023 		ldrd	r2, [r3]
+ 2087 0240 0621     		movs	r1, #6
+ 2088 0242 0291     		str	r1, [sp, #8]
+ 2089 0244 0221     		movs	r1, #2
+ 2090 0246 0191     		str	r1, [sp, #4]
+ 2091 0248 0121     		movs	r1, #1
+ 2092 024a 0091     		str	r1, [sp]
+ 2093 024c 2B21     		movs	r1, #43
+ 2094 024e 5C20     		movs	r0, #92
+ 2095 0250 FFF7FEFF 		bl	OLED_ShowFloatNum
+ 367:./Hardware/device/sd8800.c **** 		OLED_ShowChar(122,43,'V',6);
+ 2096              		.loc 1 367 3
+ 2097 0254 0623     		movs	r3, #6
+ 2098 0256 5622     		movs	r2, #86
+ 2099 0258 2B21     		movs	r1, #43
+ 2100 025a 7A20     		movs	r0, #122
+ 2101 025c FFF7FEFF 		bl	OLED_ShowChar
+ 368:./Hardware/device/sd8800.c **** 		
+ 369:./Hardware/device/sd8800.c **** 		OLED_ShowString(0,43,"Temp:",6);
+ 2102              		.loc 1 369 3
+ 2103 0260 0623     		movs	r3, #6
+ 2104 0262 404A     		ldr	r2, .L77+16
+ 2105 0264 2B21     		movs	r1, #43
+ 2106 0266 0020     		movs	r0, #0
+ 2107 0268 FFF7FEFF 		bl	OLED_ShowString
+ 370:./Hardware/device/sd8800.c **** 			
+ 371:./Hardware/device/sd8800.c **** 		OLED_ShowChar(0,0,'-',OLED_6X8);
+ 2108              		.loc 1 371 3
+ 2109 026c 0623     		movs	r3, #6
+ 2110 026e 2D22     		movs	r2, #45
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 44
+
+
+ 2111 0270 0021     		movs	r1, #0
+ 2112 0272 0020     		movs	r0, #0
+ 2113 0274 FFF7FEFF 		bl	OLED_ShowChar
+ 372:./Hardware/device/sd8800.c **** 		OLED_ShowChar(5,0,'-',OLED_6X8);
+ 2114              		.loc 1 372 3
+ 2115 0278 0623     		movs	r3, #6
+ 2116 027a 2D22     		movs	r2, #45
+ 2117 027c 0021     		movs	r1, #0
+ 2118 027e 0520     		movs	r0, #5
+ 2119 0280 FFF7FEFF 		bl	OLED_ShowChar
+ 373:./Hardware/device/sd8800.c **** 		OLED_ShowChar(10,0,'-',OLED_6X8);
+ 2120              		.loc 1 373 3
+ 2121 0284 0623     		movs	r3, #6
+ 2122 0286 2D22     		movs	r2, #45
+ 2123 0288 0021     		movs	r1, #0
+ 2124 028a 0A20     		movs	r0, #10
+ 2125 028c FFF7FEFF 		bl	OLED_ShowChar
+ 374:./Hardware/device/sd8800.c **** 		OLED_ShowChar(15,0,'-',OLED_6X8);
+ 2126              		.loc 1 374 3
+ 2127 0290 0623     		movs	r3, #6
+ 2128 0292 2D22     		movs	r2, #45
+ 2129 0294 0021     		movs	r1, #0
+ 2130 0296 0F20     		movs	r0, #15
+ 2131 0298 FFF7FEFF 		bl	OLED_ShowChar
+ 375:./Hardware/device/sd8800.c **** 		OLED_ShowChar(20,0,'-',OLED_6X8);
+ 2132              		.loc 1 375 3
+ 2133 029c 0623     		movs	r3, #6
+ 2134 029e 2D22     		movs	r2, #45
+ 2135 02a0 0021     		movs	r1, #0
+ 2136 02a2 1420     		movs	r0, #20
+ 2137 02a4 FFF7FEFF 		bl	OLED_ShowChar
+ 376:./Hardware/device/sd8800.c **** 		OLED_ShowChar(25,0,'-',OLED_6X8);
+ 2138              		.loc 1 376 3
+ 2139 02a8 0623     		movs	r3, #6
+ 2140 02aa 2D22     		movs	r2, #45
+ 2141 02ac 0021     		movs	r1, #0
+ 2142 02ae 1920     		movs	r0, #25
+ 2143 02b0 FFF7FEFF 		bl	OLED_ShowChar
+ 377:./Hardware/device/sd8800.c **** 		OLED_ShowChar(30,0,'-',OLED_6X8);
+ 2144              		.loc 1 377 3
+ 2145 02b4 0623     		movs	r3, #6
+ 2146 02b6 2D22     		movs	r2, #45
+ 2147 02b8 0021     		movs	r1, #0
+ 2148 02ba 1E20     		movs	r0, #30
+ 2149 02bc FFF7FEFF 		bl	OLED_ShowChar
+ 378:./Hardware/device/sd8800.c **** 		OLED_ShowChar(35,0,'-',OLED_6X8);
+ 2150              		.loc 1 378 3
+ 2151 02c0 0623     		movs	r3, #6
+ 2152 02c2 2D22     		movs	r2, #45
+ 2153 02c4 0021     		movs	r1, #0
+ 2154 02c6 2320     		movs	r0, #35
+ 2155 02c8 FFF7FEFF 		bl	OLED_ShowChar
+ 379:./Hardware/device/sd8800.c **** 
+ 380:./Hardware/device/sd8800.c **** 		OLED_ShowString(40,0,"TEST IC",OLED_6X8);
+ 2156              		.loc 1 380 3
+ 2157 02cc 0623     		movs	r3, #6
+ 2158 02ce 264A     		ldr	r2, .L77+20
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 45
+
+
+ 2159 02d0 0021     		movs	r1, #0
+ 2160 02d2 2820     		movs	r0, #40
+ 2161 02d4 FFF7FEFF 		bl	OLED_ShowString
+ 381:./Hardware/device/sd8800.c **** 		
+ 382:./Hardware/device/sd8800.c **** 		OLED_ShowChar(83,0,'-',OLED_6X8);
+ 2162              		.loc 1 382 3
+ 2163 02d8 0623     		movs	r3, #6
+ 2164 02da 2D22     		movs	r2, #45
+ 2165 02dc 0021     		movs	r1, #0
+ 2166 02de 5320     		movs	r0, #83
+ 2167 02e0 FFF7FEFF 		bl	OLED_ShowChar
+ 383:./Hardware/device/sd8800.c **** 		OLED_ShowChar(88,0,'-',OLED_6X8);
+ 2168              		.loc 1 383 3
+ 2169 02e4 0623     		movs	r3, #6
+ 2170 02e6 2D22     		movs	r2, #45
+ 2171 02e8 0021     		movs	r1, #0
+ 2172 02ea 5820     		movs	r0, #88
+ 2173 02ec FFF7FEFF 		bl	OLED_ShowChar
+ 384:./Hardware/device/sd8800.c **** 		OLED_ShowChar(90,0,'-',OLED_6X8);
+ 2174              		.loc 1 384 3
+ 2175 02f0 0623     		movs	r3, #6
+ 2176 02f2 2D22     		movs	r2, #45
+ 2177 02f4 0021     		movs	r1, #0
+ 2178 02f6 5A20     		movs	r0, #90
+ 2179 02f8 FFF7FEFF 		bl	OLED_ShowChar
+ 385:./Hardware/device/sd8800.c **** 		OLED_ShowChar(95,0,'-',OLED_6X8);
+ 2180              		.loc 1 385 3
+ 2181 02fc 0623     		movs	r3, #6
+ 2182 02fe 2D22     		movs	r2, #45
+ 2183 0300 0021     		movs	r1, #0
+ 2184 0302 5F20     		movs	r0, #95
+ 2185 0304 FFF7FEFF 		bl	OLED_ShowChar
+ 386:./Hardware/device/sd8800.c **** 		OLED_ShowChar(100,0,'-',OLED_6X8);
+ 2186              		.loc 1 386 3
+ 2187 0308 0623     		movs	r3, #6
+ 2188 030a 2D22     		movs	r2, #45
+ 2189 030c 0021     		movs	r1, #0
+ 2190 030e 6420     		movs	r0, #100
+ 2191 0310 FFF7FEFF 		bl	OLED_ShowChar
+ 387:./Hardware/device/sd8800.c **** 		OLED_ShowChar(105,0,'-',OLED_6X8);
+ 2192              		.loc 1 387 3
+ 2193 0314 0623     		movs	r3, #6
+ 2194 0316 2D22     		movs	r2, #45
+ 2195 0318 0021     		movs	r1, #0
+ 2196 031a 6920     		movs	r0, #105
+ 2197 031c FFF7FEFF 		bl	OLED_ShowChar
+ 388:./Hardware/device/sd8800.c **** 		OLED_ShowChar(110,0,'-',OLED_6X8);
+ 2198              		.loc 1 388 3
+ 2199 0320 0623     		movs	r3, #6
+ 2200 0322 2D22     		movs	r2, #45
+ 2201 0324 0021     		movs	r1, #0
+ 2202 0326 6E20     		movs	r0, #110
+ 2203 0328 FFF7FEFF 		bl	OLED_ShowChar
+ 389:./Hardware/device/sd8800.c **** 		OLED_ShowChar(115,0,'-',OLED_6X8);
+ 2204              		.loc 1 389 3
+ 2205 032c 0623     		movs	r3, #6
+ 2206 032e 2D22     		movs	r2, #45
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 46
+
+
+ 2207 0330 0021     		movs	r1, #0
+ 2208 0332 7320     		movs	r0, #115
+ 2209 0334 FFF7FEFF 		bl	OLED_ShowChar
+ 390:./Hardware/device/sd8800.c **** 		OLED_ShowChar(120,0,'-',OLED_6X8);
+ 2210              		.loc 1 390 3
+ 2211 0338 0623     		movs	r3, #6
+ 2212 033a 2D22     		movs	r2, #45
+ 2213 033c 0021     		movs	r1, #0
+ 2214 033e 7820     		movs	r0, #120
+ 2215 0340 FFF7FEFF 		bl	OLED_ShowChar
+ 391:./Hardware/device/sd8800.c **** 		OLED_ShowChar(125,0,'-',OLED_6X8);
+ 2216              		.loc 1 391 3
+ 2217 0344 0623     		movs	r3, #6
+ 2218 0346 2D22     		movs	r2, #45
+ 2219 0348 0021     		movs	r1, #0
+ 2220 034a 7D20     		movs	r0, #125
+ 2221 034c FFF7FEFF 		bl	OLED_ShowChar
+ 2222 0350 7AE0     		b	.L75
+ 2223              	.L78:
+ 2224 0352 00BF     		.align	2
+ 2225              	.L77:
+ 2226 0354 CDCCCCCC 		.word	-858993459
+ 2227 0358 00000000 		.word	sd8800_temp
+ 2228 035c 08000000 		.word	.LC2
+ 2229 0360 00000000 		.word	sd8800_vbat
+ 2230 0364 10000000 		.word	.LC3
+ 2231 0368 18000000 		.word	.LC4
+ 2232              	.L74:
+ 392:./Hardware/device/sd8800.c **** 		
+ 393:./Hardware/device/sd8800.c **** 	}else{
+ 394:./Hardware/device/sd8800.c **** 		
+ 395:./Hardware/device/sd8800.c **** 		OLED_ShowChar(30,8,'-',8);
+ 2233              		.loc 1 395 3
+ 2234 036c 0823     		movs	r3, #8
+ 2235 036e 2D22     		movs	r2, #45
+ 2236 0370 0821     		movs	r1, #8
+ 2237 0372 1E20     		movs	r0, #30
+ 2238 0374 FFF7FEFF 		bl	OLED_ShowChar
+ 396:./Hardware/device/sd8800.c **** 		OLED_ShowChar(37,8,'-',8);
+ 2239              		.loc 1 396 3
+ 2240 0378 0823     		movs	r3, #8
+ 2241 037a 2D22     		movs	r2, #45
+ 2242 037c 0821     		movs	r1, #8
+ 2243 037e 2520     		movs	r0, #37
+ 2244 0380 FFF7FEFF 		bl	OLED_ShowChar
+ 397:./Hardware/device/sd8800.c **** 		OLED_ShowChar(44,8,'-',8);
+ 2245              		.loc 1 397 3
+ 2246 0384 0823     		movs	r3, #8
+ 2247 0386 2D22     		movs	r2, #45
+ 2248 0388 0821     		movs	r1, #8
+ 2249 038a 2C20     		movs	r0, #44
+ 2250 038c FFF7FEFF 		bl	OLED_ShowChar
+ 398:./Hardware/device/sd8800.c **** 		OLED_ShowChar(51,8,'-',8);
+ 2251              		.loc 1 398 3
+ 2252 0390 0823     		movs	r3, #8
+ 2253 0392 2D22     		movs	r2, #45
+ 2254 0394 0821     		movs	r1, #8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 47
+
+
+ 2255 0396 3320     		movs	r0, #51
+ 2256 0398 FFF7FEFF 		bl	OLED_ShowChar
+ 399:./Hardware/device/sd8800.c **** 		OLED_ShowChar(58,8,'-',8);
+ 2257              		.loc 1 399 3
+ 2258 039c 0823     		movs	r3, #8
+ 2259 039e 2D22     		movs	r2, #45
+ 2260 03a0 0821     		movs	r1, #8
+ 2261 03a2 3A20     		movs	r0, #58
+ 2262 03a4 FFF7FEFF 		bl	OLED_ShowChar
+ 400:./Hardware/device/sd8800.c **** 		OLED_ShowChar(65,8,'-',8);
+ 2263              		.loc 1 400 3
+ 2264 03a8 0823     		movs	r3, #8
+ 2265 03aa 2D22     		movs	r2, #45
+ 2266 03ac 0821     		movs	r1, #8
+ 2267 03ae 4120     		movs	r0, #65
+ 2268 03b0 FFF7FEFF 		bl	OLED_ShowChar
+ 401:./Hardware/device/sd8800.c **** 		OLED_ShowChar(72,8,'-',8);
+ 2269              		.loc 1 401 3
+ 2270 03b4 0823     		movs	r3, #8
+ 2271 03b6 2D22     		movs	r2, #45
+ 2272 03b8 0821     		movs	r1, #8
+ 2273 03ba 4820     		movs	r0, #72
+ 2274 03bc FFF7FEFF 		bl	OLED_ShowChar
+ 402:./Hardware/device/sd8800.c **** 		OLED_ShowChar(79,8,'-',8);
+ 2275              		.loc 1 402 3
+ 2276 03c0 0823     		movs	r3, #8
+ 2277 03c2 2D22     		movs	r2, #45
+ 2278 03c4 0821     		movs	r1, #8
+ 2279 03c6 4F20     		movs	r0, #79
+ 2280 03c8 FFF7FEFF 		bl	OLED_ShowChar
+ 403:./Hardware/device/sd8800.c **** 		OLED_ShowChar(90,8,'W',8);
+ 2281              		.loc 1 403 3
+ 2282 03cc 0823     		movs	r3, #8
+ 2283 03ce 5722     		movs	r2, #87
+ 2284 03d0 0821     		movs	r1, #8
+ 2285 03d2 5A20     		movs	r0, #90
+ 2286 03d4 FFF7FEFF 		bl	OLED_ShowChar
+ 404:./Hardware/device/sd8800.c **** 		OLED_ShowChar(99,8,'-',8);
+ 2287              		.loc 1 404 3
+ 2288 03d8 0823     		movs	r3, #8
+ 2289 03da 2D22     		movs	r2, #45
+ 2290 03dc 0821     		movs	r1, #8
+ 2291 03de 6320     		movs	r0, #99
+ 2292 03e0 FFF7FEFF 		bl	OLED_ShowChar
+ 405:./Hardware/device/sd8800.c **** 		
+ 406:./Hardware/device/sd8800.c **** 		OLED_ShowChar(35,22,'-',8);
+ 2293              		.loc 1 406 3
+ 2294 03e4 0823     		movs	r3, #8
+ 2295 03e6 2D22     		movs	r2, #45
+ 2296 03e8 1621     		movs	r1, #22
+ 2297 03ea 2320     		movs	r0, #35
+ 2298 03ec FFF7FEFF 		bl	OLED_ShowChar
+ 407:./Hardware/device/sd8800.c **** 		OLED_ShowChar(42,22,'-',8);
+ 2299              		.loc 1 407 3
+ 2300 03f0 0823     		movs	r3, #8
+ 2301 03f2 2D22     		movs	r2, #45
+ 2302 03f4 1621     		movs	r1, #22
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 48
+
+
+ 2303 03f6 2A20     		movs	r0, #42
+ 2304 03f8 FFF7FEFF 		bl	OLED_ShowChar
+ 408:./Hardware/device/sd8800.c **** 		OLED_ShowChar(49,22,':',8);
+ 2305              		.loc 1 408 3
+ 2306 03fc 0823     		movs	r3, #8
+ 2307 03fe 3A22     		movs	r2, #58
+ 2308 0400 1621     		movs	r1, #22
+ 2309 0402 3120     		movs	r0, #49
+ 2310 0404 FFF7FEFF 		bl	OLED_ShowChar
+ 409:./Hardware/device/sd8800.c **** 		OLED_ShowChar(56,22,'-',8);
+ 2311              		.loc 1 409 3
+ 2312 0408 0823     		movs	r3, #8
+ 2313 040a 2D22     		movs	r2, #45
+ 2314 040c 1621     		movs	r1, #22
+ 2315 040e 3820     		movs	r0, #56
+ 2316 0410 FFF7FEFF 		bl	OLED_ShowChar
+ 410:./Hardware/device/sd8800.c **** 		OLED_ShowChar(63,22,'-',8);
+ 2317              		.loc 1 410 3
+ 2318 0414 0823     		movs	r3, #8
+ 2319 0416 2D22     		movs	r2, #45
+ 2320 0418 1621     		movs	r1, #22
+ 2321 041a 3F20     		movs	r0, #63
+ 2322 041c FFF7FEFF 		bl	OLED_ShowChar
+ 411:./Hardware/device/sd8800.c **** 		OLED_ShowChar(70,22,':',8);
+ 2323              		.loc 1 411 3
+ 2324 0420 0823     		movs	r3, #8
+ 2325 0422 3A22     		movs	r2, #58
+ 2326 0424 1621     		movs	r1, #22
+ 2327 0426 4620     		movs	r0, #70
+ 2328 0428 FFF7FEFF 		bl	OLED_ShowChar
+ 412:./Hardware/device/sd8800.c **** 		OLED_ShowChar(77,22,'-',8);
+ 2329              		.loc 1 412 3
+ 2330 042c 0823     		movs	r3, #8
+ 2331 042e 2D22     		movs	r2, #45
+ 2332 0430 1621     		movs	r1, #22
+ 2333 0432 4D20     		movs	r0, #77
+ 2334 0434 FFF7FEFF 		bl	OLED_ShowChar
+ 413:./Hardware/device/sd8800.c **** 		OLED_ShowChar(84,22,'-',8);
+ 2335              		.loc 1 413 3
+ 2336 0438 0823     		movs	r3, #8
+ 2337 043a 2D22     		movs	r2, #45
+ 2338 043c 1621     		movs	r1, #22
+ 2339 043e 5420     		movs	r0, #84
+ 2340 0440 FFF7FEFF 		bl	OLED_ShowChar
+ 414:./Hardware/device/sd8800.c **** 
+ 415:./Hardware/device/sd8800.c **** 	  NO_ACK_sd3xxx_messgae_line();
+ 2341              		.loc 1 415 4
+ 2342 0444 FFF7FEFF 		bl	NO_ACK_sd3xxx_messgae_line
+ 2343              	.L75:
+ 416:./Hardware/device/sd8800.c **** 	}
+ 417:./Hardware/device/sd8800.c **** 	return TRUE;
+ 2344              		.loc 1 417 9
+ 2345 0448 0123     		movs	r3, #1
+ 418:./Hardware/device/sd8800.c **** }
+ 2346              		.loc 1 418 1
+ 2347 044a 1846     		mov	r0, r3
+ 2348 044c 1837     		adds	r7, r7, #24
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 49
+
+
+ 2349              	.LCFI83:
+ 2350              		.cfi_def_cfa_offset 8
+ 2351 044e BD46     		mov	sp, r7
+ 2352              	.LCFI84:
+ 2353              		.cfi_def_cfa_register 13
+ 2354              		@ sp needed
+ 2355 0450 80BD     		pop	{r7, pc}
+ 2356              		.cfi_endproc
+ 2357              	.LFE48:
+ 2359 0452 00BF     		.section	.rodata
+ 2360              		.align	2
+ 2361              	.LC5:
+ 2362 0020 74696D65 		.ascii	"time is error\000"
+ 2362      20697320 
+ 2362      6572726F 
+ 2362      7200
+ 2363              		.section	.text.sd8800_time_copy,"ax",%progbits
+ 2364              		.align	1
+ 2365              		.global	sd8800_time_copy
+ 2366              		.syntax unified
+ 2367              		.thumb
+ 2368              		.thumb_func
+ 2369              		.fpu softvfp
+ 2371              	sd8800_time_copy:
+ 2372              	.LFB49:
+ 419:./Hardware/device/sd8800.c **** 
+ 420:./Hardware/device/sd8800.c **** uint8_t sd8800_time_copy(void)
+ 421:./Hardware/device/sd8800.c **** {
+ 2373              		.loc 1 421 1
+ 2374              		.cfi_startproc
+ 2375              		@ args = 0, pretend = 0, frame = 24
+ 2376              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2377 0000 80B5     		push	{r7, lr}
+ 2378              	.LCFI85:
+ 2379              		.cfi_def_cfa_offset 8
+ 2380              		.cfi_offset 7, -8
+ 2381              		.cfi_offset 14, -4
+ 2382 0002 88B0     		sub	sp, sp, #32
+ 2383              	.LCFI86:
+ 2384              		.cfi_def_cfa_offset 40
+ 2385 0004 02AF     		add	r7, sp, #8
+ 2386              	.LCFI87:
+ 2387              		.cfi_def_cfa 7, 32
+ 422:./Hardware/device/sd8800.c **** 	uint8_t year_h,year_l;
+ 423:./Hardware/device/sd8800.c **** 	uint8_t month_h,month_l;
+ 424:./Hardware/device/sd8800.c **** 	uint8_t day_h,day_l;
+ 425:./Hardware/device/sd8800.c **** 	uint8_t week;
+ 426:./Hardware/device/sd8800.c **** 	uint8_t hour_h,hour_l;
+ 427:./Hardware/device/sd8800.c **** 	uint8_t minute_h,minute_l;
+ 428:./Hardware/device/sd8800.c **** 	uint8_t second_h,second_l;
+ 429:./Hardware/device/sd8800.c **** 	
+ 430:./Hardware/device/sd8800.c **** 	rtc_time copy_buf;
+ 431:./Hardware/device/sd8800.c **** 	
+ 432:./Hardware/device/sd8800.c **** 	if(RTC_ReadTimeDate(&copy_buf,IIC_STD)!=RTC_OK)
+ 2388              		.loc 1 432 5
+ 2389 0006 3B1D     		adds	r3, r7, #4
+ 2390 0008 0121     		movs	r1, #1
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 50
+
+
+ 2391 000a 1846     		mov	r0, r3
+ 2392 000c FFF7FEFF 		bl	RTC_ReadTimeDate
+ 2393 0010 0346     		mov	r3, r0
+ 2394              		.loc 1 432 4
+ 2395 0012 062B     		cmp	r3, #6
+ 2396 0014 04D0     		beq	.L80
+ 433:./Hardware/device/sd8800.c **** 	{
+ 434:./Hardware/device/sd8800.c **** 		Usart_Printf("time is error");
+ 2397              		.loc 1 434 3
+ 2398 0016 8048     		ldr	r0, .L84
+ 2399 0018 FFF7FEFF 		bl	Usart_Printf
+ 435:./Hardware/device/sd8800.c **** 		return FALSE;
+ 2400              		.loc 1 435 10
+ 2401 001c 0023     		movs	r3, #0
+ 2402 001e F7E0     		b	.L83
+ 2403              	.L80:
+ 436:./Hardware/device/sd8800.c **** 		
+ 437:./Hardware/device/sd8800.c **** 	}
+ 438:./Hardware/device/sd8800.c **** 	
+ 439:./Hardware/device/sd8800.c **** 	if(SD8800_WriteTimeDate(&copy_buf,IIC_TEST)!=RTC_FAIL)
+ 2404              		.loc 1 439 5
+ 2405 0020 3B1D     		adds	r3, r7, #4
+ 2406 0022 0021     		movs	r1, #0
+ 2407 0024 1846     		mov	r0, r3
+ 2408 0026 FFF7FEFF 		bl	SD8800_WriteTimeDate
+ 2409 002a 0346     		mov	r3, r0
+ 2410              		.loc 1 439 4
+ 2411 002c 082B     		cmp	r3, #8
+ 2412 002e 00F0EE80 		beq	.L82
+ 440:./Hardware/device/sd8800.c **** 	{
+ 441:./Hardware/device/sd8800.c **** 	year_h = copy_buf.year / 10;
+ 2413              		.loc 1 441 19
+ 2414 0032 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 2415              		.loc 1 441 9
+ 2416 0034 794A     		ldr	r2, .L84+4
+ 2417 0036 A2FB0323 		umull	r2, r3, r2, r3
+ 2418 003a DB08     		lsrs	r3, r3, #3
+ 2419 003c FB75     		strb	r3, [r7, #23]
+ 442:./Hardware/device/sd8800.c **** 	year_l = copy_buf.year % 10;  //Äê
+ 2420              		.loc 1 442 19
+ 2421 003e BA7A     		ldrb	r2, [r7, #10]	@ zero_extendqisi2
+ 2422              		.loc 1 442 9
+ 2423 0040 764B     		ldr	r3, .L84+4
+ 2424 0042 A3FB0213 		umull	r1, r3, r3, r2
+ 2425 0046 D908     		lsrs	r1, r3, #3
+ 2426 0048 0B46     		mov	r3, r1
+ 2427 004a 9B00     		lsls	r3, r3, #2
+ 2428 004c 0B44     		add	r3, r3, r1
+ 2429 004e 5B00     		lsls	r3, r3, #1
+ 2430 0050 D31A     		subs	r3, r2, r3
+ 2431 0052 BB75     		strb	r3, [r7, #22]
+ 443:./Hardware/device/sd8800.c **** 
+ 444:./Hardware/device/sd8800.c **** 	month_h = copy_buf.month / 10;
+ 2432              		.loc 1 444 20
+ 2433 0054 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 2434              		.loc 1 444 10
+ 2435 0056 714A     		ldr	r2, .L84+4
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 51
+
+
+ 2436 0058 A2FB0323 		umull	r2, r3, r2, r3
+ 2437 005c DB08     		lsrs	r3, r3, #3
+ 2438 005e 7B75     		strb	r3, [r7, #21]
+ 445:./Hardware/device/sd8800.c **** 	month_l = copy_buf.month % 10;  //ÔÂ
+ 2439              		.loc 1 445 20
+ 2440 0060 7A7A     		ldrb	r2, [r7, #9]	@ zero_extendqisi2
+ 2441              		.loc 1 445 10
+ 2442 0062 6E4B     		ldr	r3, .L84+4
+ 2443 0064 A3FB0213 		umull	r1, r3, r3, r2
+ 2444 0068 D908     		lsrs	r1, r3, #3
+ 2445 006a 0B46     		mov	r3, r1
+ 2446 006c 9B00     		lsls	r3, r3, #2
+ 2447 006e 0B44     		add	r3, r3, r1
+ 2448 0070 5B00     		lsls	r3, r3, #1
+ 2449 0072 D31A     		subs	r3, r2, r3
+ 2450 0074 3B75     		strb	r3, [r7, #20]
+ 446:./Hardware/device/sd8800.c **** 
+ 447:./Hardware/device/sd8800.c **** 	day_h = copy_buf.day / 10;
+ 2451              		.loc 1 447 18
+ 2452 0076 3B7A     		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 2453              		.loc 1 447 8
+ 2454 0078 684A     		ldr	r2, .L84+4
+ 2455 007a A2FB0323 		umull	r2, r3, r2, r3
+ 2456 007e DB08     		lsrs	r3, r3, #3
+ 2457 0080 FB74     		strb	r3, [r7, #19]
+ 448:./Hardware/device/sd8800.c **** 	day_l = copy_buf.day % 10;  //ÈÕ
+ 2458              		.loc 1 448 18
+ 2459 0082 3A7A     		ldrb	r2, [r7, #8]	@ zero_extendqisi2
+ 2460              		.loc 1 448 8
+ 2461 0084 654B     		ldr	r3, .L84+4
+ 2462 0086 A3FB0213 		umull	r1, r3, r3, r2
+ 2463 008a D908     		lsrs	r1, r3, #3
+ 2464 008c 0B46     		mov	r3, r1
+ 2465 008e 9B00     		lsls	r3, r3, #2
+ 2466 0090 0B44     		add	r3, r3, r1
+ 2467 0092 5B00     		lsls	r3, r3, #1
+ 2468 0094 D31A     		subs	r3, r2, r3
+ 2469 0096 BB74     		strb	r3, [r7, #18]
+ 449:./Hardware/device/sd8800.c **** 
+ 450:./Hardware/device/sd8800.c **** 	week  = copy_buf.week;
+ 2470              		.loc 1 450 8
+ 2471 0098 FB79     		ldrb	r3, [r7, #7]
+ 2472 009a 7B74     		strb	r3, [r7, #17]
+ 451:./Hardware/device/sd8800.c **** 
+ 452:./Hardware/device/sd8800.c **** 	hour_h = copy_buf.hour / 10;
+ 2473              		.loc 1 452 19
+ 2474 009c BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 2475              		.loc 1 452 9
+ 2476 009e 5F4A     		ldr	r2, .L84+4
+ 2477 00a0 A2FB0323 		umull	r2, r3, r2, r3
+ 2478 00a4 DB08     		lsrs	r3, r3, #3
+ 2479 00a6 3B74     		strb	r3, [r7, #16]
+ 453:./Hardware/device/sd8800.c **** 	hour_l = copy_buf.hour % 10;  //Ê±
+ 2480              		.loc 1 453 19
+ 2481 00a8 BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 2482              		.loc 1 453 9
+ 2483 00aa 5C4B     		ldr	r3, .L84+4
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 52
+
+
+ 2484 00ac A3FB0213 		umull	r1, r3, r3, r2
+ 2485 00b0 D908     		lsrs	r1, r3, #3
+ 2486 00b2 0B46     		mov	r3, r1
+ 2487 00b4 9B00     		lsls	r3, r3, #2
+ 2488 00b6 0B44     		add	r3, r3, r1
+ 2489 00b8 5B00     		lsls	r3, r3, #1
+ 2490 00ba D31A     		subs	r3, r2, r3
+ 2491 00bc FB73     		strb	r3, [r7, #15]
+ 454:./Hardware/device/sd8800.c **** 
+ 455:./Hardware/device/sd8800.c **** 	minute_h = copy_buf.minute / 10;
+ 2492              		.loc 1 455 21
+ 2493 00be 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 2494              		.loc 1 455 11
+ 2495 00c0 564A     		ldr	r2, .L84+4
+ 2496 00c2 A2FB0323 		umull	r2, r3, r2, r3
+ 2497 00c6 DB08     		lsrs	r3, r3, #3
+ 2498 00c8 BB73     		strb	r3, [r7, #14]
+ 456:./Hardware/device/sd8800.c **** 	minute_l = copy_buf.minute % 10;  //·Ö
+ 2499              		.loc 1 456 21
+ 2500 00ca 7A79     		ldrb	r2, [r7, #5]	@ zero_extendqisi2
+ 2501              		.loc 1 456 11
+ 2502 00cc 534B     		ldr	r3, .L84+4
+ 2503 00ce A3FB0213 		umull	r1, r3, r3, r2
+ 2504 00d2 D908     		lsrs	r1, r3, #3
+ 2505 00d4 0B46     		mov	r3, r1
+ 2506 00d6 9B00     		lsls	r3, r3, #2
+ 2507 00d8 0B44     		add	r3, r3, r1
+ 2508 00da 5B00     		lsls	r3, r3, #1
+ 2509 00dc D31A     		subs	r3, r2, r3
+ 2510 00de 7B73     		strb	r3, [r7, #13]
+ 457:./Hardware/device/sd8800.c **** 
+ 458:./Hardware/device/sd8800.c **** 	second_h = copy_buf.second / 10;
+ 2511              		.loc 1 458 21
+ 2512 00e0 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 2513              		.loc 1 458 11
+ 2514 00e2 4E4A     		ldr	r2, .L84+4
+ 2515 00e4 A2FB0323 		umull	r2, r3, r2, r3
+ 2516 00e8 DB08     		lsrs	r3, r3, #3
+ 2517 00ea 3B73     		strb	r3, [r7, #12]
+ 459:./Hardware/device/sd8800.c **** 	second_l = copy_buf.second % 10; //Ãë
+ 2518              		.loc 1 459 21
+ 2519 00ec 3A79     		ldrb	r2, [r7, #4]	@ zero_extendqisi2
+ 2520              		.loc 1 459 11
+ 2521 00ee 4B4B     		ldr	r3, .L84+4
+ 2522 00f0 A3FB0213 		umull	r1, r3, r3, r2
+ 2523 00f4 D908     		lsrs	r1, r3, #3
+ 2524 00f6 0B46     		mov	r3, r1
+ 2525 00f8 9B00     		lsls	r3, r3, #2
+ 2526 00fa 0B44     		add	r3, r3, r1
+ 2527 00fc 5B00     		lsls	r3, r3, #1
+ 2528 00fe D31A     		subs	r3, r2, r3
+ 2529 0100 FB72     		strb	r3, [r7, #11]
+ 460:./Hardware/device/sd8800.c **** 
+ 461:./Hardware/device/sd8800.c **** 	OLED_ShowNum(30,42,year_h,1,OLED_6X8);//Ïà¸ôÏÔÊ¾µÄÊý¾ÝXÖá¼ä¸ô7¸ö×ø±ê£¬Ïà¸ôÏÔÊ¾µÄÊý¾ÝYÖá¼ä¸ô15¸ö×ø±
+ 2530              		.loc 1 461 2
+ 2531 0102 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 2532 0104 0623     		movs	r3, #6
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 53
+
+
+ 2533 0106 0093     		str	r3, [sp]
+ 2534 0108 0123     		movs	r3, #1
+ 2535 010a 2A21     		movs	r1, #42
+ 2536 010c 1E20     		movs	r0, #30
+ 2537 010e FFF7FEFF 		bl	OLED_ShowNum
+ 462:./Hardware/device/sd8800.c **** 	OLED_ShowNum(37,42,year_l,1,OLED_6X8);
+ 2538              		.loc 1 462 2
+ 2539 0112 BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 2540 0114 0623     		movs	r3, #6
+ 2541 0116 0093     		str	r3, [sp]
+ 2542 0118 0123     		movs	r3, #1
+ 2543 011a 2A21     		movs	r1, #42
+ 2544 011c 2520     		movs	r0, #37
+ 2545 011e FFF7FEFF 		bl	OLED_ShowNum
+ 463:./Hardware/device/sd8800.c **** 	OLED_ShowChar(44,42,'-',OLED_6X8);
+ 2546              		.loc 1 463 2
+ 2547 0122 0623     		movs	r3, #6
+ 2548 0124 2D22     		movs	r2, #45
+ 2549 0126 2A21     		movs	r1, #42
+ 2550 0128 2C20     		movs	r0, #44
+ 2551 012a FFF7FEFF 		bl	OLED_ShowChar
+ 464:./Hardware/device/sd8800.c **** 	OLED_ShowNum(51,42,month_h,1,OLED_6X8);
+ 2552              		.loc 1 464 2
+ 2553 012e 7A7D     		ldrb	r2, [r7, #21]	@ zero_extendqisi2
+ 2554 0130 0623     		movs	r3, #6
+ 2555 0132 0093     		str	r3, [sp]
+ 2556 0134 0123     		movs	r3, #1
+ 2557 0136 2A21     		movs	r1, #42
+ 2558 0138 3320     		movs	r0, #51
+ 2559 013a FFF7FEFF 		bl	OLED_ShowNum
+ 465:./Hardware/device/sd8800.c **** 	OLED_ShowNum(58,42,month_l,1,OLED_6X8);
+ 2560              		.loc 1 465 2
+ 2561 013e 3A7D     		ldrb	r2, [r7, #20]	@ zero_extendqisi2
+ 2562 0140 0623     		movs	r3, #6
+ 2563 0142 0093     		str	r3, [sp]
+ 2564 0144 0123     		movs	r3, #1
+ 2565 0146 2A21     		movs	r1, #42
+ 2566 0148 3A20     		movs	r0, #58
+ 2567 014a FFF7FEFF 		bl	OLED_ShowNum
+ 466:./Hardware/device/sd8800.c **** 	OLED_ShowChar(65,42,'-',OLED_6X8);
+ 2568              		.loc 1 466 2
+ 2569 014e 0623     		movs	r3, #6
+ 2570 0150 2D22     		movs	r2, #45
+ 2571 0152 2A21     		movs	r1, #42
+ 2572 0154 4120     		movs	r0, #65
+ 2573 0156 FFF7FEFF 		bl	OLED_ShowChar
+ 467:./Hardware/device/sd8800.c **** 	OLED_ShowNum(72,42,day_h,1,OLED_6X8);
+ 2574              		.loc 1 467 2
+ 2575 015a FA7C     		ldrb	r2, [r7, #19]	@ zero_extendqisi2
+ 2576 015c 0623     		movs	r3, #6
+ 2577 015e 0093     		str	r3, [sp]
+ 2578 0160 0123     		movs	r3, #1
+ 2579 0162 2A21     		movs	r1, #42
+ 2580 0164 4820     		movs	r0, #72
+ 2581 0166 FFF7FEFF 		bl	OLED_ShowNum
+ 468:./Hardware/device/sd8800.c **** 	OLED_ShowNum(79,42,day_l,1,OLED_6X8);
+ 2582              		.loc 1 468 2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 54
+
+
+ 2583 016a BA7C     		ldrb	r2, [r7, #18]	@ zero_extendqisi2
+ 2584 016c 0623     		movs	r3, #6
+ 2585 016e 0093     		str	r3, [sp]
+ 2586 0170 0123     		movs	r3, #1
+ 2587 0172 2A21     		movs	r1, #42
+ 2588 0174 4F20     		movs	r0, #79
+ 2589 0176 FFF7FEFF 		bl	OLED_ShowNum
+ 469:./Hardware/device/sd8800.c **** 	OLED_ShowChar(90,42,'W',OLED_6X8);
+ 2590              		.loc 1 469 2
+ 2591 017a 0623     		movs	r3, #6
+ 2592 017c 5722     		movs	r2, #87
+ 2593 017e 2A21     		movs	r1, #42
+ 2594 0180 5A20     		movs	r0, #90
+ 2595 0182 FFF7FEFF 		bl	OLED_ShowChar
+ 470:./Hardware/device/sd8800.c **** 	OLED_ShowNum(99,42,week,1,OLED_6X8);
+ 2596              		.loc 1 470 2
+ 2597 0186 7A7C     		ldrb	r2, [r7, #17]	@ zero_extendqisi2
+ 2598 0188 0623     		movs	r3, #6
+ 2599 018a 0093     		str	r3, [sp]
+ 2600 018c 0123     		movs	r3, #1
+ 2601 018e 2A21     		movs	r1, #42
+ 2602 0190 6320     		movs	r0, #99
+ 2603 0192 FFF7FEFF 		bl	OLED_ShowNum
+ 471:./Hardware/device/sd8800.c **** 
+ 472:./Hardware/device/sd8800.c **** 	OLED_ShowNum(35,53,hour_h,1,OLED_6X8);
+ 2604              		.loc 1 472 2
+ 2605 0196 3A7C     		ldrb	r2, [r7, #16]	@ zero_extendqisi2
+ 2606 0198 0623     		movs	r3, #6
+ 2607 019a 0093     		str	r3, [sp]
+ 2608 019c 0123     		movs	r3, #1
+ 2609 019e 3521     		movs	r1, #53
+ 2610 01a0 2320     		movs	r0, #35
+ 2611 01a2 FFF7FEFF 		bl	OLED_ShowNum
+ 473:./Hardware/device/sd8800.c **** 	OLED_ShowNum(42,53,hour_l,1,OLED_6X8);
+ 2612              		.loc 1 473 2
+ 2613 01a6 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 2614 01a8 0623     		movs	r3, #6
+ 2615 01aa 0093     		str	r3, [sp]
+ 2616 01ac 0123     		movs	r3, #1
+ 2617 01ae 3521     		movs	r1, #53
+ 2618 01b0 2A20     		movs	r0, #42
+ 2619 01b2 FFF7FEFF 		bl	OLED_ShowNum
+ 474:./Hardware/device/sd8800.c **** 	OLED_ShowChar(49,53,':',OLED_6X8);
+ 2620              		.loc 1 474 2
+ 2621 01b6 0623     		movs	r3, #6
+ 2622 01b8 3A22     		movs	r2, #58
+ 2623 01ba 3521     		movs	r1, #53
+ 2624 01bc 3120     		movs	r0, #49
+ 2625 01be FFF7FEFF 		bl	OLED_ShowChar
+ 475:./Hardware/device/sd8800.c **** 	OLED_ShowNum(56,53,minute_h,1,OLED_6X8);
+ 2626              		.loc 1 475 2
+ 2627 01c2 BA7B     		ldrb	r2, [r7, #14]	@ zero_extendqisi2
+ 2628 01c4 0623     		movs	r3, #6
+ 2629 01c6 0093     		str	r3, [sp]
+ 2630 01c8 0123     		movs	r3, #1
+ 2631 01ca 3521     		movs	r1, #53
+ 2632 01cc 3820     		movs	r0, #56
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 55
+
+
+ 2633 01ce FFF7FEFF 		bl	OLED_ShowNum
+ 476:./Hardware/device/sd8800.c **** 	OLED_ShowNum(63,53,minute_l,1,OLED_6X8);
+ 2634              		.loc 1 476 2
+ 2635 01d2 7A7B     		ldrb	r2, [r7, #13]	@ zero_extendqisi2
+ 2636 01d4 0623     		movs	r3, #6
+ 2637 01d6 0093     		str	r3, [sp]
+ 2638 01d8 0123     		movs	r3, #1
+ 2639 01da 3521     		movs	r1, #53
+ 2640 01dc 3F20     		movs	r0, #63
+ 2641 01de FFF7FEFF 		bl	OLED_ShowNum
+ 477:./Hardware/device/sd8800.c **** 	OLED_ShowChar(70,53,':',OLED_6X8);
+ 2642              		.loc 1 477 2
+ 2643 01e2 0623     		movs	r3, #6
+ 2644 01e4 3A22     		movs	r2, #58
+ 2645 01e6 3521     		movs	r1, #53
+ 2646 01e8 4620     		movs	r0, #70
+ 2647 01ea FFF7FEFF 		bl	OLED_ShowChar
+ 478:./Hardware/device/sd8800.c **** 	OLED_ShowNum(77,53,second_h,1,OLED_6X8);
+ 2648              		.loc 1 478 2
+ 2649 01ee 3A7B     		ldrb	r2, [r7, #12]	@ zero_extendqisi2
+ 2650 01f0 0623     		movs	r3, #6
+ 2651 01f2 0093     		str	r3, [sp]
+ 2652 01f4 0123     		movs	r3, #1
+ 2653 01f6 3521     		movs	r1, #53
+ 2654 01f8 4D20     		movs	r0, #77
+ 2655 01fa FFF7FEFF 		bl	OLED_ShowNum
+ 479:./Hardware/device/sd8800.c **** 	OLED_ShowNum(84,53,second_l,1,OLED_6X8);
+ 2656              		.loc 1 479 2
+ 2657 01fe FA7A     		ldrb	r2, [r7, #11]	@ zero_extendqisi2
+ 2658 0200 0623     		movs	r3, #6
+ 2659 0202 0093     		str	r3, [sp]
+ 2660 0204 0123     		movs	r3, #1
+ 2661 0206 3521     		movs	r1, #53
+ 2662 0208 5420     		movs	r0, #84
+ 2663 020a FFF7FEFF 		bl	OLED_ShowNum
+ 2664              	.L82:
+ 480:./Hardware/device/sd8800.c **** 	 
+ 481:./Hardware/device/sd8800.c ****  }
+ 482:./Hardware/device/sd8800.c **** 	
+ 483:./Hardware/device/sd8800.c ****  return TRUE;
+ 2665              		.loc 1 483 9
+ 2666 020e 0123     		movs	r3, #1
+ 2667              	.L83:
+ 484:./Hardware/device/sd8800.c **** 
+ 485:./Hardware/device/sd8800.c **** }
+ 2668              		.loc 1 485 1 discriminator 1
+ 2669 0210 1846     		mov	r0, r3
+ 2670 0212 1837     		adds	r7, r7, #24
+ 2671              	.LCFI88:
+ 2672              		.cfi_def_cfa_offset 8
+ 2673 0214 BD46     		mov	sp, r7
+ 2674              	.LCFI89:
+ 2675              		.cfi_def_cfa_register 13
+ 2676              		@ sp needed
+ 2677 0216 80BD     		pop	{r7, pc}
+ 2678              	.L85:
+ 2679              		.align	2
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 56
+
+
+ 2680              	.L84:
+ 2681 0218 20000000 		.word	.LC5
+ 2682 021c CDCCCCCC 		.word	-858993459
+ 2683              		.cfi_endproc
+ 2684              	.LFE49:
+ 2686              		.section	.text.RTC_ReadRAM_8800,"ax",%progbits
+ 2687              		.align	1
+ 2688              		.global	RTC_ReadRAM_8800
+ 2689              		.syntax unified
+ 2690              		.thumb
+ 2691              		.thumb_func
+ 2692              		.fpu softvfp
+ 2694              	RTC_ReadRAM_8800:
+ 2695              	.LFB50:
+ 486:./Hardware/device/sd8800.c **** 
+ 487:./Hardware/device/sd8800.c **** uint8_t RTC_ReadRAM_8800(uint8_t addr,uint8_t *data,uint8_t len,i2c_device_bus IIC_x)
+ 488:./Hardware/device/sd8800.c **** {
+ 2696              		.loc 1 488 1
+ 2697              		.cfi_startproc
+ 2698              		@ args = 0, pretend = 0, frame = 8
+ 2699              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2700 0000 80B5     		push	{r7, lr}
+ 2701              	.LCFI90:
+ 2702              		.cfi_def_cfa_offset 8
+ 2703              		.cfi_offset 7, -8
+ 2704              		.cfi_offset 14, -4
+ 2705 0002 82B0     		sub	sp, sp, #8
+ 2706              	.LCFI91:
+ 2707              		.cfi_def_cfa_offset 16
+ 2708 0004 00AF     		add	r7, sp, #0
+ 2709              	.LCFI92:
+ 2710              		.cfi_def_cfa_register 7
+ 2711 0006 3960     		str	r1, [r7]
+ 2712 0008 1146     		mov	r1, r2
+ 2713 000a 1A46     		mov	r2, r3
+ 2714 000c 0346     		mov	r3, r0
+ 2715 000e FB71     		strb	r3, [r7, #7]
+ 2716 0010 0B46     		mov	r3, r1
+ 2717 0012 BB71     		strb	r3, [r7, #6]
+ 2718 0014 1346     		mov	r3, r2
+ 2719 0016 7B71     		strb	r3, [r7, #5]
+ 489:./Hardware/device/sd8800.c **** 
+ 490:./Hardware/device/sd8800.c **** 	return SD8800_read_addr(addr,data,len,IIC_x);
+ 2720              		.loc 1 490 9
+ 2721 0018 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 2722 001a BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 2723 001c F879     		ldrb	r0, [r7, #7]	@ zero_extendqisi2
+ 2724 001e 3968     		ldr	r1, [r7]
+ 2725 0020 FFF7FEFF 		bl	SD8800_read_addr
+ 2726 0024 0346     		mov	r3, r0
+ 491:./Hardware/device/sd8800.c **** 	
+ 492:./Hardware/device/sd8800.c **** }
+ 2727              		.loc 1 492 1
+ 2728 0026 1846     		mov	r0, r3
+ 2729 0028 0837     		adds	r7, r7, #8
+ 2730              	.LCFI93:
+ 2731              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 57
+
+
+ 2732 002a BD46     		mov	sp, r7
+ 2733              	.LCFI94:
+ 2734              		.cfi_def_cfa_register 13
+ 2735              		@ sp needed
+ 2736 002c 80BD     		pop	{r7, pc}
+ 2737              		.cfi_endproc
+ 2738              	.LFE50:
+ 2740              		.section	.text.RTC_WriteRAM_8800,"ax",%progbits
+ 2741              		.align	1
+ 2742              		.global	RTC_WriteRAM_8800
+ 2743              		.syntax unified
+ 2744              		.thumb
+ 2745              		.thumb_func
+ 2746              		.fpu softvfp
+ 2748              	RTC_WriteRAM_8800:
+ 2749              	.LFB51:
+ 493:./Hardware/device/sd8800.c **** 
+ 494:./Hardware/device/sd8800.c **** uint8_t RTC_WriteRAM_8800(uint8_t addr,uint8_t *data,uint8_t len,i2c_device_bus IIC_x)
+ 495:./Hardware/device/sd8800.c **** {
+ 2750              		.loc 1 495 1
+ 2751              		.cfi_startproc
+ 2752              		@ args = 0, pretend = 0, frame = 8
+ 2753              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2754 0000 80B5     		push	{r7, lr}
+ 2755              	.LCFI95:
+ 2756              		.cfi_def_cfa_offset 8
+ 2757              		.cfi_offset 7, -8
+ 2758              		.cfi_offset 14, -4
+ 2759 0002 82B0     		sub	sp, sp, #8
+ 2760              	.LCFI96:
+ 2761              		.cfi_def_cfa_offset 16
+ 2762 0004 00AF     		add	r7, sp, #0
+ 2763              	.LCFI97:
+ 2764              		.cfi_def_cfa_register 7
+ 2765 0006 3960     		str	r1, [r7]
+ 2766 0008 1146     		mov	r1, r2
+ 2767 000a 1A46     		mov	r2, r3
+ 2768 000c 0346     		mov	r3, r0
+ 2769 000e FB71     		strb	r3, [r7, #7]
+ 2770 0010 0B46     		mov	r3, r1
+ 2771 0012 BB71     		strb	r3, [r7, #6]
+ 2772 0014 1346     		mov	r3, r2
+ 2773 0016 7B71     		strb	r3, [r7, #5]
+ 496:./Hardware/device/sd8800.c **** 
+ 497:./Hardware/device/sd8800.c **** 	 if(SD8800_write_addr(addr,data,len,IIC_x)!=RTC_OK)
+ 2774              		.loc 1 497 6
+ 2775 0018 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 2776 001a BA79     		ldrb	r2, [r7, #6]	@ zero_extendqisi2
+ 2777 001c F879     		ldrb	r0, [r7, #7]	@ zero_extendqisi2
+ 2778 001e 3968     		ldr	r1, [r7]
+ 2779 0020 FFF7FEFF 		bl	SD8800_write_addr
+ 2780 0024 0346     		mov	r3, r0
+ 2781              		.loc 1 497 5
+ 2782 0026 062B     		cmp	r3, #6
+ 2783 0028 01D0     		beq	.L89
+ 498:./Hardware/device/sd8800.c **** 		return RTC_NOACK;
+ 2784              		.loc 1 498 10
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 58
+
+
+ 2785 002a 0723     		movs	r3, #7
+ 2786 002c 00E0     		b	.L90
+ 2787              	.L89:
+ 499:./Hardware/device/sd8800.c **** 	 
+ 500:./Hardware/device/sd8800.c **** 	 return TRUE;
+ 2788              		.loc 1 500 10
+ 2789 002e 0123     		movs	r3, #1
+ 2790              	.L90:
+ 501:./Hardware/device/sd8800.c **** 	 
+ 502:./Hardware/device/sd8800.c **** }
+ 2791              		.loc 1 502 1
+ 2792 0030 1846     		mov	r0, r3
+ 2793 0032 0837     		adds	r7, r7, #8
+ 2794              	.LCFI98:
+ 2795              		.cfi_def_cfa_offset 8
+ 2796 0034 BD46     		mov	sp, r7
+ 2797              	.LCFI99:
+ 2798              		.cfi_def_cfa_register 13
+ 2799              		@ sp needed
+ 2800 0036 80BD     		pop	{r7, pc}
+ 2801              		.cfi_endproc
+ 2802              	.LFE51:
+ 2804              		.section	.text.sd8800_charge_on,"ax",%progbits
+ 2805              		.align	1
+ 2806              		.global	sd8800_charge_on
+ 2807              		.syntax unified
+ 2808              		.thumb
+ 2809              		.thumb_func
+ 2810              		.fpu softvfp
+ 2812              	sd8800_charge_on:
+ 2813              	.LFB52:
+ 503:./Hardware/device/sd8800.c **** 
+ 504:./Hardware/device/sd8800.c **** void sd8800_charge_on(void)
+ 505:./Hardware/device/sd8800.c **** {
+ 2814              		.loc 1 505 1
+ 2815              		.cfi_startproc
+ 2816              		@ args = 0, pretend = 0, frame = 8
+ 2817              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2818 0000 80B5     		push	{r7, lr}
+ 2819              	.LCFI100:
+ 2820              		.cfi_def_cfa_offset 8
+ 2821              		.cfi_offset 7, -8
+ 2822              		.cfi_offset 14, -4
+ 2823 0002 84B0     		sub	sp, sp, #16
+ 2824              	.LCFI101:
+ 2825              		.cfi_def_cfa_offset 24
+ 2826 0004 02AF     		add	r7, sp, #8
+ 2827              	.LCFI102:
+ 2828              		.cfi_def_cfa 7, 16
+ 506:./Hardware/device/sd8800.c **** 	uint8_t buf=0x04;
+ 2829              		.loc 1 506 10
+ 2830 0006 0423     		movs	r3, #4
+ 2831 0008 FB71     		strb	r3, [r7, #7]
+ 507:./Hardware/device/sd8800.c **** 	SD8800_write_addr(0x18,&buf,1,IIC_TEST);
+ 2832              		.loc 1 507 2
+ 2833 000a F91D     		adds	r1, r7, #7
+ 2834 000c 0023     		movs	r3, #0
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 59
+
+
+ 2835 000e 0122     		movs	r2, #1
+ 2836 0010 1820     		movs	r0, #24
+ 2837 0012 FFF7FEFF 		bl	SD8800_write_addr
+ 508:./Hardware/device/sd8800.c **** 	OLED_ShowImage(110, 40, 12, 20, Charge);
+ 2838              		.loc 1 508 2
+ 2839 0016 064B     		ldr	r3, .L92
+ 2840 0018 0093     		str	r3, [sp]
+ 2841 001a 1423     		movs	r3, #20
+ 2842 001c 0C22     		movs	r2, #12
+ 2843 001e 2821     		movs	r1, #40
+ 2844 0020 6E20     		movs	r0, #110
+ 2845 0022 FFF7FEFF 		bl	OLED_ShowImage
+ 509:./Hardware/device/sd8800.c **** }
+ 2846              		.loc 1 509 1
+ 2847 0026 00BF     		nop
+ 2848 0028 0837     		adds	r7, r7, #8
+ 2849              	.LCFI103:
+ 2850              		.cfi_def_cfa_offset 8
+ 2851 002a BD46     		mov	sp, r7
+ 2852              	.LCFI104:
+ 2853              		.cfi_def_cfa_register 13
+ 2854              		@ sp needed
+ 2855 002c 80BD     		pop	{r7, pc}
+ 2856              	.L93:
+ 2857 002e 00BF     		.align	2
+ 2858              	.L92:
+ 2859 0030 00000000 		.word	Charge
+ 2860              		.cfi_endproc
+ 2861              	.LFE52:
+ 2863              		.section	.text.sd8800_charge_off,"ax",%progbits
+ 2864              		.align	1
+ 2865              		.global	sd8800_charge_off
+ 2866              		.syntax unified
+ 2867              		.thumb
+ 2868              		.thumb_func
+ 2869              		.fpu softvfp
+ 2871              	sd8800_charge_off:
+ 2872              	.LFB53:
+ 510:./Hardware/device/sd8800.c **** 
+ 511:./Hardware/device/sd8800.c **** void sd8800_charge_off(void)
+ 512:./Hardware/device/sd8800.c **** {
+ 2873              		.loc 1 512 1
+ 2874              		.cfi_startproc
+ 2875              		@ args = 0, pretend = 0, frame = 8
+ 2876              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2877 0000 80B5     		push	{r7, lr}
+ 2878              	.LCFI105:
+ 2879              		.cfi_def_cfa_offset 8
+ 2880              		.cfi_offset 7, -8
+ 2881              		.cfi_offset 14, -4
+ 2882 0002 82B0     		sub	sp, sp, #8
+ 2883              	.LCFI106:
+ 2884              		.cfi_def_cfa_offset 16
+ 2885 0004 00AF     		add	r7, sp, #0
+ 2886              	.LCFI107:
+ 2887              		.cfi_def_cfa_register 7
+ 513:./Hardware/device/sd8800.c **** 	uint8_t buf=0xA0;
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 60
+
+
+ 2888              		.loc 1 513 10
+ 2889 0006 A023     		movs	r3, #160
+ 2890 0008 FB71     		strb	r3, [r7, #7]
+ 514:./Hardware/device/sd8800.c **** 	SD8800_write_addr(0x18,&buf,1,IIC_TEST);
+ 2891              		.loc 1 514 2
+ 2892 000a F91D     		adds	r1, r7, #7
+ 2893 000c 0023     		movs	r3, #0
+ 2894 000e 0122     		movs	r2, #1
+ 2895 0010 1820     		movs	r0, #24
+ 2896 0012 FFF7FEFF 		bl	SD8800_write_addr
+ 515:./Hardware/device/sd8800.c **** 	OLED_ClearArea(110,40,12,20);
+ 2897              		.loc 1 515 2
+ 2898 0016 1423     		movs	r3, #20
+ 2899 0018 0C22     		movs	r2, #12
+ 2900 001a 2821     		movs	r1, #40
+ 2901 001c 6E20     		movs	r0, #110
+ 2902 001e FFF7FEFF 		bl	OLED_ClearArea
+ 516:./Hardware/device/sd8800.c **** }
+ 2903              		.loc 1 516 1
+ 2904 0022 00BF     		nop
+ 2905 0024 0837     		adds	r7, r7, #8
+ 2906              	.LCFI108:
+ 2907              		.cfi_def_cfa_offset 8
+ 2908 0026 BD46     		mov	sp, r7
+ 2909              	.LCFI109:
+ 2910              		.cfi_def_cfa_register 13
+ 2911              		@ sp needed
+ 2912 0028 80BD     		pop	{r7, pc}
+ 2913              		.cfi_endproc
+ 2914              	.LFE53:
+ 2916              		.text
+ 2917              	.Letext0:
+ 2918              		.file 2 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 2919              		.file 3 "c:\\stm32soft\\gcc\\gcc-arm-none-eabi-10-2020-q4-major-win32\\gcc-arm-none-eabi-10-2020-q
+ 2920              		.file 4 "./Libraries/CMSIS/stm32f10x.h"
+ 2921              		.file 5 "./Libraries/STM32F10x_StdPeriph_Driver/inc/stm32f10x_gpio.h"
+ 2922              		.file 6 "./Hardware/device/iic.h"
+ 2923              		.file 7 "./Hardware/device/rtc.h"
+ 2924              		.file 8 "./Hardware/hardware/OLED_Data.h"
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 61
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 sd8800.c
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:19     .bss.sd8800_temp:00000000 sd8800_temp
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:20     .bss.sd8800_temp:00000000 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:26     .bss.sd8800_vbat:00000000 sd8800_vbat
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:23     .bss.sd8800_vbat:00000000 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:29     .text.SD8800_read_addr:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:37     .text.SD8800_read_addr:00000000 SD8800_read_addr
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:98     .text.SD8800_write_addr:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:105    .text.SD8800_write_addr:00000000 SD8800_write_addr
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:165    .text.SD8800_ReadTimeDate:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:172    .text.SD8800_ReadTimeDate:00000000 SD8800_ReadTimeDate
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:286    .text.SD8800_WriteTimeDate:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:293    .text.SD8800_WriteTimeDate:00000000 SD8800_WriteTimeDate
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:400    .text.sd8800_idbuff:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:407    .text.sd8800_idbuff:00000000 sd8800_idbuff
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:460    .rodata:00000000 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:467    .text.sd8800_id_show:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:474    .text.sd8800_id_show:00000000 sd8800_id_show
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:751    .text.sd8800_id_show:000001a4 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:761    .text.sd8800_ReadTemp:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:768    .text.sd8800_ReadTemp:00000000 sd8800_ReadTemp
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:860    .text.sd8800_ReadTemp:00000088 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:869    .text.sd8800_ReadVbat:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:876    .text.sd8800_ReadVbat:00000000 sd8800_ReadVbat
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:988    .text.sd8800_ReadVbat:000000b0 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:994    .text.sd8800_VbatQuan:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1001   .text.sd8800_VbatQuan:00000000 sd8800_VbatQuan
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1080   .text.sd8800_f32768:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1087   .text.sd8800_f32768:00000000 sd8800_f32768
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1135   .text.sd8800_f32768:00000030 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1140   .text.sd8800_f32768_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1147   .text.sd8800_f32768_off:00000000 sd8800_f32768_off
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1195   .text.sd8800_f32768_off:00000030 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1200   .text.sd8800_f1024:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1207   .text.sd8800_f1024:00000000 sd8800_f1024
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1255   .text.sd8800_f1024:00000030 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1260   .text.sd8800_f1024_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1267   .text.sd8800_f1024_off:00000000 sd8800_f1024_off
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1315   .text.sd8800_f1024_off:00000030 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1320   .text.sd8800_f1:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1327   .text.sd8800_f1:00000000 sd8800_f1
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1375   .text.sd8800_f1:00000030 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1380   .text.sd8800_f1_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1387   .text.sd8800_f1_off:00000000 sd8800_f1_off
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1435   .text.sd8800_f1_off:00000030 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1440   .text.sd8800_and_std:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1447   .text.sd8800_and_std:00000000 sd8800_and_std
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1750   .text.sd8800_and_std:00000210 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1765   .text.sd8800_time_show:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:1772   .text.sd8800_time_show:00000000 sd8800_time_show
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2226   .text.sd8800_time_show:00000354 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2234   .text.sd8800_time_show:0000036c $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2364   .text.sd8800_time_copy:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2371   .text.sd8800_time_copy:00000000 sd8800_time_copy
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2681   .text.sd8800_time_copy:00000218 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2687   .text.RTC_ReadRAM_8800:00000000 $t
+ARM GAS  C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s 			page 62
+
+
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2694   .text.RTC_ReadRAM_8800:00000000 RTC_ReadRAM_8800
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2741   .text.RTC_WriteRAM_8800:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2748   .text.RTC_WriteRAM_8800:00000000 RTC_WriteRAM_8800
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2805   .text.sd8800_charge_on:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2812   .text.sd8800_charge_on:00000000 sd8800_charge_on
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2859   .text.sd8800_charge_on:00000030 $d
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2864   .text.sd8800_charge_off:00000000 $t
+C:\Users\86134\AppData\Local\Temp\cc8mJgNp.s:2871   .text.sd8800_charge_off:00000000 sd8800_charge_off
+
+UNDEFINED SYMBOLS
+IIC_read_multiple_bytes
+IIC_write_multiple_bytes
+bcd_to_dec
+dec_to_bcd
+OLED_ShowString
+OLED_ShowNum
+__aeabi_i2d
+__aeabi_dsub
+__aeabi_ddiv
+__aeabi_d2uiz
+RTC_ReadByte
+Delay_ms
+GPIO_WriteBit
+sd2405showtime
+Test_Line
+OLED_ShowChar
+NO_ACK_Test_Line
+OLED_DrawPoint
+OLED_ShowFloatNum
+NO_ACK_sd3xxx_messgae_line
+RTC_ReadTimeDate
+Usart_Printf
+OLED_ShowImage
+Charge
+OLED_ClearArea
