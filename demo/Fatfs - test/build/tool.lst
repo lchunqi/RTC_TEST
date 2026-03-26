@@ -1,0 +1,1547 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"tool.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.Soft_UART_Init,"ax",%progbits
+  18              		.align	1
+  19              		.global	Soft_UART_Init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	Soft_UART_Init:
+  25              	.LFB69:
+  26              		.file 1 "User/Src/tool.c"
+   1:User/Src/tool.c **** #include "tool.h"
+   2:User/Src/tool.c **** 
+   3:User/Src/tool.c **** // 精准延时（72MHz）
+   4:User/Src/tool.c **** static inline void delay_us(uint32_t us)
+   5:User/Src/tool.c **** {
+   6:User/Src/tool.c ****     uint32_t count = us * (SystemCoreClock / 1000000UL);
+   7:User/Src/tool.c ****     while(count--) {__NOP();}
+   8:User/Src/tool.c **** }
+   9:User/Src/tool.c **** 
+  10:User/Src/tool.c **** void Soft_UART_Init(void)
+  11:User/Src/tool.c **** {
+  27              		.loc 1 11 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 24
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 20
+  34              		.cfi_offset 4, -20
+  35              		.cfi_offset 5, -16
+  36              		.cfi_offset 6, -12
+  37              		.cfi_offset 7, -8
+  38              		.cfi_offset 14, -4
+  39 0002 87B0     		sub	sp, sp, #28
+  40              	.LCFI1:
+  41              		.cfi_def_cfa_offset 48
+  12:User/Src/tool.c ****     GPIO_InitTypeDef GPIO_InitStruct = {0};
+  42              		.loc 1 12 5 view .LVU1
+  43              		.loc 1 12 22 is_stmt 0 view .LVU2
+  44 0004 0024     		movs	r4, #0
+  45 0006 0294     		str	r4, [sp, #8]
+  46 0008 0394     		str	r4, [sp, #12]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 2
+
+
+  47 000a 0494     		str	r4, [sp, #16]
+  48 000c 0594     		str	r4, [sp, #20]
+  13:User/Src/tool.c ****     __HAL_RCC_GPIOB_CLK_ENABLE();
+  49              		.loc 1 13 5 is_stmt 1 view .LVU3
+  50              	.LBB40:
+  51              		.loc 1 13 5 view .LVU4
+  52              		.loc 1 13 5 view .LVU5
+  53 000e 134B     		ldr	r3, .L3
+  54 0010 9A69     		ldr	r2, [r3, #24]
+  55 0012 42F00802 		orr	r2, r2, #8
+  56 0016 9A61     		str	r2, [r3, #24]
+  57              		.loc 1 13 5 view .LVU6
+  58 0018 9B69     		ldr	r3, [r3, #24]
+  59 001a 03F00803 		and	r3, r3, #8
+  60 001e 0193     		str	r3, [sp, #4]
+  61              		.loc 1 13 5 view .LVU7
+  62 0020 019B     		ldr	r3, [sp, #4]
+  63              	.LBE40:
+  64              		.loc 1 13 5 view .LVU8
+  14:User/Src/tool.c ****     
+  15:User/Src/tool.c ****     // TX初始化
+  16:User/Src/tool.c ****     GPIO_InitStruct.Pin = SOFT_UART_TX_Pin;
+  65              		.loc 1 16 5 view .LVU9
+  66              		.loc 1 16 25 is_stmt 0 view .LVU10
+  67 0022 4FF40057 		mov	r7, #8192
+  68 0026 0297     		str	r7, [sp, #8]
+  17:User/Src/tool.c ****     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  69              		.loc 1 17 5 is_stmt 1 view .LVU11
+  70              		.loc 1 17 26 is_stmt 0 view .LVU12
+  71 0028 0125     		movs	r5, #1
+  72 002a 0395     		str	r5, [sp, #12]
+  18:User/Src/tool.c ****     GPIO_InitStruct.Pull = GPIO_PULLUP;
+  73              		.loc 1 18 5 is_stmt 1 view .LVU13
+  74              		.loc 1 18 26 is_stmt 0 view .LVU14
+  75 002c 0495     		str	r5, [sp, #16]
+  19:User/Src/tool.c ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  76              		.loc 1 19 5 is_stmt 1 view .LVU15
+  77              		.loc 1 19 27 is_stmt 0 view .LVU16
+  78 002e 0323     		movs	r3, #3
+  79 0030 0593     		str	r3, [sp, #20]
+  20:User/Src/tool.c ****     HAL_GPIO_Init(SOFT_UART_TX_GPIO_Port, &GPIO_InitStruct);
+  80              		.loc 1 20 5 is_stmt 1 view .LVU17
+  81 0032 0B4E     		ldr	r6, .L3+4
+  82 0034 02A9     		add	r1, sp, #8
+  83 0036 3046     		mov	r0, r6
+  84 0038 FFF7FEFF 		bl	HAL_GPIO_Init
+  85              	.LVL0:
+  21:User/Src/tool.c ****     
+  22:User/Src/tool.c ****     // RX初始化
+  23:User/Src/tool.c ****     GPIO_InitStruct.Pin = SOFT_UART_RX_Pin;
+  86              		.loc 1 23 5 view .LVU18
+  87              		.loc 1 23 25 is_stmt 0 view .LVU19
+  88 003c 4FF48043 		mov	r3, #16384
+  89 0040 0293     		str	r3, [sp, #8]
+  24:User/Src/tool.c ****     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  90              		.loc 1 24 5 is_stmt 1 view .LVU20
+  91              		.loc 1 24 26 is_stmt 0 view .LVU21
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 3
+
+
+  92 0042 0394     		str	r4, [sp, #12]
+  25:User/Src/tool.c ****     GPIO_InitStruct.Pull = GPIO_PULLUP;
+  93              		.loc 1 25 5 is_stmt 1 view .LVU22
+  94              		.loc 1 25 26 is_stmt 0 view .LVU23
+  95 0044 0495     		str	r5, [sp, #16]
+  26:User/Src/tool.c ****     HAL_GPIO_Init(SOFT_UART_RX_GPIO_Port, &GPIO_InitStruct);
+  96              		.loc 1 26 5 is_stmt 1 view .LVU24
+  97 0046 02A9     		add	r1, sp, #8
+  98 0048 3046     		mov	r0, r6
+  99 004a FFF7FEFF 		bl	HAL_GPIO_Init
+ 100              	.LVL1:
+  27:User/Src/tool.c ****     
+  28:User/Src/tool.c ****     // TX默认高电平
+  29:User/Src/tool.c ****     HAL_GPIO_WritePin(SOFT_UART_TX_GPIO_Port, SOFT_UART_TX_Pin, GPIO_PIN_SET);
+ 101              		.loc 1 29 5 view .LVU25
+ 102 004e 2A46     		mov	r2, r5
+ 103 0050 3946     		mov	r1, r7
+ 104 0052 3046     		mov	r0, r6
+ 105 0054 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 106              	.LVL2:
+  30:User/Src/tool.c **** }
+ 107              		.loc 1 30 1 is_stmt 0 view .LVU26
+ 108 0058 07B0     		add	sp, sp, #28
+ 109              	.LCFI2:
+ 110              		.cfi_def_cfa_offset 20
+ 111              		@ sp needed
+ 112 005a F0BD     		pop	{r4, r5, r6, r7, pc}
+ 113              	.L4:
+ 114              		.align	2
+ 115              	.L3:
+ 116 005c 00100240 		.word	1073876992
+ 117 0060 000C0140 		.word	1073810432
+ 118              		.cfi_endproc
+ 119              	.LFE69:
+ 121              		.section	.text.Soft_UART_SendByte,"ax",%progbits
+ 122              		.align	1
+ 123              		.global	Soft_UART_SendByte
+ 124              		.syntax unified
+ 125              		.thumb
+ 126              		.thumb_func
+ 128              	Soft_UART_SendByte:
+ 129              	.LVL3:
+ 130              	.LFB70:
+  31:User/Src/tool.c **** 
+  32:User/Src/tool.c **** void Soft_UART_SendByte(uint8_t data)
+  33:User/Src/tool.c **** {
+ 131              		.loc 1 33 1 is_stmt 1 view -0
+ 132              		.cfi_startproc
+ 133              		@ args = 0, pretend = 0, frame = 0
+ 134              		@ frame_needed = 0, uses_anonymous_args = 0
+ 135              		.loc 1 33 1 is_stmt 0 view .LVU28
+ 136 0000 38B5     		push	{r3, r4, r5, lr}
+ 137              	.LCFI3:
+ 138              		.cfi_def_cfa_offset 16
+ 139              		.cfi_offset 3, -16
+ 140              		.cfi_offset 4, -12
+ 141              		.cfi_offset 5, -8
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 4
+
+
+ 142              		.cfi_offset 14, -4
+ 143 0002 0546     		mov	r5, r0
+  34:User/Src/tool.c ****     uint8_t i;
+ 144              		.loc 1 34 5 is_stmt 1 view .LVU29
+  35:User/Src/tool.c ****     // 起始位
+  36:User/Src/tool.c ****     HAL_GPIO_WritePin(SOFT_UART_TX_GPIO_Port, SOFT_UART_TX_Pin, GPIO_PIN_RESET);
+ 145              		.loc 1 36 5 view .LVU30
+ 146 0004 0022     		movs	r2, #0
+ 147 0006 4FF40051 		mov	r1, #8192
+ 148 000a 2248     		ldr	r0, .L16
+ 149              	.LVL4:
+ 150              		.loc 1 36 5 is_stmt 0 view .LVU31
+ 151 000c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 152              	.LVL5:
+  37:User/Src/tool.c ****     delay_us(BAUD_DELAY_US);
+ 153              		.loc 1 37 5 is_stmt 1 view .LVU32
+ 154              	.LBB41:
+ 155              	.LBI41:
+   4:User/Src/tool.c ****     uint32_t count = us * (SystemCoreClock / 1000000UL);
+ 156              		.loc 1 4 20 view .LVU33
+ 157              	.LBB42:
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 158              		.loc 1 6 5 view .LVU34
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 159              		.loc 1 6 44 is_stmt 0 view .LVU35
+ 160 0010 214B     		ldr	r3, .L16+4
+ 161 0012 1B68     		ldr	r3, [r3]
+ 162 0014 214A     		ldr	r2, .L16+8
+ 163 0016 A2FB0323 		umull	r2, r3, r2, r3
+ 164 001a 9B0C     		lsrs	r3, r3, #18
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 165              		.loc 1 6 14 view .LVU36
+ 166 001c 6822     		movs	r2, #104
+ 167 001e 02FB03F3 		mul	r3, r2, r3
+ 168              	.LVL6:
+   7:User/Src/tool.c **** }
+ 169              		.loc 1 7 5 is_stmt 1 view .LVU37
+   7:User/Src/tool.c **** }
+ 170              		.loc 1 7 10 is_stmt 0 view .LVU38
+ 171 0022 01E0     		b	.L6
+ 172              	.LVL7:
+ 173              	.L7:
+   7:User/Src/tool.c **** }
+ 174              		.loc 1 7 21 is_stmt 1 view .LVU39
+ 175              		.syntax unified
+ 176              	@ 7 "User/Src/tool.c" 1
+ 177 0024 00BF     		nop
+ 178              	@ 0 "" 2
+   7:User/Src/tool.c **** }
+ 179              		.loc 1 7 16 is_stmt 0 view .LVU40
+ 180              		.thumb
+ 181              		.syntax unified
+ 182 0026 1346     		mov	r3, r2
+ 183              	.LVL8:
+ 184              	.L6:
+   7:User/Src/tool.c **** }
+ 185              		.loc 1 7 10 is_stmt 1 view .LVU41
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 5
+
+
+   7:User/Src/tool.c **** }
+ 186              		.loc 1 7 16 is_stmt 0 view .LVU42
+ 187 0028 5A1E     		subs	r2, r3, #1
+ 188              	.LVL9:
+   7:User/Src/tool.c **** }
+ 189              		.loc 1 7 10 view .LVU43
+ 190 002a 002B     		cmp	r3, #0
+ 191 002c FAD1     		bne	.L7
+ 192              	.LBE42:
+ 193              	.LBE41:
+  38:User/Src/tool.c ****     
+  39:User/Src/tool.c ****     // 数据位(低位先行)
+  40:User/Src/tool.c ****     for(i=0; i<8; i++)
+ 194              		.loc 1 40 10 view .LVU44
+ 195 002e 0024     		movs	r4, #0
+ 196 0030 06E0     		b	.L8
+ 197              	.LVL10:
+ 198              	.L10:
+ 199              	.LBB43:
+ 200              	.LBB44:
+   7:User/Src/tool.c **** }
+ 201              		.loc 1 7 21 is_stmt 1 view .LVU45
+ 202              		.syntax unified
+ 203              	@ 7 "User/Src/tool.c" 1
+ 204 0032 00BF     		nop
+ 205              	@ 0 "" 2
+   7:User/Src/tool.c **** }
+ 206              		.loc 1 7 16 is_stmt 0 view .LVU46
+ 207              		.thumb
+ 208              		.syntax unified
+ 209 0034 1346     		mov	r3, r2
+ 210              	.LVL11:
+ 211              	.L9:
+   7:User/Src/tool.c **** }
+ 212              		.loc 1 7 10 is_stmt 1 view .LVU47
+   7:User/Src/tool.c **** }
+ 213              		.loc 1 7 16 is_stmt 0 view .LVU48
+ 214 0036 5A1E     		subs	r2, r3, #1
+ 215              	.LVL12:
+   7:User/Src/tool.c **** }
+ 216              		.loc 1 7 10 view .LVU49
+ 217 0038 002B     		cmp	r3, #0
+ 218 003a FAD1     		bne	.L10
+ 219              	.LVL13:
+   7:User/Src/tool.c **** }
+ 220              		.loc 1 7 10 view .LVU50
+ 221              	.LBE44:
+ 222              	.LBE43:
+ 223              		.loc 1 40 19 is_stmt 1 discriminator 3 view .LVU51
+ 224              		.loc 1 40 20 is_stmt 0 discriminator 3 view .LVU52
+ 225 003c 0134     		adds	r4, r4, #1
+ 226              	.LVL14:
+ 227              		.loc 1 40 20 discriminator 3 view .LVU53
+ 228 003e E4B2     		uxtb	r4, r4
+ 229              	.LVL15:
+ 230              	.L8:
+ 231              		.loc 1 40 14 is_stmt 1 discriminator 1 view .LVU54
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 6
+
+
+ 232              		.loc 1 40 5 is_stmt 0 discriminator 1 view .LVU55
+ 233 0040 072C     		cmp	r4, #7
+ 234 0042 11D8     		bhi	.L15
+  41:User/Src/tool.c ****     {
+  42:User/Src/tool.c ****         HAL_GPIO_WritePin(SOFT_UART_TX_GPIO_Port, SOFT_UART_TX_Pin,
+ 235              		.loc 1 42 9 is_stmt 1 discriminator 3 view .LVU56
+ 236 0044 05F00102 		and	r2, r5, #1
+ 237 0048 4FF40051 		mov	r1, #8192
+ 238 004c 1148     		ldr	r0, .L16
+ 239 004e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 240              	.LVL16:
+  43:User/Src/tool.c ****             (data&1) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+  44:User/Src/tool.c ****         data >>= 1;
+ 241              		.loc 1 44 9 discriminator 3 view .LVU57
+ 242              		.loc 1 44 14 is_stmt 0 discriminator 3 view .LVU58
+ 243 0052 6D08     		lsrs	r5, r5, #1
+ 244              	.LVL17:
+  45:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 245              		.loc 1 45 9 is_stmt 1 discriminator 3 view .LVU59
+ 246              	.LBB46:
+ 247              	.LBI43:
+   4:User/Src/tool.c **** {
+ 248              		.loc 1 4 20 discriminator 3 view .LVU60
+ 249              	.LBB45:
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 250              		.loc 1 6 5 discriminator 3 view .LVU61
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 251              		.loc 1 6 44 is_stmt 0 discriminator 3 view .LVU62
+ 252 0054 104B     		ldr	r3, .L16+4
+ 253 0056 1B68     		ldr	r3, [r3]
+ 254 0058 104A     		ldr	r2, .L16+8
+ 255 005a A2FB0323 		umull	r2, r3, r2, r3
+ 256 005e 9B0C     		lsrs	r3, r3, #18
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 257              		.loc 1 6 14 discriminator 3 view .LVU63
+ 258 0060 6822     		movs	r2, #104
+ 259 0062 02FB03F3 		mul	r3, r2, r3
+ 260              	.LVL18:
+   7:User/Src/tool.c **** }
+ 261              		.loc 1 7 5 is_stmt 1 discriminator 3 view .LVU64
+   7:User/Src/tool.c **** }
+ 262              		.loc 1 7 10 is_stmt 0 discriminator 3 view .LVU65
+ 263 0066 E6E7     		b	.L9
+ 264              	.LVL19:
+ 265              	.L15:
+   7:User/Src/tool.c **** }
+ 266              		.loc 1 7 10 discriminator 3 view .LVU66
+ 267              	.LBE45:
+ 268              	.LBE46:
+  46:User/Src/tool.c ****     }
+  47:User/Src/tool.c ****     
+  48:User/Src/tool.c ****     // 停止位
+  49:User/Src/tool.c ****     HAL_GPIO_WritePin(SOFT_UART_TX_GPIO_Port, SOFT_UART_TX_Pin, GPIO_PIN_SET);
+ 269              		.loc 1 49 5 is_stmt 1 view .LVU67
+ 270 0068 0122     		movs	r2, #1
+ 271 006a 4FF40051 		mov	r1, #8192
+ 272 006e 0948     		ldr	r0, .L16
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 7
+
+
+ 273 0070 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 274              	.LVL20:
+  50:User/Src/tool.c ****     delay_us(BAUD_DELAY_US);
+ 275              		.loc 1 50 5 view .LVU68
+ 276              	.LBB47:
+ 277              	.LBI47:
+   4:User/Src/tool.c **** {
+ 278              		.loc 1 4 20 view .LVU69
+ 279              	.LBB48:
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 280              		.loc 1 6 5 view .LVU70
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 281              		.loc 1 6 44 is_stmt 0 view .LVU71
+ 282 0074 084B     		ldr	r3, .L16+4
+ 283 0076 1B68     		ldr	r3, [r3]
+ 284 0078 084A     		ldr	r2, .L16+8
+ 285 007a A2FB0323 		umull	r2, r3, r2, r3
+ 286 007e 9B0C     		lsrs	r3, r3, #18
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 287              		.loc 1 6 14 view .LVU72
+ 288 0080 6822     		movs	r2, #104
+ 289 0082 02FB03F3 		mul	r3, r2, r3
+ 290              	.LVL21:
+   7:User/Src/tool.c **** }
+ 291              		.loc 1 7 5 is_stmt 1 view .LVU73
+   7:User/Src/tool.c **** }
+ 292              		.loc 1 7 10 is_stmt 0 view .LVU74
+ 293 0086 01E0     		b	.L12
+ 294              	.LVL22:
+ 295              	.L13:
+   7:User/Src/tool.c **** }
+ 296              		.loc 1 7 21 is_stmt 1 view .LVU75
+ 297              		.syntax unified
+ 298              	@ 7 "User/Src/tool.c" 1
+ 299 0088 00BF     		nop
+ 300              	@ 0 "" 2
+   7:User/Src/tool.c **** }
+ 301              		.loc 1 7 16 is_stmt 0 view .LVU76
+ 302              		.thumb
+ 303              		.syntax unified
+ 304 008a 1346     		mov	r3, r2
+ 305              	.LVL23:
+ 306              	.L12:
+   7:User/Src/tool.c **** }
+ 307              		.loc 1 7 10 is_stmt 1 view .LVU77
+   7:User/Src/tool.c **** }
+ 308              		.loc 1 7 16 is_stmt 0 view .LVU78
+ 309 008c 5A1E     		subs	r2, r3, #1
+ 310              	.LVL24:
+   7:User/Src/tool.c **** }
+ 311              		.loc 1 7 10 view .LVU79
+ 312 008e 002B     		cmp	r3, #0
+ 313 0090 FAD1     		bne	.L13
+ 314              	.LBE48:
+ 315              	.LBE47:
+  51:User/Src/tool.c **** }
+ 316              		.loc 1 51 1 view .LVU80
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 8
+
+
+ 317 0092 38BD     		pop	{r3, r4, r5, pc}
+ 318              	.LVL25:
+ 319              	.L17:
+ 320              		.loc 1 51 1 view .LVU81
+ 321              		.align	2
+ 322              	.L16:
+ 323 0094 000C0140 		.word	1073810432
+ 324 0098 00000000 		.word	SystemCoreClock
+ 325 009c 83DE1B43 		.word	1125899907
+ 326              		.cfi_endproc
+ 327              	.LFE70:
+ 329              		.section	.text.Soft_UART_SendStr,"ax",%progbits
+ 330              		.align	1
+ 331              		.global	Soft_UART_SendStr
+ 332              		.syntax unified
+ 333              		.thumb
+ 334              		.thumb_func
+ 336              	Soft_UART_SendStr:
+ 337              	.LVL26:
+ 338              	.LFB71:
+  52:User/Src/tool.c **** 
+  53:User/Src/tool.c **** // 带长度限制的字符串发送
+  54:User/Src/tool.c **** void Soft_UART_SendStr(uint8_t *str)
+  55:User/Src/tool.c **** {
+ 339              		.loc 1 55 1 is_stmt 1 view -0
+ 340              		.cfi_startproc
+ 341              		@ args = 0, pretend = 0, frame = 0
+ 342              		@ frame_needed = 0, uses_anonymous_args = 0
+ 343              		.loc 1 55 1 is_stmt 0 view .LVU83
+ 344 0000 10B5     		push	{r4, lr}
+ 345              	.LCFI4:
+ 346              		.cfi_def_cfa_offset 8
+ 347              		.cfi_offset 4, -8
+ 348              		.cfi_offset 14, -4
+ 349 0002 0446     		mov	r4, r0
+  56:User/Src/tool.c ****     while(*str ) 
+ 350              		.loc 1 56 5 is_stmt 1 view .LVU84
+ 351              		.loc 1 56 10 is_stmt 0 view .LVU85
+ 352 0004 02E0     		b	.L19
+ 353              	.LVL27:
+ 354              	.L20:
+  57:User/Src/tool.c ****     {
+  58:User/Src/tool.c ****         Soft_UART_SendByte(*str++);
+ 355              		.loc 1 58 9 is_stmt 1 view .LVU86
+ 356              		.loc 1 58 32 is_stmt 0 view .LVU87
+ 357 0006 0134     		adds	r4, r4, #1
+ 358              	.LVL28:
+ 359              		.loc 1 58 9 view .LVU88
+ 360 0008 FFF7FEFF 		bl	Soft_UART_SendByte
+ 361              	.LVL29:
+ 362              	.L19:
+  56:User/Src/tool.c ****     while(*str ) 
+ 363              		.loc 1 56 10 is_stmt 1 view .LVU89
+  56:User/Src/tool.c ****     while(*str ) 
+ 364              		.loc 1 56 11 is_stmt 0 view .LVU90
+ 365 000c 2078     		ldrb	r0, [r4]	@ zero_extendqisi2
+  56:User/Src/tool.c ****     while(*str ) 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 9
+
+
+ 366              		.loc 1 56 10 view .LVU91
+ 367 000e 0028     		cmp	r0, #0
+ 368 0010 F9D1     		bne	.L20
+  59:User/Src/tool.c ****     }
+  60:User/Src/tool.c **** }
+ 369              		.loc 1 60 1 view .LVU92
+ 370 0012 10BD     		pop	{r4, pc}
+ 371              		.loc 1 60 1 view .LVU93
+ 372              		.cfi_endproc
+ 373              	.LFE71:
+ 375              		.section	.text.Soft_UART_ReceiveReady,"ax",%progbits
+ 376              		.align	1
+ 377              		.global	Soft_UART_ReceiveReady
+ 378              		.syntax unified
+ 379              		.thumb
+ 380              		.thumb_func
+ 382              	Soft_UART_ReceiveReady:
+ 383              	.LFB72:
+  61:User/Src/tool.c **** 
+  62:User/Src/tool.c **** uint8_t Soft_UART_ReceiveReady(void)
+  63:User/Src/tool.c **** {
+ 384              		.loc 1 63 1 is_stmt 1 view -0
+ 385              		.cfi_startproc
+ 386              		@ args = 0, pretend = 0, frame = 0
+ 387              		@ frame_needed = 0, uses_anonymous_args = 0
+ 388 0000 08B5     		push	{r3, lr}
+ 389              	.LCFI5:
+ 390              		.cfi_def_cfa_offset 8
+ 391              		.cfi_offset 3, -8
+ 392              		.cfi_offset 14, -4
+  64:User/Src/tool.c ****     return (HAL_GPIO_ReadPin(SOFT_UART_RX_GPIO_Port, SOFT_UART_RX_Pin) == GPIO_PIN_RESET);
+ 393              		.loc 1 64 5 view .LVU95
+ 394              		.loc 1 64 13 is_stmt 0 view .LVU96
+ 395 0002 4FF48041 		mov	r1, #16384
+ 396 0006 0348     		ldr	r0, .L24
+ 397 0008 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 398              	.LVL30:
+  65:User/Src/tool.c **** }
+ 399              		.loc 1 65 1 view .LVU97
+ 400 000c B0FA80F0 		clz	r0, r0
+ 401 0010 4009     		lsrs	r0, r0, #5
+ 402 0012 08BD     		pop	{r3, pc}
+ 403              	.L25:
+ 404              		.align	2
+ 405              	.L24:
+ 406 0014 000C0140 		.word	1073810432
+ 407              		.cfi_endproc
+ 408              	.LFE72:
+ 410              		.section	.text.Soft_UART_ReceiveByte,"ax",%progbits
+ 411              		.align	1
+ 412              		.global	Soft_UART_ReceiveByte
+ 413              		.syntax unified
+ 414              		.thumb
+ 415              		.thumb_func
+ 417              	Soft_UART_ReceiveByte:
+ 418              	.LVL31:
+ 419              	.LFB73:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 10
+
+
+  66:User/Src/tool.c **** 
+  67:User/Src/tool.c **** uint8_t Soft_UART_ReceiveByte(uint32_t timeout)
+  68:User/Src/tool.c **** {
+ 420              		.loc 1 68 1 is_stmt 1 view -0
+ 421              		.cfi_startproc
+ 422              		@ args = 0, pretend = 0, frame = 0
+ 423              		@ frame_needed = 0, uses_anonymous_args = 0
+ 424              		.loc 1 68 1 is_stmt 0 view .LVU99
+ 425 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 426              	.LCFI6:
+ 427              		.cfi_def_cfa_offset 24
+ 428              		.cfi_offset 3, -24
+ 429              		.cfi_offset 4, -20
+ 430              		.cfi_offset 5, -16
+ 431              		.cfi_offset 6, -12
+ 432              		.cfi_offset 7, -8
+ 433              		.cfi_offset 14, -4
+ 434 0002 0646     		mov	r6, r0
+  69:User/Src/tool.c ****     uint8_t data = 0;
+ 435              		.loc 1 69 5 is_stmt 1 view .LVU100
+ 436              	.LVL32:
+  70:User/Src/tool.c ****     uint32_t tick = 0;
+ 437              		.loc 1 70 5 view .LVU101
+  71:User/Src/tool.c **** 
+  72:User/Src/tool.c ****     // 1. 等待起始位（下降沿）
+  73:User/Src/tool.c ****     while (HAL_GPIO_ReadPin(SOFT_UART_RX_GPIO_Port, SOFT_UART_RX_Pin) != GPIO_PIN_RESET)
+ 438              		.loc 1 73 5 view .LVU102
+  70:User/Src/tool.c ****     uint32_t tick = 0;
+ 439              		.loc 1 70 14 is_stmt 0 view .LVU103
+ 440 0004 0024     		movs	r4, #0
+ 441              	.LVL33:
+ 442              	.L27:
+ 443              		.loc 1 73 11 is_stmt 1 view .LVU104
+ 444              		.loc 1 73 12 is_stmt 0 view .LVU105
+ 445 0006 4FF48041 		mov	r1, #16384
+ 446 000a 2C48     		ldr	r0, .L47
+ 447 000c FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 448              	.LVL34:
+ 449              		.loc 1 73 11 view .LVU106
+ 450 0010 0746     		mov	r7, r0
+ 451 0012 28B1     		cbz	r0, .L44
+  74:User/Src/tool.c ****     {
+  75:User/Src/tool.c ****         if (++tick > timeout) return 0xFF;
+ 452              		.loc 1 75 9 is_stmt 1 view .LVU107
+ 453              		.loc 1 75 12 is_stmt 0 view .LVU108
+ 454 0014 0134     		adds	r4, r4, #1
+ 455              	.LVL35:
+ 456              		.loc 1 75 12 view .LVU109
+ 457 0016 A642     		cmp	r6, r4
+ 458 0018 F5D2     		bcs	.L27
+ 459              		.loc 1 75 38 view .LVU110
+ 460 001a FF27     		movs	r7, #255
+ 461              	.LVL36:
+ 462              	.L28:
+  76:User/Src/tool.c ****     }
+  77:User/Src/tool.c **** 
+  78:User/Src/tool.c ****     // 2. 关中断，保证时序不被打断
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 11
+
+
+  79:User/Src/tool.c ****     __disable_irq();
+  80:User/Src/tool.c **** 
+  81:User/Src/tool.c ****     // 3. 【关键修复】延时 1.5 位周期，对准数据位中心
+  82:User/Src/tool.c ****     delay_us(BAUD_DELAY_US);
+  83:User/Src/tool.c ****     delay_us(BAUD_DELAY_US / 2);
+  84:User/Src/tool.c **** 
+  85:User/Src/tool.c ****     // 4. 采样8位数据（低位先行）
+  86:User/Src/tool.c ****     for (uint8_t i = 0; i < 8; i++)
+  87:User/Src/tool.c ****     {
+  88:User/Src/tool.c ****         if (HAL_GPIO_ReadPin(SOFT_UART_RX_GPIO_Port, SOFT_UART_RX_Pin) == GPIO_PIN_SET)
+  89:User/Src/tool.c ****             data |= (1 << i);
+  90:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+  91:User/Src/tool.c ****     }
+  92:User/Src/tool.c **** 
+  93:User/Src/tool.c ****     // 5. 开中断
+  94:User/Src/tool.c ****     __enable_irq();
+  95:User/Src/tool.c **** 
+  96:User/Src/tool.c ****     // 6. 等待停止位
+  97:User/Src/tool.c ****     tick = 0;
+  98:User/Src/tool.c ****     while (HAL_GPIO_ReadPin(SOFT_UART_RX_GPIO_Port, SOFT_UART_RX_Pin) == GPIO_PIN_RESET)
+  99:User/Src/tool.c ****     {
+ 100:User/Src/tool.c ****         if (++tick > timeout) return 0xFF;
+ 101:User/Src/tool.c ****     }
+ 102:User/Src/tool.c **** 
+ 103:User/Src/tool.c ****     return data;
+ 104:User/Src/tool.c **** }
+ 463              		.loc 1 104 1 view .LVU111
+ 464 001c 3846     		mov	r0, r7
+ 465 001e F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 466              	.LVL37:
+ 467              	.L44:
+  79:User/Src/tool.c **** 
+ 468              		.loc 1 79 5 is_stmt 1 view .LVU112
+ 469              	.LBB49:
+ 470              	.LBI49:
+ 471              		.file 2 "Drivers/CMSIS/Include/cmsis_gcc.h"
+   1:Drivers/CMSIS/Include/cmsis_gcc.h **** /**************************************************************************//**
+   2:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @file     cmsis_gcc.h
+   3:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @brief    CMSIS compiler GCC header file
+   4:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @version  V5.0.4
+   5:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @date     09. April 2018
+   6:Drivers/CMSIS/Include/cmsis_gcc.h ****  ******************************************************************************/
+   7:Drivers/CMSIS/Include/cmsis_gcc.h **** /*
+   8:Drivers/CMSIS/Include/cmsis_gcc.h ****  * Copyright (c) 2009-2018 Arm Limited. All rights reserved.
+   9:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  10:Drivers/CMSIS/Include/cmsis_gcc.h ****  * SPDX-License-Identifier: Apache-2.0
+  11:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  12:Drivers/CMSIS/Include/cmsis_gcc.h ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+  13:Drivers/CMSIS/Include/cmsis_gcc.h ****  * not use this file except in compliance with the License.
+  14:Drivers/CMSIS/Include/cmsis_gcc.h ****  * You may obtain a copy of the License at
+  15:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  16:Drivers/CMSIS/Include/cmsis_gcc.h ****  * www.apache.org/licenses/LICENSE-2.0
+  17:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  18:Drivers/CMSIS/Include/cmsis_gcc.h ****  * Unless required by applicable law or agreed to in writing, software
+  19:Drivers/CMSIS/Include/cmsis_gcc.h ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  20:Drivers/CMSIS/Include/cmsis_gcc.h ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  21:Drivers/CMSIS/Include/cmsis_gcc.h ****  * See the License for the specific language governing permissions and
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 12
+
+
+  22:Drivers/CMSIS/Include/cmsis_gcc.h ****  * limitations under the License.
+  23:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+  24:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  25:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __CMSIS_GCC_H
+  26:Drivers/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_H
+  27:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  28:Drivers/CMSIS/Include/cmsis_gcc.h **** /* ignore some GCC warnings */
+  29:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic push
+  30:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wsign-conversion"
+  31:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wconversion"
+  32:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wunused-parameter"
+  33:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  34:Drivers/CMSIS/Include/cmsis_gcc.h **** /* Fallback for __has_builtin */
+  35:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __has_builtin
+  36:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __has_builtin(x) (0)
+  37:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  38:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  39:Drivers/CMSIS/Include/cmsis_gcc.h **** /* CMSIS compiler specific defines */
+  40:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ASM
+  41:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ASM                                  __asm
+  42:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  43:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __INLINE
+  44:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __INLINE                               inline
+  45:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  46:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_INLINE
+  47:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_INLINE                        static inline
+  48:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  49:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_FORCEINLINE                 
+  50:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_FORCEINLINE                   __attribute__((always_inline)) static inline
+  51:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif                                           
+  52:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __NO_RETURN
+  53:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __NO_RETURN                            __attribute__((__noreturn__))
+  54:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  55:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __USED
+  56:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __USED                                 __attribute__((used))
+  57:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  58:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __WEAK
+  59:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __WEAK                                 __attribute__((weak))
+  60:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  61:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED
+  62:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED                               __attribute__((packed, aligned(1)))
+  63:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  64:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_STRUCT
+  65:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_STRUCT                        struct __attribute__((packed, aligned(1)))
+  66:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  67:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_UNION
+  68:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_UNION                         union __attribute__((packed, aligned(1)))
+  69:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  70:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32        /* deprecated */
+  71:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  72:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  73:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  74:Drivers/CMSIS/Include/cmsis_gcc.h ****   struct __attribute__((packed)) T_UINT32 { uint32_t v; };
+  75:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  76:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
+  77:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  78:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_WRITE
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 13
+
+
+  79:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  80:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  81:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  82:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_WRITE { uint16_t v; };
+  83:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  84:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_WRITE(addr, val)    (void)((((struct T_UINT16_WRITE *)(void *)(addr))-
+  85:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  86:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_READ
+  87:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  88:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  89:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  90:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_READ { uint16_t v; };
+  91:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  92:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_READ(addr)          (((const struct T_UINT16_READ *)(const void *)(add
+  93:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  94:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_WRITE
+  95:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  96:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  97:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  98:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_WRITE { uint32_t v; };
+  99:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 100:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_WRITE(addr, val)    (void)((((struct T_UINT32_WRITE *)(void *)(addr))-
+ 101:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 102:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_READ
+ 103:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+ 104:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+ 105:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+ 106:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_READ { uint32_t v; };
+ 107:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 108:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_READ(addr)          (((const struct T_UINT32_READ *)(const void *)(add
+ 109:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 110:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ALIGNED
+ 111:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ALIGNED(x)                           __attribute__((aligned(x)))
+ 112:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 113:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __RESTRICT
+ 114:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __RESTRICT                             __restrict
+ 115:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 116:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 117:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 118:Drivers/CMSIS/Include/cmsis_gcc.h **** /* ###########################  Core Function Access  ########################### */
+ 119:Drivers/CMSIS/Include/cmsis_gcc.h **** /** \ingroup  CMSIS_Core_FunctionInterface
+ 120:Drivers/CMSIS/Include/cmsis_gcc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+ 121:Drivers/CMSIS/Include/cmsis_gcc.h ****   @{
+ 122:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 123:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 124:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 125:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Enable IRQ Interrupts
+ 126:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 127:Drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 128:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 129:Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __enable_irq(void)
+ 130:Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 131:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsie i" : : : "memory");
+ 132:Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 133:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 134:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 135:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 14
+
+
+ 136:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Disable IRQ Interrupts
+ 137:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Disables IRQ interrupts by setting the I-bit in the CPSR.
+ 138:Drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 139:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 140:Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __disable_irq(void)
+ 472              		.loc 2 140 27 view .LVU113
+ 473              	.LBB50:
+ 141:Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 142:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsid i" : : : "memory");
+ 474              		.loc 2 142 3 view .LVU114
+ 475              		.syntax unified
+ 476              	@ 142 "Drivers/CMSIS/Include/cmsis_gcc.h" 1
+ 477 0020 72B6     		cpsid i
+ 478              	@ 0 "" 2
+ 479              		.thumb
+ 480              		.syntax unified
+ 481              	.LBE50:
+ 482              	.LBE49:
+  82:User/Src/tool.c ****     delay_us(BAUD_DELAY_US / 2);
+ 483              		.loc 1 82 5 view .LVU115
+ 484              	.LVL38:
+ 485              	.LBB51:
+ 486              	.LBI51:
+   4:User/Src/tool.c **** {
+ 487              		.loc 1 4 20 view .LVU116
+ 488              	.LBB52:
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 489              		.loc 1 6 5 view .LVU117
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 490              		.loc 1 6 44 is_stmt 0 view .LVU118
+ 491 0022 274B     		ldr	r3, .L47+4
+ 492 0024 1B68     		ldr	r3, [r3]
+ 493 0026 274A     		ldr	r2, .L47+8
+ 494 0028 A2FB0323 		umull	r2, r3, r2, r3
+ 495 002c 9B0C     		lsrs	r3, r3, #18
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 496              		.loc 1 6 14 view .LVU119
+ 497 002e 6822     		movs	r2, #104
+ 498 0030 02FB03F3 		mul	r3, r2, r3
+ 499              	.LVL39:
+   7:User/Src/tool.c **** }
+ 500              		.loc 1 7 5 is_stmt 1 view .LVU120
+   7:User/Src/tool.c **** }
+ 501              		.loc 1 7 10 is_stmt 0 view .LVU121
+ 502 0034 01E0     		b	.L30
+ 503              	.LVL40:
+ 504              	.L31:
+   7:User/Src/tool.c **** }
+ 505              		.loc 1 7 21 is_stmt 1 view .LVU122
+ 506              		.syntax unified
+ 507              	@ 7 "User/Src/tool.c" 1
+ 508 0036 00BF     		nop
+ 509              	@ 0 "" 2
+   7:User/Src/tool.c **** }
+ 510              		.loc 1 7 16 is_stmt 0 view .LVU123
+ 511              		.thumb
+ 512              		.syntax unified
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 15
+
+
+ 513 0038 1346     		mov	r3, r2
+ 514              	.LVL41:
+ 515              	.L30:
+   7:User/Src/tool.c **** }
+ 516              		.loc 1 7 10 is_stmt 1 view .LVU124
+   7:User/Src/tool.c **** }
+ 517              		.loc 1 7 16 is_stmt 0 view .LVU125
+ 518 003a 5A1E     		subs	r2, r3, #1
+ 519              	.LVL42:
+   7:User/Src/tool.c **** }
+ 520              		.loc 1 7 10 view .LVU126
+ 521 003c 002B     		cmp	r3, #0
+ 522 003e FAD1     		bne	.L31
+ 523              	.LVL43:
+   7:User/Src/tool.c **** }
+ 524              		.loc 1 7 10 view .LVU127
+ 525              	.LBE52:
+ 526              	.LBE51:
+  83:User/Src/tool.c **** 
+ 527              		.loc 1 83 5 is_stmt 1 view .LVU128
+ 528              	.LBB53:
+ 529              	.LBI53:
+   4:User/Src/tool.c **** {
+ 530              		.loc 1 4 20 view .LVU129
+ 531              	.LBB54:
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 532              		.loc 1 6 5 view .LVU130
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 533              		.loc 1 6 44 is_stmt 0 view .LVU131
+ 534 0040 1F4B     		ldr	r3, .L47+4
+ 535 0042 1C68     		ldr	r4, [r3]
+ 536              	.LVL44:
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 537              		.loc 1 6 44 view .LVU132
+ 538 0044 1F4B     		ldr	r3, .L47+8
+ 539 0046 A3FB0434 		umull	r3, r4, r3, r4
+ 540 004a A40C     		lsrs	r4, r4, #18
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 541              		.loc 1 6 14 view .LVU133
+ 542 004c 3423     		movs	r3, #52
+ 543 004e 03FB04F4 		mul	r4, r3, r4
+ 544              	.LVL45:
+   7:User/Src/tool.c **** }
+ 545              		.loc 1 7 5 is_stmt 1 view .LVU134
+   7:User/Src/tool.c **** }
+ 546              		.loc 1 7 10 is_stmt 0 view .LVU135
+ 547 0052 01E0     		b	.L32
+ 548              	.LVL46:
+ 549              	.L33:
+   7:User/Src/tool.c **** }
+ 550              		.loc 1 7 21 is_stmt 1 view .LVU136
+ 551              		.syntax unified
+ 552              	@ 7 "User/Src/tool.c" 1
+ 553 0054 00BF     		nop
+ 554              	@ 0 "" 2
+   7:User/Src/tool.c **** }
+ 555              		.loc 1 7 16 is_stmt 0 view .LVU137
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 16
+
+
+ 556              		.thumb
+ 557              		.syntax unified
+ 558 0056 1C46     		mov	r4, r3
+ 559              	.LVL47:
+ 560              	.L32:
+   7:User/Src/tool.c **** }
+ 561              		.loc 1 7 10 is_stmt 1 view .LVU138
+   7:User/Src/tool.c **** }
+ 562              		.loc 1 7 16 is_stmt 0 view .LVU139
+ 563 0058 631E     		subs	r3, r4, #1
+ 564              	.LVL48:
+   7:User/Src/tool.c **** }
+ 565              		.loc 1 7 10 view .LVU140
+ 566 005a 002C     		cmp	r4, #0
+ 567 005c FAD1     		bne	.L33
+ 568              	.LBE54:
+ 569              	.LBE53:
+ 570              	.LBB55:
+  86:User/Src/tool.c ****     {
+ 571              		.loc 1 86 18 view .LVU141
+ 572 005e 3D46     		mov	r5, r7
+ 573 0060 0BE0     		b	.L34
+ 574              	.LVL49:
+ 575              	.L46:
+  89:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 576              		.loc 1 89 13 is_stmt 1 view .LVU142
+  89:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 577              		.loc 1 89 24 is_stmt 0 view .LVU143
+ 578 0062 0123     		movs	r3, #1
+ 579 0064 AB40     		lsls	r3, r3, r5
+  89:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 580              		.loc 1 89 18 view .LVU144
+ 581 0066 1F43     		orrs	r7, r7, r3
+ 582              	.LVL50:
+  89:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 583              		.loc 1 89 18 view .LVU145
+ 584 0068 FFB2     		uxtb	r7, r7
+ 585              	.LVL51:
+  89:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 586              		.loc 1 89 18 view .LVU146
+ 587 006a 0FE0     		b	.L35
+ 588              	.LVL52:
+ 589              	.L37:
+ 590              	.LBB56:
+ 591              	.LBB57:
+   7:User/Src/tool.c **** }
+ 592              		.loc 1 7 21 is_stmt 1 view .LVU147
+ 593              		.syntax unified
+ 594              	@ 7 "User/Src/tool.c" 1
+ 595 006c 00BF     		nop
+ 596              	@ 0 "" 2
+   7:User/Src/tool.c **** }
+ 597              		.loc 1 7 16 is_stmt 0 view .LVU148
+ 598              		.thumb
+ 599              		.syntax unified
+ 600 006e 1346     		mov	r3, r2
+ 601              	.LVL53:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 17
+
+
+ 602              	.L36:
+   7:User/Src/tool.c **** }
+ 603              		.loc 1 7 10 is_stmt 1 view .LVU149
+   7:User/Src/tool.c **** }
+ 604              		.loc 1 7 16 is_stmt 0 view .LVU150
+ 605 0070 5A1E     		subs	r2, r3, #1
+ 606              	.LVL54:
+   7:User/Src/tool.c **** }
+ 607              		.loc 1 7 10 view .LVU151
+ 608 0072 002B     		cmp	r3, #0
+ 609 0074 FAD1     		bne	.L37
+ 610              	.LVL55:
+   7:User/Src/tool.c **** }
+ 611              		.loc 1 7 10 view .LVU152
+ 612              	.LBE57:
+ 613              	.LBE56:
+  86:User/Src/tool.c ****     {
+ 614              		.loc 1 86 32 is_stmt 1 discriminator 2 view .LVU153
+  86:User/Src/tool.c ****     {
+ 615              		.loc 1 86 33 is_stmt 0 discriminator 2 view .LVU154
+ 616 0076 0135     		adds	r5, r5, #1
+ 617              	.LVL56:
+  86:User/Src/tool.c ****     {
+ 618              		.loc 1 86 33 discriminator 2 view .LVU155
+ 619 0078 EDB2     		uxtb	r5, r5
+ 620              	.LVL57:
+ 621              	.L34:
+  86:User/Src/tool.c ****     {
+ 622              		.loc 1 86 25 is_stmt 1 discriminator 1 view .LVU156
+  86:User/Src/tool.c ****     {
+ 623              		.loc 1 86 5 is_stmt 0 discriminator 1 view .LVU157
+ 624 007a 072D     		cmp	r5, #7
+ 625 007c 10D8     		bhi	.L45
+  88:User/Src/tool.c ****             data |= (1 << i);
+ 626              		.loc 1 88 9 is_stmt 1 view .LVU158
+  88:User/Src/tool.c ****             data |= (1 << i);
+ 627              		.loc 1 88 13 is_stmt 0 view .LVU159
+ 628 007e 4FF48041 		mov	r1, #16384
+ 629 0082 0E48     		ldr	r0, .L47
+ 630 0084 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 631              	.LVL58:
+  88:User/Src/tool.c ****             data |= (1 << i);
+ 632              		.loc 1 88 12 view .LVU160
+ 633 0088 0128     		cmp	r0, #1
+ 634 008a EAD0     		beq	.L46
+ 635              	.L35:
+  90:User/Src/tool.c ****     }
+ 636              		.loc 1 90 9 is_stmt 1 discriminator 2 view .LVU161
+ 637              	.LVL59:
+ 638              	.LBB59:
+ 639              	.LBI56:
+   4:User/Src/tool.c **** {
+ 640              		.loc 1 4 20 discriminator 2 view .LVU162
+ 641              	.LBB58:
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 642              		.loc 1 6 5 discriminator 2 view .LVU163
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 18
+
+
+ 643              		.loc 1 6 44 is_stmt 0 discriminator 2 view .LVU164
+ 644 008c 0C4B     		ldr	r3, .L47+4
+ 645 008e 1B68     		ldr	r3, [r3]
+ 646 0090 0C4A     		ldr	r2, .L47+8
+ 647 0092 A2FB0323 		umull	r2, r3, r2, r3
+ 648 0096 9B0C     		lsrs	r3, r3, #18
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 649              		.loc 1 6 14 discriminator 2 view .LVU165
+ 650 0098 6822     		movs	r2, #104
+ 651 009a 02FB03F3 		mul	r3, r2, r3
+ 652              	.LVL60:
+   7:User/Src/tool.c **** }
+ 653              		.loc 1 7 5 is_stmt 1 discriminator 2 view .LVU166
+   7:User/Src/tool.c **** }
+ 654              		.loc 1 7 10 is_stmt 0 discriminator 2 view .LVU167
+ 655 009e E7E7     		b	.L36
+ 656              	.LVL61:
+ 657              	.L45:
+   7:User/Src/tool.c **** }
+ 658              		.loc 1 7 10 discriminator 2 view .LVU168
+ 659              	.LBE58:
+ 660              	.LBE59:
+ 661              	.LBE55:
+  94:User/Src/tool.c **** 
+ 662              		.loc 1 94 5 is_stmt 1 view .LVU169
+ 663              	.LBB60:
+ 664              	.LBI60:
+ 129:Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 665              		.loc 2 129 27 view .LVU170
+ 666              	.LBB61:
+ 131:Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 667              		.loc 2 131 3 view .LVU171
+ 668              		.syntax unified
+ 669              	@ 131 "Drivers/CMSIS/Include/cmsis_gcc.h" 1
+ 670 00a0 62B6     		cpsie i
+ 671              	@ 0 "" 2
+ 672              		.thumb
+ 673              		.syntax unified
+ 674              	.LBE61:
+ 675              	.LBE60:
+  97:User/Src/tool.c ****     while (HAL_GPIO_ReadPin(SOFT_UART_RX_GPIO_Port, SOFT_UART_RX_Pin) == GPIO_PIN_RESET)
+ 676              		.loc 1 97 5 view .LVU172
+ 677              	.LVL62:
+  98:User/Src/tool.c ****     {
+ 678              		.loc 1 98 5 view .LVU173
+ 679              	.L39:
+  98:User/Src/tool.c ****     {
+ 680              		.loc 1 98 11 view .LVU174
+  98:User/Src/tool.c ****     {
+ 681              		.loc 1 98 12 is_stmt 0 view .LVU175
+ 682 00a2 4FF48041 		mov	r1, #16384
+ 683 00a6 0548     		ldr	r0, .L47
+ 684 00a8 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 685              	.LVL63:
+  98:User/Src/tool.c ****     {
+ 686              		.loc 1 98 11 view .LVU176
+ 687 00ac 0028     		cmp	r0, #0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 19
+
+
+ 688 00ae B5D1     		bne	.L28
+ 100:User/Src/tool.c ****     }
+ 689              		.loc 1 100 9 is_stmt 1 view .LVU177
+ 100:User/Src/tool.c ****     }
+ 690              		.loc 1 100 12 is_stmt 0 view .LVU178
+ 691 00b0 0134     		adds	r4, r4, #1
+ 692              	.LVL64:
+ 100:User/Src/tool.c ****     }
+ 693              		.loc 1 100 12 view .LVU179
+ 694 00b2 B442     		cmp	r4, r6
+ 695 00b4 F5D9     		bls	.L39
+ 100:User/Src/tool.c ****     }
+ 696              		.loc 1 100 38 view .LVU180
+ 697 00b6 FF27     		movs	r7, #255
+ 698              	.LVL65:
+ 100:User/Src/tool.c ****     }
+ 699              		.loc 1 100 38 view .LVU181
+ 700 00b8 B0E7     		b	.L28
+ 701              	.L48:
+ 702 00ba 00BF     		.align	2
+ 703              	.L47:
+ 704 00bc 000C0140 		.word	1073810432
+ 705 00c0 00000000 		.word	SystemCoreClock
+ 706 00c4 83DE1B43 		.word	1125899907
+ 707              		.cfi_endproc
+ 708              	.LFE73:
+ 710              		.section	.text.Soft_UART_ReceiveData,"ax",%progbits
+ 711              		.align	1
+ 712              		.global	Soft_UART_ReceiveData
+ 713              		.syntax unified
+ 714              		.thumb
+ 715              		.thumb_func
+ 717              	Soft_UART_ReceiveData:
+ 718              	.LVL66:
+ 719              	.LFB74:
+ 105:User/Src/tool.c **** 
+ 106:User/Src/tool.c **** 
+ 107:User/Src/tool.c **** uint8_t Soft_UART_ReceiveData(uint8_t *data)
+ 108:User/Src/tool.c **** {
+ 720              		.loc 1 108 1 is_stmt 1 view -0
+ 721              		.cfi_startproc
+ 722              		@ args = 0, pretend = 0, frame = 0
+ 723              		@ frame_needed = 0, uses_anonymous_args = 0
+ 724              		.loc 1 108 1 is_stmt 0 view .LVU183
+ 725 0000 70B5     		push	{r4, r5, r6, lr}
+ 726              	.LCFI7:
+ 727              		.cfi_def_cfa_offset 16
+ 728              		.cfi_offset 4, -16
+ 729              		.cfi_offset 5, -12
+ 730              		.cfi_offset 6, -8
+ 731              		.cfi_offset 14, -4
+ 732 0002 0646     		mov	r6, r0
+ 109:User/Src/tool.c ****     uint32_t timeout=1000;
+ 733              		.loc 1 109 5 is_stmt 1 view .LVU184
+ 734              	.LVL67:
+ 110:User/Src/tool.c ****     uint32_t tick = 0;
+ 735              		.loc 1 110 5 view .LVU185
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 20
+
+
+ 111:User/Src/tool.c **** 
+ 112:User/Src/tool.c ****     // 1. 等待起始位（下降沿）
+ 113:User/Src/tool.c ****     while (HAL_GPIO_ReadPin(SOFT_UART_RX_GPIO_Port, SOFT_UART_RX_Pin) != GPIO_PIN_RESET)
+ 736              		.loc 1 113 5 view .LVU186
+ 110:User/Src/tool.c ****     uint32_t tick = 0;
+ 737              		.loc 1 110 14 is_stmt 0 view .LVU187
+ 738 0004 0024     		movs	r4, #0
+ 739              	.LVL68:
+ 740              	.L50:
+ 741              		.loc 1 113 11 is_stmt 1 view .LVU188
+ 742              		.loc 1 113 12 is_stmt 0 view .LVU189
+ 743 0006 4FF48041 		mov	r1, #16384
+ 744 000a 2D48     		ldr	r0, .L71
+ 745 000c FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 746              	.LVL69:
+ 747              		.loc 1 113 11 view .LVU190
+ 748 0010 0546     		mov	r5, r0
+ 749 0012 28B1     		cbz	r0, .L67
+ 114:User/Src/tool.c ****     {
+ 115:User/Src/tool.c ****         if (++tick > timeout) return 0xFF;
+ 750              		.loc 1 115 9 is_stmt 1 view .LVU191
+ 751              		.loc 1 115 12 is_stmt 0 view .LVU192
+ 752 0014 0134     		adds	r4, r4, #1
+ 753              	.LVL70:
+ 754              		.loc 1 115 12 view .LVU193
+ 755 0016 B4F57A7F 		cmp	r4, #1000
+ 756 001a F4D9     		bls	.L50
+ 757              		.loc 1 115 38 view .LVU194
+ 758 001c FF20     		movs	r0, #255
+ 759 001e 4EE0     		b	.L51
+ 760              	.L67:
+ 116:User/Src/tool.c ****     }
+ 117:User/Src/tool.c **** 
+ 118:User/Src/tool.c ****     // 2. 关中断，保证时序不被打断
+ 119:User/Src/tool.c ****     __disable_irq();
+ 761              		.loc 1 119 5 is_stmt 1 view .LVU195
+ 762              	.LBB62:
+ 763              	.LBI62:
+ 140:Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 764              		.loc 2 140 27 view .LVU196
+ 765              	.LBB63:
+ 766              		.loc 2 142 3 view .LVU197
+ 767              		.syntax unified
+ 768              	@ 142 "Drivers/CMSIS/Include/cmsis_gcc.h" 1
+ 769 0020 72B6     		cpsid i
+ 770              	@ 0 "" 2
+ 771              		.thumb
+ 772              		.syntax unified
+ 773              	.LBE63:
+ 774              	.LBE62:
+ 120:User/Src/tool.c **** 
+ 121:User/Src/tool.c ****     // 3. 【关键修复】延时 1.5 位周期，对准数据位中心
+ 122:User/Src/tool.c ****     delay_us(BAUD_DELAY_US);
+ 775              		.loc 1 122 5 view .LVU198
+ 776              	.LVL71:
+ 777              	.LBB64:
+ 778              	.LBI64:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 21
+
+
+   4:User/Src/tool.c **** {
+ 779              		.loc 1 4 20 view .LVU199
+ 780              	.LBB65:
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 781              		.loc 1 6 5 view .LVU200
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 782              		.loc 1 6 44 is_stmt 0 view .LVU201
+ 783 0022 284B     		ldr	r3, .L71+4
+ 784 0024 1B68     		ldr	r3, [r3]
+ 785 0026 284A     		ldr	r2, .L71+8
+ 786 0028 A2FB0323 		umull	r2, r3, r2, r3
+ 787 002c 9B0C     		lsrs	r3, r3, #18
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 788              		.loc 1 6 14 view .LVU202
+ 789 002e 6822     		movs	r2, #104
+ 790 0030 02FB03F3 		mul	r3, r2, r3
+ 791              	.LVL72:
+   7:User/Src/tool.c **** }
+ 792              		.loc 1 7 5 is_stmt 1 view .LVU203
+   7:User/Src/tool.c **** }
+ 793              		.loc 1 7 10 is_stmt 0 view .LVU204
+ 794 0034 01E0     		b	.L53
+ 795              	.LVL73:
+ 796              	.L54:
+   7:User/Src/tool.c **** }
+ 797              		.loc 1 7 21 is_stmt 1 view .LVU205
+ 798              		.syntax unified
+ 799              	@ 7 "User/Src/tool.c" 1
+ 800 0036 00BF     		nop
+ 801              	@ 0 "" 2
+   7:User/Src/tool.c **** }
+ 802              		.loc 1 7 16 is_stmt 0 view .LVU206
+ 803              		.thumb
+ 804              		.syntax unified
+ 805 0038 1346     		mov	r3, r2
+ 806              	.LVL74:
+ 807              	.L53:
+   7:User/Src/tool.c **** }
+ 808              		.loc 1 7 10 is_stmt 1 view .LVU207
+   7:User/Src/tool.c **** }
+ 809              		.loc 1 7 16 is_stmt 0 view .LVU208
+ 810 003a 5A1E     		subs	r2, r3, #1
+ 811              	.LVL75:
+   7:User/Src/tool.c **** }
+ 812              		.loc 1 7 10 view .LVU209
+ 813 003c 002B     		cmp	r3, #0
+ 814 003e FAD1     		bne	.L54
+ 815              	.LVL76:
+   7:User/Src/tool.c **** }
+ 816              		.loc 1 7 10 view .LVU210
+ 817              	.LBE65:
+ 818              	.LBE64:
+ 123:User/Src/tool.c ****     delay_us(BAUD_DELAY_US / 2);
+ 819              		.loc 1 123 5 is_stmt 1 view .LVU211
+ 820              	.LBB66:
+ 821              	.LBI66:
+   4:User/Src/tool.c **** {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 22
+
+
+ 822              		.loc 1 4 20 view .LVU212
+ 823              	.LBB67:
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 824              		.loc 1 6 5 view .LVU213
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 825              		.loc 1 6 44 is_stmt 0 view .LVU214
+ 826 0040 204B     		ldr	r3, .L71+4
+ 827 0042 1C68     		ldr	r4, [r3]
+ 828              	.LVL77:
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 829              		.loc 1 6 44 view .LVU215
+ 830 0044 204B     		ldr	r3, .L71+8
+ 831 0046 A3FB0434 		umull	r3, r4, r3, r4
+ 832 004a A40C     		lsrs	r4, r4, #18
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 833              		.loc 1 6 14 view .LVU216
+ 834 004c 3423     		movs	r3, #52
+ 835 004e 03FB04F4 		mul	r4, r3, r4
+ 836              	.LVL78:
+   7:User/Src/tool.c **** }
+ 837              		.loc 1 7 5 is_stmt 1 view .LVU217
+   7:User/Src/tool.c **** }
+ 838              		.loc 1 7 10 is_stmt 0 view .LVU218
+ 839 0052 01E0     		b	.L55
+ 840              	.LVL79:
+ 841              	.L56:
+   7:User/Src/tool.c **** }
+ 842              		.loc 1 7 21 is_stmt 1 view .LVU219
+ 843              		.syntax unified
+ 844              	@ 7 "User/Src/tool.c" 1
+ 845 0054 00BF     		nop
+ 846              	@ 0 "" 2
+   7:User/Src/tool.c **** }
+ 847              		.loc 1 7 16 is_stmt 0 view .LVU220
+ 848              		.thumb
+ 849              		.syntax unified
+ 850 0056 1C46     		mov	r4, r3
+ 851              	.LVL80:
+ 852              	.L55:
+   7:User/Src/tool.c **** }
+ 853              		.loc 1 7 10 is_stmt 1 view .LVU221
+   7:User/Src/tool.c **** }
+ 854              		.loc 1 7 16 is_stmt 0 view .LVU222
+ 855 0058 631E     		subs	r3, r4, #1
+ 856              	.LVL81:
+   7:User/Src/tool.c **** }
+ 857              		.loc 1 7 10 view .LVU223
+ 858 005a 002C     		cmp	r4, #0
+ 859 005c FAD1     		bne	.L56
+ 860 005e 0DE0     		b	.L57
+ 861              	.LVL82:
+ 862              	.L69:
+   7:User/Src/tool.c **** }
+ 863              		.loc 1 7 10 view .LVU224
+ 864              	.LBE67:
+ 865              	.LBE66:
+ 866              	.LBB68:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 23
+
+
+ 124:User/Src/tool.c **** 
+ 125:User/Src/tool.c ****     // 4. 采样8位数据（低位先行）
+ 126:User/Src/tool.c ****     for (uint8_t i = 0; i < 8; i++)
+ 127:User/Src/tool.c ****     {
+ 128:User/Src/tool.c ****         if (HAL_GPIO_ReadPin(SOFT_UART_RX_GPIO_Port, SOFT_UART_RX_Pin) == GPIO_PIN_SET)
+ 129:User/Src/tool.c ****             *data |= (1 << i);
+ 867              		.loc 1 129 13 is_stmt 1 view .LVU225
+ 868              		.loc 1 129 25 is_stmt 0 view .LVU226
+ 869 0060 0123     		movs	r3, #1
+ 870 0062 03FA05F2 		lsl	r2, r3, r5
+ 871              		.loc 1 129 19 view .LVU227
+ 872 0066 3378     		ldrb	r3, [r6]	@ zero_extendqisi2
+ 873 0068 1343     		orrs	r3, r3, r2
+ 874 006a 3370     		strb	r3, [r6]
+ 875 006c 0FE0     		b	.L58
+ 876              	.LVL83:
+ 877              	.L60:
+ 878              	.LBB69:
+ 879              	.LBB70:
+   7:User/Src/tool.c **** }
+ 880              		.loc 1 7 21 is_stmt 1 view .LVU228
+ 881              		.syntax unified
+ 882              	@ 7 "User/Src/tool.c" 1
+ 883 006e 00BF     		nop
+ 884              	@ 0 "" 2
+   7:User/Src/tool.c **** }
+ 885              		.loc 1 7 16 is_stmt 0 view .LVU229
+ 886              		.thumb
+ 887              		.syntax unified
+ 888 0070 1346     		mov	r3, r2
+ 889              	.LVL84:
+ 890              	.L59:
+   7:User/Src/tool.c **** }
+ 891              		.loc 1 7 10 is_stmt 1 view .LVU230
+   7:User/Src/tool.c **** }
+ 892              		.loc 1 7 16 is_stmt 0 view .LVU231
+ 893 0072 5A1E     		subs	r2, r3, #1
+ 894              	.LVL85:
+   7:User/Src/tool.c **** }
+ 895              		.loc 1 7 10 view .LVU232
+ 896 0074 002B     		cmp	r3, #0
+ 897 0076 FAD1     		bne	.L60
+ 898              	.LVL86:
+   7:User/Src/tool.c **** }
+ 899              		.loc 1 7 10 view .LVU233
+ 900              	.LBE70:
+ 901              	.LBE69:
+ 126:User/Src/tool.c ****     {
+ 902              		.loc 1 126 32 is_stmt 1 discriminator 2 view .LVU234
+ 126:User/Src/tool.c ****     {
+ 903              		.loc 1 126 33 is_stmt 0 discriminator 2 view .LVU235
+ 904 0078 0135     		adds	r5, r5, #1
+ 905              	.LVL87:
+ 126:User/Src/tool.c ****     {
+ 906              		.loc 1 126 33 discriminator 2 view .LVU236
+ 907 007a EDB2     		uxtb	r5, r5
+ 908              	.LVL88:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 24
+
+
+ 909              	.L57:
+ 126:User/Src/tool.c ****     {
+ 910              		.loc 1 126 25 is_stmt 1 discriminator 1 view .LVU237
+ 126:User/Src/tool.c ****     {
+ 911              		.loc 1 126 5 is_stmt 0 discriminator 1 view .LVU238
+ 912 007c 072D     		cmp	r5, #7
+ 913 007e 10D8     		bhi	.L68
+ 128:User/Src/tool.c ****             *data |= (1 << i);
+ 914              		.loc 1 128 9 is_stmt 1 view .LVU239
+ 128:User/Src/tool.c ****             *data |= (1 << i);
+ 915              		.loc 1 128 13 is_stmt 0 view .LVU240
+ 916 0080 4FF48041 		mov	r1, #16384
+ 917 0084 0E48     		ldr	r0, .L71
+ 918 0086 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 919              	.LVL89:
+ 128:User/Src/tool.c ****             *data |= (1 << i);
+ 920              		.loc 1 128 12 view .LVU241
+ 921 008a 0128     		cmp	r0, #1
+ 922 008c E8D0     		beq	.L69
+ 923              	.L58:
+ 130:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 924              		.loc 1 130 9 is_stmt 1 discriminator 2 view .LVU242
+ 925              	.LVL90:
+ 926              	.LBB72:
+ 927              	.LBI69:
+   4:User/Src/tool.c **** {
+ 928              		.loc 1 4 20 discriminator 2 view .LVU243
+ 929              	.LBB71:
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 930              		.loc 1 6 5 discriminator 2 view .LVU244
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 931              		.loc 1 6 44 is_stmt 0 discriminator 2 view .LVU245
+ 932 008e 0D4B     		ldr	r3, .L71+4
+ 933 0090 1B68     		ldr	r3, [r3]
+ 934 0092 0D4A     		ldr	r2, .L71+8
+ 935 0094 A2FB0323 		umull	r2, r3, r2, r3
+ 936 0098 9B0C     		lsrs	r3, r3, #18
+   6:User/Src/tool.c ****     while(count--) {__NOP();}
+ 937              		.loc 1 6 14 discriminator 2 view .LVU246
+ 938 009a 6822     		movs	r2, #104
+ 939 009c 02FB03F3 		mul	r3, r2, r3
+ 940              	.LVL91:
+   7:User/Src/tool.c **** }
+ 941              		.loc 1 7 5 is_stmt 1 discriminator 2 view .LVU247
+   7:User/Src/tool.c **** }
+ 942              		.loc 1 7 10 is_stmt 0 discriminator 2 view .LVU248
+ 943 00a0 E7E7     		b	.L59
+ 944              	.LVL92:
+ 945              	.L68:
+   7:User/Src/tool.c **** }
+ 946              		.loc 1 7 10 discriminator 2 view .LVU249
+ 947              	.LBE71:
+ 948              	.LBE72:
+ 949              	.LBE68:
+ 131:User/Src/tool.c ****     }
+ 132:User/Src/tool.c **** 
+ 133:User/Src/tool.c ****     // 5. 开中断
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 25
+
+
+ 134:User/Src/tool.c ****     __enable_irq();
+ 950              		.loc 1 134 5 is_stmt 1 view .LVU250
+ 951              	.LBB73:
+ 952              	.LBI73:
+ 129:Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 953              		.loc 2 129 27 view .LVU251
+ 954              	.LBB74:
+ 131:Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 955              		.loc 2 131 3 view .LVU252
+ 956              		.syntax unified
+ 957              	@ 131 "Drivers/CMSIS/Include/cmsis_gcc.h" 1
+ 958 00a2 62B6     		cpsie i
+ 959              	@ 0 "" 2
+ 960              		.thumb
+ 961              		.syntax unified
+ 962              	.LBE74:
+ 963              	.LBE73:
+ 135:User/Src/tool.c **** 
+ 136:User/Src/tool.c ****     // 6. 等待停止位
+ 137:User/Src/tool.c ****     tick = 0;
+ 964              		.loc 1 137 5 view .LVU253
+ 965              	.LVL93:
+ 138:User/Src/tool.c ****     while (HAL_GPIO_ReadPin(SOFT_UART_RX_GPIO_Port, SOFT_UART_RX_Pin) == GPIO_PIN_RESET)
+ 966              		.loc 1 138 5 view .LVU254
+ 967              	.L62:
+ 968              		.loc 1 138 11 view .LVU255
+ 969              		.loc 1 138 12 is_stmt 0 view .LVU256
+ 970 00a4 4FF48041 		mov	r1, #16384
+ 971 00a8 0548     		ldr	r0, .L71
+ 972 00aa FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 973              	.LVL94:
+ 974              		.loc 1 138 11 view .LVU257
+ 975 00ae 28B9     		cbnz	r0, .L70
+ 139:User/Src/tool.c ****     {
+ 140:User/Src/tool.c ****         if (++tick > timeout) return 0xFF;
+ 976              		.loc 1 140 9 is_stmt 1 view .LVU258
+ 977              		.loc 1 140 12 is_stmt 0 view .LVU259
+ 978 00b0 0134     		adds	r4, r4, #1
+ 979              	.LVL95:
+ 980              		.loc 1 140 12 view .LVU260
+ 981 00b2 B4F57A7F 		cmp	r4, #1000
+ 982 00b6 F5D9     		bls	.L62
+ 983              		.loc 1 140 38 view .LVU261
+ 984 00b8 FF20     		movs	r0, #255
+ 985 00ba 00E0     		b	.L51
+ 986              	.L70:
+ 141:User/Src/tool.c ****     }
+ 142:User/Src/tool.c **** 
+ 143:User/Src/tool.c ****     return 1;
+ 987              		.loc 1 143 12 view .LVU262
+ 988 00bc 0120     		movs	r0, #1
+ 989              	.LVL96:
+ 990              	.L51:
+ 144:User/Src/tool.c **** }...
+ 991              		.loc 1 144 1 view .LVU263
+ 992 00be 70BD     		pop	{r4, r5, r6, pc}
+ 993              	.LVL97:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 26
+
+
+ 994              	.L72:
+ 995              		.loc 1 144 1 view .LVU264
+ 996              		.align	2
+ 997              	.L71:
+ 998 00c0 000C0140 		.word	1073810432
+ 999 00c4 00000000 		.word	SystemCoreClock
+ 1000 00c8 83DE1B43 		.word	1125899907
+ 1001              		.cfi_endproc
+ 1002              	.LFE74:
+ 1004              		.text
+ 1005              	.Letext0:
+ 1006              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1007              		.file 4 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1008              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 1009              		.file 6 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h"
+ 1010              		.file 7 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc894quk.s 			page 27
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 tool.c
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:18     .text.Soft_UART_Init:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:24     .text.Soft_UART_Init:00000000 Soft_UART_Init
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:116    .text.Soft_UART_Init:0000005c $d
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:122    .text.Soft_UART_SendByte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:128    .text.Soft_UART_SendByte:00000000 Soft_UART_SendByte
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:323    .text.Soft_UART_SendByte:00000094 $d
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:330    .text.Soft_UART_SendStr:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:336    .text.Soft_UART_SendStr:00000000 Soft_UART_SendStr
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:376    .text.Soft_UART_ReceiveReady:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:382    .text.Soft_UART_ReceiveReady:00000000 Soft_UART_ReceiveReady
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:406    .text.Soft_UART_ReceiveReady:00000014 $d
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:411    .text.Soft_UART_ReceiveByte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:417    .text.Soft_UART_ReceiveByte:00000000 Soft_UART_ReceiveByte
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:704    .text.Soft_UART_ReceiveByte:000000bc $d
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:711    .text.Soft_UART_ReceiveData:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:717    .text.Soft_UART_ReceiveData:00000000 Soft_UART_ReceiveData
+C:\Users\84759\AppData\Local\Temp\cc894quk.s:998    .text.Soft_UART_ReceiveData:000000c0 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_Init
+HAL_GPIO_WritePin
+SystemCoreClock
+HAL_GPIO_ReadPin

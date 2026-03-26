@@ -1,0 +1,2523 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.rodata.fatfs_error_str.str1.4,"aMS",%progbits,1
+  18              		.align	2
+  19              	.LC0:
+  20 0000 554E4B4E 		.ascii	"UNKNOWN_ERROR (\316\264\326\252\264\355\316\363)\000"
+  20      4F574E5F 
+  20      4552524F 
+  20      522028CE 
+  20      B4D6AAB4 
+  21 0019 000000   		.align	2
+  22              	.LC1:
+  23 001c 46525F44 		.ascii	"FR_DISK_ERR (\264\305\305\314I/O\264\355\316\363)\000"
+  23      49534B5F 
+  23      45525220 
+  23      28B4C5C5 
+  23      CC492F4F 
+  24 0036 0000     		.align	2
+  25              	.LC2:
+  26 0038 46525F49 		.ascii	"FR_INT_ERR (\266\317\321\324\312\247\260\334)\000"
+  26      4E545F45 
+  26      52522028 
+  26      B6CFD1D4 
+  26      CAA7B0DC 
+  27 004e 0000     		.align	2
+  28              	.LC3:
+  29 0050 46525F4E 		.ascii	"FR_NOT_READY (\311\350\261\270\316\264\276\315\320\367"
+  29      4F545F52 
+  29      45414459 
+  29      2028C9E8 
+  29      B1B8CEB4 
+  30 0068 2FCEB4B3 		.ascii	"/\316\264\263\365\312\274\273\257)\000"
+  30      F5CABCBB 
+  30      AF2900
+  31 0073 00       		.align	2
+  32              	.LC4:
+  33 0074 46525F4E 		.ascii	"FR_NO_FILE (\316\304\274\376\262\273\264\346\324\332"
+  33      4F5F4649 
+  33      4C452028 
+  33      CEC4BCFE 
+  33      B2BBB4E6 
+  34 008a 2900     		.ascii	")\000"
+  35              		.align	2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 2
+
+
+  36              	.LC5:
+  37 008c 46525F4E 		.ascii	"FR_NO_PATH (\302\267\276\266\262\273\264\346\324\332"
+  37      4F5F5041 
+  37      54482028 
+  37      C2B7BEB6 
+  37      B2BBB4E6 
+  38 00a2 2900     		.ascii	")\000"
+  39              		.align	2
+  40              	.LC6:
+  41 00a4 46525F49 		.ascii	"FR_INVALID_NAME (\316\304\274\376\303\373/\302\267\276"
+  41      4E56414C 
+  41      49445F4E 
+  41      414D4520 
+  41      28CEC4BC 
+  42 00bf B6CEDED0 		.ascii	"\266\316\336\320\247)\000"
+  42      A72900
+  43 00c6 0000     		.align	2
+  44              	.LC7:
+  45 00c8 46525F44 		.ascii	"FR_DENIED (\267\303\316\312\261\273\276\334\276\370"
+  45      454E4945 
+  45      442028B7 
+  45      C3CECAB1 
+  45      BBBEDCBE 
+  46 00dd 2FD2D1CB 		.ascii	"/\322\321\313\370\266\250)\000"
+  46      F8B6A829 
+  46      00
+  47 00e6 0000     		.align	2
+  48              	.LC8:
+  49 00e8 46525F45 		.ascii	"FR_EXIST (\316\304\274\376\322\321\264\346\324\332)"
+  49      58495354 
+  49      2028CEC4 
+  49      BCFED2D1 
+  49      B4E6D4DA 
+  50 00fd 00       		.ascii	"\000"
+  51 00fe 0000     		.align	2
+  52              	.LC9:
+  53 0100 46525F49 		.ascii	"FR_INVALID_OBJECT (\316\304\274\376\266\324\317\363"
+  53      4E56414C 
+  53      49445F4F 
+  53      424A4543 
+  53      542028CE 
+  54 011b CEDED0A7 		.ascii	"\316\336\320\247)\000"
+  54      2900
+  55 0121 000000   		.align	2
+  56              	.LC10:
+  57 0124 46525F57 		.ascii	"FR_WRITE_PROTECTED (\275\351\326\312\320\264\261\243"
+  57      52495445 
+  57      5F50524F 
+  57      54454354 
+  57      45442028 
+  58 0140 BBA42900 		.ascii	"\273\244)\000"
+  59              		.align	2
+  60              	.LC11:
+  61 0144 46525F49 		.ascii	"FR_INVALID_DRIVE (\307\375\266\257\306\367\272\305\316"
+  61      4E56414C 
+  61      49445F44 
+  61      52495645 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 3
+
+
+  61      2028C7FD 
+  62 015f DED0A72F 		.ascii	"\336\320\247/\316\264\327\242\262\341)\000"
+  62      CEB4D7A2 
+  62      B2E12900 
+  63 016b 00       		.align	2
+  64              	.LC12:
+  65 016c 46525F4E 		.ascii	"FR_NOT_ENABLED (\307\375\266\257\306\367\316\264\306"
+  65      4F545F45 
+  65      4E41424C 
+  65      45442028 
+  65      C7FDB6AF 
+  66 0185 F4D3C32F 		.ascii	"\364\323\303/IOCTL\326\270\301\356\310\261\312\247)"
+  66      494F4354 
+  66      4CD6B8C1 
+  66      EEC8B1CA 
+  66      A729
+  67 0197 00       		.ascii	"\000"
+  68              		.align	2
+  69              	.LC13:
+  70 0198 46525F4E 		.ascii	"FR_NO_FILESYSTEM (\316\336\323\320\320\247\316\304\274"
+  70      4F5F4649 
+  70      4C455359 
+  70      5354454D 
+  70      2028CEDE 
+  71 01b3 FECFB5CD 		.ascii	"\376\317\265\315\263)\000"
+  71      B32900
+  72 01ba 0000     		.align	2
+  73              	.LC14:
+  74 01bc 46525F4D 		.ascii	"FR_MKFS_ABORTED (\270\361\312\275\273\257\326\325\326"
+  74      4B46535F 
+  74      41424F52 
+  74      54454420 
+  74      28B8F1CA 
+  75 01d6 B92FB2CE 		.ascii	"\271/\262\316\312\375\264\355\316\363)\000"
+  75      CAFDB4ED 
+  75      CEF32900 
+  76 01e2 0000     		.align	2
+  77              	.LC15:
+  78 01e4 46525F54 		.ascii	"FR_TIMEOUT (\315\250\320\305\263\254\312\261)\000"
+  78      494D454F 
+  78      55542028 
+  78      CDA8D0C5 
+  78      B3ACCAB1 
+  79 01fa 0000     		.align	2
+  80              	.LC16:
+  81 01fc 46525F4C 		.ascii	"FR_LOCKED (\316\304\274\376\261\273\266\340\310\316"
+  81      4F434B45 
+  81      442028CE 
+  81      C4BCFEB1 
+  81      BBB6E0C8 
+  82 0211 CEF1CBF8 		.ascii	"\316\361\313\370\266\250)\000"
+  82      B6A82900 
+  83 0219 000000   		.align	2
+  84              	.LC17:
+  85 021c 46525F4E 		.ascii	"FR_NOT_ENOUGH_CORE (\304\332\264\346\262\273\327\343"
+  85      4F545F45 
+  85      4E4F5547 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 4
+
+
+  85      485F434F 
+  85      52452028 
+  86 0238 2900     		.ascii	")\000"
+  87 023a 0000     		.align	2
+  88              	.LC18:
+  89 023c 46525F54 		.ascii	"FR_TOO_MANY_OPEN_FILES (\264\362\277\252\316\304\274"
+  89      4F4F5F4D 
+  89      414E595F 
+  89      4F50454E 
+  89      5F46494C 
+  90 025b FECAFDB3 		.ascii	"\376\312\375\263\254\317\336)\000"
+  90      ACCFDE29 
+  90      00
+  91              		.align	2
+  92              	.LC19:
+  93 0264 46525F49 		.ascii	"FR_INVALID_PARAMETER (\262\316\312\375\264\355\316\363"
+  93      4E56414C 
+  93      49445F50 
+  93      4152414D 
+  93      45544552 
+  94 0282 2900     		.ascii	")\000"
+  95              		.align	2
+  96              	.LC20:
+  97 0284 46525F4F 		.ascii	"FR_OK (\262\331\327\367\263\311\271\246)\000"
+  97      4B2028B2 
+  97      D9D7F7B3 
+  97      C9B9A629 
+  97      00
+  98              		.section	.text.fatfs_error_str,"ax",%progbits
+  99              		.align	1
+ 100              		.syntax unified
+ 101              		.thumb
+ 102              		.thumb_func
+ 104              	fatfs_error_str:
+ 105              	.LVL0:
+ 106              	.LFB71:
+ 107              		.file 1 "Core/Src/main.c"
+   1:Core/Src/main.c **** /* USER CODE BEGIN Header */
+   2:Core/Src/main.c **** /**
+   3:Core/Src/main.c ****   ******************************************************************************
+   4:Core/Src/main.c ****   * @file           : main.c
+   5:Core/Src/main.c ****   * @brief          : Main program body
+   6:Core/Src/main.c ****   ******************************************************************************
+   7:Core/Src/main.c ****   * @attention
+   8:Core/Src/main.c ****   *
+   9:Core/Src/main.c ****   * Copyright (c) 2026 STMicroelectronics.
+  10:Core/Src/main.c ****   * All rights reserved.
+  11:Core/Src/main.c ****   *
+  12:Core/Src/main.c ****   * This software is licensed under terms that can be found in the LICENSE file
+  13:Core/Src/main.c ****   * in the root directory of this software component.
+  14:Core/Src/main.c ****   * If no LICENSE file comes with this software, it is provided AS-IS.
+  15:Core/Src/main.c ****   *
+  16:Core/Src/main.c ****   ******************************************************************************
+  17:Core/Src/main.c ****   */
+  18:Core/Src/main.c **** /* USER CODE END Header */
+  19:Core/Src/main.c **** /* Includes ------------------------------------------------------------------*/
+  20:Core/Src/main.c **** #include "main.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 5
+
+
+  21:Core/Src/main.c **** #include "fatfs.h"
+  22:Core/Src/main.c **** #include "i2c.h"
+  23:Core/Src/main.c **** #include "rtc.h"
+  24:Core/Src/main.c **** #include "spi.h"
+  25:Core/Src/main.c **** #include "usart.h"
+  26:Core/Src/main.c **** #include "gpio.h"
+  27:Core/Src/main.c **** 
+  28:Core/Src/main.c **** /* Private includes ----------------------------------------------------------*/
+  29:Core/Src/main.c **** /* USER CODE BEGIN Includes */
+  30:Core/Src/main.c **** 
+  31:Core/Src/main.c **** #include "command.h"
+  32:Core/Src/main.c **** 
+  33:Core/Src/main.c **** /* USER CODE END Includes */
+  34:Core/Src/main.c **** 
+  35:Core/Src/main.c **** /* Private typedef -----------------------------------------------------------*/
+  36:Core/Src/main.c **** /* USER CODE BEGIN PTD */
+  37:Core/Src/main.c **** 
+  38:Core/Src/main.c **** /* USER CODE END PTD */
+  39:Core/Src/main.c **** 
+  40:Core/Src/main.c **** /* Private define ------------------------------------------------------------*/
+  41:Core/Src/main.c **** /* USER CODE BEGIN PD */
+  42:Core/Src/main.c **** 
+  43:Core/Src/main.c **** /* USER CODE END PD */
+  44:Core/Src/main.c **** 
+  45:Core/Src/main.c **** /* Private macro -------------------------------------------------------------*/
+  46:Core/Src/main.c **** /* USER CODE BEGIN PM */
+  47:Core/Src/main.c **** 
+  48:Core/Src/main.c **** /* USER CODE END PM */
+  49:Core/Src/main.c **** 
+  50:Core/Src/main.c **** /* Private variables ---------------------------------------------------------*/
+  51:Core/Src/main.c **** 
+  52:Core/Src/main.c **** /* USER CODE BEGIN PV */
+  53:Core/Src/main.c **** 
+  54:Core/Src/main.c **** /* USER CODE END PV */
+  55:Core/Src/main.c **** 
+  56:Core/Src/main.c **** /* Private function prototypes -----------------------------------------------*/
+  57:Core/Src/main.c **** void SystemClock_Config(void);
+  58:Core/Src/main.c **** /* USER CODE BEGIN PFP */
+  59:Core/Src/main.c **** 
+  60:Core/Src/main.c **** /* USER CODE END PFP */
+  61:Core/Src/main.c **** 
+  62:Core/Src/main.c **** /* Private user code ---------------------------------------------------------*/
+  63:Core/Src/main.c **** /* USER CODE BEGIN 0 */
+  64:Core/Src/main.c **** #define LED_PIN    GPIO_PIN_5
+  65:Core/Src/main.c **** #define LED_PORT   GPIOB
+  66:Core/Src/main.c **** // 全局变量：记录FatFs执行状态（供调试查看）
+  67:Core/Src/main.c **** uint8_t fatfs_status = 0; // 0=未执行，1=驱动注册完成，2=格式化完成，3=挂载完成，255=失败
+  68:Core/Src/main.c **** /* USER CODE END 0 */
+  69:Core/Src/main.c **** 
+  70:Core/Src/main.c **** /**
+  71:Core/Src/main.c ****   * @brief  The application entry point.
+  72:Core/Src/main.c ****   * @retval int
+  73:Core/Src/main.c ****   */
+  74:Core/Src/main.c **** int main(void)
+  75:Core/Src/main.c **** {
+  76:Core/Src/main.c **** 
+  77:Core/Src/main.c ****   /* USER CODE BEGIN 1 */
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 6
+
+
+  78:Core/Src/main.c **** 
+  79:Core/Src/main.c ****   /* USER CODE END 1 */
+  80:Core/Src/main.c **** 
+  81:Core/Src/main.c ****   /* MCU Configuration--------------------------------------------------------*/
+  82:Core/Src/main.c **** 
+  83:Core/Src/main.c ****   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  84:Core/Src/main.c ****   HAL_Init();
+  85:Core/Src/main.c **** 
+  86:Core/Src/main.c ****   /* USER CODE BEGIN Init */
+  87:Core/Src/main.c **** 
+  88:Core/Src/main.c ****   /* USER CODE END Init */
+  89:Core/Src/main.c **** 
+  90:Core/Src/main.c ****   /* Configure the system clock */
+  91:Core/Src/main.c ****   SystemClock_Config();
+  92:Core/Src/main.c **** 
+  93:Core/Src/main.c ****   /* USER CODE BEGIN SysInit */
+  94:Core/Src/main.c **** 
+  95:Core/Src/main.c ****   /* USER CODE END SysInit */
+  96:Core/Src/main.c **** 
+  97:Core/Src/main.c ****   /* Initialize all configured peripherals */
+  98:Core/Src/main.c ****   MX_GPIO_Init();
+  99:Core/Src/main.c ****   MX_I2C1_Init();
+ 100:Core/Src/main.c ****   MX_RTC_Init();
+ 101:Core/Src/main.c ****   MX_SPI1_Init();
+ 102:Core/Src/main.c ****   MX_USART1_UART_Init();
+ 103:Core/Src/main.c ****   MX_USART2_UART_Init();
+ 104:Core/Src/main.c ****   MX_FATFS_Init();
+ 105:Core/Src/main.c ****   /* USER CODE BEGIN 2 */
+ 106:Core/Src/main.c ****   HAL_UART_Receive_IT(&huart1, &usbRxBuf, 1);
+ 107:Core/Src/main.c **** 
+ 108:Core/Src/main.c ****   //RTC_SetDateTime(2026, 3, 19, 10, 6, 30);
+ 109:Core/Src/main.c **** 	UsbPrintf("===== Data:%s Time:%s ! =====\r\n",__DATE__ , __TIME__);
+ 110:Core/Src/main.c ****   uint32_t systemTick = 0;//
+ 111:Core/Src/main.c **** 
+ 112:Core/Src/main.c ****   //W25Q64_FullTest();  //W25Q64功能测试
+ 113:Core/Src/main.c ****   //FatFs_Test();       //fatfs读写测试
+ 114:Core/Src/main.c **** 
+ 115:Core/Src/main.c ****   uint8_t hh, mm, ss;
+ 116:Core/Src/main.c ****   //uint8_t u2_buf[256];
+ 117:Core/Src/main.c **** 
+ 118:Core/Src/main.c ****   /* USER CODE END 2 */
+ 119:Core/Src/main.c ****   /* Infinite loop */
+ 120:Core/Src/main.c ****   /* USER CODE BEGIN WHILE */
+ 121:Core/Src/main.c ****   while (1)
+ 122:Core/Src/main.c ****   {
+ 123:Core/Src/main.c ****     // // 读取一整行（遇到回车/换行停止）
+ 124:Core/Src/main.c ****     //uint16_t len = UART2_ReadLine(u2_buf, sizeof(u2_buf));
+ 125:Core/Src/main.c ****     // // 如果读到数据
+ 126:Core/Src/main.c ****     // if (len > 0)
+ 127:Core/Src/main.c ****     // {
+ 128:Core/Src/main.c ****     //     // 在这里处理你从串口2发来的数据
+ 129:Core/Src/main.c ****     //     UsbPrintf("USART2 收到：%s\r\n", u2_buf);
+ 130:Core/Src/main.c ****     // }
+ 131:Core/Src/main.c **** 
+ 132:Core/Src/main.c ****     if (systemTick != HAL_GetTick()) 
+ 133:Core/Src/main.c ****     {
+ 134:Core/Src/main.c ****       CheckCommandList();
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 7
+
+
+ 135:Core/Src/main.c ****       FatFs_WriteUart2ByTimeStamp();
+ 136:Core/Src/main.c ****       if (systemTick % 5 == 0)
+ 137:Core/Src/main.c ****       {
+ 138:Core/Src/main.c ****         
+ 139:Core/Src/main.c ****         //button_ticks();
+ 140:Core/Src/main.c ****       }
+ 141:Core/Src/main.c ****       if (systemTick % 1000 == 0)
+ 142:Core/Src/main.c ****       {
+ 143:Core/Src/main.c ****         RTC_GetCurrentTime(&hh, &mm, &ss);
+ 144:Core/Src/main.c ****         //UsbPrintf("RTC时间：%02d:%02d:%02d\n", hh, mm, ss);
+ 145:Core/Src/main.c ****       }
+ 146:Core/Src/main.c ****       systemTick = HAL_GetTick();
+ 147:Core/Src/main.c ****     }
+ 148:Core/Src/main.c **** 
+ 149:Core/Src/main.c **** 
+ 150:Core/Src/main.c **** 
+ 151:Core/Src/main.c **** 
+ 152:Core/Src/main.c ****     /* USER CODE END WHILE */
+ 153:Core/Src/main.c **** 
+ 154:Core/Src/main.c ****     /* USER CODE BEGIN 3 */
+ 155:Core/Src/main.c ****   }
+ 156:Core/Src/main.c ****   /* USER CODE END 3 */
+ 157:Core/Src/main.c **** }
+ 158:Core/Src/main.c **** 
+ 159:Core/Src/main.c **** /**
+ 160:Core/Src/main.c ****   * @brief System Clock Configuration
+ 161:Core/Src/main.c ****   * @retval None
+ 162:Core/Src/main.c ****   */
+ 163:Core/Src/main.c **** void SystemClock_Config(void)
+ 164:Core/Src/main.c **** {
+ 165:Core/Src/main.c ****   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+ 166:Core/Src/main.c ****   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+ 167:Core/Src/main.c ****   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+ 168:Core/Src/main.c **** 
+ 169:Core/Src/main.c ****   /** Initializes the RCC Oscillators according to the specified parameters
+ 170:Core/Src/main.c ****   * in the RCC_OscInitTypeDef structure.
+ 171:Core/Src/main.c ****   */
+ 172:Core/Src/main.c ****   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE|RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTY
+ 173:Core/Src/main.c ****   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+ 174:Core/Src/main.c ****   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+ 175:Core/Src/main.c ****   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+ 176:Core/Src/main.c ****   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
+ 177:Core/Src/main.c ****   // ? 开启外部 32768Hz
+ 178:Core/Src/main.c ****   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+ 179:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+ 180:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+ 181:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+ 182:Core/Src/main.c ****   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+ 183:Core/Src/main.c ****   {
+ 184:Core/Src/main.c ****     Error_Handler();
+ 185:Core/Src/main.c ****   }
+ 186:Core/Src/main.c **** 
+ 187:Core/Src/main.c ****   /** Initializes the CPU, AHB and APB buses clocks
+ 188:Core/Src/main.c ****   */
+ 189:Core/Src/main.c ****   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+ 190:Core/Src/main.c ****                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+ 191:Core/Src/main.c ****   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 8
+
+
+ 192:Core/Src/main.c ****   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+ 193:Core/Src/main.c ****   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+ 194:Core/Src/main.c ****   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+ 195:Core/Src/main.c **** 
+ 196:Core/Src/main.c ****   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+ 197:Core/Src/main.c ****   {
+ 198:Core/Src/main.c ****     Error_Handler();
+ 199:Core/Src/main.c ****   }
+ 200:Core/Src/main.c ****   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC;
+ 201:Core/Src/main.c ****   PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+ 202:Core/Src/main.c ****   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+ 203:Core/Src/main.c ****   {
+ 204:Core/Src/main.c ****     Error_Handler();
+ 205:Core/Src/main.c ****   }
+ 206:Core/Src/main.c **** }
+ 207:Core/Src/main.c **** 
+ 208:Core/Src/main.c **** /* USER CODE BEGIN 4 */
+ 209:Core/Src/main.c **** 
+ 210:Core/Src/main.c **** 
+ 211:Core/Src/main.c **** void UsbPrintf(char* fmt,...)  
+ 212:Core/Src/main.c **** {  
+ 213:Core/Src/main.c **** 	va_list ap;
+ 214:Core/Src/main.c **** 	memset(g_UsbTxBuff, 0, UART_TRANSMIT_BUFF_NUMBER);
+ 215:Core/Src/main.c **** 	va_start(ap, fmt);
+ 216:Core/Src/main.c **** 	vsnprintf((char*)g_UsbTxBuff, UART_TRANSMIT_BUFF_NUMBER, fmt, ap);
+ 217:Core/Src/main.c **** 	va_end(ap);
+ 218:Core/Src/main.c **** 	HAL_UART_Transmit(&huart1, g_UsbTxBuff, strlen((char*)g_UsbTxBuff), 1000);
+ 219:Core/Src/main.c **** }
+ 220:Core/Src/main.c **** 
+ 221:Core/Src/main.c **** 
+ 222:Core/Src/main.c **** 
+ 223:Core/Src/main.c **** /************************ 官方规范版 FatFs 挂载+读写测试函数 ************************/
+ 224:Core/Src/main.c **** #define TEST_FILE_NAME  "test.txt"  // 官方规范：不硬编码盘符，由驱动分配
+ 225:Core/Src/main.c **** #define TEST_WRITE_DATA "Hello FatFs! W25Q64 Flash Test OK! "  // 测试数据
+ 226:Core/Src/main.c **** #define TEST_READ_BUF_SIZE  128U    // 读缓冲区大小（官方推荐不超过256）
+ 227:Core/Src/main.c **** 
+ 228:Core/Src/main.c **** // 官方FatFs错误码解析（与ff.c/R0.11源码完全对齐，含中文说明）
+ 229:Core/Src/main.c **** static const char* fatfs_error_str(FRESULT res)
+ 230:Core/Src/main.c **** {
+ 108              		.loc 1 230 1 view -0
+ 109              		.cfi_startproc
+ 110              		@ args = 0, pretend = 0, frame = 0
+ 111              		@ frame_needed = 0, uses_anonymous_args = 0
+ 112              		@ link register save eliminated.
+ 231:Core/Src/main.c ****     switch(res) {
+ 113              		.loc 1 231 5 view .LVU1
+ 114 0000 1328     		cmp	r0, #19
+ 115 0002 31D8     		bhi	.L2
+ 116 0004 DFE800F0 		tbb	[pc, r0]
+ 117              	.L4:
+ 118 0008 0A       		.byte	(.L23-.L4)/2
+ 119 0009 32       		.byte	(.L24-.L4)/2
+ 120 000a 0C       		.byte	(.L21-.L4)/2
+ 121 000b 0E       		.byte	(.L20-.L4)/2
+ 122 000c 10       		.byte	(.L19-.L4)/2
+ 123 000d 12       		.byte	(.L18-.L4)/2
+ 124 000e 14       		.byte	(.L17-.L4)/2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 9
+
+
+ 125 000f 16       		.byte	(.L16-.L4)/2
+ 126 0010 18       		.byte	(.L15-.L4)/2
+ 127 0011 1A       		.byte	(.L14-.L4)/2
+ 128 0012 1C       		.byte	(.L13-.L4)/2
+ 129 0013 1E       		.byte	(.L12-.L4)/2
+ 130 0014 20       		.byte	(.L11-.L4)/2
+ 131 0015 22       		.byte	(.L10-.L4)/2
+ 132 0016 24       		.byte	(.L9-.L4)/2
+ 133 0017 26       		.byte	(.L8-.L4)/2
+ 134 0018 28       		.byte	(.L7-.L4)/2
+ 135 0019 2A       		.byte	(.L6-.L4)/2
+ 136 001a 2C       		.byte	(.L5-.L4)/2
+ 137 001b 2E       		.byte	(.L3-.L4)/2
+ 138              		.p2align 1
+ 139              	.L23:
+ 140 001c 1448     		ldr	r0, .L25
+ 141              	.LVL1:
+ 142              		.loc 1 231 5 is_stmt 0 view .LVU2
+ 143 001e 7047     		bx	lr
+ 144              	.LVL2:
+ 145              	.L21:
+ 232:Core/Src/main.c ****         case FR_OK:             return "FR_OK (操作成功)";
+ 233:Core/Src/main.c ****         case FR_DISK_ERR:       return "FR_DISK_ERR (磁盘I/O错误)";
+ 234:Core/Src/main.c ****         case FR_INT_ERR:        return "FR_INT_ERR (断言失败)";
+ 146              		.loc 1 234 33 is_stmt 1 view .LVU3
+ 147              		.loc 1 234 40 is_stmt 0 view .LVU4
+ 148 0020 1448     		ldr	r0, .L25+4
+ 149              	.LVL3:
+ 150              		.loc 1 234 40 view .LVU5
+ 151 0022 7047     		bx	lr
+ 152              	.LVL4:
+ 153              	.L20:
+ 235:Core/Src/main.c ****         case FR_NOT_READY:      return "FR_NOT_READY (设备未就绪/未初始化)";
+ 154              		.loc 1 235 33 is_stmt 1 view .LVU6
+ 155              		.loc 1 235 40 is_stmt 0 view .LVU7
+ 156 0024 1448     		ldr	r0, .L25+8
+ 157              	.LVL5:
+ 158              		.loc 1 235 40 view .LVU8
+ 159 0026 7047     		bx	lr
+ 160              	.LVL6:
+ 161              	.L19:
+ 236:Core/Src/main.c ****         case FR_NO_FILE:        return "FR_NO_FILE (文件不存在)";
+ 162              		.loc 1 236 33 is_stmt 1 view .LVU9
+ 163              		.loc 1 236 40 is_stmt 0 view .LVU10
+ 164 0028 1448     		ldr	r0, .L25+12
+ 165              	.LVL7:
+ 166              		.loc 1 236 40 view .LVU11
+ 167 002a 7047     		bx	lr
+ 168              	.LVL8:
+ 169              	.L18:
+ 237:Core/Src/main.c ****         case FR_NO_PATH:        return "FR_NO_PATH (路径不存在)";
+ 170              		.loc 1 237 33 is_stmt 1 view .LVU12
+ 171              		.loc 1 237 40 is_stmt 0 view .LVU13
+ 172 002c 1448     		ldr	r0, .L25+16
+ 173              	.LVL9:
+ 174              		.loc 1 237 40 view .LVU14
+ 175 002e 7047     		bx	lr
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 10
+
+
+ 176              	.LVL10:
+ 177              	.L17:
+ 238:Core/Src/main.c ****         case FR_INVALID_NAME:   return "FR_INVALID_NAME (文件名/路径无效)";
+ 178              		.loc 1 238 33 is_stmt 1 view .LVU15
+ 179              		.loc 1 238 40 is_stmt 0 view .LVU16
+ 180 0030 1448     		ldr	r0, .L25+20
+ 181              	.LVL11:
+ 182              		.loc 1 238 40 view .LVU17
+ 183 0032 7047     		bx	lr
+ 184              	.LVL12:
+ 185              	.L16:
+ 239:Core/Src/main.c ****         case FR_DENIED:         return "FR_DENIED (访问被拒绝/已锁定)";
+ 186              		.loc 1 239 33 is_stmt 1 view .LVU18
+ 187              		.loc 1 239 40 is_stmt 0 view .LVU19
+ 188 0034 1448     		ldr	r0, .L25+24
+ 189              	.LVL13:
+ 190              		.loc 1 239 40 view .LVU20
+ 191 0036 7047     		bx	lr
+ 192              	.LVL14:
+ 193              	.L15:
+ 240:Core/Src/main.c ****         case FR_EXIST:          return "FR_EXIST (文件已存在)";
+ 194              		.loc 1 240 33 is_stmt 1 view .LVU21
+ 195              		.loc 1 240 40 is_stmt 0 view .LVU22
+ 196 0038 1448     		ldr	r0, .L25+28
+ 197              	.LVL15:
+ 198              		.loc 1 240 40 view .LVU23
+ 199 003a 7047     		bx	lr
+ 200              	.LVL16:
+ 201              	.L14:
+ 241:Core/Src/main.c ****         case FR_INVALID_OBJECT: return "FR_INVALID_OBJECT (文件对象无效)";
+ 202              		.loc 1 241 33 is_stmt 1 view .LVU24
+ 203              		.loc 1 241 40 is_stmt 0 view .LVU25
+ 204 003c 1448     		ldr	r0, .L25+32
+ 205              	.LVL17:
+ 206              		.loc 1 241 40 view .LVU26
+ 207 003e 7047     		bx	lr
+ 208              	.LVL18:
+ 209              	.L13:
+ 242:Core/Src/main.c ****         case FR_WRITE_PROTECTED: return "FR_WRITE_PROTECTED (介质写保护)";
+ 210              		.loc 1 242 34 is_stmt 1 view .LVU27
+ 211              		.loc 1 242 41 is_stmt 0 view .LVU28
+ 212 0040 1448     		ldr	r0, .L25+36
+ 213              	.LVL19:
+ 214              		.loc 1 242 41 view .LVU29
+ 215 0042 7047     		bx	lr
+ 216              	.LVL20:
+ 217              	.L12:
+ 243:Core/Src/main.c ****         case FR_INVALID_DRIVE: return "FR_INVALID_DRIVE (驱动器号无效/未注册)";
+ 218              		.loc 1 243 32 is_stmt 1 view .LVU30
+ 219              		.loc 1 243 39 is_stmt 0 view .LVU31
+ 220 0044 1448     		ldr	r0, .L25+40
+ 221              	.LVL21:
+ 222              		.loc 1 243 39 view .LVU32
+ 223 0046 7047     		bx	lr
+ 224              	.LVL22:
+ 225              	.L11:
+ 244:Core/Src/main.c ****         case FR_NOT_ENABLED:   return "FR_NOT_ENABLED (驱动器未启用/IOCTL指令缺失)";
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 11
+
+
+ 226              		.loc 1 244 32 is_stmt 1 view .LVU33
+ 227              		.loc 1 244 39 is_stmt 0 view .LVU34
+ 228 0048 1448     		ldr	r0, .L25+44
+ 229              	.LVL23:
+ 230              		.loc 1 244 39 view .LVU35
+ 231 004a 7047     		bx	lr
+ 232              	.LVL24:
+ 233              	.L10:
+ 245:Core/Src/main.c ****         case FR_NO_FILESYSTEM: return "FR_NO_FILESYSTEM (无有效文件系统)";
+ 234              		.loc 1 245 32 is_stmt 1 view .LVU36
+ 235              		.loc 1 245 39 is_stmt 0 view .LVU37
+ 236 004c 1448     		ldr	r0, .L25+48
+ 237              	.LVL25:
+ 238              		.loc 1 245 39 view .LVU38
+ 239 004e 7047     		bx	lr
+ 240              	.LVL26:
+ 241              	.L9:
+ 246:Core/Src/main.c ****         case FR_MKFS_ABORTED:  return "FR_MKFS_ABORTED (格式化终止/参数错误)";
+ 242              		.loc 1 246 32 is_stmt 1 view .LVU39
+ 243              		.loc 1 246 39 is_stmt 0 view .LVU40
+ 244 0050 1448     		ldr	r0, .L25+52
+ 245              	.LVL27:
+ 246              		.loc 1 246 39 view .LVU41
+ 247 0052 7047     		bx	lr
+ 248              	.LVL28:
+ 249              	.L8:
+ 247:Core/Src/main.c ****         case FR_TIMEOUT:       return "FR_TIMEOUT (通信超时)";
+ 250              		.loc 1 247 32 is_stmt 1 view .LVU42
+ 251              		.loc 1 247 39 is_stmt 0 view .LVU43
+ 252 0054 1448     		ldr	r0, .L25+56
+ 253              	.LVL29:
+ 254              		.loc 1 247 39 view .LVU44
+ 255 0056 7047     		bx	lr
+ 256              	.LVL30:
+ 257              	.L7:
+ 248:Core/Src/main.c ****         case FR_LOCKED:        return "FR_LOCKED (文件被多任务锁定)";
+ 258              		.loc 1 248 32 is_stmt 1 view .LVU45
+ 259              		.loc 1 248 39 is_stmt 0 view .LVU46
+ 260 0058 1448     		ldr	r0, .L25+60
+ 261              	.LVL31:
+ 262              		.loc 1 248 39 view .LVU47
+ 263 005a 7047     		bx	lr
+ 264              	.LVL32:
+ 265              	.L6:
+ 249:Core/Src/main.c ****         case FR_NOT_ENOUGH_CORE: return "FR_NOT_ENOUGH_CORE (内存不足)";
+ 266              		.loc 1 249 34 is_stmt 1 view .LVU48
+ 267              		.loc 1 249 41 is_stmt 0 view .LVU49
+ 268 005c 1448     		ldr	r0, .L25+64
+ 269              	.LVL33:
+ 270              		.loc 1 249 41 view .LVU50
+ 271 005e 7047     		bx	lr
+ 272              	.LVL34:
+ 273              	.L5:
+ 250:Core/Src/main.c ****         case FR_TOO_MANY_OPEN_FILES: return "FR_TOO_MANY_OPEN_FILES (打开文件数超限)";
+ 274              		.loc 1 250 38 is_stmt 1 view .LVU51
+ 275              		.loc 1 250 45 is_stmt 0 view .LVU52
+ 276 0060 1448     		ldr	r0, .L25+68
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 12
+
+
+ 277              	.LVL35:
+ 278              		.loc 1 250 45 view .LVU53
+ 279 0062 7047     		bx	lr
+ 280              	.LVL36:
+ 281              	.L3:
+ 251:Core/Src/main.c ****         case FR_INVALID_PARAMETER:return "FR_INVALID_PARAMETER (参数错误)";
+ 282              		.loc 1 251 35 is_stmt 1 view .LVU54
+ 283              		.loc 1 251 42 is_stmt 0 view .LVU55
+ 284 0064 1448     		ldr	r0, .L25+72
+ 285              	.LVL37:
+ 286              		.loc 1 251 42 view .LVU56
+ 287 0066 7047     		bx	lr
+ 288              	.LVL38:
+ 289              	.L2:
+ 252:Core/Src/main.c ****         default:               return "UNKNOWN_ERROR (未知错误)";
+ 290              		.loc 1 252 32 is_stmt 1 view .LVU57
+ 291              		.loc 1 252 39 is_stmt 0 view .LVU58
+ 292 0068 1448     		ldr	r0, .L25+76
+ 293              	.LVL39:
+ 294              		.loc 1 252 39 view .LVU59
+ 295 006a 7047     		bx	lr
+ 296              	.LVL40:
+ 297              	.L24:
+ 233:Core/Src/main.c ****         case FR_INT_ERR:        return "FR_INT_ERR (断言失败)";
+ 298              		.loc 1 233 40 view .LVU60
+ 299 006c 1448     		ldr	r0, .L25+80
+ 300              	.LVL41:
+ 253:Core/Src/main.c ****     }
+ 254:Core/Src/main.c **** }
+ 301              		.loc 1 254 1 view .LVU61
+ 302 006e 7047     		bx	lr
+ 303              	.L26:
+ 304              		.align	2
+ 305              	.L25:
+ 306 0070 84020000 		.word	.LC20
+ 307 0074 38000000 		.word	.LC2
+ 308 0078 50000000 		.word	.LC3
+ 309 007c 74000000 		.word	.LC4
+ 310 0080 8C000000 		.word	.LC5
+ 311 0084 A4000000 		.word	.LC6
+ 312 0088 C8000000 		.word	.LC7
+ 313 008c E8000000 		.word	.LC8
+ 314 0090 00010000 		.word	.LC9
+ 315 0094 24010000 		.word	.LC10
+ 316 0098 44010000 		.word	.LC11
+ 317 009c 6C010000 		.word	.LC12
+ 318 00a0 98010000 		.word	.LC13
+ 319 00a4 BC010000 		.word	.LC14
+ 320 00a8 E4010000 		.word	.LC15
+ 321 00ac FC010000 		.word	.LC16
+ 322 00b0 1C020000 		.word	.LC17
+ 323 00b4 3C020000 		.word	.LC18
+ 324 00b8 64020000 		.word	.LC19
+ 325 00bc 00000000 		.word	.LC0
+ 326 00c0 1C000000 		.word	.LC1
+ 327              		.cfi_endproc
+ 328              	.LFE71:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 13
+
+
+ 330              		.section	.text.UsbPrintf,"ax",%progbits
+ 331              		.align	1
+ 332              		.global	UsbPrintf
+ 333              		.syntax unified
+ 334              		.thumb
+ 335              		.thumb_func
+ 337              	UsbPrintf:
+ 338              	.LVL42:
+ 339              	.LFB70:
+ 212:Core/Src/main.c **** 	va_list ap;
+ 340              		.loc 1 212 1 is_stmt 1 view -0
+ 341              		.cfi_startproc
+ 342              		@ args = 4, pretend = 16, frame = 8
+ 343              		@ frame_needed = 0, uses_anonymous_args = 1
+ 212:Core/Src/main.c **** 	va_list ap;
+ 344              		.loc 1 212 1 is_stmt 0 view .LVU63
+ 345 0000 0FB4     		push	{r0, r1, r2, r3}
+ 346              	.LCFI0:
+ 347              		.cfi_def_cfa_offset 16
+ 348              		.cfi_offset 0, -16
+ 349              		.cfi_offset 1, -12
+ 350              		.cfi_offset 2, -8
+ 351              		.cfi_offset 3, -4
+ 352 0002 F0B5     		push	{r4, r5, r6, r7, lr}
+ 353              	.LCFI1:
+ 354              		.cfi_def_cfa_offset 36
+ 355              		.cfi_offset 4, -36
+ 356              		.cfi_offset 5, -32
+ 357              		.cfi_offset 6, -28
+ 358              		.cfi_offset 7, -24
+ 359              		.cfi_offset 14, -20
+ 360 0004 83B0     		sub	sp, sp, #12
+ 361              	.LCFI2:
+ 362              		.cfi_def_cfa_offset 48
+ 363 0006 08AD     		add	r5, sp, #32
+ 364 0008 55F8047B 		ldr	r7, [r5], #4
+ 213:Core/Src/main.c **** 	memset(g_UsbTxBuff, 0, UART_TRANSMIT_BUFF_NUMBER);
+ 365              		.loc 1 213 2 is_stmt 1 view .LVU64
+ 214:Core/Src/main.c **** 	va_start(ap, fmt);
+ 366              		.loc 1 214 2 view .LVU65
+ 367 000c 0E4C     		ldr	r4, .L29
+ 368 000e 4FF48076 		mov	r6, #256
+ 369 0012 3246     		mov	r2, r6
+ 370 0014 0021     		movs	r1, #0
+ 371 0016 2046     		mov	r0, r4
+ 372 0018 FFF7FEFF 		bl	memset
+ 373              	.LVL43:
+ 215:Core/Src/main.c **** 	vsnprintf((char*)g_UsbTxBuff, UART_TRANSMIT_BUFF_NUMBER, fmt, ap);
+ 374              		.loc 1 215 2 view .LVU66
+ 375 001c 0195     		str	r5, [sp, #4]
+ 216:Core/Src/main.c **** 	va_end(ap);
+ 376              		.loc 1 216 2 view .LVU67
+ 377 001e 2B46     		mov	r3, r5
+ 378 0020 3A46     		mov	r2, r7
+ 379 0022 3146     		mov	r1, r6
+ 380 0024 2046     		mov	r0, r4
+ 381 0026 FFF7FEFF 		bl	vsnprintf
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 14
+
+
+ 382              	.LVL44:
+ 217:Core/Src/main.c **** 	HAL_UART_Transmit(&huart1, g_UsbTxBuff, strlen((char*)g_UsbTxBuff), 1000);
+ 383              		.loc 1 217 2 view .LVU68
+ 218:Core/Src/main.c **** }
+ 384              		.loc 1 218 2 view .LVU69
+ 218:Core/Src/main.c **** }
+ 385              		.loc 1 218 42 is_stmt 0 view .LVU70
+ 386 002a 2046     		mov	r0, r4
+ 387 002c FFF7FEFF 		bl	strlen
+ 388              	.LVL45:
+ 218:Core/Src/main.c **** }
+ 389              		.loc 1 218 2 view .LVU71
+ 390 0030 4FF47A73 		mov	r3, #1000
+ 391 0034 82B2     		uxth	r2, r0
+ 392 0036 2146     		mov	r1, r4
+ 393 0038 0448     		ldr	r0, .L29+4
+ 394 003a FFF7FEFF 		bl	HAL_UART_Transmit
+ 395              	.LVL46:
+ 219:Core/Src/main.c **** 
+ 396              		.loc 1 219 1 view .LVU72
+ 397 003e 03B0     		add	sp, sp, #12
+ 398              	.LCFI3:
+ 399              		.cfi_def_cfa_offset 36
+ 400              		@ sp needed
+ 401 0040 BDE8F040 		pop	{r4, r5, r6, r7, lr}
+ 402              	.LCFI4:
+ 403              		.cfi_restore 14
+ 404              		.cfi_restore 7
+ 405              		.cfi_restore 6
+ 406              		.cfi_restore 5
+ 407              		.cfi_restore 4
+ 408              		.cfi_def_cfa_offset 16
+ 409 0044 04B0     		add	sp, sp, #16
+ 410              	.LCFI5:
+ 411              		.cfi_restore 3
+ 412              		.cfi_restore 2
+ 413              		.cfi_restore 1
+ 414              		.cfi_restore 0
+ 415              		.cfi_def_cfa_offset 0
+ 416 0046 7047     		bx	lr
+ 417              	.L30:
+ 418              		.align	2
+ 419              	.L29:
+ 420 0048 00000000 		.word	g_UsbTxBuff
+ 421 004c 00000000 		.word	huart1
+ 422              		.cfi_endproc
+ 423              	.LFE70:
+ 425              		.section	.rodata.FatFs_Test.str1.4,"aMS",%progbits,1
+ 426              		.align	2
+ 427              	.LC21:
+ 428 0000 0D0A3D3D 		.ascii	"\015\012===== FatFs Mount & Read/Write Test Start ("
+ 428      3D3D3D20 
+ 428      46617446 
+ 428      73204D6F 
+ 428      756E7420 
+ 429 002d 5354204F 		.ascii	"ST Official Spec) =====\015\012\000"
+ 429      66666963 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 15
+
+
+ 429      69616C20 
+ 429      53706563 
+ 429      29203D3D 
+ 430 0047 00       		.align	2
+ 431              	.LC22:
+ 432 0048 46617446 		.ascii	"FatFs Version: R0.11 | Flash: W25Q64 (8MB) | FS: FA"
+ 432      73205665 
+ 432      7273696F 
+ 432      6E3A2052 
+ 432      302E3131 
+ 433 007b 5431360D 		.ascii	"T16\015\012\000"
+ 433      0A00
+ 434 0081 000000   		.align	2
+ 435              	.LC23:
+ 436 0084 0D0A5B53 		.ascii	"\015\012[Step 0] Link W25Q64 Driver to FatFs ... \015"
+ 436      74657020 
+ 436      305D204C 
+ 436      696E6B20 
+ 436      57323551 
+ 437 00b0 0A00     		.ascii	"\012\000"
+ 438 00b2 0000     		.align	2
+ 439              	.LC24:
+ 440 00b4 4552524F 		.ascii	"ERROR: Driver Link FAILED! Code: %d\015\012\000"
+ 440      523A2044 
+ 440      72697665 
+ 440      72204C69 
+ 440      6E6B2046 
+ 441 00da 0000     		.align	2
+ 442              	.LC25:
+ 443 00dc 53554343 		.ascii	"SUCCESS: Driver Link OK! Logical Drive: %s\015\012\000"
+ 443      4553533A 
+ 443      20447269 
+ 443      76657220 
+ 443      4C696E6B 
+ 444 0109 000000   		.align	2
+ 445              	.LC26:
+ 446 010c 0D0A5B53 		.ascii	"\015\012[Step 1] Mount FatFs File System ... \015\012"
+ 446      74657020 
+ 446      315D204D 
+ 446      6F756E74 
+ 446      20466174 
+ 447 0135 00       		.ascii	"\000"
+ 448 0136 0000     		.align	2
+ 449              	.LC27:
+ 450 0138 4D6F756E 		.ascii	"Mount Result: %d -> %s\015\012\000"
+ 450      74205265 
+ 450      73756C74 
+ 450      3A202564 
+ 450      202D3E20 
+ 451 0151 000000   		.align	2
+ 452              	.LC28:
+ 453 0154 54697073 		.ascii	"Tips: No valid FAT16, start format flash ... \015\012"
+ 453      3A204E6F 
+ 453      2076616C 
+ 453      69642046 
+ 453      41543136 
+ 454 0183 00       		.ascii	"\000"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 16
+
+
+ 455              		.align	2
+ 456              	.LC29:
+ 457 0184 0D0A5B53 		.ascii	"\015\012[Step 2] Format Flash to FAT16 (ST Official"
+ 457      74657020 
+ 457      325D2046 
+ 457      6F726D61 
+ 457      7420466C 
+ 458 01b1 29202E2E 		.ascii	") ... \015\012\000"
+ 458      2E200D0A 
+ 458      00
+ 459 01ba 0000     		.align	2
+ 460              	.LC30:
+ 461 01bc 466F726D 		.ascii	"Format Result: %d -> %s\015\012\000"
+ 461      61742052 
+ 461      6573756C 
+ 461      743A2025 
+ 461      64202D3E 
+ 462 01d6 0000     		.align	2
+ 463              	.LC31:
+ 464 01d8 2D2D2D2D 		.ascii	"-----\264\355\316\363\302\353 %d----\015\012\000"
+ 464      2DB4EDCE 
+ 464      F3C2EB20 
+ 464      25642D2D 
+ 464      2D2D0D0A 
+ 465 01ed 000000   		.align	2
+ 466              	.LC32:
+ 467 01f0 4552524F 		.ascii	"ERROR: Format FAILED! Check: user_diskio.c/CTRL_TRI"
+ 467      523A2046 
+ 467      6F726D61 
+ 467      74204641 
+ 467      494C4544 
+ 468 0223 4D202F20 		.ascii	"M / ffconf.h/IOCTL\015\012\000"
+ 468      6666636F 
+ 468      6E662E68 
+ 468      2F494F43 
+ 468      544C0D0A 
+ 469              		.align	2
+ 470              	.LC33:
+ 471 0238 53554343 		.ascii	"SUCCESS: Format Flash to FAT16 OK!\015\012\000"
+ 471      4553533A 
+ 471      20466F72 
+ 471      6D617420 
+ 471      466C6173 
+ 472 025d 000000   		.align	2
+ 473              	.LC34:
+ 474 0260 0D0A5B53 		.ascii	"\015\012[Step 3] Remount FatFs After Format ... \015"
+ 474      74657020 
+ 474      335D2052 
+ 474      656D6F75 
+ 474      6E742046 
+ 475 028b 0A00     		.ascii	"\012\000"
+ 476 028d 000000   		.align	2
+ 477              	.LC35:
+ 478 0290 52656D6F 		.ascii	"Remount Result: %d -> %s\015\012\000"
+ 478      756E7420 
+ 478      52657375 
+ 478      6C743A20 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 17
+
+
+ 478      2564202D 
+ 479 02ab 00       		.align	2
+ 480              	.LC36:
+ 481 02ac 4552524F 		.ascii	"ERROR: Remount FAILED! FatFs Test Abort!\015\012\000"
+ 481      523A2052 
+ 481      656D6F75 
+ 481      6E742046 
+ 481      41494C45 
+ 482 02d7 00       		.align	2
+ 483              	.LC37:
+ 484 02d8 53554343 		.ascii	"SUCCESS: FatFs Mount OK! Drive: %s\015\012\000"
+ 484      4553533A 
+ 484      20466174 
+ 484      4673204D 
+ 484      6F756E74 
+ 485 02fd 000000   		.align	2
+ 486              	.LC38:
+ 487 0300 74657374 		.ascii	"test.txt\000"
+ 487      2E747874 
+ 487      00
+ 488 0309 000000   		.align	2
+ 489              	.LC39:
+ 490 030c 0D0A5B53 		.ascii	"\015\012[Step 4] Create & Write File: %s%s\015\012\000"
+ 490      74657020 
+ 490      345D2043 
+ 490      72656174 
+ 490      65202620 
+ 491 0333 00       		.align	2
+ 492              	.LC40:
+ 493 0334 4552524F 		.ascii	"ERROR: Create File FAILED! %d -> %s\015\012\000"
+ 493      523A2043 
+ 493      72656174 
+ 493      65204669 
+ 493      6C652046 
+ 494 035a 0000     		.align	2
+ 495              	.LC41:
+ 496 035c 48656C6C 		.ascii	"Hello FatFs! W25Q64 Flash Test OK! \000"
+ 496      6F204661 
+ 496      74467321 
+ 496      20573235 
+ 496      51363420 
+ 497              		.align	2
+ 498              	.LC42:
+ 499 0380 53554343 		.ascii	"SUCCESS: Write Data OK! Length: %d Byte\015\012\000"
+ 499      4553533A 
+ 499      20577269 
+ 499      74652044 
+ 499      61746120 
+ 500 03aa 0000     		.align	2
+ 501              	.LC43:
+ 502 03ac 57726974 		.ascii	"Write Content: %s\015\012\000"
+ 502      6520436F 
+ 502      6E74656E 
+ 502      743A2025 
+ 502      730D0A00 
+ 503              		.align	2
+ 504              	.LC44:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 18
+
+
+ 505 03c0 4552524F 		.ascii	"ERROR: Write Data FAILED! %d -> %s (Actual: %d Byte"
+ 505      523A2057 
+ 505      72697465 
+ 505      20446174 
+ 505      61204641 
+ 506 03f3 290D0A00 		.ascii	")\015\012\000"
+ 507 03f7 00       		.align	2
+ 508              	.LC45:
+ 509 03f8 0D0A5B53 		.ascii	"\015\012[Step 5] Open & Read & Check File: %s%s\015"
+ 509      74657020 
+ 509      355D204F 
+ 509      70656E20 
+ 509      26205265 
+ 510 0422 0A00     		.ascii	"\012\000"
+ 511              		.align	2
+ 512              	.LC46:
+ 513 0424 4552524F 		.ascii	"ERROR: Open File FAILED! %d -> %s\015\012\000"
+ 513      523A204F 
+ 513      70656E20 
+ 513      46696C65 
+ 513      20464149 
+ 514              		.align	2
+ 515              	.LC47:
+ 516 0448 53554343 		.ascii	"SUCCESS: Read Data OK! Length: %d Byte\015\012\000"
+ 516      4553533A 
+ 516      20526561 
+ 516      64204461 
+ 516      7461204F 
+ 517 0471 000000   		.align	2
+ 518              	.LC48:
+ 519 0474 52656164 		.ascii	"Read Content: %s\015\012\000"
+ 519      20436F6E 
+ 519      74656E74 
+ 519      3A202573 
+ 519      0D0A00
+ 520 0487 00       		.align	2
+ 521              	.LC49:
+ 522 0488 53554343 		.ascii	"SUCCESS: Data Check PASS! Read = Write\015\012\000"
+ 522      4553533A 
+ 522      20446174 
+ 522      61204368 
+ 522      65636B20 
+ 523 04b1 000000   		.align	2
+ 524              	.LC50:
+ 525 04b4 4552524F 		.ascii	"ERROR: Data Check FAIL! Read != Write\015\012\000"
+ 525      523A2044 
+ 525      61746120 
+ 525      43686563 
+ 525      6B204641 
+ 526              		.align	2
+ 527              	.LC51:
+ 528 04dc 4552524F 		.ascii	"ERROR: Read Data FAILED! %d -> %s (Actual: %d Byte)"
+ 528      523A2052 
+ 528      65616420 
+ 528      44617461 
+ 528      20464149 
+ 529 050f 0D0A00   		.ascii	"\015\012\000"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 19
+
+
+ 530 0512 0000     		.align	2
+ 531              	.LC52:
+ 532 0514 0D0A3D3D 		.ascii	"\015\012===== FatFs Test End | Status: %d =====\015"
+ 532      3D3D3D20 
+ 532      46617446 
+ 532      73205465 
+ 532      73742045 
+ 533 053e 0A00     		.ascii	"\012\000"
+ 534              		.align	2
+ 535              	.LC53:
+ 536 0540 53746174 		.ascii	"Status Note: 0=\316\264\326\264\320\320,1=\307\375\266"
+ 536      7573204E 
+ 536      6F74653A 
+ 536      20303DCE 
+ 536      B4D6B4D0 
+ 537 055b AFD7A2B2 		.ascii	"\257\327\242\262\341OK,2=\270\361\312\275\273\257OK"
+ 537      E14F4B2C 
+ 537      323DB8F1 
+ 537      CABDBBAF 
+ 537      4F4B
+ 538 056d 2C333DB9 		.ascii	",3=\271\322\324\330+\266\301\320\264OK,255=\312\247"
+ 538      D2D4D82B 
+ 538      B6C1D0B4 
+ 538      4F4B2C32 
+ 538      35353DCA 
+ 539 0582 B0DC0D0A 		.ascii	"\260\334\015\012\000"
+ 539      00
+ 540              		.section	.text.FatFs_Test,"ax",%progbits
+ 541              		.align	1
+ 542              		.global	FatFs_Test
+ 543              		.syntax unified
+ 544              		.thumb
+ 545              		.thumb_func
+ 547              	FatFs_Test:
+ 548              	.LFB72:
+ 255:Core/Src/main.c **** 
+ 256:Core/Src/main.c **** // 完全遵循ST官方ff_gen_drv.c + FatFs R0.11规范的测试函数
+ 257:Core/Src/main.c **** void FatFs_Test(void)
+ 258:Core/Src/main.c **** {
+ 549              		.loc 1 258 1 is_stmt 1 view -0
+ 550              		.cfi_startproc
+ 551              		@ args = 0, pretend = 0, frame = 8424
+ 552              		@ frame_needed = 0, uses_anonymous_args = 0
+ 553 0000 30B5     		push	{r4, r5, lr}
+ 554              	.LCFI6:
+ 555              		.cfi_def_cfa_offset 12
+ 556              		.cfi_offset 4, -12
+ 557              		.cfi_offset 5, -8
+ 558              		.cfi_offset 14, -4
+ 559 0002 ADF5035D 		sub	sp, sp, #8384
+ 560              	.LCFI7:
+ 561              		.cfi_def_cfa_offset 8396
+ 562 0006 8BB0     		sub	sp, sp, #44
+ 563              	.LCFI8:
+ 564              		.cfi_def_cfa_offset 8440
+ 259:Core/Src/main.c ****     FRESULT f_res;               // FatFs原生结果类型（官方规范）
+ 565              		.loc 1 259 5 view .LVU74
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 20
+
+
+ 260:Core/Src/main.c ****     FATFS fs;                    // FatFs文件系统对象（全局/静态，避免栈溢出）
+ 566              		.loc 1 260 5 view .LVU75
+ 261:Core/Src/main.c ****     FIL file;                    // FatFs文件对象（官方规范）
+ 567              		.loc 1 261 5 view .LVU76
+ 262:Core/Src/main.c ****     UINT f_wr_len = 0;           // FatFs标准无符号整型（适配ff.c）
+ 568              		.loc 1 262 5 view .LVU77
+ 569              		.loc 1 262 10 is_stmt 0 view .LVU78
+ 570 0008 0024     		movs	r4, #0
+ 571 000a 2294     		str	r4, [sp, #136]
+ 263:Core/Src/main.c ****     UINT f_rd_len = 0;           // FatFs标准无符号整型（适配ff.c）
+ 572              		.loc 1 263 5 is_stmt 1 view .LVU79
+ 573              		.loc 1 263 10 is_stmt 0 view .LVU80
+ 574 000c 2194     		str	r4, [sp, #132]
+ 264:Core/Src/main.c ****     uint8_t f_read_buf[TEST_READ_BUF_SIZE] = {0};  // 读缓冲区
+ 575              		.loc 1 264 5 is_stmt 1 view .LVU81
+ 576              		.loc 1 264 13 is_stmt 0 view .LVU82
+ 577 000e 0194     		str	r4, [sp, #4]
+ 578 0010 7C22     		movs	r2, #124
+ 579 0012 2146     		mov	r1, r4
+ 580 0014 02A8     		add	r0, sp, #8
+ 581 0016 FFF7FEFF 		bl	memset
+ 582              	.LVL47:
+ 265:Core/Src/main.c ****     char fatfs_path[4] = {0};    // 官方规范：路径缓冲区（4字节足够存储x:/）
+ 583              		.loc 1 265 5 is_stmt 1 view .LVU83
+ 584              		.loc 1 265 10 is_stmt 0 view .LVU84
+ 585 001a 0094     		str	r4, [sp, #0]
+ 266:Core/Src/main.c ****     fatfs_status = 0;            // 重置全局状态
+ 586              		.loc 1 266 5 is_stmt 1 view .LVU85
+ 587              		.loc 1 266 18 is_stmt 0 view .LVU86
+ 588 001c 8E4B     		ldr	r3, .L51
+ 589 001e 1C70     		strb	r4, [r3]
+ 267:Core/Src/main.c **** 
+ 268:Core/Src/main.c ****     UsbPrintf("\r\n===== FatFs Mount & Read/Write Test Start (ST Official Spec) =====\r\n");
+ 590              		.loc 1 268 5 is_stmt 1 view .LVU87
+ 591 0020 8E48     		ldr	r0, .L51+4
+ 592 0022 FFF7FEFF 		bl	UsbPrintf
+ 593              	.LVL48:
+ 269:Core/Src/main.c ****     UsbPrintf("FatFs Version: R0.11 | Flash: W25Q64 (8MB) | FS: FAT16\r\n");
+ 594              		.loc 1 269 5 view .LVU88
+ 595 0026 8E48     		ldr	r0, .L51+8
+ 596 0028 FFF7FEFF 		bl	UsbPrintf
+ 597              	.LVL49:
+ 270:Core/Src/main.c **** 
+ 271:Core/Src/main.c ****     /************************ 步骤0：官方驱动注册（ff_gen_drv.c规范） ************************/
+ 272:Core/Src/main.c ****     UsbPrintf("\r\n[Step 0] Link W25Q64 Driver to FatFs ... \r\n");
+ 598              		.loc 1 272 5 view .LVU89
+ 599 002c 8D48     		ldr	r0, .L51+12
+ 600 002e FFF7FEFF 		bl	UsbPrintf
+ 601              	.LVL50:
+ 273:Core/Src/main.c ****     uint8_t link_res = FATFS_LinkDriver(&USER_Driver, fatfs_path);
+ 602              		.loc 1 273 5 view .LVU90
+ 603              		.loc 1 273 24 is_stmt 0 view .LVU91
+ 604 0032 6946     		mov	r1, sp
+ 605 0034 8C48     		ldr	r0, .L51+16
+ 606 0036 FFF7FEFF 		bl	FATFS_LinkDriver
+ 607              	.LVL51:
+ 274:Core/Src/main.c ****     if(link_res != 0)
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 21
+
+
+ 608              		.loc 1 274 5 is_stmt 1 view .LVU92
+ 609              		.loc 1 274 7 is_stmt 0 view .LVU93
+ 610 003a 0028     		cmp	r0, #0
+ 611 003c 7ED1     		bne	.L45
+ 275:Core/Src/main.c ****     {
+ 276:Core/Src/main.c ****         UsbPrintf("ERROR: Driver Link FAILED! Code: %d\r\n", link_res);
+ 277:Core/Src/main.c ****         fatfs_status = 255;
+ 278:Core/Src/main.c ****         goto test_exit;  // 统一退出，确保资源释放
+ 279:Core/Src/main.c ****     }
+ 280:Core/Src/main.c ****     UsbPrintf("SUCCESS: Driver Link OK! Logical Drive: %s\r\n", fatfs_path);
+ 612              		.loc 1 280 5 is_stmt 1 view .LVU94
+ 613 003e 6946     		mov	r1, sp
+ 614 0040 8A48     		ldr	r0, .L51+20
+ 615              	.LVL52:
+ 616              		.loc 1 280 5 is_stmt 0 view .LVU95
+ 617 0042 FFF7FEFF 		bl	UsbPrintf
+ 618              	.LVL53:
+ 281:Core/Src/main.c ****     fatfs_status = 1;
+ 619              		.loc 1 281 5 is_stmt 1 view .LVU96
+ 620              		.loc 1 281 18 is_stmt 0 view .LVU97
+ 621 0046 0124     		movs	r4, #1
+ 622 0048 834B     		ldr	r3, .L51
+ 623 004a 1C70     		strb	r4, [r3]
+ 282:Core/Src/main.c **** 
+ 283:Core/Src/main.c ****     /************************ 步骤1：官方挂载文件系统（f_mount规范） ************************/
+ 284:Core/Src/main.c ****     UsbPrintf("\r\n[Step 1] Mount FatFs File System ... \r\n");
+ 624              		.loc 1 284 5 is_stmt 1 view .LVU98
+ 625 004c 8848     		ldr	r0, .L51+24
+ 626 004e FFF7FEFF 		bl	UsbPrintf
+ 627              	.LVL54:
+ 285:Core/Src/main.c ****     // 官方参数：&fs=文件系统对象，fatfs_path=驱动路径，1=立即挂载（不延迟）
+ 286:Core/Src/main.c ****     f_res = f_mount(&fs, fatfs_path, 1);
+ 628              		.loc 1 286 5 view .LVU99
+ 629              		.loc 1 286 13 is_stmt 0 view .LVU100
+ 630 0052 2246     		mov	r2, r4
+ 631 0054 6946     		mov	r1, sp
+ 632 0056 0DF58550 		add	r0, sp, #4256
+ 633 005a 1830     		adds	r0, r0, #24
+ 634 005c FFF7FEFF 		bl	f_mount
+ 635              	.LVL55:
+ 636 0060 0446     		mov	r4, r0
+ 637              	.LVL56:
+ 287:Core/Src/main.c ****     UsbPrintf("Mount Result: %d -> %s\r\n", f_res, fatfs_error_str(f_res));
+ 638              		.loc 1 287 5 is_stmt 1 view .LVU101
+ 639 0062 FFF7FEFF 		bl	fatfs_error_str
+ 640              	.LVL57:
+ 641 0066 0246     		mov	r2, r0
+ 642 0068 2146     		mov	r1, r4
+ 643 006a 8248     		ldr	r0, .L51+28
+ 644 006c FFF7FEFF 		bl	UsbPrintf
+ 645              	.LVL58:
+ 288:Core/Src/main.c **** 
+ 289:Core/Src/main.c ****     // 仅当【无文件系统/驱动器无效】时执行格式化，排除硬件错误
+ 290:Core/Src/main.c ****     if (f_res == FR_NO_FILESYSTEM || f_res == FR_INVALID_DRIVE || f_res == FR_NOT_READY)
+ 646              		.loc 1 290 5 view .LVU102
+ 647              		.loc 1 290 8 is_stmt 0 view .LVU103
+ 648 0070 0D2C     		cmp	r4, #13
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 22
+
+
+ 649 0072 7ED0     		beq	.L34
+ 650              		.loc 1 290 35 discriminator 1 view .LVU104
+ 651 0074 0B2C     		cmp	r4, #11
+ 652 0076 7CD0     		beq	.L34
+ 653              		.loc 1 290 64 discriminator 2 view .LVU105
+ 654 0078 032C     		cmp	r4, #3
+ 655 007a 7AD0     		beq	.L34
+ 656              	.L35:
+ 291:Core/Src/main.c ****     {
+ 292:Core/Src/main.c ****         UsbPrintf("Tips: No valid FAT16, start format flash ... \r\n");
+ 293:Core/Src/main.c ****         
+ 294:Core/Src/main.c ****         /************************ 步骤2：官方格式化（f_mkfs R0.11规范） ************************/
+ 295:Core/Src/main.c ****         UsbPrintf("\r\n[Step 2] Format Flash to FAT16 (ST Official) ... \r\n");
+ 296:Core/Src/main.c ****         // 官方参数：路径=fatfs_path，类型=FS_FAT16，簇大小=0（自动适配8MB）
+ 297:Core/Src/main.c ****         f_res = f_mkfs(fatfs_path, FS_FAT12, 4096);
+ 298:Core/Src/main.c ****         UsbPrintf("Format Result: %d -> %s\r\n", f_res, fatfs_error_str(f_res));
+ 299:Core/Src/main.c ****         
+ 300:Core/Src/main.c ****         if(f_res != FR_OK)
+ 301:Core/Src/main.c ****         {
+ 302:Core/Src/main.c ****             UsbPrintf("-----错误码 %d----\r\n", fatfs_status);
+ 303:Core/Src/main.c ****             UsbPrintf("ERROR: Format FAILED! Check: user_diskio.c/CTRL_TRIM / ffconf.h/IOCTL\r\n");
+ 304:Core/Src/main.c ****             //fatfs_status = 255;
+ 305:Core/Src/main.c ****             goto test_exit;
+ 306:Core/Src/main.c ****         }
+ 307:Core/Src/main.c ****         UsbPrintf("SUCCESS: Format Flash to FAT16 OK!\r\n");
+ 308:Core/Src/main.c ****         fatfs_status = 2;
+ 309:Core/Src/main.c **** 
+ 310:Core/Src/main.c ****         /************************ 步骤3：格式化后重新挂载（官方规范） ************************/
+ 311:Core/Src/main.c ****         UsbPrintf("\r\n[Step 3] Remount FatFs After Format ... \r\n");
+ 312:Core/Src/main.c ****         f_mount(NULL, fatfs_path, 1); // 先卸载，再重新挂载（官方推荐）
+ 313:Core/Src/main.c ****         f_res = f_mount(&fs, fatfs_path, 1);
+ 314:Core/Src/main.c ****         UsbPrintf("Remount Result: %d -> %s\r\n", f_res, fatfs_error_str(f_res));
+ 315:Core/Src/main.c ****         
+ 316:Core/Src/main.c ****         if(f_res != FR_OK)
+ 317:Core/Src/main.c ****         {
+ 318:Core/Src/main.c ****             UsbPrintf("ERROR: Remount FAILED! FatFs Test Abort!\r\n");
+ 319:Core/Src/main.c ****             fatfs_status = 255;
+ 320:Core/Src/main.c ****             goto test_exit;
+ 321:Core/Src/main.c ****         }
+ 322:Core/Src/main.c ****     }
+ 323:Core/Src/main.c ****     UsbPrintf("SUCCESS: FatFs Mount OK! Drive: %s\r\n", fatfs_path);
+ 657              		.loc 1 323 5 is_stmt 1 view .LVU106
+ 658 007c 6946     		mov	r1, sp
+ 659 007e 7E48     		ldr	r0, .L51+32
+ 660 0080 FFF7FEFF 		bl	UsbPrintf
+ 661              	.LVL59:
+ 324:Core/Src/main.c ****     fatfs_status = 3;
+ 662              		.loc 1 324 5 view .LVU107
+ 663              		.loc 1 324 18 is_stmt 0 view .LVU108
+ 664 0084 744B     		ldr	r3, .L51
+ 665 0086 0322     		movs	r2, #3
+ 666 0088 1A70     		strb	r2, [r3]
+ 325:Core/Src/main.c **** 
+ 326:Core/Src/main.c ****     /************************ 步骤4：创建+写入文件（f_open/f_write官方规范） **********************
+ 327:Core/Src/main.c ****     UsbPrintf("\r\n[Step 4] Create & Write File: %s%s\r\n", fatfs_path, TEST_FILE_NAME);
+ 667              		.loc 1 327 5 is_stmt 1 view .LVU109
+ 668 008a 7C4C     		ldr	r4, .L51+36
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 23
+
+
+ 669              	.LVL60:
+ 670              		.loc 1 327 5 is_stmt 0 view .LVU110
+ 671 008c 2246     		mov	r2, r4
+ 672 008e 6946     		mov	r1, sp
+ 673 0090 7B48     		ldr	r0, .L51+40
+ 674 0092 FFF7FEFF 		bl	UsbPrintf
+ 675              	.LVL61:
+ 328:Core/Src/main.c ****     // 官方模式：FA_CREATE_ALWAYS(覆盖创建)+FA_WRITE(写权限)，适配FAT16
+ 329:Core/Src/main.c ****     f_res = f_open(&file, TEST_FILE_NAME, FA_CREATE_ALWAYS | FA_WRITE);
+ 676              		.loc 1 329 5 is_stmt 1 view .LVU111
+ 677              		.loc 1 329 13 is_stmt 0 view .LVU112
+ 678 0096 0A22     		movs	r2, #10
+ 679 0098 2146     		mov	r1, r4
+ 680 009a 23A8     		add	r0, sp, #140
+ 681 009c FFF7FEFF 		bl	f_open
+ 682              	.LVL62:
+ 330:Core/Src/main.c ****     if (f_res != FR_OK)
+ 683              		.loc 1 330 5 is_stmt 1 view .LVU113
+ 684              		.loc 1 330 8 is_stmt 0 view .LVU114
+ 685 00a0 0446     		mov	r4, r0
+ 686 00a2 0028     		cmp	r0, #0
+ 687 00a4 40F0AA80 		bne	.L46
+ 331:Core/Src/main.c ****     {
+ 332:Core/Src/main.c ****         UsbPrintf("ERROR: Create File FAILED! %d -> %s\r\n", f_res, fatfs_error_str(f_res));
+ 333:Core/Src/main.c ****         goto test_exit;
+ 334:Core/Src/main.c ****     }
+ 335:Core/Src/main.c **** 
+ 336:Core/Src/main.c ****     // 官方f_write：必须传【实际写入长度指针】，否则会触发断言失败
+ 337:Core/Src/main.c ****     f_res = f_write(&file, TEST_WRITE_DATA, strlen(TEST_WRITE_DATA), &f_wr_len);
+ 688              		.loc 1 337 5 is_stmt 1 view .LVU115
+ 689              		.loc 1 337 13 is_stmt 0 view .LVU116
+ 690 00a8 22AB     		add	r3, sp, #136
+ 691 00aa 2322     		movs	r2, #35
+ 692 00ac 7549     		ldr	r1, .L51+44
+ 693 00ae 23A8     		add	r0, sp, #140
+ 694              	.LVL63:
+ 695              		.loc 1 337 13 view .LVU117
+ 696 00b0 FFF7FEFF 		bl	f_write
+ 697              	.LVL64:
+ 338:Core/Src/main.c ****     if (f_res == FR_OK && f_wr_len == strlen(TEST_WRITE_DATA))
+ 698              		.loc 1 338 5 is_stmt 1 view .LVU118
+ 699              		.loc 1 338 8 is_stmt 0 view .LVU119
+ 700 00b4 0446     		mov	r4, r0
+ 701 00b6 18B9     		cbnz	r0, .L38
+ 702              		.loc 1 338 36 discriminator 1 view .LVU120
+ 703 00b8 2299     		ldr	r1, [sp, #136]
+ 704              		.loc 1 338 24 discriminator 1 view .LVU121
+ 705 00ba 2329     		cmp	r1, #35
+ 706 00bc 00F0A680 		beq	.L47
+ 707              	.L38:
+ 339:Core/Src/main.c ****     {
+ 340:Core/Src/main.c ****         UsbPrintf("SUCCESS: Write Data OK! Length: %d Byte\r\n", f_wr_len);
+ 341:Core/Src/main.c ****         UsbPrintf("Write Content: %s\r\n", TEST_WRITE_DATA);
+ 342:Core/Src/main.c ****     }
+ 343:Core/Src/main.c ****     else
+ 344:Core/Src/main.c ****     {
+ 345:Core/Src/main.c ****         UsbPrintf("ERROR: Write Data FAILED! %d -> %s (Actual: %d Byte)\r\n", 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 24
+
+
+ 708              		.loc 1 345 9 is_stmt 1 view .LVU122
+ 709 00c0 2046     		mov	r0, r4
+ 710              	.LVL65:
+ 711              		.loc 1 345 9 is_stmt 0 view .LVU123
+ 712 00c2 FFF7FEFF 		bl	fatfs_error_str
+ 713              	.LVL66:
+ 714 00c6 0246     		mov	r2, r0
+ 715 00c8 229B     		ldr	r3, [sp, #136]
+ 716 00ca 2146     		mov	r1, r4
+ 717 00cc 6E48     		ldr	r0, .L51+48
+ 718 00ce FFF7FEFF 		bl	UsbPrintf
+ 719              	.LVL67:
+ 720              	.L39:
+ 346:Core/Src/main.c ****                   f_res, fatfs_error_str(f_res), f_wr_len);
+ 347:Core/Src/main.c ****     }
+ 348:Core/Src/main.c ****     f_close(&file); // 官方强制：写操作后必须close，确保数据刷入Flash
+ 721              		.loc 1 348 5 is_stmt 1 view .LVU124
+ 722 00d2 23A8     		add	r0, sp, #140
+ 723 00d4 FFF7FEFF 		bl	f_close
+ 724              	.LVL68:
+ 349:Core/Src/main.c ****     memset(f_read_buf, 0, TEST_READ_BUF_SIZE);
+ 725              		.loc 1 349 5 view .LVU125
+ 726 00d8 8022     		movs	r2, #128
+ 727 00da 0021     		movs	r1, #0
+ 728 00dc 01A8     		add	r0, sp, #4
+ 729 00de FFF7FEFF 		bl	memset
+ 730              	.LVL69:
+ 350:Core/Src/main.c **** 
+ 351:Core/Src/main.c ****     /************************ 步骤5：打开+读取+校验文件（官方规范） ************************/
+ 352:Core/Src/main.c ****     UsbPrintf("\r\n[Step 5] Open & Read & Check File: %s%s\r\n", fatfs_path, TEST_FILE_NAME);
+ 731              		.loc 1 352 5 view .LVU126
+ 732 00e2 664C     		ldr	r4, .L51+36
+ 733 00e4 2246     		mov	r2, r4
+ 734 00e6 6946     		mov	r1, sp
+ 735 00e8 6848     		ldr	r0, .L51+52
+ 736 00ea FFF7FEFF 		bl	UsbPrintf
+ 737              	.LVL70:
+ 353:Core/Src/main.c ****     // 官方模式：FA_OPEN_EXISTING(打开已有文件)+FA_READ(读权限)
+ 354:Core/Src/main.c ****     f_res = f_open(&file, TEST_FILE_NAME, FA_OPEN_EXISTING | FA_READ);
+ 738              		.loc 1 354 5 view .LVU127
+ 739              		.loc 1 354 13 is_stmt 0 view .LVU128
+ 740 00ee 0122     		movs	r2, #1
+ 741 00f0 2146     		mov	r1, r4
+ 742 00f2 23A8     		add	r0, sp, #140
+ 743 00f4 FFF7FEFF 		bl	f_open
+ 744              	.LVL71:
+ 355:Core/Src/main.c ****     if (f_res != FR_OK)
+ 745              		.loc 1 355 5 is_stmt 1 view .LVU129
+ 746              		.loc 1 355 8 is_stmt 0 view .LVU130
+ 747 00f8 0446     		mov	r4, r0
+ 748 00fa 0028     		cmp	r0, #0
+ 749 00fc 40F08E80 		bne	.L48
+ 356:Core/Src/main.c ****     {
+ 357:Core/Src/main.c ****         UsbPrintf("ERROR: Open File FAILED! %d -> %s\r\n", f_res, fatfs_error_str(f_res));
+ 358:Core/Src/main.c ****         goto test_exit;
+ 359:Core/Src/main.c ****     }
+ 360:Core/Src/main.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 25
+
+
+ 361:Core/Src/main.c ****     // 读取数据：预留1字节给\0，避免字符串越界（C语言+FatFs官方规范）
+ 362:Core/Src/main.c ****     f_res = f_read(&file, f_read_buf, TEST_READ_BUF_SIZE - 1, &f_rd_len);
+ 750              		.loc 1 362 5 is_stmt 1 view .LVU131
+ 751              		.loc 1 362 13 is_stmt 0 view .LVU132
+ 752 0100 21AB     		add	r3, sp, #132
+ 753 0102 7F22     		movs	r2, #127
+ 754 0104 01A9     		add	r1, sp, #4
+ 755 0106 23A8     		add	r0, sp, #140
+ 756              	.LVL72:
+ 757              		.loc 1 362 13 view .LVU133
+ 758 0108 FFF7FEFF 		bl	f_read
+ 759              	.LVL73:
+ 363:Core/Src/main.c ****     f_read_buf[f_rd_len] = '\0'; // 强制字符串终止
+ 760              		.loc 1 363 5 is_stmt 1 view .LVU134
+ 761              		.loc 1 363 15 is_stmt 0 view .LVU135
+ 762 010c 219C     		ldr	r4, [sp, #132]
+ 763              		.loc 1 363 26 view .LVU136
+ 764 010e 3AAB     		add	r3, sp, #232
+ 765 0110 2344     		add	r3, r3, r4
+ 766 0112 0022     		movs	r2, #0
+ 767 0114 03F8E42C 		strb	r2, [r3, #-228]
+ 364:Core/Src/main.c ****     if (f_res == FR_OK && f_rd_len > 0)
+ 768              		.loc 1 364 5 is_stmt 1 view .LVU137
+ 769              		.loc 1 364 8 is_stmt 0 view .LVU138
+ 770 0118 0546     		mov	r5, r0
+ 771 011a 10B9     		cbnz	r0, .L41
+ 772              		.loc 1 364 24 discriminator 1 view .LVU139
+ 773 011c 002C     		cmp	r4, #0
+ 774 011e 40F08580 		bne	.L49
+ 775              	.L41:
+ 365:Core/Src/main.c ****     {
+ 366:Core/Src/main.c ****         UsbPrintf("SUCCESS: Read Data OK! Length: %d Byte\r\n", f_rd_len);
+ 367:Core/Src/main.c ****         UsbPrintf("Read Content: %s\r\n", f_read_buf);
+ 368:Core/Src/main.c ****         
+ 369:Core/Src/main.c ****         // 数据一致性校验
+ 370:Core/Src/main.c ****         if (strcmp((char*)f_read_buf, TEST_WRITE_DATA) == 0)
+ 371:Core/Src/main.c ****         {
+ 372:Core/Src/main.c ****             UsbPrintf("SUCCESS: Data Check PASS! Read = Write\r\n");
+ 373:Core/Src/main.c ****         }
+ 374:Core/Src/main.c ****         else
+ 375:Core/Src/main.c ****         {
+ 376:Core/Src/main.c ****             UsbPrintf("ERROR: Data Check FAIL! Read != Write\r\n");
+ 377:Core/Src/main.c ****         }
+ 378:Core/Src/main.c ****     }
+ 379:Core/Src/main.c ****     else
+ 380:Core/Src/main.c ****     {
+ 381:Core/Src/main.c ****         UsbPrintf("ERROR: Read Data FAILED! %d -> %s (Actual: %d Byte)\r\n", 
+ 776              		.loc 1 381 9 is_stmt 1 view .LVU140
+ 777 0122 2846     		mov	r0, r5
+ 778              	.LVL74:
+ 779              		.loc 1 381 9 is_stmt 0 view .LVU141
+ 780 0124 FFF7FEFF 		bl	fatfs_error_str
+ 781              	.LVL75:
+ 782 0128 0246     		mov	r2, r0
+ 783 012a 2346     		mov	r3, r4
+ 784 012c 2946     		mov	r1, r5
+ 785 012e 5848     		ldr	r0, .L51+56
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 26
+
+
+ 786 0130 FFF7FEFF 		bl	UsbPrintf
+ 787              	.LVL76:
+ 788              	.L43:
+ 382:Core/Src/main.c ****                   f_res, fatfs_error_str(f_res), f_rd_len);
+ 383:Core/Src/main.c ****     }
+ 384:Core/Src/main.c ****     f_close(&file); // 官方强制：读操作后必须close，释放文件对象
+ 789              		.loc 1 384 5 is_stmt 1 view .LVU142
+ 790 0134 23A8     		add	r0, sp, #140
+ 791 0136 FFF7FEFF 		bl	f_close
+ 792              	.LVL77:
+ 793 013a 06E0     		b	.L33
+ 794              	.LVL78:
+ 795              	.L45:
+ 796              		.loc 1 384 5 is_stmt 0 view .LVU143
+ 797 013c 0146     		mov	r1, r0
+ 276:Core/Src/main.c ****         fatfs_status = 255;
+ 798              		.loc 1 276 9 is_stmt 1 view .LVU144
+ 799 013e 5548     		ldr	r0, .L51+60
+ 800              	.LVL79:
+ 276:Core/Src/main.c ****         fatfs_status = 255;
+ 801              		.loc 1 276 9 is_stmt 0 view .LVU145
+ 802 0140 FFF7FEFF 		bl	UsbPrintf
+ 803              	.LVL80:
+ 277:Core/Src/main.c ****         goto test_exit;  // 统一退出，确保资源释放
+ 804              		.loc 1 277 9 is_stmt 1 view .LVU146
+ 277:Core/Src/main.c ****         goto test_exit;  // 统一退出，确保资源释放
+ 805              		.loc 1 277 22 is_stmt 0 view .LVU147
+ 806 0144 444B     		ldr	r3, .L51
+ 807 0146 FF22     		movs	r2, #255
+ 808 0148 1A70     		strb	r2, [r3]
+ 278:Core/Src/main.c ****     }
+ 809              		.loc 1 278 9 is_stmt 1 view .LVU148
+ 810              	.L33:
+ 385:Core/Src/main.c **** 
+ 386:Core/Src/main.c ****     /************************ 统一退出逻辑（官方资源释放规范） ************************/
+ 387:Core/Src/main.c **** test_exit:
+ 388:Core/Src/main.c ****     // 官方强制：测试结束后必须卸载文件系统，释放卷资源（避免内存泄漏）
+ 389:Core/Src/main.c ****     f_mount(NULL, fatfs_path, 1);
+ 811              		.loc 1 389 5 view .LVU149
+ 812 014a 0122     		movs	r2, #1
+ 813 014c 6946     		mov	r1, sp
+ 814 014e 0020     		movs	r0, #0
+ 815 0150 FFF7FEFF 		bl	f_mount
+ 816              	.LVL81:
+ 390:Core/Src/main.c ****     // 卸载驱动（可选，单驱动场景可省略，多驱动场景必须加）
+ 391:Core/Src/main.c ****     FATFS_UnLinkDriver(fatfs_path);
+ 817              		.loc 1 391 5 view .LVU150
+ 818 0154 6846     		mov	r0, sp
+ 819 0156 FFF7FEFF 		bl	FATFS_UnLinkDriver
+ 820              	.LVL82:
+ 392:Core/Src/main.c ****     UsbPrintf("\r\n===== FatFs Test End | Status: %d =====\r\n", fatfs_status);
+ 821              		.loc 1 392 5 view .LVU151
+ 822 015a 3F4B     		ldr	r3, .L51
+ 823 015c 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 824 015e 4E48     		ldr	r0, .L51+64
+ 825 0160 FFF7FEFF 		bl	UsbPrintf
+ 826              	.LVL83:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 27
+
+
+ 393:Core/Src/main.c ****     UsbPrintf("Status Note: 0=未执行,1=驱动注册OK,2=格式化OK,3=挂载+读写OK,255=失败\r\n");
+ 827              		.loc 1 393 5 view .LVU152
+ 828 0164 4D48     		ldr	r0, .L51+68
+ 829 0166 FFF7FEFF 		bl	UsbPrintf
+ 830              	.LVL84:
+ 394:Core/Src/main.c **** }
+ 831              		.loc 1 394 1 is_stmt 0 view .LVU153
+ 832 016a 0DF5035D 		add	sp, sp, #8384
+ 833 016e 0BB0     		add	sp, sp, #44
+ 834              	.LCFI9:
+ 835              		.cfi_remember_state
+ 836              		.cfi_def_cfa_offset 12
+ 837              		@ sp needed
+ 838 0170 30BD     		pop	{r4, r5, pc}
+ 839              	.LVL85:
+ 840              	.L34:
+ 841              	.LCFI10:
+ 842              		.cfi_restore_state
+ 292:Core/Src/main.c ****         
+ 843              		.loc 1 292 9 is_stmt 1 view .LVU154
+ 844 0172 4B48     		ldr	r0, .L51+72
+ 845 0174 FFF7FEFF 		bl	UsbPrintf
+ 846              	.LVL86:
+ 295:Core/Src/main.c ****         // 官方参数：路径=fatfs_path，类型=FS_FAT16，簇大小=0（自动适配8MB）
+ 847              		.loc 1 295 9 view .LVU155
+ 848 0178 4A48     		ldr	r0, .L51+76
+ 849 017a FFF7FEFF 		bl	UsbPrintf
+ 850              	.LVL87:
+ 297:Core/Src/main.c ****         UsbPrintf("Format Result: %d -> %s\r\n", f_res, fatfs_error_str(f_res));
+ 851              		.loc 1 297 9 view .LVU156
+ 297:Core/Src/main.c ****         UsbPrintf("Format Result: %d -> %s\r\n", f_res, fatfs_error_str(f_res));
+ 852              		.loc 1 297 17 is_stmt 0 view .LVU157
+ 853 017e 4FF48052 		mov	r2, #4096
+ 854 0182 0121     		movs	r1, #1
+ 855 0184 6846     		mov	r0, sp
+ 856 0186 FFF7FEFF 		bl	f_mkfs
+ 857              	.LVL88:
+ 858 018a 0446     		mov	r4, r0
+ 859              	.LVL89:
+ 298:Core/Src/main.c ****         
+ 860              		.loc 1 298 9 is_stmt 1 view .LVU158
+ 861 018c FFF7FEFF 		bl	fatfs_error_str
+ 862              	.LVL90:
+ 863 0190 0246     		mov	r2, r0
+ 864 0192 2146     		mov	r1, r4
+ 865 0194 4448     		ldr	r0, .L51+80
+ 866 0196 FFF7FEFF 		bl	UsbPrintf
+ 867              	.LVL91:
+ 300:Core/Src/main.c ****         {
+ 868              		.loc 1 300 9 view .LVU159
+ 300:Core/Src/main.c ****         {
+ 869              		.loc 1 300 11 is_stmt 0 view .LVU160
+ 870 019a 34BB     		cbnz	r4, .L50
+ 307:Core/Src/main.c ****         fatfs_status = 2;
+ 871              		.loc 1 307 9 is_stmt 1 view .LVU161
+ 872 019c 4348     		ldr	r0, .L51+84
+ 873 019e FFF7FEFF 		bl	UsbPrintf
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 28
+
+
+ 874              	.LVL92:
+ 308:Core/Src/main.c **** 
+ 875              		.loc 1 308 9 view .LVU162
+ 308:Core/Src/main.c **** 
+ 876              		.loc 1 308 22 is_stmt 0 view .LVU163
+ 877 01a2 2D4B     		ldr	r3, .L51
+ 878 01a4 0222     		movs	r2, #2
+ 879 01a6 1A70     		strb	r2, [r3]
+ 311:Core/Src/main.c ****         f_mount(NULL, fatfs_path, 1); // 先卸载，再重新挂载（官方推荐）
+ 880              		.loc 1 311 9 is_stmt 1 view .LVU164
+ 881 01a8 4148     		ldr	r0, .L51+88
+ 882 01aa FFF7FEFF 		bl	UsbPrintf
+ 883              	.LVL93:
+ 312:Core/Src/main.c ****         f_res = f_mount(&fs, fatfs_path, 1);
+ 884              		.loc 1 312 9 view .LVU165
+ 885 01ae 0122     		movs	r2, #1
+ 886 01b0 6946     		mov	r1, sp
+ 887 01b2 0020     		movs	r0, #0
+ 888 01b4 FFF7FEFF 		bl	f_mount
+ 889              	.LVL94:
+ 313:Core/Src/main.c ****         UsbPrintf("Remount Result: %d -> %s\r\n", f_res, fatfs_error_str(f_res));
+ 890              		.loc 1 313 9 view .LVU166
+ 313:Core/Src/main.c ****         UsbPrintf("Remount Result: %d -> %s\r\n", f_res, fatfs_error_str(f_res));
+ 891              		.loc 1 313 17 is_stmt 0 view .LVU167
+ 892 01b8 0122     		movs	r2, #1
+ 893 01ba 6946     		mov	r1, sp
+ 894 01bc 0DF58550 		add	r0, sp, #4256
+ 895 01c0 1830     		adds	r0, r0, #24
+ 896 01c2 FFF7FEFF 		bl	f_mount
+ 897              	.LVL95:
+ 898 01c6 0446     		mov	r4, r0
+ 899              	.LVL96:
+ 314:Core/Src/main.c ****         
+ 900              		.loc 1 314 9 is_stmt 1 view .LVU168
+ 901 01c8 FFF7FEFF 		bl	fatfs_error_str
+ 902              	.LVL97:
+ 903 01cc 0246     		mov	r2, r0
+ 904 01ce 2146     		mov	r1, r4
+ 905 01d0 3848     		ldr	r0, .L51+92
+ 906 01d2 FFF7FEFF 		bl	UsbPrintf
+ 907              	.LVL98:
+ 316:Core/Src/main.c ****         {
+ 908              		.loc 1 316 9 view .LVU169
+ 316:Core/Src/main.c ****         {
+ 909              		.loc 1 316 11 is_stmt 0 view .LVU170
+ 910 01d6 002C     		cmp	r4, #0
+ 911 01d8 3FF450AF 		beq	.L35
+ 318:Core/Src/main.c ****             fatfs_status = 255;
+ 912              		.loc 1 318 13 is_stmt 1 view .LVU171
+ 913 01dc 3648     		ldr	r0, .L51+96
+ 914 01de FFF7FEFF 		bl	UsbPrintf
+ 915              	.LVL99:
+ 319:Core/Src/main.c ****             goto test_exit;
+ 916              		.loc 1 319 13 view .LVU172
+ 319:Core/Src/main.c ****             goto test_exit;
+ 917              		.loc 1 319 26 is_stmt 0 view .LVU173
+ 918 01e2 1D4B     		ldr	r3, .L51
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 29
+
+
+ 919 01e4 FF22     		movs	r2, #255
+ 920 01e6 1A70     		strb	r2, [r3]
+ 320:Core/Src/main.c ****         }
+ 921              		.loc 1 320 13 is_stmt 1 view .LVU174
+ 922 01e8 AFE7     		b	.L33
+ 923              	.L50:
+ 302:Core/Src/main.c ****             UsbPrintf("ERROR: Format FAILED! Check: user_diskio.c/CTRL_TRIM / ffconf.h/IOCTL\r\n");
+ 924              		.loc 1 302 13 view .LVU175
+ 925 01ea 1B4B     		ldr	r3, .L51
+ 926 01ec 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 927 01ee 3348     		ldr	r0, .L51+100
+ 928 01f0 FFF7FEFF 		bl	UsbPrintf
+ 929              	.LVL100:
+ 303:Core/Src/main.c ****             //fatfs_status = 255;
+ 930              		.loc 1 303 13 view .LVU176
+ 931 01f4 3248     		ldr	r0, .L51+104
+ 932 01f6 FFF7FEFF 		bl	UsbPrintf
+ 933              	.LVL101:
+ 305:Core/Src/main.c ****         }
+ 934              		.loc 1 305 13 view .LVU177
+ 935 01fa A6E7     		b	.L33
+ 936              	.LVL102:
+ 937              	.L46:
+ 332:Core/Src/main.c ****         goto test_exit;
+ 938              		.loc 1 332 9 view .LVU178
+ 939 01fc FFF7FEFF 		bl	fatfs_error_str
+ 940              	.LVL103:
+ 332:Core/Src/main.c ****         goto test_exit;
+ 941              		.loc 1 332 9 is_stmt 0 view .LVU179
+ 942 0200 0246     		mov	r2, r0
+ 943 0202 2146     		mov	r1, r4
+ 944 0204 2F48     		ldr	r0, .L51+108
+ 945 0206 FFF7FEFF 		bl	UsbPrintf
+ 946              	.LVL104:
+ 333:Core/Src/main.c ****     }
+ 947              		.loc 1 333 9 is_stmt 1 view .LVU180
+ 948 020a 9EE7     		b	.L33
+ 949              	.LVL105:
+ 950              	.L47:
+ 340:Core/Src/main.c ****         UsbPrintf("Write Content: %s\r\n", TEST_WRITE_DATA);
+ 951              		.loc 1 340 9 view .LVU181
+ 952 020c 2E48     		ldr	r0, .L51+112
+ 953              	.LVL106:
+ 340:Core/Src/main.c ****         UsbPrintf("Write Content: %s\r\n", TEST_WRITE_DATA);
+ 954              		.loc 1 340 9 is_stmt 0 view .LVU182
+ 955 020e FFF7FEFF 		bl	UsbPrintf
+ 956              	.LVL107:
+ 341:Core/Src/main.c ****     }
+ 957              		.loc 1 341 9 is_stmt 1 view .LVU183
+ 958 0212 1C49     		ldr	r1, .L51+44
+ 959 0214 2D48     		ldr	r0, .L51+116
+ 960 0216 FFF7FEFF 		bl	UsbPrintf
+ 961              	.LVL108:
+ 962 021a 5AE7     		b	.L39
+ 963              	.LVL109:
+ 964              	.L48:
+ 357:Core/Src/main.c ****         goto test_exit;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 30
+
+
+ 965              		.loc 1 357 9 view .LVU184
+ 966 021c FFF7FEFF 		bl	fatfs_error_str
+ 967              	.LVL110:
+ 357:Core/Src/main.c ****         goto test_exit;
+ 968              		.loc 1 357 9 is_stmt 0 view .LVU185
+ 969 0220 0246     		mov	r2, r0
+ 970 0222 2146     		mov	r1, r4
+ 971 0224 2A48     		ldr	r0, .L51+120
+ 972 0226 FFF7FEFF 		bl	UsbPrintf
+ 973              	.LVL111:
+ 358:Core/Src/main.c ****     }
+ 974              		.loc 1 358 9 is_stmt 1 view .LVU186
+ 975 022a 8EE7     		b	.L33
+ 976              	.LVL112:
+ 977              	.L49:
+ 366:Core/Src/main.c ****         UsbPrintf("Read Content: %s\r\n", f_read_buf);
+ 978              		.loc 1 366 9 view .LVU187
+ 979 022c 2146     		mov	r1, r4
+ 980 022e 2948     		ldr	r0, .L51+124
+ 981              	.LVL113:
+ 366:Core/Src/main.c ****         UsbPrintf("Read Content: %s\r\n", f_read_buf);
+ 982              		.loc 1 366 9 is_stmt 0 view .LVU188
+ 983 0230 FFF7FEFF 		bl	UsbPrintf
+ 984              	.LVL114:
+ 367:Core/Src/main.c ****         
+ 985              		.loc 1 367 9 is_stmt 1 view .LVU189
+ 986 0234 01A9     		add	r1, sp, #4
+ 987 0236 2848     		ldr	r0, .L51+128
+ 988 0238 FFF7FEFF 		bl	UsbPrintf
+ 989              	.LVL115:
+ 370:Core/Src/main.c ****         {
+ 990              		.loc 1 370 9 view .LVU190
+ 370:Core/Src/main.c ****         {
+ 991              		.loc 1 370 13 is_stmt 0 view .LVU191
+ 992 023c 1149     		ldr	r1, .L51+44
+ 993 023e 01A8     		add	r0, sp, #4
+ 994 0240 FFF7FEFF 		bl	strcmp
+ 995              	.LVL116:
+ 370:Core/Src/main.c ****         {
+ 996              		.loc 1 370 12 view .LVU192
+ 997 0244 18B9     		cbnz	r0, .L42
+ 372:Core/Src/main.c ****         }
+ 998              		.loc 1 372 13 is_stmt 1 view .LVU193
+ 999 0246 2548     		ldr	r0, .L51+132
+ 1000 0248 FFF7FEFF 		bl	UsbPrintf
+ 1001              	.LVL117:
+ 1002 024c 72E7     		b	.L43
+ 1003              	.L42:
+ 376:Core/Src/main.c ****         }
+ 1004              		.loc 1 376 13 view .LVU194
+ 1005 024e 2448     		ldr	r0, .L51+136
+ 1006 0250 FFF7FEFF 		bl	UsbPrintf
+ 1007              	.LVL118:
+ 1008 0254 6EE7     		b	.L43
+ 1009              	.L52:
+ 1010 0256 00BF     		.align	2
+ 1011              	.L51:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 31
+
+
+ 1012 0258 00000000 		.word	.LANCHOR0
+ 1013 025c 00000000 		.word	.LC21
+ 1014 0260 48000000 		.word	.LC22
+ 1015 0264 84000000 		.word	.LC23
+ 1016 0268 00000000 		.word	USER_Driver
+ 1017 026c DC000000 		.word	.LC25
+ 1018 0270 0C010000 		.word	.LC26
+ 1019 0274 38010000 		.word	.LC27
+ 1020 0278 D8020000 		.word	.LC37
+ 1021 027c 00030000 		.word	.LC38
+ 1022 0280 0C030000 		.word	.LC39
+ 1023 0284 5C030000 		.word	.LC41
+ 1024 0288 C0030000 		.word	.LC44
+ 1025 028c F8030000 		.word	.LC45
+ 1026 0290 DC040000 		.word	.LC51
+ 1027 0294 B4000000 		.word	.LC24
+ 1028 0298 14050000 		.word	.LC52
+ 1029 029c 40050000 		.word	.LC53
+ 1030 02a0 54010000 		.word	.LC28
+ 1031 02a4 84010000 		.word	.LC29
+ 1032 02a8 BC010000 		.word	.LC30
+ 1033 02ac 38020000 		.word	.LC33
+ 1034 02b0 60020000 		.word	.LC34
+ 1035 02b4 90020000 		.word	.LC35
+ 1036 02b8 AC020000 		.word	.LC36
+ 1037 02bc D8010000 		.word	.LC31
+ 1038 02c0 F0010000 		.word	.LC32
+ 1039 02c4 34030000 		.word	.LC40
+ 1040 02c8 80030000 		.word	.LC42
+ 1041 02cc AC030000 		.word	.LC43
+ 1042 02d0 24040000 		.word	.LC46
+ 1043 02d4 48040000 		.word	.LC47
+ 1044 02d8 74040000 		.word	.LC48
+ 1045 02dc 88040000 		.word	.LC49
+ 1046 02e0 B4040000 		.word	.LC50
+ 1047              		.cfi_endproc
+ 1048              	.LFE72:
+ 1050              		.section	.text.Error_Handler,"ax",%progbits
+ 1051              		.align	1
+ 1052              		.global	Error_Handler
+ 1053              		.syntax unified
+ 1054              		.thumb
+ 1055              		.thumb_func
+ 1057              	Error_Handler:
+ 1058              	.LFB73:
+ 395:Core/Src/main.c **** 
+ 396:Core/Src/main.c **** 
+ 397:Core/Src/main.c **** 
+ 398:Core/Src/main.c **** /* USER CODE END 4 */
+ 399:Core/Src/main.c **** 
+ 400:Core/Src/main.c **** /**
+ 401:Core/Src/main.c ****   * @brief  This function is executed in case of error occurrence.
+ 402:Core/Src/main.c ****   * @retval None
+ 403:Core/Src/main.c ****   */
+ 404:Core/Src/main.c **** void Error_Handler(void)
+ 405:Core/Src/main.c **** {
+ 1059              		.loc 1 405 1 view -0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 32
+
+
+ 1060              		.cfi_startproc
+ 1061              		@ Volatile: function does not return.
+ 1062              		@ args = 0, pretend = 0, frame = 0
+ 1063              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1064              		@ link register save eliminated.
+ 406:Core/Src/main.c ****   /* USER CODE BEGIN Error_Handler_Debug */
+ 407:Core/Src/main.c ****   /* User can add his own implementation to report the HAL error return state */
+ 408:Core/Src/main.c ****   __disable_irq();
+ 1065              		.loc 1 408 3 view .LVU196
+ 1066              	.LBB4:
+ 1067              	.LBI4:
+ 1068              		.file 2 "Drivers/CMSIS/Include/cmsis_gcc.h"
+   1:Drivers/CMSIS/Include/cmsis_gcc.h **** /**************************************************************************//**
+   2:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @file     cmsis_gcc.h
+   3:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @brief    CMSIS compiler GCC header file
+   4:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @version  V5.0.4
+   5:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @date     09. April 2018
+   6:Drivers/CMSIS/Include/cmsis_gcc.h ****  ******************************************************************************/
+   7:Drivers/CMSIS/Include/cmsis_gcc.h **** /*
+   8:Drivers/CMSIS/Include/cmsis_gcc.h ****  * Copyright (c) 2009-2018 Arm Limited. All rights reserved.
+   9:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  10:Drivers/CMSIS/Include/cmsis_gcc.h ****  * SPDX-License-Identifier: Apache-2.0
+  11:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  12:Drivers/CMSIS/Include/cmsis_gcc.h ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+  13:Drivers/CMSIS/Include/cmsis_gcc.h ****  * not use this file except in compliance with the License.
+  14:Drivers/CMSIS/Include/cmsis_gcc.h ****  * You may obtain a copy of the License at
+  15:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  16:Drivers/CMSIS/Include/cmsis_gcc.h ****  * www.apache.org/licenses/LICENSE-2.0
+  17:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  18:Drivers/CMSIS/Include/cmsis_gcc.h ****  * Unless required by applicable law or agreed to in writing, software
+  19:Drivers/CMSIS/Include/cmsis_gcc.h ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  20:Drivers/CMSIS/Include/cmsis_gcc.h ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  21:Drivers/CMSIS/Include/cmsis_gcc.h ****  * See the License for the specific language governing permissions and
+  22:Drivers/CMSIS/Include/cmsis_gcc.h ****  * limitations under the License.
+  23:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+  24:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  25:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __CMSIS_GCC_H
+  26:Drivers/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_H
+  27:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  28:Drivers/CMSIS/Include/cmsis_gcc.h **** /* ignore some GCC warnings */
+  29:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic push
+  30:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wsign-conversion"
+  31:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wconversion"
+  32:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wunused-parameter"
+  33:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  34:Drivers/CMSIS/Include/cmsis_gcc.h **** /* Fallback for __has_builtin */
+  35:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __has_builtin
+  36:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __has_builtin(x) (0)
+  37:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  38:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  39:Drivers/CMSIS/Include/cmsis_gcc.h **** /* CMSIS compiler specific defines */
+  40:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ASM
+  41:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ASM                                  __asm
+  42:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  43:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __INLINE
+  44:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __INLINE                               inline
+  45:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 33
+
+
+  46:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_INLINE
+  47:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_INLINE                        static inline
+  48:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  49:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_FORCEINLINE                 
+  50:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_FORCEINLINE                   __attribute__((always_inline)) static inline
+  51:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif                                           
+  52:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __NO_RETURN
+  53:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __NO_RETURN                            __attribute__((__noreturn__))
+  54:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  55:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __USED
+  56:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __USED                                 __attribute__((used))
+  57:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  58:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __WEAK
+  59:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __WEAK                                 __attribute__((weak))
+  60:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  61:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED
+  62:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED                               __attribute__((packed, aligned(1)))
+  63:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  64:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_STRUCT
+  65:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_STRUCT                        struct __attribute__((packed, aligned(1)))
+  66:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  67:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_UNION
+  68:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_UNION                         union __attribute__((packed, aligned(1)))
+  69:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  70:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32        /* deprecated */
+  71:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  72:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  73:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  74:Drivers/CMSIS/Include/cmsis_gcc.h ****   struct __attribute__((packed)) T_UINT32 { uint32_t v; };
+  75:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  76:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
+  77:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  78:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_WRITE
+  79:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  80:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  81:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  82:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_WRITE { uint16_t v; };
+  83:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  84:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_WRITE(addr, val)    (void)((((struct T_UINT16_WRITE *)(void *)(addr))-
+  85:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  86:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_READ
+  87:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  88:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  89:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  90:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_READ { uint16_t v; };
+  91:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  92:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_READ(addr)          (((const struct T_UINT16_READ *)(const void *)(add
+  93:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  94:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_WRITE
+  95:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  96:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  97:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  98:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_WRITE { uint32_t v; };
+  99:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 100:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_WRITE(addr, val)    (void)((((struct T_UINT32_WRITE *)(void *)(addr))-
+ 101:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 102:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_READ
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 34
+
+
+ 103:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+ 104:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+ 105:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+ 106:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_READ { uint32_t v; };
+ 107:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 108:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_READ(addr)          (((const struct T_UINT32_READ *)(const void *)(add
+ 109:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 110:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ALIGNED
+ 111:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ALIGNED(x)                           __attribute__((aligned(x)))
+ 112:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 113:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __RESTRICT
+ 114:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __RESTRICT                             __restrict
+ 115:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 116:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 117:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 118:Drivers/CMSIS/Include/cmsis_gcc.h **** /* ###########################  Core Function Access  ########################### */
+ 119:Drivers/CMSIS/Include/cmsis_gcc.h **** /** \ingroup  CMSIS_Core_FunctionInterface
+ 120:Drivers/CMSIS/Include/cmsis_gcc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+ 121:Drivers/CMSIS/Include/cmsis_gcc.h ****   @{
+ 122:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 123:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 124:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 125:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Enable IRQ Interrupts
+ 126:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 127:Drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 128:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 129:Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __enable_irq(void)
+ 130:Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 131:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsie i" : : : "memory");
+ 132:Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 133:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 134:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 135:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 136:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Disable IRQ Interrupts
+ 137:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Disables IRQ interrupts by setting the I-bit in the CPSR.
+ 138:Drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 139:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 140:Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __disable_irq(void)
+ 1069              		.loc 2 140 27 view .LVU197
+ 1070              	.LBB5:
+ 141:Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 142:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsid i" : : : "memory");
+ 1071              		.loc 2 142 3 view .LVU198
+ 1072              		.syntax unified
+ 1073              	@ 142 "Drivers/CMSIS/Include/cmsis_gcc.h" 1
+ 1074 0000 72B6     		cpsid i
+ 1075              	@ 0 "" 2
+ 1076              		.thumb
+ 1077              		.syntax unified
+ 1078              	.L54:
+ 1079              	.LBE5:
+ 1080              	.LBE4:
+ 409:Core/Src/main.c ****   while (1)
+ 1081              		.loc 1 409 3 discriminator 1 view .LVU199
+ 410:Core/Src/main.c ****   {
+ 411:Core/Src/main.c ****   }
+ 1082              		.loc 1 411 3 discriminator 1 view .LVU200
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 35
+
+
+ 409:Core/Src/main.c ****   while (1)
+ 1083              		.loc 1 409 9 discriminator 1 view .LVU201
+ 1084 0002 FEE7     		b	.L54
+ 1085              		.cfi_endproc
+ 1086              	.LFE73:
+ 1088              		.section	.text.SystemClock_Config,"ax",%progbits
+ 1089              		.align	1
+ 1090              		.global	SystemClock_Config
+ 1091              		.syntax unified
+ 1092              		.thumb
+ 1093              		.thumb_func
+ 1095              	SystemClock_Config:
+ 1096              	.LFB69:
+ 164:Core/Src/main.c ****   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+ 1097              		.loc 1 164 1 view -0
+ 1098              		.cfi_startproc
+ 1099              		@ args = 0, pretend = 0, frame = 88
+ 1100              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1101 0000 00B5     		push	{lr}
+ 1102              	.LCFI11:
+ 1103              		.cfi_def_cfa_offset 4
+ 1104              		.cfi_offset 14, -4
+ 1105 0002 97B0     		sub	sp, sp, #92
+ 1106              	.LCFI12:
+ 1107              		.cfi_def_cfa_offset 96
+ 165:Core/Src/main.c ****   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+ 1108              		.loc 1 165 3 view .LVU203
+ 165:Core/Src/main.c ****   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+ 1109              		.loc 1 165 22 is_stmt 0 view .LVU204
+ 1110 0004 2822     		movs	r2, #40
+ 1111 0006 0021     		movs	r1, #0
+ 1112 0008 0CA8     		add	r0, sp, #48
+ 1113 000a FFF7FEFF 		bl	memset
+ 1114              	.LVL119:
+ 166:Core/Src/main.c ****   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+ 1115              		.loc 1 166 3 is_stmt 1 view .LVU205
+ 166:Core/Src/main.c ****   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+ 1116              		.loc 1 166 22 is_stmt 0 view .LVU206
+ 1117 000e 0023     		movs	r3, #0
+ 1118 0010 0793     		str	r3, [sp, #28]
+ 1119 0012 0893     		str	r3, [sp, #32]
+ 1120 0014 0993     		str	r3, [sp, #36]
+ 1121 0016 0A93     		str	r3, [sp, #40]
+ 1122 0018 0B93     		str	r3, [sp, #44]
+ 167:Core/Src/main.c **** 
+ 1123              		.loc 1 167 3 is_stmt 1 view .LVU207
+ 167:Core/Src/main.c **** 
+ 1124              		.loc 1 167 28 is_stmt 0 view .LVU208
+ 1125 001a 0193     		str	r3, [sp, #4]
+ 1126 001c 0293     		str	r3, [sp, #8]
+ 1127 001e 0393     		str	r3, [sp, #12]
+ 1128 0020 0493     		str	r3, [sp, #16]
+ 1129 0022 0593     		str	r3, [sp, #20]
+ 1130 0024 0693     		str	r3, [sp, #24]
+ 172:Core/Src/main.c ****   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+ 1131              		.loc 1 172 3 is_stmt 1 view .LVU209
+ 172:Core/Src/main.c ****   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 36
+
+
+ 1132              		.loc 1 172 36 is_stmt 0 view .LVU210
+ 1133 0026 0D23     		movs	r3, #13
+ 1134 0028 0C93     		str	r3, [sp, #48]
+ 173:Core/Src/main.c ****   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+ 1135              		.loc 1 173 3 is_stmt 1 view .LVU211
+ 173:Core/Src/main.c ****   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+ 1136              		.loc 1 173 30 is_stmt 0 view .LVU212
+ 1137 002a 4FF48032 		mov	r2, #65536
+ 1138 002e 0D92     		str	r2, [sp, #52]
+ 174:Core/Src/main.c ****   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+ 1139              		.loc 1 174 3 is_stmt 1 view .LVU213
+ 175:Core/Src/main.c ****   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
+ 1140              		.loc 1 175 3 view .LVU214
+ 175:Core/Src/main.c ****   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
+ 1141              		.loc 1 175 30 is_stmt 0 view .LVU215
+ 1142 0030 0123     		movs	r3, #1
+ 1143 0032 1093     		str	r3, [sp, #64]
+ 176:Core/Src/main.c ****   // ? 开启外部 32768Hz
+ 1144              		.loc 1 176 3 is_stmt 1 view .LVU216
+ 176:Core/Src/main.c ****   // ? 开启外部 32768Hz
+ 1145              		.loc 1 176 30 is_stmt 0 view .LVU217
+ 1146 0034 1293     		str	r3, [sp, #72]
+ 178:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+ 1147              		.loc 1 178 3 is_stmt 1 view .LVU218
+ 178:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+ 1148              		.loc 1 178 30 is_stmt 0 view .LVU219
+ 1149 0036 0F93     		str	r3, [sp, #60]
+ 179:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+ 1150              		.loc 1 179 3 is_stmt 1 view .LVU220
+ 179:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+ 1151              		.loc 1 179 34 is_stmt 0 view .LVU221
+ 1152 0038 0223     		movs	r3, #2
+ 1153 003a 1393     		str	r3, [sp, #76]
+ 180:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+ 1154              		.loc 1 180 3 is_stmt 1 view .LVU222
+ 180:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+ 1155              		.loc 1 180 35 is_stmt 0 view .LVU223
+ 1156 003c 1492     		str	r2, [sp, #80]
+ 181:Core/Src/main.c ****   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+ 1157              		.loc 1 181 3 is_stmt 1 view .LVU224
+ 181:Core/Src/main.c ****   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+ 1158              		.loc 1 181 32 is_stmt 0 view .LVU225
+ 1159 003e 4FF4E013 		mov	r3, #1835008
+ 1160 0042 1593     		str	r3, [sp, #84]
+ 182:Core/Src/main.c ****   {
+ 1161              		.loc 1 182 3 is_stmt 1 view .LVU226
+ 182:Core/Src/main.c ****   {
+ 1162              		.loc 1 182 7 is_stmt 0 view .LVU227
+ 1163 0044 0CA8     		add	r0, sp, #48
+ 1164 0046 FFF7FEFF 		bl	HAL_RCC_OscConfig
+ 1165              	.LVL120:
+ 182:Core/Src/main.c ****   {
+ 1166              		.loc 1 182 6 view .LVU228
+ 1167 004a C8B9     		cbnz	r0, .L60
+ 189:Core/Src/main.c ****                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+ 1168              		.loc 1 189 3 is_stmt 1 view .LVU229
+ 189:Core/Src/main.c ****                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 37
+
+
+ 1169              		.loc 1 189 31 is_stmt 0 view .LVU230
+ 1170 004c 0F23     		movs	r3, #15
+ 1171 004e 0793     		str	r3, [sp, #28]
+ 191:Core/Src/main.c ****   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+ 1172              		.loc 1 191 3 is_stmt 1 view .LVU231
+ 191:Core/Src/main.c ****   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+ 1173              		.loc 1 191 34 is_stmt 0 view .LVU232
+ 1174 0050 0221     		movs	r1, #2
+ 1175 0052 0891     		str	r1, [sp, #32]
+ 192:Core/Src/main.c ****   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+ 1176              		.loc 1 192 3 is_stmt 1 view .LVU233
+ 192:Core/Src/main.c ****   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+ 1177              		.loc 1 192 35 is_stmt 0 view .LVU234
+ 1178 0054 0023     		movs	r3, #0
+ 1179 0056 0993     		str	r3, [sp, #36]
+ 193:Core/Src/main.c ****   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+ 1180              		.loc 1 193 3 is_stmt 1 view .LVU235
+ 193:Core/Src/main.c ****   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+ 1181              		.loc 1 193 36 is_stmt 0 view .LVU236
+ 1182 0058 4FF48062 		mov	r2, #1024
+ 1183 005c 0A92     		str	r2, [sp, #40]
+ 194:Core/Src/main.c **** 
+ 1184              		.loc 1 194 3 is_stmt 1 view .LVU237
+ 194:Core/Src/main.c **** 
+ 1185              		.loc 1 194 36 is_stmt 0 view .LVU238
+ 1186 005e 0B93     		str	r3, [sp, #44]
+ 196:Core/Src/main.c ****   {
+ 1187              		.loc 1 196 3 is_stmt 1 view .LVU239
+ 196:Core/Src/main.c ****   {
+ 1188              		.loc 1 196 7 is_stmt 0 view .LVU240
+ 1189 0060 07A8     		add	r0, sp, #28
+ 1190 0062 FFF7FEFF 		bl	HAL_RCC_ClockConfig
+ 1191              	.LVL121:
+ 196:Core/Src/main.c ****   {
+ 1192              		.loc 1 196 6 view .LVU241
+ 1193 0066 68B9     		cbnz	r0, .L61
+ 200:Core/Src/main.c ****   PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+ 1194              		.loc 1 200 3 is_stmt 1 view .LVU242
+ 200:Core/Src/main.c ****   PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+ 1195              		.loc 1 200 38 is_stmt 0 view .LVU243
+ 1196 0068 0123     		movs	r3, #1
+ 1197 006a 0193     		str	r3, [sp, #4]
+ 201:Core/Src/main.c ****   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+ 1198              		.loc 1 201 3 is_stmt 1 view .LVU244
+ 201:Core/Src/main.c ****   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+ 1199              		.loc 1 201 35 is_stmt 0 view .LVU245
+ 1200 006c 4FF48073 		mov	r3, #256
+ 1201 0070 0293     		str	r3, [sp, #8]
+ 202:Core/Src/main.c ****   {
+ 1202              		.loc 1 202 3 is_stmt 1 view .LVU246
+ 202:Core/Src/main.c ****   {
+ 1203              		.loc 1 202 7 is_stmt 0 view .LVU247
+ 1204 0072 01A8     		add	r0, sp, #4
+ 1205 0074 FFF7FEFF 		bl	HAL_RCCEx_PeriphCLKConfig
+ 1206              	.LVL122:
+ 202:Core/Src/main.c ****   {
+ 1207              		.loc 1 202 6 view .LVU248
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 38
+
+
+ 1208 0078 30B9     		cbnz	r0, .L62
+ 206:Core/Src/main.c **** 
+ 1209              		.loc 1 206 1 view .LVU249
+ 1210 007a 17B0     		add	sp, sp, #92
+ 1211              	.LCFI13:
+ 1212              		.cfi_remember_state
+ 1213              		.cfi_def_cfa_offset 4
+ 1214              		@ sp needed
+ 1215 007c 5DF804FB 		ldr	pc, [sp], #4
+ 1216              	.L60:
+ 1217              	.LCFI14:
+ 1218              		.cfi_restore_state
+ 184:Core/Src/main.c ****   }
+ 1219              		.loc 1 184 5 is_stmt 1 view .LVU250
+ 1220 0080 FFF7FEFF 		bl	Error_Handler
+ 1221              	.LVL123:
+ 1222              	.L61:
+ 198:Core/Src/main.c ****   }
+ 1223              		.loc 1 198 5 view .LVU251
+ 1224 0084 FFF7FEFF 		bl	Error_Handler
+ 1225              	.LVL124:
+ 1226              	.L62:
+ 204:Core/Src/main.c ****   }
+ 1227              		.loc 1 204 5 view .LVU252
+ 1228 0088 FFF7FEFF 		bl	Error_Handler
+ 1229              	.LVL125:
+ 1230              		.cfi_endproc
+ 1231              	.LFE69:
+ 1233              		.section	.rodata.main.str1.4,"aMS",%progbits,1
+ 1234              		.align	2
+ 1235              	.LC54:
+ 1236 0000 31353A33 		.ascii	"15:32:06\000"
+ 1236      323A3036 
+ 1236      00
+ 1237 0009 000000   		.align	2
+ 1238              	.LC55:
+ 1239 000c 4D617220 		.ascii	"Mar 20 2026\000"
+ 1239      32302032 
+ 1239      30323600 
+ 1240              		.align	2
+ 1241              	.LC56:
+ 1242 0018 3D3D3D3D 		.ascii	"===== Data:%s Time:%s ! =====\015\012\000"
+ 1242      3D204461 
+ 1242      74613A25 
+ 1242      73205469 
+ 1242      6D653A25 
+ 1243              		.section	.text.main,"ax",%progbits
+ 1244              		.align	1
+ 1245              		.global	main
+ 1246              		.syntax unified
+ 1247              		.thumb
+ 1248              		.thumb_func
+ 1250              	main:
+ 1251              	.LFB68:
+  75:Core/Src/main.c **** 
+ 1252              		.loc 1 75 1 view -0
+ 1253              		.cfi_startproc
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 39
+
+
+ 1254              		@ args = 0, pretend = 0, frame = 8
+ 1255              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1256 0000 10B5     		push	{r4, lr}
+ 1257              	.LCFI15:
+ 1258              		.cfi_def_cfa_offset 8
+ 1259              		.cfi_offset 4, -8
+ 1260              		.cfi_offset 14, -4
+ 1261 0002 82B0     		sub	sp, sp, #8
+ 1262              	.LCFI16:
+ 1263              		.cfi_def_cfa_offset 16
+  84:Core/Src/main.c **** 
+ 1264              		.loc 1 84 3 view .LVU254
+ 1265 0004 FFF7FEFF 		bl	HAL_Init
+ 1266              	.LVL126:
+  91:Core/Src/main.c **** 
+ 1267              		.loc 1 91 3 view .LVU255
+ 1268 0008 FFF7FEFF 		bl	SystemClock_Config
+ 1269              	.LVL127:
+  98:Core/Src/main.c ****   MX_I2C1_Init();
+ 1270              		.loc 1 98 3 view .LVU256
+ 1271 000c FFF7FEFF 		bl	MX_GPIO_Init
+ 1272              	.LVL128:
+  99:Core/Src/main.c ****   MX_RTC_Init();
+ 1273              		.loc 1 99 3 view .LVU257
+ 1274 0010 FFF7FEFF 		bl	MX_I2C1_Init
+ 1275              	.LVL129:
+ 100:Core/Src/main.c ****   MX_SPI1_Init();
+ 1276              		.loc 1 100 3 view .LVU258
+ 1277 0014 FFF7FEFF 		bl	MX_RTC_Init
+ 1278              	.LVL130:
+ 101:Core/Src/main.c ****   MX_USART1_UART_Init();
+ 1279              		.loc 1 101 3 view .LVU259
+ 1280 0018 FFF7FEFF 		bl	MX_SPI1_Init
+ 1281              	.LVL131:
+ 102:Core/Src/main.c ****   MX_USART2_UART_Init();
+ 1282              		.loc 1 102 3 view .LVU260
+ 1283 001c FFF7FEFF 		bl	MX_USART1_UART_Init
+ 1284              	.LVL132:
+ 103:Core/Src/main.c ****   MX_FATFS_Init();
+ 1285              		.loc 1 103 3 view .LVU261
+ 1286 0020 FFF7FEFF 		bl	MX_USART2_UART_Init
+ 1287              	.LVL133:
+ 104:Core/Src/main.c ****   /* USER CODE BEGIN 2 */
+ 1288              		.loc 1 104 3 view .LVU262
+ 1289 0024 FFF7FEFF 		bl	MX_FATFS_Init
+ 1290              	.LVL134:
+ 106:Core/Src/main.c **** 
+ 1291              		.loc 1 106 3 view .LVU263
+ 1292 0028 0122     		movs	r2, #1
+ 1293 002a 1449     		ldr	r1, .L68
+ 1294 002c 1448     		ldr	r0, .L68+4
+ 1295 002e FFF7FEFF 		bl	HAL_UART_Receive_IT
+ 1296              	.LVL135:
+ 109:Core/Src/main.c ****   uint32_t systemTick = 0;//
+ 1297              		.loc 1 109 2 view .LVU264
+ 1298 0032 144A     		ldr	r2, .L68+8
+ 1299 0034 1449     		ldr	r1, .L68+12
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 40
+
+
+ 1300 0036 1548     		ldr	r0, .L68+16
+ 1301 0038 FFF7FEFF 		bl	UsbPrintf
+ 1302              	.LVL136:
+ 110:Core/Src/main.c **** 
+ 1303              		.loc 1 110 3 view .LVU265
+ 110:Core/Src/main.c **** 
+ 1304              		.loc 1 110 12 is_stmt 0 view .LVU266
+ 1305 003c 0024     		movs	r4, #0
+ 1306 003e 02E0     		b	.L64
+ 1307              	.LVL137:
+ 1308              	.L65:
+ 146:Core/Src/main.c ****     }
+ 1309              		.loc 1 146 7 is_stmt 1 view .LVU267
+ 146:Core/Src/main.c ****     }
+ 1310              		.loc 1 146 20 is_stmt 0 view .LVU268
+ 1311 0040 FFF7FEFF 		bl	HAL_GetTick
+ 1312              	.LVL138:
+ 1313 0044 0446     		mov	r4, r0
+ 1314              	.LVL139:
+ 1315              	.L64:
+ 115:Core/Src/main.c ****   //uint8_t u2_buf[256];
+ 1316              		.loc 1 115 3 is_stmt 1 view .LVU269
+ 121:Core/Src/main.c ****   {
+ 1317              		.loc 1 121 3 view .LVU270
+ 132:Core/Src/main.c ****     {
+ 1318              		.loc 1 132 5 view .LVU271
+ 132:Core/Src/main.c ****     {
+ 1319              		.loc 1 132 23 is_stmt 0 view .LVU272
+ 1320 0046 FFF7FEFF 		bl	HAL_GetTick
+ 1321              	.LVL140:
+ 132:Core/Src/main.c ****     {
+ 1322              		.loc 1 132 8 view .LVU273
+ 1323 004a A042     		cmp	r0, r4
+ 1324 004c FBD0     		beq	.L64
+ 134:Core/Src/main.c ****       FatFs_WriteUart2ByTimeStamp();
+ 1325              		.loc 1 134 7 is_stmt 1 view .LVU274
+ 1326 004e FFF7FEFF 		bl	CheckCommandList
+ 1327              	.LVL141:
+ 135:Core/Src/main.c ****       if (systemTick % 5 == 0)
+ 1328              		.loc 1 135 7 view .LVU275
+ 1329 0052 FFF7FEFF 		bl	FatFs_WriteUart2ByTimeStamp
+ 1330              	.LVL142:
+ 136:Core/Src/main.c ****       {
+ 1331              		.loc 1 136 7 view .LVU276
+ 140:Core/Src/main.c ****       if (systemTick % 1000 == 0)
+ 1332              		.loc 1 140 7 view .LVU277
+ 141:Core/Src/main.c ****       {
+ 1333              		.loc 1 141 7 view .LVU278
+ 141:Core/Src/main.c ****       {
+ 1334              		.loc 1 141 22 is_stmt 0 view .LVU279
+ 1335 0056 0E4B     		ldr	r3, .L68+20
+ 1336 0058 A3FB0423 		umull	r2, r3, r3, r4
+ 1337 005c 9B09     		lsrs	r3, r3, #6
+ 1338 005e 4FF47A72 		mov	r2, #1000
+ 1339 0062 02FB1343 		mls	r3, r2, r3, r4
+ 141:Core/Src/main.c ****       {
+ 1340              		.loc 1 141 10 view .LVU280
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 41
+
+
+ 1341 0066 002B     		cmp	r3, #0
+ 1342 0068 EAD1     		bne	.L65
+ 143:Core/Src/main.c ****         //UsbPrintf("RTC时间：%02d:%02d:%02d\n", hh, mm, ss);
+ 1343              		.loc 1 143 9 is_stmt 1 view .LVU281
+ 1344 006a 0DF10502 		add	r2, sp, #5
+ 1345 006e 0DF10601 		add	r1, sp, #6
+ 1346 0072 0DF10700 		add	r0, sp, #7
+ 1347 0076 FFF7FEFF 		bl	RTC_GetCurrentTime
+ 1348              	.LVL143:
+ 1349 007a E1E7     		b	.L65
+ 1350              	.L69:
+ 1351              		.align	2
+ 1352              	.L68:
+ 1353 007c 00000000 		.word	usbRxBuf
+ 1354 0080 00000000 		.word	huart1
+ 1355 0084 00000000 		.word	.LC54
+ 1356 0088 0C000000 		.word	.LC55
+ 1357 008c 18000000 		.word	.LC56
+ 1358 0090 D34D6210 		.word	274877907
+ 1359              		.cfi_endproc
+ 1360              	.LFE68:
+ 1362              		.global	fatfs_status
+ 1363              		.section	.bss.fatfs_status,"aw",%nobits
+ 1364              		.set	.LANCHOR0,. + 0
+ 1367              	fatfs_status:
+ 1368 0000 00       		.space	1
+ 1369              		.text
+ 1370              	.Letext0:
+ 1371              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1372              		.file 4 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1373              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 1374              		.file 6 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 1375              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h"
+ 1376              		.file 8 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc_ex.h"
+ 1377              		.file 9 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 1378              		.file 10 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h"
+ 1379              		.file 11 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\lib\\gc
+ 1380              		.file 12 "Middlewares/Third_Party/FatFs/src/integer.h"
+ 1381              		.file 13 "Middlewares/Third_Party/FatFs/src/ff.h"
+ 1382              		.file 14 "Middlewares/Third_Party/FatFs/src/diskio.h"
+ 1383              		.file 15 "Middlewares/Third_Party/FatFs/src/ff_gen_drv.h"
+ 1384              		.file 16 "FATFS/Target/user_diskio.h"
+ 1385              		.file 17 "Core/Inc/usart.h"
+ 1386              		.file 18 "User/Inc/command.h"
+ 1387              		.file 19 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-non
+ 1388              		.file 20 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-non
+ 1389              		.file 21 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h"
+ 1390              		.file 22 "Core/Inc/gpio.h"
+ 1391              		.file 23 "Core/Inc/i2c.h"
+ 1392              		.file 24 "Core/Inc/rtc.h"
+ 1393              		.file 25 "Core/Inc/spi.h"
+ 1394              		.file 26 "FATFS/App/fatfs.h"
+ 1395              		.file 27 "User/Inc/storage.h"
+ 1396              		.file 28 "<built-in>"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 42
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:18     .rodata.fatfs_error_str.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:99     .text.fatfs_error_str:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:104    .text.fatfs_error_str:00000000 fatfs_error_str
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:118    .text.fatfs_error_str:00000008 $d
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:138    .text.fatfs_error_str:0000001c $t
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:306    .text.fatfs_error_str:00000070 $d
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:331    .text.UsbPrintf:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:337    .text.UsbPrintf:00000000 UsbPrintf
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:420    .text.UsbPrintf:00000048 $d
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:426    .rodata.FatFs_Test.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:541    .text.FatFs_Test:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:547    .text.FatFs_Test:00000000 FatFs_Test
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:1012   .text.FatFs_Test:00000258 $d
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:1051   .text.Error_Handler:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:1057   .text.Error_Handler:00000000 Error_Handler
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:1089   .text.SystemClock_Config:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:1095   .text.SystemClock_Config:00000000 SystemClock_Config
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:1234   .rodata.main.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:1244   .text.main:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:1250   .text.main:00000000 main
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:1353   .text.main:0000007c $d
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:1367   .bss.fatfs_status:00000000 fatfs_status
+C:\Users\84759\AppData\Local\Temp\ccg21enw.s:1368   .bss.fatfs_status:00000000 $d
+
+UNDEFINED SYMBOLS
+memset
+vsnprintf
+strlen
+HAL_UART_Transmit
+g_UsbTxBuff
+huart1
+FATFS_LinkDriver
+f_mount
+f_open
+f_write
+f_close
+f_read
+FATFS_UnLinkDriver
+f_mkfs
+strcmp
+USER_Driver
+HAL_RCC_OscConfig
+HAL_RCC_ClockConfig
+HAL_RCCEx_PeriphCLKConfig
+HAL_Init
+MX_GPIO_Init
+MX_I2C1_Init
+MX_RTC_Init
+MX_SPI1_Init
+MX_USART1_UART_Init
+MX_USART2_UART_Init
+MX_FATFS_Init
+HAL_UART_Receive_IT
+HAL_GetTick
+CheckCommandList
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccg21enw.s 			page 43
+
+
+FatFs_WriteUart2ByTimeStamp
+RTC_GetCurrentTime
+usbRxBuf

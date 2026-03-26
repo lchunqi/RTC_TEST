@@ -1,0 +1,1348 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"fatfs.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.rodata.MX_FATFS_Init.str1.4,"aMS",%progbits,1
+  18              		.align	2
+  19              	.LC0:
+  20 0000 5B666174 		.ascii	"[fatfs] \307\375\266\257\301\264\275\323\312\247\260"
+  20      66735D20 
+  20      C7FDB6AF 
+  20      C1B4BDD3 
+  20      CAA7B0
+  21 0013 DCA3A1B4 		.ascii	"\334\243\241\264\355\316\363\302\353\243\272%d\015\012"
+  21      EDCEF3C2 
+  21      EBA3BA25 
+  21      640D0A
+  22 0022 00       		.ascii	"\000"
+  23 0023 00       		.align	2
+  24              	.LC1:
+  25 0024 5B666174 		.ascii	"[fatfs] \263\365\312\274\273\257\315\352\263\311\243"
+  25      66735D20 
+  25      B3F5CABC 
+  25      BBAFCDEA 
+  25      B3C9A3
+  26 0037 A1C7EBD6 		.ascii	"\241\307\353\326\264\320\320\271\322\324\330/\270\361"
+  26      B4D0D0B9 
+  26      D2D4D82F 
+  26      B8F1
+  27 0045 CABDBBAF 		.ascii	"\312\275\273\257\015\012\000"
+  27      0D0A00
+  28              		.section	.text.MX_FATFS_Init,"ax",%progbits
+  29              		.align	1
+  30              		.global	MX_FATFS_Init
+  31              		.syntax unified
+  32              		.thumb
+  33              		.thumb_func
+  35              	MX_FATFS_Init:
+  36              	.LFB68:
+  37              		.file 1 "FATFS/App/fatfs.c"
+   1:FATFS/App/fatfs.c **** #include "fatfs.h"
+   2:FATFS/App/fatfs.c **** #include "usart.h"
+   3:FATFS/App/fatfs.c **** #include "user_diskio.h"
+   4:FATFS/App/fatfs.c **** 
+   5:FATFS/App/fatfs.c **** uint8_t retUSER;
+   6:FATFS/App/fatfs.c **** char USERPath[4] = "0:";
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 2
+
+
+   7:FATFS/App/fatfs.c **** FATFS USERFatFS;
+   8:FATFS/App/fatfs.c **** FIL USERFile;
+   9:FATFS/App/fatfs.c **** UINT fnum;
+  10:FATFS/App/fatfs.c **** 
+  11:FATFS/App/fatfs.c **** // 全局时间结构体
+  12:FATFS/App/fatfs.c **** FatFs_Time_t g_fatfs_time = {2026, 3, 20, 0, 0, 0};
+  13:FATFS/App/fatfs.c **** 
+  14:FATFS/App/fatfs.c **** /**
+  15:FATFS/App/fatfs.c ****  * @brief  FATFS初始化（驱动挂载）
+  16:FATFS/App/fatfs.c ****  */
+  17:FATFS/App/fatfs.c **** void MX_FATFS_Init(void)
+  18:FATFS/App/fatfs.c **** {
+  38              		.loc 1 18 1 view -0
+  39              		.cfi_startproc
+  40              		@ args = 0, pretend = 0, frame = 0
+  41              		@ frame_needed = 0, uses_anonymous_args = 0
+  42 0000 08B5     		push	{r3, lr}
+  43              	.LCFI0:
+  44              		.cfi_def_cfa_offset 8
+  45              		.cfi_offset 3, -8
+  46              		.cfi_offset 14, -4
+  19:FATFS/App/fatfs.c ****     retUSER = FATFS_LinkDriver(&USER_Driver, USERPath);
+  47              		.loc 1 19 5 view .LVU1
+  48              		.loc 1 19 15 is_stmt 0 view .LVU2
+  49 0002 0849     		ldr	r1, .L6
+  50 0004 0848     		ldr	r0, .L6+4
+  51 0006 FFF7FEFF 		bl	FATFS_LinkDriver
+  52              	.LVL0:
+  53              		.loc 1 19 13 view .LVU3
+  54 000a 084B     		ldr	r3, .L6+8
+  55 000c 1870     		strb	r0, [r3]
+  20:FATFS/App/fatfs.c ****     if (retUSER != FR_OK)
+  56              		.loc 1 20 5 is_stmt 1 view .LVU4
+  57              		.loc 1 20 8 is_stmt 0 view .LVU5
+  58 000e 18B9     		cbnz	r0, .L5
+  21:FATFS/App/fatfs.c ****     {
+  22:FATFS/App/fatfs.c ****         UsbPrintf("[fatfs] 驱动链接失败！错误码：%d\r\n", retUSER);
+  23:FATFS/App/fatfs.c ****         // 不卡死，仅返回
+  24:FATFS/App/fatfs.c ****         return;
+  25:FATFS/App/fatfs.c ****     }
+  26:FATFS/App/fatfs.c ****     UsbPrintf("[fatfs] 初始化完成！请执行挂载/格式化\r\n");
+  59              		.loc 1 26 5 is_stmt 1 view .LVU6
+  60 0010 0748     		ldr	r0, .L6+12
+  61 0012 FFF7FEFF 		bl	UsbPrintf
+  62              	.LVL1:
+  63              	.L1:
+  27:FATFS/App/fatfs.c **** }
+  64              		.loc 1 27 1 is_stmt 0 view .LVU7
+  65 0016 08BD     		pop	{r3, pc}
+  66              	.L5:
+  22:FATFS/App/fatfs.c ****         // 不卡死，仅返回
+  67              		.loc 1 22 9 is_stmt 1 view .LVU8
+  68 0018 0146     		mov	r1, r0
+  69 001a 0648     		ldr	r0, .L6+16
+  70 001c FFF7FEFF 		bl	UsbPrintf
+  71              	.LVL2:
+  24:FATFS/App/fatfs.c ****     }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 3
+
+
+  72              		.loc 1 24 9 view .LVU9
+  73 0020 F9E7     		b	.L1
+  74              	.L7:
+  75 0022 00BF     		.align	2
+  76              	.L6:
+  77 0024 00000000 		.word	.LANCHOR0
+  78 0028 00000000 		.word	USER_Driver
+  79 002c 00000000 		.word	.LANCHOR1
+  80 0030 24000000 		.word	.LC1
+  81 0034 00000000 		.word	.LC0
+  82              		.cfi_endproc
+  83              	.LFE68:
+  85              		.section	.text.get_fattime,"ax",%progbits
+  86              		.align	1
+  87              		.global	get_fattime
+  88              		.syntax unified
+  89              		.thumb
+  90              		.thumb_func
+  92              	get_fattime:
+  93              	.LFB69:
+  28:FATFS/App/fatfs.c **** 
+  29:FATFS/App/fatfs.c **** /**
+  30:FATFS/App/fatfs.c ****  * @brief  获取FatFS时间戳（供FatFS内部调用）
+  31:FATFS/App/fatfs.c ****  */
+  32:FATFS/App/fatfs.c **** DWORD get_fattime(void)
+  33:FATFS/App/fatfs.c **** {
+  94              		.loc 1 33 1 view -0
+  95              		.cfi_startproc
+  96              		@ args = 0, pretend = 0, frame = 0
+  97              		@ frame_needed = 0, uses_anonymous_args = 0
+  98              		@ link register save eliminated.
+  34:FATFS/App/fatfs.c ****     // 边界保护，防止时间越界
+  35:FATFS/App/fatfs.c ****     if (g_fatfs_time.year < 1980) g_fatfs_time.year = 1980;
+  99              		.loc 1 35 5 view .LVU11
+ 100              		.loc 1 35 21 is_stmt 0 view .LVU12
+ 101 0000 1C4B     		ldr	r3, .L14
+ 102 0002 1A88     		ldrh	r2, [r3]
+ 103              		.loc 1 35 8 view .LVU13
+ 104 0004 40F2BB73 		movw	r3, #1979
+ 105 0008 9A42     		cmp	r2, r3
+ 106 000a 03D8     		bhi	.L9
+ 107              		.loc 1 35 35 is_stmt 1 discriminator 1 view .LVU14
+ 108              		.loc 1 35 53 is_stmt 0 discriminator 1 view .LVU15
+ 109 000c 194B     		ldr	r3, .L14
+ 110 000e 40F2BC72 		movw	r2, #1980
+ 111 0012 1A80     		strh	r2, [r3]	@ movhi
+ 112              	.L9:
+  36:FATFS/App/fatfs.c ****     if (g_fatfs_time.month < 1)  g_fatfs_time.month = 1;
+ 113              		.loc 1 36 5 is_stmt 1 view .LVU16
+ 114              		.loc 1 36 21 is_stmt 0 view .LVU17
+ 115 0014 174B     		ldr	r3, .L14
+ 116 0016 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 117              		.loc 1 36 8 view .LVU18
+ 118 0018 13B9     		cbnz	r3, .L10
+ 119              		.loc 1 36 34 is_stmt 1 discriminator 1 view .LVU19
+ 120              		.loc 1 36 53 is_stmt 0 discriminator 1 view .LVU20
+ 121 001a 164B     		ldr	r3, .L14
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 4
+
+
+ 122 001c 0122     		movs	r2, #1
+ 123 001e 9A70     		strb	r2, [r3, #2]
+ 124              	.L10:
+  37:FATFS/App/fatfs.c ****     if (g_fatfs_time.month > 12) g_fatfs_time.month = 12;
+ 125              		.loc 1 37 5 is_stmt 1 view .LVU21
+ 126              		.loc 1 37 21 is_stmt 0 view .LVU22
+ 127 0020 144B     		ldr	r3, .L14
+ 128 0022 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 129              		.loc 1 37 8 view .LVU23
+ 130 0024 0C2B     		cmp	r3, #12
+ 131 0026 02D9     		bls	.L11
+ 132              		.loc 1 37 34 is_stmt 1 discriminator 1 view .LVU24
+ 133              		.loc 1 37 53 is_stmt 0 discriminator 1 view .LVU25
+ 134 0028 124B     		ldr	r3, .L14
+ 135 002a 0C22     		movs	r2, #12
+ 136 002c 9A70     		strb	r2, [r3, #2]
+ 137              	.L11:
+  38:FATFS/App/fatfs.c ****     if (g_fatfs_time.day < 1)    g_fatfs_time.day = 1;
+ 138              		.loc 1 38 5 is_stmt 1 view .LVU26
+ 139              		.loc 1 38 21 is_stmt 0 view .LVU27
+ 140 002e 114B     		ldr	r3, .L14
+ 141 0030 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 142              		.loc 1 38 8 view .LVU28
+ 143 0032 13B9     		cbnz	r3, .L12
+ 144              		.loc 1 38 34 is_stmt 1 discriminator 1 view .LVU29
+ 145              		.loc 1 38 51 is_stmt 0 discriminator 1 view .LVU30
+ 146 0034 0F4B     		ldr	r3, .L14
+ 147 0036 0122     		movs	r2, #1
+ 148 0038 DA70     		strb	r2, [r3, #3]
+ 149              	.L12:
+  39:FATFS/App/fatfs.c ****     if (g_fatfs_time.day > 31)   g_fatfs_time.day = 31;
+ 150              		.loc 1 39 5 is_stmt 1 view .LVU31
+ 151              		.loc 1 39 21 is_stmt 0 view .LVU32
+ 152 003a 0E4B     		ldr	r3, .L14
+ 153 003c DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 154              		.loc 1 39 8 view .LVU33
+ 155 003e 1F2B     		cmp	r3, #31
+ 156 0040 02D9     		bls	.L13
+ 157              		.loc 1 39 34 is_stmt 1 discriminator 1 view .LVU34
+ 158              		.loc 1 39 51 is_stmt 0 discriminator 1 view .LVU35
+ 159 0042 0C4B     		ldr	r3, .L14
+ 160 0044 1F22     		movs	r2, #31
+ 161 0046 DA70     		strb	r2, [r3, #3]
+ 162              	.L13:
+  40:FATFS/App/fatfs.c **** 
+  41:FATFS/App/fatfs.c ****     return ((DWORD)(g_fatfs_time.year - 1980) << 25)
+ 163              		.loc 1 41 5 is_stmt 1 view .LVU36
+ 164              		.loc 1 41 33 is_stmt 0 view .LVU37
+ 165 0048 0A4A     		ldr	r2, .L14
+ 166 004a 1388     		ldrh	r3, [r2]
+ 167              		.loc 1 41 39 view .LVU38
+ 168 004c A3F2BC70 		subw	r0, r3, #1980
+  42:FATFS/App/fatfs.c ****          | ((DWORD)g_fatfs_time.month << 21)
+ 169              		.loc 1 42 32 view .LVU39
+ 170 0050 9378     		ldrb	r3, [r2, #2]	@ zero_extendqisi2
+ 171              		.loc 1 42 39 view .LVU40
+ 172 0052 5B05     		lsls	r3, r3, #21
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 5
+
+
+ 173              		.loc 1 42 10 view .LVU41
+ 174 0054 43EA4063 		orr	r3, r3, r0, lsl #25
+  43:FATFS/App/fatfs.c ****          | ((DWORD)g_fatfs_time.day << 16)
+ 175              		.loc 1 43 32 view .LVU42
+ 176 0058 D078     		ldrb	r0, [r2, #3]	@ zero_extendqisi2
+ 177              		.loc 1 43 10 view .LVU43
+ 178 005a 43EA0043 		orr	r3, r3, r0, lsl #16
+  44:FATFS/App/fatfs.c ****          | ((DWORD)g_fatfs_time.hour << 11)
+ 179              		.loc 1 44 32 view .LVU44
+ 180 005e 1079     		ldrb	r0, [r2, #4]	@ zero_extendqisi2
+ 181              		.loc 1 44 10 view .LVU45
+ 182 0060 43EAC023 		orr	r3, r3, r0, lsl #11
+  45:FATFS/App/fatfs.c ****          | ((DWORD)g_fatfs_time.minute << 5)
+ 183              		.loc 1 45 32 view .LVU46
+ 184 0064 5079     		ldrb	r0, [r2, #5]	@ zero_extendqisi2
+ 185              		.loc 1 45 10 view .LVU47
+ 186 0066 43EA4013 		orr	r3, r3, r0, lsl #5
+  46:FATFS/App/fatfs.c ****          | ((DWORD)(g_fatfs_time.second / 2));
+ 187              		.loc 1 46 33 view .LVU48
+ 188 006a 9079     		ldrb	r0, [r2, #6]	@ zero_extendqisi2
+  47:FATFS/App/fatfs.c **** }
+ 189              		.loc 1 47 1 view .LVU49
+ 190 006c 43EA5000 		orr	r0, r3, r0, lsr #1
+ 191 0070 7047     		bx	lr
+ 192              	.L15:
+ 193 0072 00BF     		.align	2
+ 194              	.L14:
+ 195 0074 00000000 		.word	.LANCHOR2
+ 196              		.cfi_endproc
+ 197              	.LFE69:
+ 199              		.section	.rodata.FatFs_Mount.str1.4,"aMS",%progbits,1
+ 200              		.align	2
+ 201              	.LC2:
+ 202 0000 5B666174 		.ascii	"[fatfs] \271\322\324\330\263\311\271\246\015\012\000"
+ 202      66735D20 
+ 202      B9D2D4D8 
+ 202      B3C9B9A6 
+ 202      0D0A00
+ 203 0013 00       		.align	2
+ 204              	.LC3:
+ 205 0014 5B666174 		.ascii	"[fatfs] \316\264\270\361\312\275\273\257\243\254\307"
+ 205      66735D20 
+ 205      CEB4B8F1 
+ 205      CABDBBAF 
+ 205      A3ACC7
+ 206 0027 EBCFC8B8 		.ascii	"\353\317\310\270\361\312\275\273\257\015\012\000"
+ 206      F1CABDBB 
+ 206      AF0D0A00 
+ 207 0033 00       		.align	2
+ 208              	.LC4:
+ 209 0034 5B666174 		.ascii	"[fatfs] \271\322\324\330\312\247\260\334\243\272%d\015"
+ 209      66735D20 
+ 209      B9D2D4D8 
+ 209      CAA7B0DC 
+ 209      A3BA2564 
+ 210 0049 0A00     		.ascii	"\012\000"
+ 211              		.section	.text.FatFs_Mount,"ax",%progbits
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 6
+
+
+ 212              		.align	1
+ 213              		.global	FatFs_Mount
+ 214              		.syntax unified
+ 215              		.thumb
+ 216              		.thumb_func
+ 218              	FatFs_Mount:
+ 219              	.LFB70:
+  48:FATFS/App/fatfs.c **** 
+  49:FATFS/App/fatfs.c **** /**
+  50:FATFS/App/fatfs.c ****  * @brief  挂载文件系统
+  51:FATFS/App/fatfs.c ****  */
+  52:FATFS/App/fatfs.c **** FRESULT FatFs_Mount(void)
+  53:FATFS/App/fatfs.c **** {
+ 220              		.loc 1 53 1 is_stmt 1 view -0
+ 221              		.cfi_startproc
+ 222              		@ args = 0, pretend = 0, frame = 0
+ 223              		@ frame_needed = 0, uses_anonymous_args = 0
+ 224 0000 38B5     		push	{r3, r4, r5, lr}
+ 225              	.LCFI1:
+ 226              		.cfi_def_cfa_offset 16
+ 227              		.cfi_offset 3, -16
+ 228              		.cfi_offset 4, -12
+ 229              		.cfi_offset 5, -8
+ 230              		.cfi_offset 14, -4
+  54:FATFS/App/fatfs.c ****     // 先卸载
+  55:FATFS/App/fatfs.c ****     retUSER = f_mount(NULL, USERPath, 0);
+ 231              		.loc 1 55 5 view .LVU51
+ 232              		.loc 1 55 15 is_stmt 0 view .LVU52
+ 233 0002 124C     		ldr	r4, .L23
+ 234 0004 0022     		movs	r2, #0
+ 235 0006 2146     		mov	r1, r4
+ 236 0008 1046     		mov	r0, r2
+ 237 000a FFF7FEFF 		bl	f_mount
+ 238              	.LVL3:
+ 239              		.loc 1 55 13 view .LVU53
+ 240 000e 104D     		ldr	r5, .L23+4
+ 241 0010 2870     		strb	r0, [r5]
+  56:FATFS/App/fatfs.c **** 
+  57:FATFS/App/fatfs.c ****     // 挂载（1=立即挂载）
+  58:FATFS/App/fatfs.c ****     retUSER = f_mount(&USERFatFS, USERPath, 1);
+ 242              		.loc 1 58 5 is_stmt 1 view .LVU54
+ 243              		.loc 1 58 15 is_stmt 0 view .LVU55
+ 244 0012 0122     		movs	r2, #1
+ 245 0014 2146     		mov	r1, r4
+ 246 0016 0F48     		ldr	r0, .L23+8
+ 247 0018 FFF7FEFF 		bl	f_mount
+ 248              	.LVL4:
+ 249 001c 0446     		mov	r4, r0
+ 250              		.loc 1 58 13 view .LVU56
+ 251 001e 2870     		strb	r0, [r5]
+  59:FATFS/App/fatfs.c **** 
+  60:FATFS/App/fatfs.c ****     switch(retUSER)
+ 252              		.loc 1 60 5 is_stmt 1 view .LVU57
+ 253 0020 40B1     		cbz	r0, .L17
+ 254 0022 0146     		mov	r1, r0
+ 255 0024 0D28     		cmp	r0, #13
+ 256 0026 0AD0     		beq	.L18
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 7
+
+
+  61:FATFS/App/fatfs.c ****     {
+  62:FATFS/App/fatfs.c ****         case FR_OK:
+  63:FATFS/App/fatfs.c ****             UsbPrintf("[fatfs] 挂载成功\r\n");
+  64:FATFS/App/fatfs.c ****             return FR_OK;
+  65:FATFS/App/fatfs.c **** 
+  66:FATFS/App/fatfs.c ****         case FR_NO_FILESYSTEM:
+  67:FATFS/App/fatfs.c ****             UsbPrintf("[fatfs] 未格式化，请先格式化\r\n");
+  68:FATFS/App/fatfs.c ****             return retUSER;
+  69:FATFS/App/fatfs.c **** 
+  70:FATFS/App/fatfs.c ****         default:
+  71:FATFS/App/fatfs.c ****             UsbPrintf("[fatfs] 挂载失败：%d\r\n", retUSER);
+ 257              		.loc 1 71 13 view .LVU58
+ 258 0028 0B48     		ldr	r0, .L23+12
+ 259 002a FFF7FEFF 		bl	UsbPrintf
+ 260              	.LVL5:
+  72:FATFS/App/fatfs.c ****             return retUSER;
+ 261              		.loc 1 72 13 view .LVU59
+ 262              		.loc 1 72 20 is_stmt 0 view .LVU60
+ 263 002e 084B     		ldr	r3, .L23+4
+ 264 0030 1C78     		ldrb	r4, [r3]	@ zero_extendqisi2
+ 265 0032 02E0     		b	.L20
+ 266              	.L17:
+  63:FATFS/App/fatfs.c ****             return FR_OK;
+ 267              		.loc 1 63 13 is_stmt 1 view .LVU61
+ 268 0034 0948     		ldr	r0, .L23+16
+ 269 0036 FFF7FEFF 		bl	UsbPrintf
+ 270              	.LVL6:
+  64:FATFS/App/fatfs.c **** 
+ 271              		.loc 1 64 13 view .LVU62
+ 272              	.L20:
+  73:FATFS/App/fatfs.c ****     }
+  74:FATFS/App/fatfs.c **** }
+ 273              		.loc 1 74 1 is_stmt 0 view .LVU63
+ 274 003a 2046     		mov	r0, r4
+ 275 003c 38BD     		pop	{r3, r4, r5, pc}
+ 276              	.L18:
+  67:FATFS/App/fatfs.c ****             return retUSER;
+ 277              		.loc 1 67 13 is_stmt 1 view .LVU64
+ 278 003e 0848     		ldr	r0, .L23+20
+ 279 0040 FFF7FEFF 		bl	UsbPrintf
+ 280              	.LVL7:
+  68:FATFS/App/fatfs.c **** 
+ 281              		.loc 1 68 13 view .LVU65
+  68:FATFS/App/fatfs.c **** 
+ 282              		.loc 1 68 20 is_stmt 0 view .LVU66
+ 283 0044 024B     		ldr	r3, .L23+4
+ 284 0046 1C78     		ldrb	r4, [r3]	@ zero_extendqisi2
+ 285 0048 F7E7     		b	.L20
+ 286              	.L24:
+ 287 004a 00BF     		.align	2
+ 288              	.L23:
+ 289 004c 00000000 		.word	.LANCHOR0
+ 290 0050 00000000 		.word	.LANCHOR1
+ 291 0054 00000000 		.word	USERFatFS
+ 292 0058 34000000 		.word	.LC4
+ 293 005c 00000000 		.word	.LC2
+ 294 0060 14000000 		.word	.LC3
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 8
+
+
+ 295              		.cfi_endproc
+ 296              	.LFE70:
+ 298              		.section	.rodata.FatFs_Format.str1.4,"aMS",%progbits,1
+ 299              		.align	2
+ 300              	.LC5:
+ 301 0000 5B666174 		.ascii	"[fatfs] \320\266\324\330\262\242\315\254\262\275..."
+ 301      66735D20 
+ 301      D0B6D4D8 
+ 301      B2A2CDAC 
+ 301      B2BD2E2E 
+ 302 0015 0D0A00   		.ascii	"\015\012\000"
+ 303              		.align	2
+ 304              	.LC6:
+ 305 0018 5B666174 		.ascii	"[fatfs] \324\244\271\322\324\330\312\247\260\334\015"
+ 305      66735D20 
+ 305      D4A4B9D2 
+ 305      D4D8CAA7 
+ 305      B0DC0D
+ 306 002b 0A00     		.ascii	"\012\000"
+ 307 002d 000000   		.align	2
+ 308              	.LC7:
+ 309 0030 5B666174 		.ascii	"[fatfs] \277\252\312\274\270\361\312\275\273\257..."
+ 309      66735D20 
+ 309      BFAACABC 
+ 309      B8F1CABD 
+ 309      BBAF2E2E 
+ 310 0045 0D0A00   		.ascii	"\015\012\000"
+ 311              		.align	2
+ 312              	.LC8:
+ 313 0048 5B666174 		.ascii	"[fatfs] \270\361\312\275\273\257\312\247\260\334\243"
+ 313      66735D20 
+ 313      B8F1CABD 
+ 313      BBAFCAA7 
+ 313      B0DCA3
+ 314 005b BA25640D 		.ascii	"\272%d\015\012\000"
+ 314      0A00
+ 315 0061 000000   		.align	2
+ 316              	.LC9:
+ 317 0064 5B666174 		.ascii	"[fatfs] \270\361\312\275\273\257+\271\322\324\330\263"
+ 317      66735D20 
+ 317      B8F1CABD 
+ 317      BBAF2BB9 
+ 317      D2D4D8B3 
+ 318 0078 C9B9A6A3 		.ascii	"\311\271\246\243\241FS\300\340\320\315\243\272%d\015"
+ 318      A14653C0 
+ 318      E0D0CDA3 
+ 318      BA25640D 
+ 319 0088 0A00     		.ascii	"\012\000"
+ 320 008a 0000     		.align	2
+ 321              	.LC10:
+ 322 008c 5B666174 		.ascii	"[fatfs] \270\361\312\275\273\257\272\363\271\322\324"
+ 322      66735D20 
+ 322      B8F1CABD 
+ 322      BBAFBAF3 
+ 322      B9D2D4
+ 323 009f D8CAA7B0 		.ascii	"\330\312\247\260\334\243\272%d\015\012\000"
+ 323      DCA3BA25 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 9
+
+
+ 323      640D0A00 
+ 324              		.section	.text.FatFs_Format,"ax",%progbits
+ 325              		.align	1
+ 326              		.global	FatFs_Format
+ 327              		.syntax unified
+ 328              		.thumb
+ 329              		.thumb_func
+ 331              	FatFs_Format:
+ 332              	.LFB71:
+  75:FATFS/App/fatfs.c **** 
+  76:FATFS/App/fatfs.c **** /**
+  77:FATFS/App/fatfs.c ****  * @brief  格式化（修复版）
+  78:FATFS/App/fatfs.c ****  */
+  79:FATFS/App/fatfs.c **** FRESULT FatFs_Format(void)
+  80:FATFS/App/fatfs.c **** {
+ 333              		.loc 1 80 1 is_stmt 1 view -0
+ 334              		.cfi_startproc
+ 335              		@ args = 0, pretend = 0, frame = 0
+ 336              		@ frame_needed = 0, uses_anonymous_args = 0
+ 337 0000 10B5     		push	{r4, lr}
+ 338              	.LCFI2:
+ 339              		.cfi_def_cfa_offset 8
+ 340              		.cfi_offset 4, -8
+ 341              		.cfi_offset 14, -4
+  81:FATFS/App/fatfs.c ****     FRESULT res;
+ 342              		.loc 1 81 5 view .LVU68
+  82:FATFS/App/fatfs.c **** 
+  83:FATFS/App/fatfs.c ****     UsbPrintf("[fatfs] 卸载并同步...\r\n");
+ 343              		.loc 1 83 5 view .LVU69
+ 344 0002 2448     		ldr	r0, .L34
+ 345 0004 FFF7FEFF 		bl	UsbPrintf
+ 346              	.LVL8:
+  84:FATFS/App/fatfs.c ****     f_mount(NULL, USERPath, 0);
+ 347              		.loc 1 84 5 view .LVU70
+ 348 0008 234C     		ldr	r4, .L34+4
+ 349 000a 0022     		movs	r2, #0
+ 350 000c 2146     		mov	r1, r4
+ 351 000e 1046     		mov	r0, r2
+ 352 0010 FFF7FEFF 		bl	f_mount
+ 353              	.LVL9:
+  85:FATFS/App/fatfs.c ****     disk_ioctl(0, CTRL_SYNC, NULL);  // 必须等Flash空闲
+ 354              		.loc 1 85 5 view .LVU71
+ 355 0014 0022     		movs	r2, #0
+ 356 0016 1146     		mov	r1, r2
+ 357 0018 1046     		mov	r0, r2
+ 358 001a FFF7FEFF 		bl	disk_ioctl
+ 359              	.LVL10:
+  86:FATFS/App/fatfs.c **** 
+  87:FATFS/App/fatfs.c ****     // 预挂载
+  88:FATFS/App/fatfs.c ****     res = f_mount(&USERFatFS, USERPath, 1);
+ 360              		.loc 1 88 5 view .LVU72
+ 361              		.loc 1 88 11 is_stmt 0 view .LVU73
+ 362 001e 0122     		movs	r2, #1
+ 363 0020 2146     		mov	r1, r4
+ 364 0022 1E48     		ldr	r0, .L34+8
+ 365 0024 FFF7FEFF 		bl	f_mount
+ 366              	.LVL11:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 10
+
+
+  89:FATFS/App/fatfs.c ****     if(res != FR_OK && res != FR_NO_FILESYSTEM)
+ 367              		.loc 1 89 5 is_stmt 1 view .LVU74
+ 368              		.loc 1 89 7 is_stmt 0 view .LVU75
+ 369 0028 10B1     		cbz	r0, .L26
+ 370 002a 0446     		mov	r4, r0
+ 371              		.loc 1 89 21 discriminator 1 view .LVU76
+ 372 002c 0D28     		cmp	r0, #13
+ 373 002e 23D1     		bne	.L32
+ 374              	.L26:
+  90:FATFS/App/fatfs.c ****     {
+  91:FATFS/App/fatfs.c ****         UsbPrintf("[fatfs] 预挂载失败\r\n");
+  92:FATFS/App/fatfs.c ****         return res;
+  93:FATFS/App/fatfs.c ****     }
+  94:FATFS/App/fatfs.c **** 
+  95:FATFS/App/fatfs.c ****     UsbPrintf("[fatfs] 开始格式化...\r\n");
+ 375              		.loc 1 95 5 is_stmt 1 view .LVU77
+ 376 0030 1B48     		ldr	r0, .L34+12
+ 377              	.LVL12:
+ 378              		.loc 1 95 5 is_stmt 0 view .LVU78
+ 379 0032 FFF7FEFF 		bl	UsbPrintf
+ 380              	.LVL13:
+  96:FATFS/App/fatfs.c **** 
+  97:FATFS/App/fatfs.c ****     res = f_mkfs(USERPath, 1, 0);
+ 381              		.loc 1 97 5 is_stmt 1 view .LVU79
+ 382              		.loc 1 97 11 is_stmt 0 view .LVU80
+ 383 0036 0022     		movs	r2, #0
+ 384 0038 0121     		movs	r1, #1
+ 385 003a 1748     		ldr	r0, .L34+4
+ 386 003c FFF7FEFF 		bl	f_mkfs
+ 387              	.LVL14:
+  98:FATFS/App/fatfs.c **** 
+  99:FATFS/App/fatfs.c ****     if(res != FR_OK)
+ 388              		.loc 1 99 5 is_stmt 1 view .LVU81
+ 389              		.loc 1 99 7 is_stmt 0 view .LVU82
+ 390 0040 0446     		mov	r4, r0
+ 391 0042 E8B9     		cbnz	r0, .L33
+ 100:FATFS/App/fatfs.c ****     {
+ 101:FATFS/App/fatfs.c ****         UsbPrintf("[fatfs] 格式化失败：%d\r\n", res);
+ 102:FATFS/App/fatfs.c ****         return res;
+ 103:FATFS/App/fatfs.c ****     }
+ 104:FATFS/App/fatfs.c **** 
+ 105:FATFS/App/fatfs.c ****     disk_ioctl(0, CTRL_SYNC, NULL);
+ 392              		.loc 1 105 5 is_stmt 1 view .LVU83
+ 393 0044 0022     		movs	r2, #0
+ 394 0046 1146     		mov	r1, r2
+ 395 0048 1046     		mov	r0, r2
+ 396              	.LVL15:
+ 397              		.loc 1 105 5 is_stmt 0 view .LVU84
+ 398 004a FFF7FEFF 		bl	disk_ioctl
+ 399              	.LVL16:
+ 106:FATFS/App/fatfs.c ****     res = f_mount(&USERFatFS, USERPath, 1);
+ 400              		.loc 1 106 5 is_stmt 1 view .LVU85
+ 401              		.loc 1 106 11 is_stmt 0 view .LVU86
+ 402 004e 0122     		movs	r2, #1
+ 403 0050 1149     		ldr	r1, .L34+4
+ 404 0052 1248     		ldr	r0, .L34+8
+ 405 0054 FFF7FEFF 		bl	f_mount
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 11
+
+
+ 406              	.LVL17:
+ 107:FATFS/App/fatfs.c **** 
+ 108:FATFS/App/fatfs.c ****     if(res == FR_OK)
+ 407              		.loc 1 108 5 is_stmt 1 view .LVU87
+ 408              		.loc 1 108 7 is_stmt 0 view .LVU88
+ 409 0058 0446     		mov	r4, r0
+ 410 005a B0B9     		cbnz	r0, .L29
+ 109:FATFS/App/fatfs.c ****     {
+ 110:FATFS/App/fatfs.c ****         UsbPrintf("[fatfs] 格式化+挂载成功！FS类型：%d\r\n", USERFatFS.fs_type);
+ 411              		.loc 1 110 9 is_stmt 1 view .LVU89
+ 412 005c 114B     		ldr	r3, .L34+16
+ 413 005e 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 414 0060 1148     		ldr	r0, .L34+20
+ 415              	.LVL18:
+ 416              		.loc 1 110 9 is_stmt 0 view .LVU90
+ 417 0062 FFF7FEFF 		bl	UsbPrintf
+ 418              	.LVL19:
+ 419              	.L30:
+ 111:FATFS/App/fatfs.c ****     }
+ 112:FATFS/App/fatfs.c ****     else
+ 113:FATFS/App/fatfs.c ****     {
+ 114:FATFS/App/fatfs.c ****         UsbPrintf("[fatfs] 格式化后挂载失败：%d\r\n", res);
+ 115:FATFS/App/fatfs.c ****     }
+ 116:FATFS/App/fatfs.c ****     
+ 117:FATFS/App/fatfs.c ****     disk_ioctl(0, CTRL_SYNC, NULL);
+ 420              		.loc 1 117 5 is_stmt 1 view .LVU91
+ 421 0066 0022     		movs	r2, #0
+ 422 0068 1146     		mov	r1, r2
+ 423 006a 1046     		mov	r0, r2
+ 424 006c FFF7FEFF 		bl	disk_ioctl
+ 425              	.LVL20:
+ 118:FATFS/App/fatfs.c ****     W25Q64_WaitBusy();
+ 426              		.loc 1 118 5 view .LVU92
+ 427 0070 FFF7FEFF 		bl	W25Q64_WaitBusy
+ 428              	.LVL21:
+ 119:FATFS/App/fatfs.c ****     return res;
+ 429              		.loc 1 119 5 view .LVU93
+ 430              	.L27:
+ 120:FATFS/App/fatfs.c **** }
+ 431              		.loc 1 120 1 is_stmt 0 view .LVU94
+ 432 0074 2046     		mov	r0, r4
+ 433 0076 10BD     		pop	{r4, pc}
+ 434              	.LVL22:
+ 435              	.L32:
+  91:FATFS/App/fatfs.c ****         return res;
+ 436              		.loc 1 91 9 is_stmt 1 view .LVU95
+ 437 0078 0C48     		ldr	r0, .L34+24
+ 438              	.LVL23:
+  91:FATFS/App/fatfs.c ****         return res;
+ 439              		.loc 1 91 9 is_stmt 0 view .LVU96
+ 440 007a FFF7FEFF 		bl	UsbPrintf
+ 441              	.LVL24:
+  92:FATFS/App/fatfs.c ****     }
+ 442              		.loc 1 92 9 is_stmt 1 view .LVU97
+  92:FATFS/App/fatfs.c ****     }
+ 443              		.loc 1 92 16 is_stmt 0 view .LVU98
+ 444 007e F9E7     		b	.L27
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 12
+
+
+ 445              	.LVL25:
+ 446              	.L33:
+ 101:FATFS/App/fatfs.c ****         return res;
+ 447              		.loc 1 101 9 is_stmt 1 view .LVU99
+ 448 0080 0146     		mov	r1, r0
+ 449 0082 0B48     		ldr	r0, .L34+28
+ 450              	.LVL26:
+ 101:FATFS/App/fatfs.c ****         return res;
+ 451              		.loc 1 101 9 is_stmt 0 view .LVU100
+ 452 0084 FFF7FEFF 		bl	UsbPrintf
+ 453              	.LVL27:
+ 102:FATFS/App/fatfs.c ****     }
+ 454              		.loc 1 102 9 is_stmt 1 view .LVU101
+ 102:FATFS/App/fatfs.c ****     }
+ 455              		.loc 1 102 16 is_stmt 0 view .LVU102
+ 456 0088 F4E7     		b	.L27
+ 457              	.LVL28:
+ 458              	.L29:
+ 114:FATFS/App/fatfs.c ****     }
+ 459              		.loc 1 114 9 is_stmt 1 view .LVU103
+ 460 008a 0146     		mov	r1, r0
+ 461 008c 0948     		ldr	r0, .L34+32
+ 462              	.LVL29:
+ 114:FATFS/App/fatfs.c ****     }
+ 463              		.loc 1 114 9 is_stmt 0 view .LVU104
+ 464 008e FFF7FEFF 		bl	UsbPrintf
+ 465              	.LVL30:
+ 466 0092 E8E7     		b	.L30
+ 467              	.L35:
+ 468              		.align	2
+ 469              	.L34:
+ 470 0094 00000000 		.word	.LC5
+ 471 0098 00000000 		.word	.LANCHOR0
+ 472 009c 00000000 		.word	USERFatFS
+ 473 00a0 30000000 		.word	.LC7
+ 474 00a4 00100000 		.word	USERFatFS+4096
+ 475 00a8 64000000 		.word	.LC9
+ 476 00ac 18000000 		.word	.LC6
+ 477 00b0 48000000 		.word	.LC8
+ 478 00b4 8C000000 		.word	.LC10
+ 479              		.cfi_endproc
+ 480              	.LFE71:
+ 482              		.section	.rodata.FatFs_ListDir.str1.4,"aMS",%progbits,1
+ 483              		.align	2
+ 484              	.LC11:
+ 485 0000 0D0A3D3D 		.ascii	"\015\012====== [\304\277\302\274] ======\015\012\000"
+ 485      3D3D3D3D 
+ 485      205BC4BF 
+ 485      C2BC5D20 
+ 485      3D3D3D3D 
+ 486 0019 000000   		.align	2
+ 487              	.LC12:
+ 488 001c 5B666174 		.ascii	"[fatfs] \316\264\270\361\312\275\273\257\015\012\000"
+ 488      66735D20 
+ 488      CEB4B8F1 
+ 488      CABDBBAF 
+ 488      0D0A00
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 13
+
+
+ 489 002f 00       		.align	2
+ 490              	.LC13:
+ 491 0030 5B666174 		.ascii	"[fatfs] \316\264\271\322\324\330\015\012\000"
+ 491      66735D20 
+ 491      CEB4B9D2 
+ 491      D4D80D0A 
+ 491      00
+ 492 0041 000000   		.align	2
+ 493              	.LC14:
+ 494 0044 5B666174 		.ascii	"[fatfs] \264\362\277\252\304\277\302\274\312\247\260"
+ 494      66735D20 
+ 494      B4F2BFAA 
+ 494      C4BFC2BC 
+ 494      CAA7B0
+ 495 0057 DCA3BA25 		.ascii	"\334\243\272%d\015\012\000"
+ 495      640D0A00 
+ 496 005f 00       		.align	2
+ 497              	.LC15:
+ 498 0060 3D3D3D3D 		.ascii	"====== END ======\015\012\000"
+ 498      3D3D2045 
+ 498      4E44203D 
+ 498      3D3D3D3D 
+ 498      3D0D0A00 
+ 499              		.align	2
+ 500              	.LC16:
+ 501 0074 5B444952 		.ascii	"[DIR]  %-12s | %04d-%02d-%02d %02d:%02d:%02d\015\012"
+ 501      5D202025 
+ 501      2D313273 
+ 501      207C2025 
+ 501      3034642D 
+ 502 00a2 00       		.ascii	"\000"
+ 503 00a3 00       		.align	2
+ 504              	.LC17:
+ 505 00a4 252D3132 		.ascii	"%-12s | %04d-%02d-%02d %02d:%02d:%02d | %lu KB /%10"
+ 505      73207C20 
+ 505      25303464 
+ 505      2D253032 
+ 505      642D2530 
+ 506 00d7 6C7520D7 		.ascii	"lu \327\326\275\332\015\012\000"
+ 506      D6BDDA0D 
+ 506      0A00
+ 507 00e1 000000   		.align	2
+ 508              	.LC18:
+ 509 00e4 5B666174 		.ascii	"[fatfs] \304\277\302\274\316\252\277\325\015\012\000"
+ 509      66735D20 
+ 509      C4BFC2BC 
+ 509      CEAABFD5 
+ 509      0D0A00
+ 510              		.section	.text.FatFs_ListDir,"ax",%progbits
+ 511              		.align	1
+ 512              		.global	FatFs_ListDir
+ 513              		.syntax unified
+ 514              		.thumb
+ 515              		.thumb_func
+ 517              	FatFs_ListDir:
+ 518              	.LFB72:
+ 121:FATFS/App/fatfs.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 14
+
+
+ 122:FATFS/App/fatfs.c **** /**
+ 123:FATFS/App/fatfs.c ****  * @brief  列出根目录文件
+ 124:FATFS/App/fatfs.c ****  */
+ 125:FATFS/App/fatfs.c **** void FatFs_ListDir(void)
+ 126:FATFS/App/fatfs.c **** {
+ 519              		.loc 1 126 1 is_stmt 1 view -0
+ 520              		.cfi_startproc
+ 521              		@ args = 0, pretend = 0, frame = 4168
+ 522              		@ frame_needed = 0, uses_anonymous_args = 0
+ 523 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 524              	.LCFI3:
+ 525              		.cfi_def_cfa_offset 20
+ 526              		.cfi_offset 4, -20
+ 527              		.cfi_offset 5, -16
+ 528              		.cfi_offset 6, -12
+ 529              		.cfi_offset 7, -8
+ 530              		.cfi_offset 14, -4
+ 531 0002 ADF5835D 		sub	sp, sp, #4192
+ 532              	.LCFI4:
+ 533              		.cfi_def_cfa_offset 4212
+ 534 0006 81B0     		sub	sp, sp, #4
+ 535              	.LCFI5:
+ 536              		.cfi_def_cfa_offset 4216
+ 127:FATFS/App/fatfs.c ****     DIR dir;
+ 537              		.loc 1 127 5 view .LVU106
+ 128:FATFS/App/fatfs.c ****     FILINFO fno;
+ 538              		.loc 1 128 5 view .LVU107
+ 129:FATFS/App/fatfs.c ****     FRESULT res;
+ 539              		.loc 1 129 5 view .LVU108
+ 130:FATFS/App/fatfs.c **** 
+ 131:FATFS/App/fatfs.c ****     UsbPrintf("\r\n====== [目录] ======\r\n");
+ 540              		.loc 1 131 5 view .LVU109
+ 541 0008 3648     		ldr	r0, .L51
+ 542 000a FFF7FEFF 		bl	UsbPrintf
+ 543              	.LVL31:
+ 132:FATFS/App/fatfs.c **** 
+ 133:FATFS/App/fatfs.c ****     res = f_opendir(&dir, USERPath);
+ 544              		.loc 1 133 5 view .LVU110
+ 545              		.loc 1 133 11 is_stmt 0 view .LVU111
+ 546 000e 3649     		ldr	r1, .L51+4
+ 547 0010 0EA8     		add	r0, sp, #56
+ 548 0012 FFF7FEFF 		bl	f_opendir
+ 549              	.LVL32:
+ 134:FATFS/App/fatfs.c ****     if (res != FR_OK)
+ 550              		.loc 1 134 5 is_stmt 1 view .LVU112
+ 551              		.loc 1 134 8 is_stmt 0 view .LVU113
+ 552 0016 0446     		mov	r4, r0
+ 553 0018 10B3     		cbz	r0, .L37
+ 135:FATFS/App/fatfs.c ****     {
+ 136:FATFS/App/fatfs.c ****         if (res == FR_NO_FILESYSTEM)
+ 554              		.loc 1 136 9 is_stmt 1 view .LVU114
+ 555              		.loc 1 136 12 is_stmt 0 view .LVU115
+ 556 001a 0D28     		cmp	r0, #13
+ 557 001c 09D0     		beq	.L48
+ 137:FATFS/App/fatfs.c ****             UsbPrintf("[fatfs] 未格式化\r\n");
+ 138:FATFS/App/fatfs.c ****         else if (res == FR_NOT_READY)
+ 558              		.loc 1 138 14 is_stmt 1 view .LVU116
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 15
+
+
+ 559              		.loc 1 138 17 is_stmt 0 view .LVU117
+ 560 001e 0328     		cmp	r0, #3
+ 561 0020 0BD0     		beq	.L49
+ 139:FATFS/App/fatfs.c ****             UsbPrintf("[fatfs] 未挂载\r\n");
+ 140:FATFS/App/fatfs.c ****         else
+ 141:FATFS/App/fatfs.c ****             UsbPrintf("[fatfs] 打开目录失败：%d\r\n", res);
+ 562              		.loc 1 141 13 is_stmt 1 view .LVU118
+ 563 0022 0146     		mov	r1, r0
+ 564 0024 3148     		ldr	r0, .L51+8
+ 565              	.LVL33:
+ 566              		.loc 1 141 13 is_stmt 0 view .LVU119
+ 567 0026 FFF7FEFF 		bl	UsbPrintf
+ 568              	.LVL34:
+ 569              	.L39:
+ 142:FATFS/App/fatfs.c **** 
+ 143:FATFS/App/fatfs.c ****         UsbPrintf("====== END ======\r\n");
+ 570              		.loc 1 143 9 is_stmt 1 view .LVU120
+ 571 002a 3148     		ldr	r0, .L51+12
+ 572 002c FFF7FEFF 		bl	UsbPrintf
+ 573              	.LVL35:
+ 144:FATFS/App/fatfs.c ****         return;
+ 574              		.loc 1 144 9 view .LVU121
+ 575 0030 4FE0     		b	.L36
+ 576              	.LVL36:
+ 577              	.L48:
+ 137:FATFS/App/fatfs.c ****         else if (res == FR_NOT_READY)
+ 578              		.loc 1 137 13 view .LVU122
+ 579 0032 3048     		ldr	r0, .L51+16
+ 580              	.LVL37:
+ 137:FATFS/App/fatfs.c ****         else if (res == FR_NOT_READY)
+ 581              		.loc 1 137 13 is_stmt 0 view .LVU123
+ 582 0034 FFF7FEFF 		bl	UsbPrintf
+ 583              	.LVL38:
+ 584 0038 F7E7     		b	.L39
+ 585              	.LVL39:
+ 586              	.L49:
+ 139:FATFS/App/fatfs.c ****         else
+ 587              		.loc 1 139 13 is_stmt 1 view .LVU124
+ 588 003a 2F48     		ldr	r0, .L51+20
+ 589              	.LVL40:
+ 139:FATFS/App/fatfs.c ****         else
+ 590              		.loc 1 139 13 is_stmt 0 view .LVU125
+ 591 003c FFF7FEFF 		bl	UsbPrintf
+ 592              	.LVL41:
+ 593 0040 F3E7     		b	.L39
+ 594              	.LVL42:
+ 595              	.L44:
+ 596              	.LBB2:
+ 145:FATFS/App/fatfs.c ****     }
+ 146:FATFS/App/fatfs.c **** 
+ 147:FATFS/App/fatfs.c ****     uint8_t file_count = 0;
+ 148:FATFS/App/fatfs.c ****     while (1)
+ 149:FATFS/App/fatfs.c ****     {
+ 150:FATFS/App/fatfs.c ****         memset(&fno, 0, sizeof(FILINFO));
+ 151:FATFS/App/fatfs.c ****         res = f_readdir(&dir, &fno);
+ 152:FATFS/App/fatfs.c **** 
+ 153:FATFS/App/fatfs.c ****         // 结束或错误
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 16
+
+
+ 154:FATFS/App/fatfs.c ****         if (res != FR_OK || fno.fname[0] == 0)
+ 155:FATFS/App/fatfs.c ****             break;
+ 156:FATFS/App/fatfs.c **** 
+ 157:FATFS/App/fatfs.c ****         // 跳过隐藏/系统/点文件
+ 158:FATFS/App/fatfs.c ****         if ((fno.fname[0] == '.') || (fno.fattrib & (AM_HID | AM_SYS)))
+ 159:FATFS/App/fatfs.c ****             continue;
+ 160:FATFS/App/fatfs.c **** 
+ 161:FATFS/App/fatfs.c ****         // 时间解析
+ 162:FATFS/App/fatfs.c ****         uint16_t fdate = fno.fdate;
+ 163:FATFS/App/fatfs.c ****         uint16_t ftime = fno.ftime;
+ 164:FATFS/App/fatfs.c ****         uint16_t year  = ((fdate >> 9) & 0x7F) + 1980;
+ 165:FATFS/App/fatfs.c ****         uint8_t  month = (fdate >> 5) & 0x0F;
+ 166:FATFS/App/fatfs.c ****         uint8_t  day   = fdate & 0x1F;
+ 167:FATFS/App/fatfs.c ****         uint8_t  hour  = (ftime >> 11) & 0x1F;
+ 168:FATFS/App/fatfs.c ****         uint8_t  min   = (ftime >> 5) & 0x3F;
+ 169:FATFS/App/fatfs.c ****         uint8_t  sec   = (ftime & 0x1F) * 2;
+ 170:FATFS/App/fatfs.c **** 
+ 171:FATFS/App/fatfs.c ****         // 打印
+ 172:FATFS/App/fatfs.c ****         if (fno.fattrib & AM_DIR)
+ 173:FATFS/App/fatfs.c ****         {
+ 174:FATFS/App/fatfs.c ****             UsbPrintf("[DIR]  %-12s | %04d-%02d-%02d %02d:%02d:%02d\r\n",
+ 175:FATFS/App/fatfs.c ****                 fno.fname, year, month, day, hour, min, sec);
+ 176:FATFS/App/fatfs.c ****         }
+ 177:FATFS/App/fatfs.c ****         else
+ 178:FATFS/App/fatfs.c ****         {
+ 179:FATFS/App/fatfs.c ****             UsbPrintf("%-12s | %04d-%02d-%02d %02d:%02d:%02d | %lu KB /%10lu 字节\r\n",
+ 597              		.loc 1 179 13 is_stmt 1 view .LVU126
+ 180:FATFS/App/fatfs.c ****                 fno.fname, year, month, day, hour, min, sec, fno.fsize/1024,fno.fsize);
+ 598              		.loc 1 180 65 is_stmt 0 view .LVU127
+ 599 0042 069D     		ldr	r5, [sp, #24]
+ 179:FATFS/App/fatfs.c ****                 fno.fname, year, month, day, hour, min, sec, fno.fsize/1024,fno.fsize);
+ 600              		.loc 1 179 13 view .LVU128
+ 601 0044 0595     		str	r5, [sp, #20]
+ 602 0046 AD0A     		lsrs	r5, r5, #10
+ 603 0048 0495     		str	r5, [sp, #16]
+ 604 004a 0391     		str	r1, [sp, #12]
+ 605 004c 0297     		str	r7, [sp, #8]
+ 606 004e 0196     		str	r6, [sp, #4]
+ 607 0050 0090     		str	r0, [sp]
+ 608 0052 0DF12101 		add	r1, sp, #33
+ 609              	.LVL43:
+ 179:FATFS/App/fatfs.c ****                 fno.fname, year, month, day, hour, min, sec, fno.fsize/1024,fno.fsize);
+ 610              		.loc 1 179 13 view .LVU129
+ 611 0056 2948     		ldr	r0, .L51+24
+ 612              	.LVL44:
+ 179:FATFS/App/fatfs.c ****                 fno.fname, year, month, day, hour, min, sec, fno.fsize/1024,fno.fsize);
+ 613              		.loc 1 179 13 view .LVU130
+ 614 0058 FFF7FEFF 		bl	UsbPrintf
+ 615              	.LVL45:
+ 616              	.L45:
+ 181:FATFS/App/fatfs.c ****         }
+ 182:FATFS/App/fatfs.c ****         file_count++;
+ 617              		.loc 1 182 9 is_stmt 1 view .LVU131
+ 618              		.loc 1 182 19 is_stmt 0 view .LVU132
+ 619 005c 0134     		adds	r4, r4, #1
+ 620              	.LVL46:
+ 621              		.loc 1 182 19 view .LVU133
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 17
+
+
+ 622 005e E4B2     		uxtb	r4, r4
+ 623              	.LVL47:
+ 624              	.L37:
+ 625              		.loc 1 182 19 view .LVU134
+ 626              	.LBE2:
+ 148:FATFS/App/fatfs.c ****     {
+ 627              		.loc 1 148 5 is_stmt 1 view .LVU135
+ 628              	.LBB3:
+ 150:FATFS/App/fatfs.c ****         res = f_readdir(&dir, &fno);
+ 629              		.loc 1 150 9 view .LVU136
+ 630 0060 2022     		movs	r2, #32
+ 631 0062 0021     		movs	r1, #0
+ 632 0064 06A8     		add	r0, sp, #24
+ 633 0066 FFF7FEFF 		bl	memset
+ 634              	.LVL48:
+ 151:FATFS/App/fatfs.c **** 
+ 635              		.loc 1 151 9 view .LVU137
+ 151:FATFS/App/fatfs.c **** 
+ 636              		.loc 1 151 15 is_stmt 0 view .LVU138
+ 637 006a 06A9     		add	r1, sp, #24
+ 638 006c 0EA8     		add	r0, sp, #56
+ 639 006e FFF7FEFF 		bl	f_readdir
+ 640              	.LVL49:
+ 154:FATFS/App/fatfs.c ****             break;
+ 641              		.loc 1 154 9 is_stmt 1 view .LVU139
+ 154:FATFS/App/fatfs.c ****             break;
+ 642              		.loc 1 154 12 is_stmt 0 view .LVU140
+ 643 0072 38BB     		cbnz	r0, .L42
+ 154:FATFS/App/fatfs.c ****             break;
+ 644              		.loc 1 154 38 discriminator 1 view .LVU141
+ 645 0074 9DF82130 		ldrb	r3, [sp, #33]	@ zero_extendqisi2
+ 154:FATFS/App/fatfs.c ****             break;
+ 646              		.loc 1 154 26 discriminator 1 view .LVU142
+ 647 0078 23B3     		cbz	r3, .L42
+ 158:FATFS/App/fatfs.c ****             continue;
+ 648              		.loc 1 158 9 is_stmt 1 view .LVU143
+ 158:FATFS/App/fatfs.c ****             continue;
+ 649              		.loc 1 158 12 is_stmt 0 view .LVU144
+ 650 007a 2E2B     		cmp	r3, #46
+ 651 007c F0D0     		beq	.L37
+ 158:FATFS/App/fatfs.c ****             continue;
+ 652              		.loc 1 158 42 discriminator 1 view .LVU145
+ 653 007e 9DF820C0 		ldrb	ip, [sp, #32]	@ zero_extendqisi2
+ 158:FATFS/App/fatfs.c ****             continue;
+ 654              		.loc 1 158 35 discriminator 1 view .LVU146
+ 655 0082 1CF0060F 		tst	ip, #6
+ 656 0086 EBD1     		bne	.L37
+ 162:FATFS/App/fatfs.c ****         uint16_t ftime = fno.ftime;
+ 657              		.loc 1 162 9 is_stmt 1 view .LVU147
+ 162:FATFS/App/fatfs.c ****         uint16_t ftime = fno.ftime;
+ 658              		.loc 1 162 18 is_stmt 0 view .LVU148
+ 659 0088 BDF81C00 		ldrh	r0, [sp, #28]
+ 660              	.LVL50:
+ 163:FATFS/App/fatfs.c ****         uint16_t year  = ((fdate >> 9) & 0x7F) + 1980;
+ 661              		.loc 1 163 9 is_stmt 1 view .LVU149
+ 163:FATFS/App/fatfs.c ****         uint16_t year  = ((fdate >> 9) & 0x7F) + 1980;
+ 662              		.loc 1 163 18 is_stmt 0 view .LVU150
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 18
+
+
+ 663 008c BDF81E10 		ldrh	r1, [sp, #30]
+ 664              	.LVL51:
+ 164:FATFS/App/fatfs.c ****         uint8_t  month = (fdate >> 5) & 0x0F;
+ 665              		.loc 1 164 9 is_stmt 1 view .LVU151
+ 164:FATFS/App/fatfs.c ****         uint8_t  month = (fdate >> 5) & 0x0F;
+ 666              		.loc 1 164 48 is_stmt 0 view .LVU152
+ 667 0090 420A     		lsrs	r2, r0, #9
+ 164:FATFS/App/fatfs.c ****         uint8_t  month = (fdate >> 5) & 0x0F;
+ 668              		.loc 1 164 18 view .LVU153
+ 669 0092 02F2BC72 		addw	r2, r2, #1980
+ 670              	.LVL52:
+ 165:FATFS/App/fatfs.c ****         uint8_t  day   = fdate & 0x1F;
+ 671              		.loc 1 165 9 is_stmt 1 view .LVU154
+ 165:FATFS/App/fatfs.c ****         uint8_t  day   = fdate & 0x1F;
+ 672              		.loc 1 165 18 is_stmt 0 view .LVU155
+ 673 0096 C0F34313 		ubfx	r3, r0, #5, #4
+ 674              	.LVL53:
+ 166:FATFS/App/fatfs.c ****         uint8_t  hour  = (ftime >> 11) & 0x1F;
+ 675              		.loc 1 166 9 is_stmt 1 view .LVU156
+ 166:FATFS/App/fatfs.c ****         uint8_t  hour  = (ftime >> 11) & 0x1F;
+ 676              		.loc 1 166 18 is_stmt 0 view .LVU157
+ 677 009a 00F01F00 		and	r0, r0, #31
+ 678              	.LVL54:
+ 167:FATFS/App/fatfs.c ****         uint8_t  min   = (ftime >> 5) & 0x3F;
+ 679              		.loc 1 167 9 is_stmt 1 view .LVU158
+ 167:FATFS/App/fatfs.c ****         uint8_t  min   = (ftime >> 5) & 0x3F;
+ 680              		.loc 1 167 18 is_stmt 0 view .LVU159
+ 681 009e CE0A     		lsrs	r6, r1, #11
+ 682              	.LVL55:
+ 168:FATFS/App/fatfs.c ****         uint8_t  sec   = (ftime & 0x1F) * 2;
+ 683              		.loc 1 168 9 is_stmt 1 view .LVU160
+ 168:FATFS/App/fatfs.c ****         uint8_t  sec   = (ftime & 0x1F) * 2;
+ 684              		.loc 1 168 18 is_stmt 0 view .LVU161
+ 685 00a0 C1F34517 		ubfx	r7, r1, #5, #6
+ 686              	.LVL56:
+ 169:FATFS/App/fatfs.c **** 
+ 687              		.loc 1 169 9 is_stmt 1 view .LVU162
+ 169:FATFS/App/fatfs.c **** 
+ 688              		.loc 1 169 18 is_stmt 0 view .LVU163
+ 689 00a4 01F01F01 		and	r1, r1, #31
+ 690              	.LVL57:
+ 169:FATFS/App/fatfs.c **** 
+ 691              		.loc 1 169 18 view .LVU164
+ 692 00a8 4900     		lsls	r1, r1, #1
+ 693              	.LVL58:
+ 172:FATFS/App/fatfs.c ****         {
+ 694              		.loc 1 172 9 is_stmt 1 view .LVU165
+ 172:FATFS/App/fatfs.c ****         {
+ 695              		.loc 1 172 12 is_stmt 0 view .LVU166
+ 696 00aa 1CF0100F 		tst	ip, #16
+ 697 00ae C8D0     		beq	.L44
+ 174:FATFS/App/fatfs.c ****                 fno.fname, year, month, day, hour, min, sec);
+ 698              		.loc 1 174 13 is_stmt 1 view .LVU167
+ 699 00b0 0391     		str	r1, [sp, #12]
+ 700 00b2 0297     		str	r7, [sp, #8]
+ 701 00b4 0196     		str	r6, [sp, #4]
+ 702 00b6 0090     		str	r0, [sp]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 19
+
+
+ 703 00b8 0DF12101 		add	r1, sp, #33
+ 704              	.LVL59:
+ 174:FATFS/App/fatfs.c ****                 fno.fname, year, month, day, hour, min, sec);
+ 705              		.loc 1 174 13 is_stmt 0 view .LVU168
+ 706 00bc 1048     		ldr	r0, .L51+28
+ 707              	.LVL60:
+ 174:FATFS/App/fatfs.c ****                 fno.fname, year, month, day, hour, min, sec);
+ 708              		.loc 1 174 13 view .LVU169
+ 709 00be FFF7FEFF 		bl	UsbPrintf
+ 710              	.LVL61:
+ 174:FATFS/App/fatfs.c ****                 fno.fname, year, month, day, hour, min, sec);
+ 711              		.loc 1 174 13 view .LVU170
+ 712 00c2 CBE7     		b	.L45
+ 713              	.LVL62:
+ 714              	.L42:
+ 174:FATFS/App/fatfs.c ****                 fno.fname, year, month, day, hour, min, sec);
+ 715              		.loc 1 174 13 view .LVU171
+ 716              	.LBE3:
+ 183:FATFS/App/fatfs.c ****     }
+ 184:FATFS/App/fatfs.c **** 
+ 185:FATFS/App/fatfs.c ****     if (file_count == 0)
+ 717              		.loc 1 185 5 is_stmt 1 view .LVU172
+ 718              		.loc 1 185 8 is_stmt 0 view .LVU173
+ 719 00c4 4CB1     		cbz	r4, .L50
+ 720              	.LVL63:
+ 721              	.L46:
+ 186:FATFS/App/fatfs.c ****         UsbPrintf("[fatfs] 目录为空\r\n");
+ 187:FATFS/App/fatfs.c **** 
+ 188:FATFS/App/fatfs.c ****     f_closedir(&dir);
+ 722              		.loc 1 188 5 is_stmt 1 view .LVU174
+ 723 00c6 0EA8     		add	r0, sp, #56
+ 724 00c8 FFF7FEFF 		bl	f_closedir
+ 725              	.LVL64:
+ 189:FATFS/App/fatfs.c ****     UsbPrintf("====== END ======\r\n");
+ 726              		.loc 1 189 5 view .LVU175
+ 727 00cc 0848     		ldr	r0, .L51+12
+ 728 00ce FFF7FEFF 		bl	UsbPrintf
+ 729              	.LVL65:
+ 730              	.L36:
+ 190:FATFS/App/fatfs.c **** }
+ 731              		.loc 1 190 1 is_stmt 0 view .LVU176
+ 732 00d2 0DF5835D 		add	sp, sp, #4192
+ 733 00d6 01B0     		add	sp, sp, #4
+ 734              	.LCFI6:
+ 735              		.cfi_remember_state
+ 736              		.cfi_def_cfa_offset 20
+ 737              		@ sp needed
+ 738 00d8 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 739              	.LVL66:
+ 740              	.L50:
+ 741              	.LCFI7:
+ 742              		.cfi_restore_state
+ 186:FATFS/App/fatfs.c ****         UsbPrintf("[fatfs] 目录为空\r\n");
+ 743              		.loc 1 186 9 is_stmt 1 view .LVU177
+ 744 00da 0A48     		ldr	r0, .L51+32
+ 745              	.LVL67:
+ 186:FATFS/App/fatfs.c ****         UsbPrintf("[fatfs] 目录为空\r\n");
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 20
+
+
+ 746              		.loc 1 186 9 is_stmt 0 view .LVU178
+ 747 00dc FFF7FEFF 		bl	UsbPrintf
+ 748              	.LVL68:
+ 749 00e0 F1E7     		b	.L46
+ 750              	.L52:
+ 751 00e2 00BF     		.align	2
+ 752              	.L51:
+ 753 00e4 00000000 		.word	.LC11
+ 754 00e8 00000000 		.word	.LANCHOR0
+ 755 00ec 44000000 		.word	.LC14
+ 756 00f0 60000000 		.word	.LC15
+ 757 00f4 1C000000 		.word	.LC12
+ 758 00f8 30000000 		.word	.LC13
+ 759 00fc A4000000 		.word	.LC17
+ 760 0100 74000000 		.word	.LC16
+ 761 0104 E4000000 		.word	.LC18
+ 762              		.cfi_endproc
+ 763              	.LFE72:
+ 765              		.section	.rodata.FatFs_Unmount.str1.4,"aMS",%progbits,1
+ 766              		.align	2
+ 767              	.LC19:
+ 768 0000 5B666174 		.ascii	"[fatfs] \320\266\324\330\263\311\271\246\015\012\000"
+ 768      66735D20 
+ 768      D0B6D4D8 
+ 768      B3C9B9A6 
+ 768      0D0A00
+ 769              		.section	.text.FatFs_Unmount,"ax",%progbits
+ 770              		.align	1
+ 771              		.global	FatFs_Unmount
+ 772              		.syntax unified
+ 773              		.thumb
+ 774              		.thumb_func
+ 776              	FatFs_Unmount:
+ 777              	.LFB73:
+ 191:FATFS/App/fatfs.c **** 
+ 192:FATFS/App/fatfs.c **** /**
+ 193:FATFS/App/fatfs.c ****  * @brief  卸载文件系统
+ 194:FATFS/App/fatfs.c ****  */
+ 195:FATFS/App/fatfs.c **** void FatFs_Unmount(void)
+ 196:FATFS/App/fatfs.c **** {
+ 778              		.loc 1 196 1 is_stmt 1 view -0
+ 779              		.cfi_startproc
+ 780              		@ args = 0, pretend = 0, frame = 0
+ 781              		@ frame_needed = 0, uses_anonymous_args = 0
+ 782 0000 08B5     		push	{r3, lr}
+ 783              	.LCFI8:
+ 784              		.cfi_def_cfa_offset 8
+ 785              		.cfi_offset 3, -8
+ 786              		.cfi_offset 14, -4
+ 197:FATFS/App/fatfs.c ****     f_close(&USERFile);      // ? 强制关闭残留文件句柄
+ 787              		.loc 1 197 5 view .LVU180
+ 788 0002 0848     		ldr	r0, .L55
+ 789 0004 FFF7FEFF 		bl	f_close
+ 790              	.LVL69:
+ 198:FATFS/App/fatfs.c ****     disk_ioctl(0, CTRL_SYNC, NULL);
+ 791              		.loc 1 198 5 view .LVU181
+ 792 0008 0022     		movs	r2, #0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 21
+
+
+ 793 000a 1146     		mov	r1, r2
+ 794 000c 1046     		mov	r0, r2
+ 795 000e FFF7FEFF 		bl	disk_ioctl
+ 796              	.LVL70:
+ 199:FATFS/App/fatfs.c ****     f_mount(NULL, USERPath, 0);
+ 797              		.loc 1 199 5 view .LVU182
+ 798 0012 0022     		movs	r2, #0
+ 799 0014 0449     		ldr	r1, .L55+4
+ 800 0016 1046     		mov	r0, r2
+ 801 0018 FFF7FEFF 		bl	f_mount
+ 802              	.LVL71:
+ 200:FATFS/App/fatfs.c ****     UsbPrintf("[fatfs] 卸载成功\r\n");
+ 803              		.loc 1 200 5 view .LVU183
+ 804 001c 0348     		ldr	r0, .L55+8
+ 805 001e FFF7FEFF 		bl	UsbPrintf
+ 806              	.LVL72:
+ 201:FATFS/App/fatfs.c **** }...
+ 807              		.loc 1 201 1 is_stmt 0 view .LVU184
+ 808 0022 08BD     		pop	{r3, pc}
+ 809              	.L56:
+ 810              		.align	2
+ 811              	.L55:
+ 812 0024 00000000 		.word	USERFile
+ 813 0028 00000000 		.word	.LANCHOR0
+ 814 002c 00000000 		.word	.LC19
+ 815              		.cfi_endproc
+ 816              	.LFE73:
+ 818              		.global	g_fatfs_time
+ 819              		.global	fnum
+ 820              		.global	USERFile
+ 821              		.global	USERFatFS
+ 822              		.global	USERPath
+ 823              		.global	retUSER
+ 824              		.section	.bss.USERFatFS,"aw",%nobits
+ 825              		.align	2
+ 828              	USERFatFS:
+ 829 0000 00000000 		.space	4144
+ 829      00000000 
+ 829      00000000 
+ 829      00000000 
+ 829      00000000 
+ 830              		.section	.bss.USERFile,"aw",%nobits
+ 831              		.align	2
+ 834              	USERFile:
+ 835 0000 00000000 		.space	4140
+ 835      00000000 
+ 835      00000000 
+ 835      00000000 
+ 835      00000000 
+ 836              		.section	.bss.fnum,"aw",%nobits
+ 837              		.align	2
+ 840              	fnum:
+ 841 0000 00000000 		.space	4
+ 842              		.section	.bss.retUSER,"aw",%nobits
+ 843              		.set	.LANCHOR1,. + 0
+ 846              	retUSER:
+ 847 0000 00       		.space	1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 22
+
+
+ 848              		.section	.data.USERPath,"aw"
+ 849              		.align	2
+ 850              		.set	.LANCHOR0,. + 0
+ 853              	USERPath:
+ 854 0000 303A00   		.ascii	"0:\000"
+ 855 0003 00       		.space	1
+ 856              		.section	.data.g_fatfs_time,"aw"
+ 857              		.align	2
+ 858              		.set	.LANCHOR2,. + 0
+ 861              	g_fatfs_time:
+ 862 0000 EA07     		.short	2026
+ 863 0002 03       		.byte	3
+ 864 0003 14       		.byte	20
+ 865 0004 00       		.byte	0
+ 866 0005 00       		.byte	0
+ 867 0006 00       		.byte	0
+ 868 0007 00       		.space	1
+ 869              		.text
+ 870              	.Letext0:
+ 871              		.file 2 "Middlewares/Third_Party/FatFs/src/integer.h"
+ 872              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 873              		.file 4 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 874              		.file 5 "Middlewares/Third_Party/FatFs/src/ff.h"
+ 875              		.file 6 "Middlewares/Third_Party/FatFs/src/diskio.h"
+ 876              		.file 7 "Middlewares/Third_Party/FatFs/src/ff_gen_drv.h"
+ 877              		.file 8 "FATFS/Target/user_diskio.h"
+ 878              		.file 9 "User/Inc/storage.h"
+ 879              		.file 10 "FATFS/App/fatfs.h"
+ 880              		.file 11 "Core/Inc/main.h"
+ 881              		.file 12 "User/Inc/flash.h"
+ 882              		.file 13 "<built-in>"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s 			page 23
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 fatfs.c
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:18     .rodata.MX_FATFS_Init.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:29     .text.MX_FATFS_Init:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:35     .text.MX_FATFS_Init:00000000 MX_FATFS_Init
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:77     .text.MX_FATFS_Init:00000024 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:86     .text.get_fattime:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:92     .text.get_fattime:00000000 get_fattime
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:195    .text.get_fattime:00000074 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:200    .rodata.FatFs_Mount.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:212    .text.FatFs_Mount:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:218    .text.FatFs_Mount:00000000 FatFs_Mount
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:289    .text.FatFs_Mount:0000004c $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:828    .bss.USERFatFS:00000000 USERFatFS
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:299    .rodata.FatFs_Format.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:325    .text.FatFs_Format:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:331    .text.FatFs_Format:00000000 FatFs_Format
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:470    .text.FatFs_Format:00000094 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:483    .rodata.FatFs_ListDir.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:511    .text.FatFs_ListDir:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:517    .text.FatFs_ListDir:00000000 FatFs_ListDir
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:753    .text.FatFs_ListDir:000000e4 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:766    .rodata.FatFs_Unmount.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:770    .text.FatFs_Unmount:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:776    .text.FatFs_Unmount:00000000 FatFs_Unmount
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:812    .text.FatFs_Unmount:00000024 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:834    .bss.USERFile:00000000 USERFile
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:861    .data.g_fatfs_time:00000000 g_fatfs_time
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:840    .bss.fnum:00000000 fnum
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:853    .data.USERPath:00000000 USERPath
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:846    .bss.retUSER:00000000 retUSER
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:825    .bss.USERFatFS:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:831    .bss.USERFile:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:837    .bss.fnum:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:847    .bss.retUSER:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:849    .data.USERPath:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccf2Jp45.s:857    .data.g_fatfs_time:00000000 $d
+
+UNDEFINED SYMBOLS
+FATFS_LinkDriver
+UsbPrintf
+USER_Driver
+f_mount
+disk_ioctl
+f_mkfs
+W25Q64_WaitBusy
+f_opendir
+memset
+f_readdir
+f_closedir
+f_close

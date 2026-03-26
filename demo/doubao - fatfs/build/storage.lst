@@ -1,0 +1,2867 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"storage.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.Storage_Print,"ax",%progbits
+  18              		.align	1
+  19              		.global	Storage_Print
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	Storage_Print:
+  25              	.LVL0:
+  26              	.LFB68:
+  27              		.file 1 "User/Src/storage.c"
+   1:User/Src/storage.c **** #include "storage.h"
+   2:User/Src/storage.c **** #include "diskio.h"
+   3:User/Src/storage.c **** #include "string.h"
+   4:User/Src/storage.c **** #include "usart.h"
+   5:User/Src/storage.c **** #include <stdio.h>
+   6:User/Src/storage.c **** #include <stdarg.h>
+   7:User/Src/storage.c **** #include <stdlib.h>
+   8:User/Src/storage.c **** #include <stdint.h>
+   9:User/Src/storage.c **** 
+  10:User/Src/storage.c **** // 全局FatFs对象
+  11:User/Src/storage.c **** static FATFS fs;
+  12:User/Src/storage.c **** /************************** 基础打印模块（独立，带宏开关） **************************/
+  13:User/Src/storage.c **** #ifdef  ENABLE_STORAGE_PRINT
+  14:User/Src/storage.c **** 
+  15:User/Src/storage.c **** //#define ENABLE_PRINT_ASCII  1  //打印ascii测试
+  16:User/Src/storage.c **** 
+  17:User/Src/storage.c **** // 封装存储模块专属打印函数，统一串口输出
+  18:User/Src/storage.c **** void Storage_Print(const char *fmt,...) {
+  28              		.loc 1 18 41 view -0
+  29              		.cfi_startproc
+  30              		@ args = 4, pretend = 16, frame = 264
+  31              		@ frame_needed = 0, uses_anonymous_args = 1
+  32              		.loc 1 18 41 is_stmt 0 view .LVU1
+  33 0000 0FB4     		push	{r0, r1, r2, r3}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 16
+  36              		.cfi_offset 0, -16
+  37              		.cfi_offset 1, -12
+  38              		.cfi_offset 2, -8
+  39              		.cfi_offset 3, -4
+  40 0002 00B5     		push	{lr}
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 2
+
+
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_offset 20
+  43              		.cfi_offset 14, -20
+  44 0004 C3B0     		sub	sp, sp, #268
+  45              	.LCFI2:
+  46              		.cfi_def_cfa_offset 288
+  47 0006 44AB     		add	r3, sp, #272
+  48 0008 53F8042B 		ldr	r2, [r3], #4
+  19:User/Src/storage.c ****     va_list args;
+  49              		.loc 1 19 5 is_stmt 1 view .LVU2
+  20:User/Src/storage.c ****     char buffer[256];
+  50              		.loc 1 20 5 view .LVU3
+  21:User/Src/storage.c ****     va_start(args, fmt);
+  51              		.loc 1 21 5 view .LVU4
+  52 000c 4193     		str	r3, [sp, #260]
+  22:User/Src/storage.c ****     vsnprintf(buffer, sizeof(buffer), fmt, args);
+  53              		.loc 1 22 5 view .LVU5
+  54 000e 4FF48071 		mov	r1, #256
+  55 0012 01A8     		add	r0, sp, #4
+  56 0014 FFF7FEFF 		bl	vsnprintf
+  57              	.LVL1:
+  23:User/Src/storage.c ****     va_end(args);
+  58              		.loc 1 23 5 view .LVU6
+  24:User/Src/storage.c ****     // 复用串口1输出，与其他模块打印逻辑一致
+  25:User/Src/storage.c ****     HAL_UART_Transmit(&huart1, (uint8_t *)buffer, strlen(buffer), 100);
+  59              		.loc 1 25 5 view .LVU7
+  60              		.loc 1 25 51 is_stmt 0 view .LVU8
+  61 0018 01A8     		add	r0, sp, #4
+  62 001a FFF7FEFF 		bl	strlen
+  63              	.LVL2:
+  64              		.loc 1 25 5 view .LVU9
+  65 001e 6423     		movs	r3, #100
+  66 0020 82B2     		uxth	r2, r0
+  67 0022 01A9     		add	r1, sp, #4
+  68 0024 0348     		ldr	r0, .L3
+  69 0026 FFF7FEFF 		bl	HAL_UART_Transmit
+  70              	.LVL3:
+  26:User/Src/storage.c **** }
+  71              		.loc 1 26 1 view .LVU10
+  72 002a 43B0     		add	sp, sp, #268
+  73              	.LCFI3:
+  74              		.cfi_def_cfa_offset 20
+  75              		@ sp needed
+  76 002c 5DF804EB 		ldr	lr, [sp], #4
+  77              	.LCFI4:
+  78              		.cfi_restore 14
+  79              		.cfi_def_cfa_offset 16
+  80 0030 04B0     		add	sp, sp, #16
+  81              	.LCFI5:
+  82              		.cfi_restore 3
+  83              		.cfi_restore 2
+  84              		.cfi_restore 1
+  85              		.cfi_restore 0
+  86              		.cfi_def_cfa_offset 0
+  87 0032 7047     		bx	lr
+  88              	.L4:
+  89              		.align	2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 3
+
+
+  90              	.L3:
+  91 0034 00000000 		.word	huart1
+  92              		.cfi_endproc
+  93              	.LFE68:
+  95              		.section	.rodata.Storage_Format.str1.4,"aMS",%progbits,1
+  96              		.align	2
+  97              	.LC0:
+  98 0000 B4E6B4A2 		.ascii	"\264\346\264\242\270\361\312\275\273\257: \277\252\312"
+  98      B8F1CABD 
+  98      BBAF3A20 
+  98      BFAACA
+  99 000f BCB8F1CA 		.ascii	"\274\270\361\312\275\273\257FLASH\316\252FAT\270\361"
+  99      BDBBAF46 
+  99      4C415348 
+  99      CEAA4641 
+  99      54B8F1
+ 100 0022 CABD2E2E 		.ascii	"\312\275...\012\000"
+ 100      2E0A00
+ 101 0029 000000   		.align	2
+ 102              	.LC1:
+ 103 002c 00       		.ascii	"\000"
+ 104 002d 000000   		.align	2
+ 105              	.LC2:
+ 106 0030 B4E6B4A2 		.ascii	"\264\346\264\242\270\361\312\275\273\257: \270\361\312"
+ 106      B8F1CABD 
+ 106      BBAF3A20 
+ 106      B8F1CA
+ 107 003f BDBBAFCA 		.ascii	"\275\273\257\312\247\260\334\243\254\264\355\316\363"
+ 107      A7B0DCA3 
+ 107      ACB4EDCE 
+ 107      F3
+ 108 004c C2EB2575 		.ascii	"\302\353%u\243\241\012\000"
+ 108      A3A10A00 
+ 109              		.align	2
+ 110              	.LC3:
+ 111 0054 B4E6B4A2 		.ascii	"\264\346\264\242\270\361\312\275\273\257: FLASH\270"
+ 111      B8F1CABD 
+ 111      BBAF3A20 
+ 111      464C4153 
+ 111      48B8
+ 112 0066 F1CABDBB 		.ascii	"\361\312\275\273\257\263\311\271\246\243\241\012\000"
+ 112      AFB3C9B9 
+ 112      A6A3A10A 
+ 112      00
+ 113              		.section	.text.Storage_Format,"ax",%progbits
+ 114              		.align	1
+ 115              		.global	Storage_Format
+ 116              		.syntax unified
+ 117              		.thumb
+ 118              		.thumb_func
+ 120              	Storage_Format:
+ 121              	.LFB70:
+  27:User/Src/storage.c **** // 替换原有UsbPrintf，统一为存储模块打印宏
+  28:User/Src/storage.c **** #define Storage_print Storage_Print
+  29:User/Src/storage.c **** #else
+  30:User/Src/storage.c **** // 关闭打印时，空宏屏蔽所有打印语句
+  31:User/Src/storage.c **** #define Storage_print(...)
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 4
+
+
+  32:User/Src/storage.c **** #endif
+  33:User/Src/storage.c **** /************************** 存储系统核心模块（初始化/格式化） **************************/
+  34:User/Src/storage.c **** // 修改storage.c中的Storage_Init函数
+  35:User/Src/storage.c **** StorageError Storage_Init(void) {
+  36:User/Src/storage.c ****     FRESULT res = FR_OK;
+  37:User/Src/storage.c ****     Storage_print("存储初始化: 开始挂载FatFs文件系统...\n");
+  38:User/Src/storage.c ****     // 先尝试挂载现有文件系统
+  39:User/Src/storage.c ****     res = f_mount(&fs, "", 1);
+  40:User/Src/storage.c ****     if (res == FR_OK) {
+  41:User/Src/storage.c ****         Storage_print("存储初始化: 成功挂载现有文件系统！\n");
+  42:User/Src/storage.c ****         return STORAGE_OK;
+  43:User/Src/storage.c ****     } else if (res == FR_NO_FILESYSTEM) {
+  44:User/Src/storage.c ****         Storage_print("存储初始化: 未检测到文件系统，创建新文件系统...\n");
+  45:User/Src/storage.c ****         // 首次上电无文件系统时创建
+  46:User/Src/storage.c ****         if (Storage_Format() != STORAGE_OK) {
+  47:User/Src/storage.c ****             Storage_print("存储初始化: 格式化失败！\n");
+  48:User/Src/storage.c ****             return STORAGE_ERROR_INIT;
+  49:User/Src/storage.c ****         }
+  50:User/Src/storage.c ****         res = f_mount(&fs, "", 1);
+  51:User/Src/storage.c ****         if (res == FR_OK) {
+  52:User/Src/storage.c ****             Storage_print("存储初始化: 新文件系统创建并挂载成功！\n");
+  53:User/Src/storage.c ****             return STORAGE_OK;
+  54:User/Src/storage.c ****         }
+  55:User/Src/storage.c ****     } else {
+  56:User/Src/storage.c ****         Storage_print("存储初始化: 挂载失败，尝试修复文件系统...\n");
+  57:User/Src/storage.c ****         // 其他错误（如元数据损坏），尝试修复
+  58:User/Src/storage.c ****         if (Storage_Format() != STORAGE_OK) {
+  59:User/Src/storage.c ****             Storage_print("存储初始化: 修复失败！\n");
+  60:User/Src/storage.c ****             return STORAGE_ERROR_INIT;
+  61:User/Src/storage.c ****         }
+  62:User/Src/storage.c ****         res = f_mount(&fs, "", 1);
+  63:User/Src/storage.c ****         if (res == FR_OK) {
+  64:User/Src/storage.c ****             Storage_print("存储初始化: 文件系统修复并挂载成功！\n");
+  65:User/Src/storage.c ****             return STORAGE_OK;
+  66:User/Src/storage.c ****         }
+  67:User/Src/storage.c ****     }
+  68:User/Src/storage.c **** 
+  69:User/Src/storage.c ****     Storage_print("存储初始化: 挂载最终失败，错误码%u\n", res);
+  70:User/Src/storage.c ****     return STORAGE_ERROR_INIT;
+  71:User/Src/storage.c **** }
+  72:User/Src/storage.c **** 
+  73:User/Src/storage.c **** StorageError Storage_Format(void) {
+ 122              		.loc 1 73 35 is_stmt 1 view -0
+ 123              		.cfi_startproc
+ 124              		@ args = 0, pretend = 0, frame = 4112
+ 125              		@ frame_needed = 0, uses_anonymous_args = 0
+ 126 0000 10B5     		push	{r4, lr}
+ 127              	.LCFI6:
+ 128              		.cfi_def_cfa_offset 8
+ 129              		.cfi_offset 4, -8
+ 130              		.cfi_offset 14, -4
+ 131 0002 ADF5805D 		sub	sp, sp, #4096
+ 132              	.LCFI7:
+ 133              		.cfi_def_cfa_offset 4104
+ 134 0006 84B0     		sub	sp, sp, #16
+ 135              	.LCFI8:
+ 136              		.cfi_def_cfa_offset 4120
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 5
+
+
+  74:User/Src/storage.c ****     MKFS_PARM parm;
+ 137              		.loc 1 74 5 view .LVU12
+  75:User/Src/storage.c ****     parm.fmt = FM_FAT;
+ 138              		.loc 1 75 5 view .LVU13
+ 139              		.loc 1 75 14 is_stmt 0 view .LVU14
+ 140 0008 0123     		movs	r3, #1
+ 141 000a 0DF58052 		add	r2, sp, #4096
+ 142 000e 1370     		strb	r3, [r2]
+  76:User/Src/storage.c ****     parm.n_fat = 2;
+ 143              		.loc 1 76 5 is_stmt 1 view .LVU15
+ 144              		.loc 1 76 16 is_stmt 0 view .LVU16
+ 145 0010 0223     		movs	r3, #2
+ 146 0012 0DF58052 		add	r2, sp, #4096
+ 147 0016 0132     		adds	r2, r2, #1
+ 148 0018 1370     		strb	r3, [r2]
+  77:User/Src/storage.c ****     parm.align = 0;
+ 149              		.loc 1 77 5 is_stmt 1 view .LVU17
+ 150              		.loc 1 77 16 is_stmt 0 view .LVU18
+ 151 001a 0021     		movs	r1, #0
+ 152 001c 0DF58053 		add	r3, sp, #4096
+ 153 0020 0433     		adds	r3, r3, #4
+ 154 0022 1960     		str	r1, [r3]
+  78:User/Src/storage.c ****     parm.n_root = 512;
+ 155              		.loc 1 78 5 is_stmt 1 view .LVU19
+ 156              		.loc 1 78 17 is_stmt 0 view .LVU20
+ 157 0024 4FF40073 		mov	r3, #512
+ 158 0028 0DF58052 		add	r2, sp, #4096
+ 159 002c 0832     		adds	r2, r2, #8
+ 160 002e 1360     		str	r3, [r2]
+  79:User/Src/storage.c ****     parm.au_size = 0;
+ 161              		.loc 1 79 5 is_stmt 1 view .LVU21
+ 162              		.loc 1 79 18 is_stmt 0 view .LVU22
+ 163 0030 0DF58053 		add	r3, sp, #4096
+ 164 0034 0C33     		adds	r3, r3, #12
+ 165 0036 1960     		str	r1, [r3]
+  80:User/Src/storage.c ****     BYTE workBuffer[4096] = {0};
+ 166              		.loc 1 80 5 is_stmt 1 view .LVU23
+ 167              		.loc 1 80 10 is_stmt 0 view .LVU24
+ 168 0038 0091     		str	r1, [sp, #0]
+ 169 003a 40F6FC72 		movw	r2, #4092
+ 170 003e 01A8     		add	r0, sp, #4
+ 171 0040 FFF7FEFF 		bl	memset
+ 172              	.LVL4:
+  81:User/Src/storage.c ****     Storage_print("存储格式化: 开始格式化FLASH为FAT格式...\n");
+ 173              		.loc 1 81 5 is_stmt 1 view .LVU25
+ 174 0044 0D48     		ldr	r0, .L10
+ 175 0046 FFF7FEFF 		bl	Storage_Print
+ 176              	.LVL5:
+  82:User/Src/storage.c ****     FRESULT res = f_mkfs("", &parm, workBuffer, sizeof(workBuffer));
+ 177              		.loc 1 82 5 view .LVU26
+ 178              		.loc 1 82 19 is_stmt 0 view .LVU27
+ 179 004a 4FF48053 		mov	r3, #4096
+ 180 004e 6A46     		mov	r2, sp
+ 181 0050 0DEB0301 		add	r1, sp, r3
+ 182 0054 0A48     		ldr	r0, .L10+4
+ 183 0056 FFF7FEFF 		bl	f_mkfs
+ 184              	.LVL6:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 6
+
+
+  83:User/Src/storage.c ****     if (res != FR_OK) {
+ 185              		.loc 1 83 5 is_stmt 1 view .LVU28
+ 186              		.loc 1 83 8 is_stmt 0 view .LVU29
+ 187 005a 0446     		mov	r4, r0
+ 188 005c 38B9     		cbnz	r0, .L9
+  84:User/Src/storage.c ****         Storage_print("存储格式化: 格式化失败，错误码%u！\n", res);
+  85:User/Src/storage.c ****         return STORAGE_ERROR_INIT;
+  86:User/Src/storage.c ****     }
+  87:User/Src/storage.c ****     Storage_print("存储格式化: FLASH格式化成功！\n");
+ 189              		.loc 1 87 5 is_stmt 1 view .LVU30
+ 190 005e 0948     		ldr	r0, .L10+8
+ 191              	.LVL7:
+ 192              		.loc 1 87 5 is_stmt 0 view .LVU31
+ 193 0060 FFF7FEFF 		bl	Storage_Print
+ 194              	.LVL8:
+  88:User/Src/storage.c ****     return STORAGE_OK;
+ 195              		.loc 1 88 5 is_stmt 1 view .LVU32
+ 196              	.L7:
+  89:User/Src/storage.c **** }
+ 197              		.loc 1 89 1 is_stmt 0 view .LVU33
+ 198 0064 2046     		mov	r0, r4
+ 199 0066 0DF5805D 		add	sp, sp, #4096
+ 200 006a 04B0     		add	sp, sp, #16
+ 201              	.LCFI9:
+ 202              		.cfi_remember_state
+ 203              		.cfi_def_cfa_offset 8
+ 204              		@ sp needed
+ 205 006c 10BD     		pop	{r4, pc}
+ 206              	.LVL9:
+ 207              	.L9:
+ 208              	.LCFI10:
+ 209              		.cfi_restore_state
+  84:User/Src/storage.c ****         Storage_print("存储格式化: 格式化失败，错误码%u！\n", res);
+ 210              		.loc 1 84 9 is_stmt 1 view .LVU34
+ 211 006e 0146     		mov	r1, r0
+ 212 0070 0548     		ldr	r0, .L10+12
+ 213              	.LVL10:
+  84:User/Src/storage.c ****         Storage_print("存储格式化: 格式化失败，错误码%u！\n", res);
+ 214              		.loc 1 84 9 is_stmt 0 view .LVU35
+ 215 0072 FFF7FEFF 		bl	Storage_Print
+ 216              	.LVL11:
+  85:User/Src/storage.c ****     }
+ 217              		.loc 1 85 9 is_stmt 1 view .LVU36
+  85:User/Src/storage.c ****     }
+ 218              		.loc 1 85 16 is_stmt 0 view .LVU37
+ 219 0076 0124     		movs	r4, #1
+ 220 0078 F4E7     		b	.L7
+ 221              	.L11:
+ 222 007a 00BF     		.align	2
+ 223              	.L10:
+ 224 007c 00000000 		.word	.LC0
+ 225 0080 2C000000 		.word	.LC1
+ 226 0084 54000000 		.word	.LC3
+ 227 0088 30000000 		.word	.LC2
+ 228              		.cfi_endproc
+ 229              	.LFE70:
+ 231              		.section	.rodata.Storage_Init.str1.4,"aMS",%progbits,1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 7
+
+
+ 232              		.align	2
+ 233              	.LC4:
+ 234 0000 B4E6B4A2 		.ascii	"\264\346\264\242\263\365\312\274\273\257: \277\252\312"
+ 234      B3F5CABC 
+ 234      BBAF3A20 
+ 234      BFAACA
+ 235 000f BCB9D2D4 		.ascii	"\274\271\322\324\330FatFs\316\304\274\376\317\265\315"
+ 235      D8466174 
+ 235      4673CEC4 
+ 235      BCFECFB5 
+ 235      CD
+ 236 0020 B32E2E2E 		.ascii	"\263...\012\000"
+ 236      0A00
+ 237 0026 0000     		.align	2
+ 238              	.LC5:
+ 239 0028 B4E6B4A2 		.ascii	"\264\346\264\242\263\365\312\274\273\257: \263\311\271"
+ 239      B3F5CABC 
+ 239      BBAF3A20 
+ 239      B3C9B9
+ 240 0037 A6B9D2D4 		.ascii	"\246\271\322\324\330\317\326\323\320\316\304\274\376"
+ 240      D8CFD6D3 
+ 240      D0CEC4BC 
+ 240      FE
+ 241 0044 CFB5CDB3 		.ascii	"\317\265\315\263\243\241\012\000"
+ 241      A3A10A00 
+ 242              		.align	2
+ 243              	.LC6:
+ 244 004c B4E6B4A2 		.ascii	"\264\346\264\242\263\365\312\274\273\257: \316\264\274"
+ 244      B3F5CABC 
+ 244      BBAF3A20 
+ 244      CEB4BC
+ 245 005b ECB2E2B5 		.ascii	"\354\262\342\265\275\316\304\274\376\317\265\315\263"
+ 245      BDCEC4BC 
+ 245      FECFB5CD 
+ 245      B3
+ 246 0068 A3ACB4B4 		.ascii	"\243\254\264\264\275\250\320\302\316\304\274\376\317"
+ 246      BDA8D0C2 
+ 246      CEC4BCFE 
+ 246      CF
+ 247 0075 B5CDB32E 		.ascii	"\265\315\263...\012\000"
+ 247      2E2E0A00 
+ 248 007d 000000   		.align	2
+ 249              	.LC7:
+ 250 0080 B4E6B4A2 		.ascii	"\264\346\264\242\263\365\312\274\273\257: \270\361\312"
+ 250      B3F5CABC 
+ 250      BBAF3A20 
+ 250      B8F1CA
+ 251 008f BDBBAFCA 		.ascii	"\275\273\257\312\247\260\334\243\241\012\000"
+ 251      A7B0DCA3 
+ 251      A10A00
+ 252 009a 0000     		.align	2
+ 253              	.LC8:
+ 254 009c B4E6B4A2 		.ascii	"\264\346\264\242\263\365\312\274\273\257: \320\302\316"
+ 254      B3F5CABC 
+ 254      BBAF3A20 
+ 254      D0C2CE
+ 255 00ab C4BCFECF 		.ascii	"\304\274\376\317\265\315\263\264\264\275\250\262\242"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 8
+
+
+ 255      B5CDB3B4 
+ 255      B4BDA8B2 
+ 255      A2
+ 256 00b8 B9D2D4D8 		.ascii	"\271\322\324\330\263\311\271\246\243\241\012\000"
+ 256      B3C9B9A6 
+ 256      A3A10A00 
+ 257              		.align	2
+ 258              	.LC9:
+ 259 00c4 B4E6B4A2 		.ascii	"\264\346\264\242\263\365\312\274\273\257: \271\322\324"
+ 259      B3F5CABC 
+ 259      BBAF3A20 
+ 259      B9D2D4
+ 260 00d3 D8CAA7B0 		.ascii	"\330\312\247\260\334\243\254\263\242\312\324\320\336"
+ 260      DCA3ACB3 
+ 260      A2CAD4D0 
+ 260      DE
+ 261 00e0 B8B4CEC4 		.ascii	"\270\264\316\304\274\376\317\265\315\263...\012\000"
+ 261      BCFECFB5 
+ 261      CDB32E2E 
+ 261      2E0A00
+ 262 00ef 00       		.align	2
+ 263              	.LC10:
+ 264 00f0 B4E6B4A2 		.ascii	"\264\346\264\242\263\365\312\274\273\257: \320\336\270"
+ 264      B3F5CABC 
+ 264      BBAF3A20 
+ 264      D0DEB8
+ 265 00ff B4CAA7B0 		.ascii	"\264\312\247\260\334\243\241\012\000"
+ 265      DCA3A10A 
+ 265      00
+ 266              		.align	2
+ 267              	.LC11:
+ 268 0108 B4E6B4A2 		.ascii	"\264\346\264\242\263\365\312\274\273\257: \316\304\274"
+ 268      B3F5CABC 
+ 268      BBAF3A20 
+ 268      CEC4BC
+ 269 0117 FECFB5CD 		.ascii	"\376\317\265\315\263\320\336\270\264\262\242\271\322"
+ 269      B3D0DEB8 
+ 269      B4B2A2B9 
+ 269      D2
+ 270 0124 D4D8B3C9 		.ascii	"\324\330\263\311\271\246\243\241\012\000"
+ 270      B9A6A3A1 
+ 270      0A00
+ 271 012e 0000     		.align	2
+ 272              	.LC12:
+ 273 0130 B4E6B4A2 		.ascii	"\264\346\264\242\263\365\312\274\273\257: \271\322\324"
+ 273      B3F5CABC 
+ 273      BBAF3A20 
+ 273      B9D2D4
+ 274 013f D8D7EED6 		.ascii	"\330\327\356\326\325\312\247\260\334\243\254\264\355"
+ 274      D5CAA7B0 
+ 274      DCA3ACB4 
+ 274      ED
+ 275 014c CEF3C2EB 		.ascii	"\316\363\302\353%u\012\000"
+ 275      25750A00 
+ 276              		.section	.text.Storage_Init,"ax",%progbits
+ 277              		.align	1
+ 278              		.global	Storage_Init
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 9
+
+
+ 279              		.syntax unified
+ 280              		.thumb
+ 281              		.thumb_func
+ 283              	Storage_Init:
+ 284              	.LFB69:
+  35:User/Src/storage.c ****     FRESULT res = FR_OK;
+ 285              		.loc 1 35 33 is_stmt 1 view -0
+ 286              		.cfi_startproc
+ 287              		@ args = 0, pretend = 0, frame = 0
+ 288              		@ frame_needed = 0, uses_anonymous_args = 0
+ 289 0000 10B5     		push	{r4, lr}
+ 290              	.LCFI11:
+ 291              		.cfi_def_cfa_offset 8
+ 292              		.cfi_offset 4, -8
+ 293              		.cfi_offset 14, -4
+  36:User/Src/storage.c ****     Storage_print("存储初始化: 开始挂载FatFs文件系统...\n");
+ 294              		.loc 1 36 5 view .LVU39
+ 295              	.LVL12:
+  37:User/Src/storage.c ****     // 先尝试挂载现有文件系统
+ 296              		.loc 1 37 5 view .LVU40
+ 297 0002 2248     		ldr	r0, .L25
+ 298 0004 FFF7FEFF 		bl	Storage_Print
+ 299              	.LVL13:
+  39:User/Src/storage.c ****     if (res == FR_OK) {
+ 300              		.loc 1 39 5 view .LVU41
+  39:User/Src/storage.c ****     if (res == FR_OK) {
+ 301              		.loc 1 39 11 is_stmt 0 view .LVU42
+ 302 0008 0122     		movs	r2, #1
+ 303 000a 2149     		ldr	r1, .L25+4
+ 304 000c 2148     		ldr	r0, .L25+8
+ 305 000e FFF7FEFF 		bl	f_mount
+ 306              	.LVL14:
+  40:User/Src/storage.c ****         Storage_print("存储初始化: 成功挂载现有文件系统！\n");
+ 307              		.loc 1 40 5 is_stmt 1 view .LVU43
+  40:User/Src/storage.c ****         Storage_print("存储初始化: 成功挂载现有文件系统！\n");
+ 308              		.loc 1 40 8 is_stmt 0 view .LVU44
+ 309 0012 0446     		mov	r4, r0
+ 310 0014 A8B1     		cbz	r0, .L20
+  43:User/Src/storage.c ****         Storage_print("存储初始化: 未检测到文件系统，创建新文件系统...\n");
+ 311              		.loc 1 43 12 is_stmt 1 view .LVU45
+  43:User/Src/storage.c ****         Storage_print("存储初始化: 未检测到文件系统，创建新文件系统...\n");
+ 312              		.loc 1 43 15 is_stmt 0 view .LVU46
+ 313 0016 0D28     		cmp	r0, #13
+ 314 0018 17D0     		beq	.L21
+  56:User/Src/storage.c ****         // 其他错误（如元数据损坏），尝试修复
+ 315              		.loc 1 56 9 is_stmt 1 view .LVU47
+ 316 001a 1F48     		ldr	r0, .L25+12
+ 317              	.LVL15:
+  56:User/Src/storage.c ****         // 其他错误（如元数据损坏），尝试修复
+ 318              		.loc 1 56 9 is_stmt 0 view .LVU48
+ 319 001c FFF7FEFF 		bl	Storage_Print
+ 320              	.LVL16:
+  58:User/Src/storage.c ****             Storage_print("存储初始化: 修复失败！\n");
+ 321              		.loc 1 58 9 is_stmt 1 view .LVU49
+  58:User/Src/storage.c ****             Storage_print("存储初始化: 修复失败！\n");
+ 322              		.loc 1 58 13 is_stmt 0 view .LVU50
+ 323 0020 FFF7FEFF 		bl	Storage_Format
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 10
+
+
+ 324              	.LVL17:
+  58:User/Src/storage.c ****             Storage_print("存储初始化: 修复失败！\n");
+ 325              		.loc 1 58 12 view .LVU51
+ 326 0024 40BB     		cbnz	r0, .L22
+  62:User/Src/storage.c ****         if (res == FR_OK) {
+ 327              		.loc 1 62 9 is_stmt 1 view .LVU52
+  62:User/Src/storage.c ****         if (res == FR_OK) {
+ 328              		.loc 1 62 15 is_stmt 0 view .LVU53
+ 329 0026 0122     		movs	r2, #1
+ 330 0028 1949     		ldr	r1, .L25+4
+ 331 002a 1A48     		ldr	r0, .L25+8
+ 332 002c FFF7FEFF 		bl	f_mount
+ 333              	.LVL18:
+  63:User/Src/storage.c ****             Storage_print("存储初始化: 文件系统修复并挂载成功！\n");
+ 334              		.loc 1 63 9 is_stmt 1 view .LVU54
+  63:User/Src/storage.c ****             Storage_print("存储初始化: 文件系统修复并挂载成功！\n");
+ 335              		.loc 1 63 12 is_stmt 0 view .LVU55
+ 336 0030 0446     		mov	r4, r0
+ 337 0032 30B3     		cbz	r0, .L23
+ 338              	.L17:
+ 339              	.LVL19:
+  69:User/Src/storage.c ****     return STORAGE_ERROR_INIT;
+ 340              		.loc 1 69 5 is_stmt 1 view .LVU56
+ 341 0034 2146     		mov	r1, r4
+ 342 0036 1948     		ldr	r0, .L25+16
+ 343 0038 FFF7FEFF 		bl	Storage_Print
+ 344              	.LVL20:
+  70:User/Src/storage.c **** }
+ 345              		.loc 1 70 5 view .LVU57
+  70:User/Src/storage.c **** }
+ 346              		.loc 1 70 12 is_stmt 0 view .LVU58
+ 347 003c 0124     		movs	r4, #1
+ 348              	.LVL21:
+ 349              	.L14:
+  71:User/Src/storage.c **** 
+ 350              		.loc 1 71 1 view .LVU59
+ 351 003e 2046     		mov	r0, r4
+ 352 0040 10BD     		pop	{r4, pc}
+ 353              	.LVL22:
+ 354              	.L20:
+  41:User/Src/storage.c ****         return STORAGE_OK;
+ 355              		.loc 1 41 9 is_stmt 1 view .LVU60
+ 356 0042 1748     		ldr	r0, .L25+20
+ 357              	.LVL23:
+  41:User/Src/storage.c ****         return STORAGE_OK;
+ 358              		.loc 1 41 9 is_stmt 0 view .LVU61
+ 359 0044 FFF7FEFF 		bl	Storage_Print
+ 360              	.LVL24:
+  42:User/Src/storage.c ****     } else if (res == FR_NO_FILESYSTEM) {
+ 361              		.loc 1 42 9 is_stmt 1 view .LVU62
+  42:User/Src/storage.c ****     } else if (res == FR_NO_FILESYSTEM) {
+ 362              		.loc 1 42 16 is_stmt 0 view .LVU63
+ 363 0048 F9E7     		b	.L14
+ 364              	.LVL25:
+ 365              	.L21:
+  44:User/Src/storage.c ****         // 首次上电无文件系统时创建
+ 366              		.loc 1 44 9 is_stmt 1 view .LVU64
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 11
+
+
+ 367 004a 1648     		ldr	r0, .L25+24
+ 368              	.LVL26:
+  44:User/Src/storage.c ****         // 首次上电无文件系统时创建
+ 369              		.loc 1 44 9 is_stmt 0 view .LVU65
+ 370 004c FFF7FEFF 		bl	Storage_Print
+ 371              	.LVL27:
+  46:User/Src/storage.c ****             Storage_print("存储初始化: 格式化失败！\n");
+ 372              		.loc 1 46 9 is_stmt 1 view .LVU66
+  46:User/Src/storage.c ****             Storage_print("存储初始化: 格式化失败！\n");
+ 373              		.loc 1 46 13 is_stmt 0 view .LVU67
+ 374 0050 FFF7FEFF 		bl	Storage_Format
+ 375              	.LVL28:
+  46:User/Src/storage.c ****             Storage_print("存储初始化: 格式化失败！\n");
+ 376              		.loc 1 46 12 view .LVU68
+ 377 0054 58B9     		cbnz	r0, .L24
+  50:User/Src/storage.c ****         if (res == FR_OK) {
+ 378              		.loc 1 50 9 is_stmt 1 view .LVU69
+  50:User/Src/storage.c ****         if (res == FR_OK) {
+ 379              		.loc 1 50 15 is_stmt 0 view .LVU70
+ 380 0056 0122     		movs	r2, #1
+ 381 0058 0D49     		ldr	r1, .L25+4
+ 382 005a 0E48     		ldr	r0, .L25+8
+ 383 005c FFF7FEFF 		bl	f_mount
+ 384              	.LVL29:
+  51:User/Src/storage.c ****             Storage_print("存储初始化: 新文件系统创建并挂载成功！\n");
+ 385              		.loc 1 51 9 is_stmt 1 view .LVU71
+  51:User/Src/storage.c ****             Storage_print("存储初始化: 新文件系统创建并挂载成功！\n");
+ 386              		.loc 1 51 12 is_stmt 0 view .LVU72
+ 387 0060 0446     		mov	r4, r0
+ 388 0062 0028     		cmp	r0, #0
+ 389 0064 E6D1     		bne	.L17
+  52:User/Src/storage.c ****             return STORAGE_OK;
+ 390              		.loc 1 52 13 is_stmt 1 view .LVU73
+ 391 0066 1048     		ldr	r0, .L25+28
+ 392              	.LVL30:
+  52:User/Src/storage.c ****             return STORAGE_OK;
+ 393              		.loc 1 52 13 is_stmt 0 view .LVU74
+ 394 0068 FFF7FEFF 		bl	Storage_Print
+ 395              	.LVL31:
+  53:User/Src/storage.c ****         }
+ 396              		.loc 1 53 13 is_stmt 1 view .LVU75
+  53:User/Src/storage.c ****         }
+ 397              		.loc 1 53 20 is_stmt 0 view .LVU76
+ 398 006c E7E7     		b	.L14
+ 399              	.L24:
+  47:User/Src/storage.c ****             return STORAGE_ERROR_INIT;
+ 400              		.loc 1 47 13 is_stmt 1 view .LVU77
+ 401 006e 0F48     		ldr	r0, .L25+32
+ 402 0070 FFF7FEFF 		bl	Storage_Print
+ 403              	.LVL32:
+  48:User/Src/storage.c ****         }
+ 404              		.loc 1 48 13 view .LVU78
+  48:User/Src/storage.c ****         }
+ 405              		.loc 1 48 20 is_stmt 0 view .LVU79
+ 406 0074 0124     		movs	r4, #1
+ 407 0076 E2E7     		b	.L14
+ 408              	.L22:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 12
+
+
+  59:User/Src/storage.c ****             return STORAGE_ERROR_INIT;
+ 409              		.loc 1 59 13 is_stmt 1 view .LVU80
+ 410 0078 0D48     		ldr	r0, .L25+36
+ 411 007a FFF7FEFF 		bl	Storage_Print
+ 412              	.LVL33:
+  60:User/Src/storage.c ****         }
+ 413              		.loc 1 60 13 view .LVU81
+  60:User/Src/storage.c ****         }
+ 414              		.loc 1 60 20 is_stmt 0 view .LVU82
+ 415 007e 0124     		movs	r4, #1
+ 416 0080 DDE7     		b	.L14
+ 417              	.LVL34:
+ 418              	.L23:
+  64:User/Src/storage.c ****             return STORAGE_OK;
+ 419              		.loc 1 64 13 is_stmt 1 view .LVU83
+ 420 0082 0C48     		ldr	r0, .L25+40
+ 421              	.LVL35:
+  64:User/Src/storage.c ****             return STORAGE_OK;
+ 422              		.loc 1 64 13 is_stmt 0 view .LVU84
+ 423 0084 FFF7FEFF 		bl	Storage_Print
+ 424              	.LVL36:
+  65:User/Src/storage.c ****         }
+ 425              		.loc 1 65 13 is_stmt 1 view .LVU85
+  65:User/Src/storage.c ****         }
+ 426              		.loc 1 65 20 is_stmt 0 view .LVU86
+ 427 0088 D9E7     		b	.L14
+ 428              	.L26:
+ 429 008a 00BF     		.align	2
+ 430              	.L25:
+ 431 008c 00000000 		.word	.LC4
+ 432 0090 2C000000 		.word	.LC1
+ 433 0094 00000000 		.word	fs
+ 434 0098 C4000000 		.word	.LC9
+ 435 009c 30010000 		.word	.LC12
+ 436 00a0 28000000 		.word	.LC5
+ 437 00a4 4C000000 		.word	.LC6
+ 438 00a8 9C000000 		.word	.LC8
+ 439 00ac 80000000 		.word	.LC7
+ 440 00b0 F0000000 		.word	.LC10
+ 441 00b4 08010000 		.word	.LC11
+ 442              		.cfi_endproc
+ 443              	.LFE69:
+ 445              		.section	.text.calculateChecksum,"ax",%progbits
+ 446              		.align	1
+ 447              		.global	calculateChecksum
+ 448              		.syntax unified
+ 449              		.thumb
+ 450              		.thumb_func
+ 452              	calculateChecksum:
+ 453              	.LVL37:
+ 454              	.LFB71:
+  90:User/Src/storage.c **** 
+  91:User/Src/storage.c **** 
+  92:User/Src/storage.c **** /************************** 校验和计算模块（独立） **************************/
+  93:User/Src/storage.c **** /**
+  94:User/Src/storage.c ****  * @brief 计算数据的异或校验和
+  95:User/Src/storage.c ****  * @param data 待计算的数据缓冲区
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 13
+
+
+  96:User/Src/storage.c ****  * @param dataSize 数据长度
+  97:User/Src/storage.c ****  * @return 计算得到的校验和
+  98:User/Src/storage.c ****  */
+  99:User/Src/storage.c **** uint8_t calculateChecksum(const uint8_t* data, UINT dataSize) {
+ 455              		.loc 1 99 63 is_stmt 1 view -0
+ 456              		.cfi_startproc
+ 457              		@ args = 0, pretend = 0, frame = 0
+ 458              		@ frame_needed = 0, uses_anonymous_args = 0
+ 459              		@ link register save eliminated.
+ 460              		.loc 1 99 63 is_stmt 0 view .LVU88
+ 461 0000 8446     		mov	ip, r0
+ 100:User/Src/storage.c ****     uint8_t checksum = 0;
+ 462              		.loc 1 100 5 is_stmt 1 view .LVU89
+ 463              	.LVL38:
+ 101:User/Src/storage.c ****     // 修改变量i为uint32_t，兼容16/32位，避免循环计数错误
+ 102:User/Src/storage.c ****     for (uint32_t i = 0; i < (uint32_t)dataSize; i++) {
+ 464              		.loc 1 102 5 view .LVU90
+ 465              	.LBB2:
+ 466              		.loc 1 102 10 view .LVU91
+ 467              		.loc 1 102 19 is_stmt 0 view .LVU92
+ 468 0002 0023     		movs	r3, #0
+ 469              	.LBE2:
+ 100:User/Src/storage.c ****     uint8_t checksum = 0;
+ 470              		.loc 1 100 13 view .LVU93
+ 471 0004 1846     		mov	r0, r3
+ 472              	.LVL39:
+ 473              	.LBB3:
+ 474              		.loc 1 102 5 view .LVU94
+ 475 0006 03E0     		b	.L28
+ 476              	.LVL40:
+ 477              	.L29:
+ 103:User/Src/storage.c ****         checksum ^= data[i];
+ 478              		.loc 1 103 9 is_stmt 1 discriminator 3 view .LVU95
+ 479              		.loc 1 103 25 is_stmt 0 discriminator 3 view .LVU96
+ 480 0008 1CF80320 		ldrb	r2, [ip, r3]	@ zero_extendqisi2
+ 481              		.loc 1 103 18 discriminator 3 view .LVU97
+ 482 000c 5040     		eors	r0, r0, r2
+ 483              	.LVL41:
+ 102:User/Src/storage.c ****         checksum ^= data[i];
+ 484              		.loc 1 102 50 is_stmt 1 discriminator 3 view .LVU98
+ 102:User/Src/storage.c ****         checksum ^= data[i];
+ 485              		.loc 1 102 51 is_stmt 0 discriminator 3 view .LVU99
+ 486 000e 0133     		adds	r3, r3, #1
+ 487              	.LVL42:
+ 488              	.L28:
+ 102:User/Src/storage.c ****         checksum ^= data[i];
+ 489              		.loc 1 102 26 is_stmt 1 discriminator 1 view .LVU100
+ 102:User/Src/storage.c ****         checksum ^= data[i];
+ 490              		.loc 1 102 5 is_stmt 0 discriminator 1 view .LVU101
+ 491 0010 8B42     		cmp	r3, r1
+ 492 0012 F9D3     		bcc	.L29
+ 493              	.LBE3:
+ 104:User/Src/storage.c ****     }
+ 105:User/Src/storage.c ****     return checksum;
+ 494              		.loc 1 105 5 is_stmt 1 view .LVU102
+ 106:User/Src/storage.c **** }
+ 495              		.loc 1 106 1 is_stmt 0 view .LVU103
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 14
+
+
+ 496 0014 7047     		bx	lr
+ 497              		.cfi_endproc
+ 498              	.LFE71:
+ 500              		.section	.rodata.Storage_WriteFileWithCrc.str1.4,"aMS",%progbits,1
+ 501              		.align	2
+ 502              	.LC13:
+ 503 0000 CEC4BCFE 		.ascii	"\316\304\274\376\320\264\310\353\264\355\316\363: \316"
+ 503      D0B4C8EB 
+ 503      B4EDCEF3 
+ 503      3A20CE
+ 504 000f DED0A7B5 		.ascii	"\336\320\247\265\304\312\344\310\353\262\316\312\375"
+ 504      C4CAE4C8 
+ 504      EBB2CECA 
+ 504      FD
+ 505 001c 0A00     		.ascii	"\012\000"
+ 506 001e 0000     		.align	2
+ 507              	.LC14:
+ 508 0020 CEC4BCFE 		.ascii	"\316\304\274\376\320\264\310\353\264\355\316\363: \264"
+ 508      D0B4C8EB 
+ 508      B4EDCEF3 
+ 508      3A20B4
+ 509 002f F2BFAACE 		.ascii	"\362\277\252\316\304\274\376%s\312\247\260\334\243\254"
+ 509      C4BCFE25 
+ 509      73CAA7B0 
+ 509      DCA3AC
+ 510 003e B4EDCEF3 		.ascii	"\264\355\316\363\302\353%u\012\000"
+ 510      C2EB2575 
+ 510      0A00
+ 511              		.align	2
+ 512              	.LC15:
+ 513 0048 CEC4BCFE 		.ascii	"\316\304\274\376\320\264\310\353: \304\277\302\274\321"
+ 513      D0B4C8EB 
+ 513      3A20C4BF 
+ 513      C2BCD1
+ 514 0057 E9D6A4B3 		.ascii	"\351\326\244\263\311\271\246\243\254\316\304\274\376"
+ 514      C9B9A6A3 
+ 514      ACCEC4BC 
+ 514      FE
+ 515 0064 2573D2D1 		.ascii	"%s\322\321\264\346\324\332\012\000"
+ 515      B4E6D4DA 
+ 515      0A00
+ 516 006e 0000     		.align	2
+ 517              	.LC16:
+ 518 0070 CEC4BCFE 		.ascii	"\316\304\274\376\320\264\310\353: \276\257\270\346\243"
+ 518      D0B4C8EB 
+ 518      3A20BEAF 
+ 518      B8E6A3
+ 519 007f A1C4BFC2 		.ascii	"\241\304\277\302\274\321\351\326\244\312\247\260\334"
+ 519      BCD1E9D6 
+ 519      A4CAA7B0 
+ 519      DC
+ 520 008c A3A8B4C5 		.ascii	"\243\250\264\305\305\314I/O\264\355\316\363\243\251"
+ 520      C5CC492F 
+ 520      4FB4EDCE 
+ 520      F3A3A9
+ 521 009b A3ACB4ED 		.ascii	"\243\254\264\355\316\363\302\353%u\012\000"
+ 521      CEF3C2EB 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 15
+
+
+ 521      25750A00 
+ 522 00a7 00       		.align	2
+ 523              	.LC17:
+ 524 00a8 CEC4BCFE 		.ascii	"\316\304\274\376\320\264\310\353: \276\257\270\346\243"
+ 524      D0B4C8EB 
+ 524      3A20BEAF 
+ 524      B8E6A3
+ 525 00b7 A1C4BFC2 		.ascii	"\241\304\277\302\274\321\351\326\244\312\247\260\334"
+ 525      BCD1E9D6 
+ 525      A4CAA7B0 
+ 525      DC
+ 526 00c4 A3A8CEC4 		.ascii	"\243\250\316\304\274\376\316\264\261\273\312\266\261"
+ 526      BCFECEB4 
+ 526      B1BBCAB6 
+ 526      B1
+ 527 00d1 F0A3A9A3 		.ascii	"\360\243\251\243\254\264\355\316\363\302\353%u\012\000"
+ 527      ACB4EDCE 
+ 527      F3C2EB25 
+ 527      750A00
+ 528              		.align	2
+ 529              	.LC18:
+ 530 00e0 CEC4BCFE 		.ascii	"\316\304\274\376\320\264\310\353\264\355\316\363: %"
+ 530      D0B4C8EB 
+ 530      B4EDCEF3 
+ 530      3A2025
+ 531 00ef 73D0B4C8 		.ascii	"s\320\264\310\353\312\247\260\334\243\254\264\355\316"
+ 531      EBCAA7B0 
+ 531      DCA3ACB4 
+ 531      EDCE
+ 532 00fd F3C2EB25 		.ascii	"\363\302\353%u\243\254\312\265\274\312\320\264\310\353"
+ 532      75A3ACCA 
+ 532      B5BCCAD0 
+ 532      B4C8EB
+ 533 010c 25752F25 		.ascii	"%u/%u\327\326\275\332\012\000"
+ 533      75D7D6BD 
+ 533      DA0A00
+ 534 0117 00       		.align	2
+ 535              	.LC19:
+ 536 0118 CEC4BCFE 		.ascii	"\316\304\274\376\320\264\310\353\263\311\271\246: %"
+ 536      D0B4C8EB 
+ 536      B3C9B9A6 
+ 536      3A2025
+ 537 0127 73D0B4C8 		.ascii	"s\320\264\310\353%u\327\326\275\332\243\254\320\243"
+ 537      EB2575D7 
+ 537      D6BDDAA3 
+ 537      ACD0A3
+ 538 0136 D1E9BACD 		.ascii	"\321\351\272\3150x%02X\012\000"
+ 538      30782530 
+ 538      32580A00 
+ 539              		.section	.text.Storage_WriteFileWithCrc,"ax",%progbits
+ 540              		.align	1
+ 541              		.global	Storage_WriteFileWithCrc
+ 542              		.syntax unified
+ 543              		.thumb
+ 544              		.thumb_func
+ 546              	Storage_WriteFileWithCrc:
+ 547              	.LVL43:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 16
+
+
+ 548              	.LFB72:
+ 107:User/Src/storage.c **** 
+ 108:User/Src/storage.c **** 
+ 109:User/Src/storage.c **** /************************** 文件级读写模块（独立，基于FatFs） **************************/
+ 110:User/Src/storage.c **** /**
+ 111:User/Src/storage.c ****  * @brief 文件写入：向指定文件写入数据（覆盖写），带校验和输出
+ 112:User/Src/storage.c ****  * @param path 文件路径（如"test.txt"）
+ 113:User/Src/storage.c ****  * @param data 待写入数据缓冲区
+ 114:User/Src/storage.c ****  * @param size 写入字节数
+ 115:User/Src/storage.c ****  * @param outChecksum 输出参数：写入数据的异或校验和（传入指针，可传NULL忽略）
+ 116:User/Src/storage.c ****  * @return 存储操作状态码
+ 117:User/Src/storage.c ****  */
+ 118:User/Src/storage.c **** // 【修改】文件写入函数：增加f_sync强制刷新缓存，确保数据刷到物理存储
+ 119:User/Src/storage.c **** // 修改storage.c中的Storage_WriteFileWithCrc函数（核心新增f_mount同步）
+ 120:User/Src/storage.c **** StorageError Storage_WriteFileWithCrc(const char *path, const uint8_t *data, UINT size, uint8_t* ou
+ 549              		.loc 1 120 111 is_stmt 1 view -0
+ 550              		.cfi_startproc
+ 551              		@ args = 0, pretend = 0, frame = 4144
+ 552              		@ frame_needed = 0, uses_anonymous_args = 0
+ 553              		.loc 1 120 111 is_stmt 0 view .LVU105
+ 554 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 555              	.LCFI12:
+ 556              		.cfi_def_cfa_offset 28
+ 557              		.cfi_offset 4, -28
+ 558              		.cfi_offset 5, -24
+ 559              		.cfi_offset 6, -20
+ 560              		.cfi_offset 7, -16
+ 561              		.cfi_offset 8, -12
+ 562              		.cfi_offset 9, -8
+ 563              		.cfi_offset 14, -4
+ 564 0004 ADF5815D 		sub	sp, sp, #4128
+ 565              	.LCFI13:
+ 566              		.cfi_def_cfa_offset 4156
+ 567 0008 87B0     		sub	sp, sp, #28
+ 568              	.LCFI14:
+ 569              		.cfi_def_cfa_offset 4184
+ 121:User/Src/storage.c ****     if (path == NULL || data == NULL || size == 0) {
+ 570              		.loc 1 121 5 is_stmt 1 view .LVU106
+ 571              		.loc 1 121 8 is_stmt 0 view .LVU107
+ 572 000a 0028     		cmp	r0, #0
+ 573 000c 37D0     		beq	.L31
+ 574 000e 8846     		mov	r8, r1
+ 575 0010 1446     		mov	r4, r2
+ 576 0012 1F46     		mov	r7, r3
+ 577 0014 0646     		mov	r6, r0
+ 578              		.loc 1 121 22 discriminator 1 view .LVU108
+ 579 0016 0029     		cmp	r1, #0
+ 580 0018 31D0     		beq	.L31
+ 581              		.loc 1 121 38 discriminator 2 view .LVU109
+ 582 001a 82B3     		cbz	r2, .L31
+ 122:User/Src/storage.c ****         Storage_print("文件写入错误: 无效的输入参数\n");
+ 123:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 124:User/Src/storage.c ****     }
+ 125:User/Src/storage.c **** 
+ 126:User/Src/storage.c ****     FIL file = {0};
+ 583              		.loc 1 126 5 is_stmt 1 view .LVU110
+ 584              		.loc 1 126 9 is_stmt 0 view .LVU111
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 17
+
+
+ 585 001c 41F22802 		movw	r2, #4136
+ 586              	.LVL44:
+ 587              		.loc 1 126 9 view .LVU112
+ 588 0020 0021     		movs	r1, #0
+ 589              	.LVL45:
+ 590              		.loc 1 126 9 view .LVU113
+ 591 0022 04A8     		add	r0, sp, #16
+ 592              	.LVL46:
+ 593              		.loc 1 126 9 view .LVU114
+ 594 0024 FFF7FEFF 		bl	memset
+ 595              	.LVL47:
+ 127:User/Src/storage.c ****     FRESULT res = f_open(&file, path, FA_WRITE | FA_CREATE_ALWAYS);
+ 596              		.loc 1 127 5 is_stmt 1 view .LVU115
+ 597              		.loc 1 127 19 is_stmt 0 view .LVU116
+ 598 0028 0A22     		movs	r2, #10
+ 599 002a 3146     		mov	r1, r6
+ 600 002c 04A8     		add	r0, sp, #16
+ 601 002e FFF7FEFF 		bl	f_open
+ 602              	.LVL48:
+ 128:User/Src/storage.c ****     if (res != FR_OK) {
+ 603              		.loc 1 128 5 is_stmt 1 view .LVU117
+ 604              		.loc 1 128 8 is_stmt 0 view .LVU118
+ 605 0032 0246     		mov	r2, r0
+ 606 0034 68BB     		cbnz	r0, .L45
+ 129:User/Src/storage.c ****         Storage_print("文件写入错误: 打开文件%s失败，错误码%u\n", path, res);
+ 130:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 131:User/Src/storage.c ****     }
+ 132:User/Src/storage.c **** 
+ 133:User/Src/storage.c ****     UINT written = 0;
+ 607              		.loc 1 133 5 is_stmt 1 view .LVU119
+ 608              		.loc 1 133 10 is_stmt 0 view .LVU120
+ 609 0036 0023     		movs	r3, #0
+ 610 0038 0393     		str	r3, [sp, #12]
+ 134:User/Src/storage.c ****     res = f_write(&file, data, (UINT)size, &written);
+ 611              		.loc 1 134 5 is_stmt 1 view .LVU121
+ 612              		.loc 1 134 11 is_stmt 0 view .LVU122
+ 613 003a 03AB     		add	r3, sp, #12
+ 614 003c 2246     		mov	r2, r4
+ 615 003e 4146     		mov	r1, r8
+ 616 0040 04A8     		add	r0, sp, #16
+ 617              	.LVL49:
+ 618              		.loc 1 134 11 view .LVU123
+ 619 0042 FFF7FEFF 		bl	f_write
+ 620              	.LVL50:
+ 135:User/Src/storage.c ****     if (res == FR_OK) {
+ 621              		.loc 1 135 5 is_stmt 1 view .LVU124
+ 622              		.loc 1 135 8 is_stmt 0 view .LVU125
+ 623 0046 0546     		mov	r5, r0
+ 624 0048 48B3     		cbz	r0, .L46
+ 625              	.LVL51:
+ 626              	.L35:
+ 136:User/Src/storage.c ****         f_sync(&file); // 同步文件数据
+ 137:User/Src/storage.c ****     }
+ 138:User/Src/storage.c ****     f_close(&file);
+ 627              		.loc 1 138 5 is_stmt 1 view .LVU126
+ 628 004a 04A8     		add	r0, sp, #16
+ 629 004c FFF7FEFF 		bl	f_close
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 18
+
+
+ 630              	.LVL52:
+ 139:User/Src/storage.c **** 
+ 140:User/Src/storage.c ****     // 核心新增：重新挂载后验证文件目录是否存在
+ 141:User/Src/storage.c ****     if (res == FR_OK && written == size) {
+ 631              		.loc 1 141 5 view .LVU127
+ 632              		.loc 1 141 8 is_stmt 0 view .LVU128
+ 633 0050 15B9     		cbnz	r5, .L36
+ 634              		.loc 1 141 33 discriminator 1 view .LVU129
+ 635 0052 039B     		ldr	r3, [sp, #12]
+ 636              		.loc 1 141 22 discriminator 1 view .LVU130
+ 637 0054 A342     		cmp	r3, r4
+ 638 0056 26D0     		beq	.L47
+ 639              	.L36:
+ 142:User/Src/storage.c ****         f_mount(NULL, "", 1); // 卸载
+ 143:User/Src/storage.c ****         f_mount(&fs, "", 1);  // 重新挂载
+ 144:User/Src/storage.c **** 
+ 145:User/Src/storage.c ****         // 验证文件是否被目录识别
+ 146:User/Src/storage.c ****         FRESULT check_res = f_stat(path, NULL);
+ 147:User/Src/storage.c ****         if (check_res == FR_OK) {
+ 148:User/Src/storage.c ****             Storage_print("文件写入: 目录验证成功，文件%s已存在\n", path);
+ 149:User/Src/storage.c ****         } else if (check_res == FR_DISK_ERR) {
+ 150:User/Src/storage.c ****             Storage_print("文件写入: 警告！目录验证失败（磁盘I/O错误），错误码%u\n", check_res);
+ 151:User/Src/storage.c ****             return STORAGE_ERROR_FILE; // 写入失败，返回错误
+ 152:User/Src/storage.c ****         } else {
+ 153:User/Src/storage.c ****             Storage_print("文件写入: 警告！目录验证失败（文件未被识别），错误码%u\n", check_res);
+ 154:User/Src/storage.c ****             return STORAGE_ERROR_FILE;
+ 155:User/Src/storage.c ****         }
+ 156:User/Src/storage.c ****     }
+ 157:User/Src/storage.c **** 
+ 158:User/Src/storage.c ****     if (res != FR_OK || written != size) {
+ 640              		.loc 1 158 5 is_stmt 1 view .LVU131
+ 641              		.loc 1 158 8 is_stmt 0 view .LVU132
+ 642 0058 002D     		cmp	r5, #0
+ 643 005a 47D1     		bne	.L39
+ 644              		.loc 1 158 33 discriminator 1 view .LVU133
+ 645 005c 0399     		ldr	r1, [sp, #12]
+ 646              		.loc 1 158 22 discriminator 1 view .LVU134
+ 647 005e A142     		cmp	r1, r4
+ 648 0060 44D1     		bne	.L39
+ 159:User/Src/storage.c ****         Storage_print("文件写入错误: %s写入失败，错误码%u，实际写入%u/%u字节\n", 
+ 160:User/Src/storage.c ****                   path, res, written, size);
+ 161:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 162:User/Src/storage.c ****     }
+ 163:User/Src/storage.c **** 
+ 164:User/Src/storage.c ****     if (outChecksum != NULL) {
+ 649              		.loc 1 164 5 is_stmt 1 view .LVU135
+ 650              		.loc 1 164 8 is_stmt 0 view .LVU136
+ 651 0062 1FB1     		cbz	r7, .L41
+ 165:User/Src/storage.c ****         *outChecksum = calculateChecksum(data, written);
+ 652              		.loc 1 165 9 is_stmt 1 view .LVU137
+ 653              		.loc 1 165 24 is_stmt 0 view .LVU138
+ 654 0064 4046     		mov	r0, r8
+ 655 0066 FFF7FEFF 		bl	calculateChecksum
+ 656              	.LVL53:
+ 657              		.loc 1 165 22 view .LVU139
+ 658 006a 3870     		strb	r0, [r7]
+ 659              	.L41:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 19
+
+
+ 166:User/Src/storage.c ****     }
+ 167:User/Src/storage.c **** 
+ 168:User/Src/storage.c ****     Storage_print("文件写入成功: %s写入%u字节，校验和0x%02X\n", path, written, outChecksum ? *outCh
+ 660              		.loc 1 168 5 is_stmt 1 view .LVU140
+ 661 006c 039A     		ldr	r2, [sp, #12]
+ 662 006e 002F     		cmp	r7, #0
+ 663 0070 45D0     		beq	.L43
+ 664              		.loc 1 168 94 is_stmt 0 discriminator 1 view .LVU141
+ 665 0072 3B78     		ldrb	r3, [r7]	@ zero_extendqisi2
+ 666              	.L42:
+ 667              		.loc 1 168 5 discriminator 4 view .LVU142
+ 668 0074 3146     		mov	r1, r6
+ 669 0076 2348     		ldr	r0, .L50
+ 670 0078 FFF7FEFF 		bl	Storage_Print
+ 671              	.LVL54:
+ 169:User/Src/storage.c ****     return STORAGE_OK;
+ 672              		.loc 1 169 5 is_stmt 1 discriminator 4 view .LVU143
+ 673              		.loc 1 169 12 is_stmt 0 discriminator 4 view .LVU144
+ 674 007c 03E0     		b	.L33
+ 675              	.LVL55:
+ 676              	.L31:
+ 122:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 677              		.loc 1 122 9 is_stmt 1 view .LVU145
+ 678 007e 2248     		ldr	r0, .L50+4
+ 679              	.LVL56:
+ 122:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 680              		.loc 1 122 9 is_stmt 0 view .LVU146
+ 681 0080 FFF7FEFF 		bl	Storage_Print
+ 682              	.LVL57:
+ 123:User/Src/storage.c ****     }
+ 683              		.loc 1 123 9 is_stmt 1 view .LVU147
+ 123:User/Src/storage.c ****     }
+ 684              		.loc 1 123 16 is_stmt 0 view .LVU148
+ 685 0084 0425     		movs	r5, #4
+ 686              	.L33:
+ 170:User/Src/storage.c **** }
+ 687              		.loc 1 170 1 view .LVU149
+ 688 0086 2846     		mov	r0, r5
+ 689 0088 0DF5815D 		add	sp, sp, #4128
+ 690 008c 07B0     		add	sp, sp, #28
+ 691              	.LCFI15:
+ 692              		.cfi_remember_state
+ 693              		.cfi_def_cfa_offset 28
+ 694              		@ sp needed
+ 695 008e BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 696              	.LVL58:
+ 697              	.L45:
+ 698              	.LCFI16:
+ 699              		.cfi_restore_state
+ 129:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 700              		.loc 1 129 9 is_stmt 1 view .LVU150
+ 701 0092 3146     		mov	r1, r6
+ 702 0094 1D48     		ldr	r0, .L50+8
+ 703              	.LVL59:
+ 129:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 704              		.loc 1 129 9 is_stmt 0 view .LVU151
+ 705 0096 FFF7FEFF 		bl	Storage_Print
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 20
+
+
+ 706              	.LVL60:
+ 130:User/Src/storage.c ****     }
+ 707              		.loc 1 130 9 is_stmt 1 view .LVU152
+ 130:User/Src/storage.c ****     }
+ 708              		.loc 1 130 16 is_stmt 0 view .LVU153
+ 709 009a 0425     		movs	r5, #4
+ 710 009c F3E7     		b	.L33
+ 711              	.LVL61:
+ 712              	.L46:
+ 136:User/Src/storage.c ****     }
+ 713              		.loc 1 136 9 is_stmt 1 view .LVU154
+ 714 009e 04A8     		add	r0, sp, #16
+ 715              	.LVL62:
+ 136:User/Src/storage.c ****     }
+ 716              		.loc 1 136 9 is_stmt 0 view .LVU155
+ 717 00a0 FFF7FEFF 		bl	f_sync
+ 718              	.LVL63:
+ 719 00a4 D1E7     		b	.L35
+ 720              	.L47:
+ 721              	.LBB4:
+ 142:User/Src/storage.c ****         f_mount(&fs, "", 1);  // 重新挂载
+ 722              		.loc 1 142 9 is_stmt 1 view .LVU156
+ 723 00a6 DFF86890 		ldr	r9, .L50+12
+ 724 00aa 0122     		movs	r2, #1
+ 725 00ac 4946     		mov	r1, r9
+ 726 00ae 0020     		movs	r0, #0
+ 727 00b0 FFF7FEFF 		bl	f_mount
+ 728              	.LVL64:
+ 143:User/Src/storage.c **** 
+ 729              		.loc 1 143 9 view .LVU157
+ 730 00b4 0122     		movs	r2, #1
+ 731 00b6 4946     		mov	r1, r9
+ 732 00b8 1648     		ldr	r0, .L50+16
+ 733 00ba FFF7FEFF 		bl	f_mount
+ 734              	.LVL65:
+ 146:User/Src/storage.c ****         if (check_res == FR_OK) {
+ 735              		.loc 1 146 9 view .LVU158
+ 146:User/Src/storage.c ****         if (check_res == FR_OK) {
+ 736              		.loc 1 146 29 is_stmt 0 view .LVU159
+ 737 00be 0021     		movs	r1, #0
+ 738 00c0 3046     		mov	r0, r6
+ 739 00c2 FFF7FEFF 		bl	f_stat
+ 740              	.LVL66:
+ 147:User/Src/storage.c ****             Storage_print("文件写入: 目录验证成功，文件%s已存在\n", path);
+ 741              		.loc 1 147 9 is_stmt 1 view .LVU160
+ 147:User/Src/storage.c ****             Storage_print("文件写入: 目录验证成功，文件%s已存在\n", path);
+ 742              		.loc 1 147 12 is_stmt 0 view .LVU161
+ 743 00c6 0146     		mov	r1, r0
+ 744 00c8 30B1     		cbz	r0, .L48
+ 149:User/Src/storage.c ****             Storage_print("文件写入: 警告！目录验证失败（磁盘I/O错误），错误码%u\n", check_res);
+ 745              		.loc 1 149 16 is_stmt 1 view .LVU162
+ 149:User/Src/storage.c ****             Storage_print("文件写入: 警告！目录验证失败（磁盘I/O错误），错误码%u\n", check_res);
+ 746              		.loc 1 149 19 is_stmt 0 view .LVU163
+ 747 00ca 0128     		cmp	r0, #1
+ 748 00cc 09D0     		beq	.L49
+ 153:User/Src/storage.c ****             return STORAGE_ERROR_FILE;
+ 749              		.loc 1 153 13 is_stmt 1 view .LVU164
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 21
+
+
+ 750 00ce 1248     		ldr	r0, .L50+20
+ 751              	.LVL67:
+ 153:User/Src/storage.c ****             return STORAGE_ERROR_FILE;
+ 752              		.loc 1 153 13 is_stmt 0 view .LVU165
+ 753 00d0 FFF7FEFF 		bl	Storage_Print
+ 754              	.LVL68:
+ 154:User/Src/storage.c ****         }
+ 755              		.loc 1 154 13 is_stmt 1 view .LVU166
+ 154:User/Src/storage.c ****         }
+ 756              		.loc 1 154 20 is_stmt 0 view .LVU167
+ 757 00d4 0425     		movs	r5, #4
+ 758 00d6 D6E7     		b	.L33
+ 759              	.LVL69:
+ 760              	.L48:
+ 148:User/Src/storage.c ****         } else if (check_res == FR_DISK_ERR) {
+ 761              		.loc 1 148 13 is_stmt 1 view .LVU168
+ 762 00d8 3146     		mov	r1, r6
+ 763 00da 1048     		ldr	r0, .L50+24
+ 764              	.LVL70:
+ 148:User/Src/storage.c ****         } else if (check_res == FR_DISK_ERR) {
+ 765              		.loc 1 148 13 is_stmt 0 view .LVU169
+ 766 00dc FFF7FEFF 		bl	Storage_Print
+ 767              	.LVL71:
+ 768 00e0 BAE7     		b	.L36
+ 769              	.LVL72:
+ 770              	.L49:
+ 150:User/Src/storage.c ****             return STORAGE_ERROR_FILE; // 写入失败，返回错误
+ 771              		.loc 1 150 13 is_stmt 1 view .LVU170
+ 772 00e2 0F48     		ldr	r0, .L50+28
+ 773              	.LVL73:
+ 150:User/Src/storage.c ****             return STORAGE_ERROR_FILE; // 写入失败，返回错误
+ 774              		.loc 1 150 13 is_stmt 0 view .LVU171
+ 775 00e4 FFF7FEFF 		bl	Storage_Print
+ 776              	.LVL74:
+ 151:User/Src/storage.c ****         } else {
+ 777              		.loc 1 151 13 is_stmt 1 view .LVU172
+ 151:User/Src/storage.c ****         } else {
+ 778              		.loc 1 151 20 is_stmt 0 view .LVU173
+ 779 00e8 0425     		movs	r5, #4
+ 780 00ea CCE7     		b	.L33
+ 781              	.L39:
+ 151:User/Src/storage.c ****         } else {
+ 782              		.loc 1 151 20 view .LVU174
+ 783              	.LBE4:
+ 159:User/Src/storage.c ****                   path, res, written, size);
+ 784              		.loc 1 159 9 is_stmt 1 view .LVU175
+ 785 00ec 0094     		str	r4, [sp]
+ 786 00ee 039B     		ldr	r3, [sp, #12]
+ 787 00f0 2A46     		mov	r2, r5
+ 788 00f2 3146     		mov	r1, r6
+ 789 00f4 0B48     		ldr	r0, .L50+32
+ 790 00f6 FFF7FEFF 		bl	Storage_Print
+ 791              	.LVL75:
+ 161:User/Src/storage.c ****     }
+ 792              		.loc 1 161 9 view .LVU176
+ 161:User/Src/storage.c ****     }
+ 793              		.loc 1 161 16 is_stmt 0 view .LVU177
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 22
+
+
+ 794 00fa 0425     		movs	r5, #4
+ 795 00fc C3E7     		b	.L33
+ 796              	.L43:
+ 168:User/Src/storage.c ****     return STORAGE_OK;
+ 797              		.loc 1 168 5 view .LVU178
+ 798 00fe 0023     		movs	r3, #0
+ 799 0100 B8E7     		b	.L42
+ 800              	.L51:
+ 801 0102 00BF     		.align	2
+ 802              	.L50:
+ 803 0104 18010000 		.word	.LC19
+ 804 0108 00000000 		.word	.LC13
+ 805 010c 20000000 		.word	.LC14
+ 806 0110 2C000000 		.word	.LC1
+ 807 0114 00000000 		.word	fs
+ 808 0118 A8000000 		.word	.LC17
+ 809 011c 48000000 		.word	.LC15
+ 810 0120 70000000 		.word	.LC16
+ 811 0124 E0000000 		.word	.LC18
+ 812              		.cfi_endproc
+ 813              	.LFE72:
+ 815              		.section	.rodata.Storage_GetFileSize.str1.4,"aMS",%progbits,1
+ 816              		.align	2
+ 817              	.LC20:
+ 818 0000 BBF1C8A1 		.ascii	"\273\361\310\241\316\304\274\376\264\363\320\241\264"
+ 818      CEC4BCFE 
+ 818      B4F3D0A1 
+ 818      B4
+ 819 000d EDCEF33A 		.ascii	"\355\316\363: \264\305\305\314I/O\264\355\316\363\243"
+ 819      20B4C5C5 
+ 819      CC492F4F 
+ 819      B4EDCEF3 
+ 819      A3
+ 820 001e A8B5D7B2 		.ascii	"\250\265\327\262\343FLASH\266\301\312\247\260\334\243"
+ 820      E3464C41 
+ 820      5348B6C1 
+ 820      CAA7B0DC 
+ 820      A3
+ 821 002f A9A3ACB4 		.ascii	"\251\243\254\264\355\316\363\302\353%u\012\000"
+ 821      EDCEF3C2 
+ 821      EB25750A 
+ 821      00
+ 822              		.align	2
+ 823              	.LC21:
+ 824 003c BBF1C8A1 		.ascii	"\273\361\310\241\316\304\274\376\264\363\320\241\264"
+ 824      CEC4BCFE 
+ 824      B4F3D0A1 
+ 824      B4
+ 825 0049 EDCEF33A 		.ascii	"\355\316\363: \316\304\274\376%s\262\273\264\346\324"
+ 825      20CEC4BC 
+ 825      FE2573B2 
+ 825      BBB4E6D4 
+ 826 0059 DAA3ACB4 		.ascii	"\332\243\254\264\355\316\363\302\353%u\012\000"
+ 826      EDCEF3C2 
+ 826      EB25750A 
+ 826      00
+ 827 0066 0000     		.align	2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 23
+
+
+ 828              	.LC22:
+ 829 0068 BBF1C8A1 		.ascii	"\273\361\310\241\316\304\274\376\264\363\320\241\264"
+ 829      CEC4BCFE 
+ 829      B4F3D0A1 
+ 829      B4
+ 830 0075 EDCEF33A 		.ascii	"\355\316\363: \264\362\277\252%s\312\247\260\334\243"
+ 830      20B4F2BF 
+ 830      AA2573CA 
+ 830      A7B0DCA3 
+ 831 0085 ACB4EDCE 		.ascii	"\254\264\355\316\363\302\353%u\012\000"
+ 831      F3C2EB25 
+ 831      750A00
+ 832              		.section	.text.Storage_GetFileSize,"ax",%progbits
+ 833              		.align	1
+ 834              		.global	Storage_GetFileSize
+ 835              		.syntax unified
+ 836              		.thumb
+ 837              		.thumb_func
+ 839              	Storage_GetFileSize:
+ 840              	.LVL76:
+ 841              	.LFB73:
+ 171:User/Src/storage.c **** 
+ 172:User/Src/storage.c **** 
+ 173:User/Src/storage.c **** // 【新增】获取文件大小函数：独立模块，用于读写一致性校验
+ 174:User/Src/storage.c **** UINT Storage_GetFileSize(const char *path) {
+ 842              		.loc 1 174 44 is_stmt 1 view -0
+ 843              		.cfi_startproc
+ 844              		@ args = 0, pretend = 0, frame = 4136
+ 845              		@ frame_needed = 0, uses_anonymous_args = 0
+ 846              		.loc 1 174 44 is_stmt 0 view .LVU180
+ 847 0000 10B5     		push	{r4, lr}
+ 848              	.LCFI17:
+ 849              		.cfi_def_cfa_offset 8
+ 850              		.cfi_offset 4, -8
+ 851              		.cfi_offset 14, -4
+ 852 0002 ADF5815D 		sub	sp, sp, #4128
+ 853              	.LCFI18:
+ 854              		.cfi_def_cfa_offset 4136
+ 855 0006 82B0     		sub	sp, sp, #8
+ 856              	.LCFI19:
+ 857              		.cfi_def_cfa_offset 4144
+ 175:User/Src/storage.c ****     if (path == NULL) return 0;
+ 858              		.loc 1 175 5 is_stmt 1 view .LVU181
+ 859              		.loc 1 175 8 is_stmt 0 view .LVU182
+ 860 0008 50B3     		cbz	r0, .L58
+ 861 000a 0446     		mov	r4, r0
+ 176:User/Src/storage.c ****     FIL file = {0};
+ 862              		.loc 1 176 5 is_stmt 1 view .LVU183
+ 863              		.loc 1 176 9 is_stmt 0 view .LVU184
+ 864 000c 41F22802 		movw	r2, #4136
+ 865 0010 0021     		movs	r1, #0
+ 866 0012 6846     		mov	r0, sp
+ 867              	.LVL77:
+ 868              		.loc 1 176 9 view .LVU185
+ 869 0014 FFF7FEFF 		bl	memset
+ 870              	.LVL78:
+ 177:User/Src/storage.c ****     FRESULT res = f_open(&file, path, FA_READ);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 24
+
+
+ 871              		.loc 1 177 5 is_stmt 1 view .LVU186
+ 872              		.loc 1 177 19 is_stmt 0 view .LVU187
+ 873 0018 0122     		movs	r2, #1
+ 874 001a 2146     		mov	r1, r4
+ 875 001c 6846     		mov	r0, sp
+ 876 001e FFF7FEFF 		bl	f_open
+ 877              	.LVL79:
+ 178:User/Src/storage.c ****     if (res != FR_OK) {
+ 878              		.loc 1 178 5 is_stmt 1 view .LVU188
+ 879              		.loc 1 178 8 is_stmt 0 view .LVU189
+ 880 0022 0246     		mov	r2, r0
+ 881 0024 B8B1     		cbz	r0, .L54
+ 179:User/Src/storage.c ****         if (res == FR_DISK_ERR) {
+ 882              		.loc 1 179 9 is_stmt 1 view .LVU190
+ 883              		.loc 1 179 12 is_stmt 0 view .LVU191
+ 884 0026 0128     		cmp	r0, #1
+ 885 0028 0BD0     		beq	.L60
+ 180:User/Src/storage.c ****             Storage_print("获取文件大小错误: 磁盘I/O错误（底层FLASH读失败），错误码%u\n", res);
+ 181:User/Src/storage.c ****         } else if (res == FR_NO_FILE) {
+ 886              		.loc 1 181 16 is_stmt 1 view .LVU192
+ 887              		.loc 1 181 19 is_stmt 0 view .LVU193
+ 888 002a 0428     		cmp	r0, #4
+ 889 002c 0ED0     		beq	.L61
+ 182:User/Src/storage.c ****             Storage_print("获取文件大小错误: 文件%s不存在，错误码%u\n", path, res);
+ 183:User/Src/storage.c ****         } else {
+ 184:User/Src/storage.c ****             Storage_print("获取文件大小错误: 打开%s失败，错误码%u\n", path, res);
+ 890              		.loc 1 184 13 is_stmt 1 view .LVU194
+ 891 002e 2146     		mov	r1, r4
+ 892 0030 0C48     		ldr	r0, .L62
+ 893              	.LVL80:
+ 894              		.loc 1 184 13 is_stmt 0 view .LVU195
+ 895 0032 FFF7FEFF 		bl	Storage_Print
+ 896              	.LVL81:
+ 897              	.L56:
+ 185:User/Src/storage.c ****         }
+ 186:User/Src/storage.c ****         return 0;
+ 898              		.loc 1 186 9 is_stmt 1 view .LVU196
+ 899              		.loc 1 186 16 is_stmt 0 view .LVU197
+ 900 0036 0024     		movs	r4, #0
+ 901              	.LVL82:
+ 902              	.L52:
+ 187:User/Src/storage.c ****     }
+ 188:User/Src/storage.c ****     UINT fileSize = f_size(&file);
+ 189:User/Src/storage.c ****     f_close(&file);
+ 190:User/Src/storage.c ****     return fileSize;
+ 191:User/Src/storage.c **** }
+ 903              		.loc 1 191 1 view .LVU198
+ 904 0038 2046     		mov	r0, r4
+ 905 003a 0DF5815D 		add	sp, sp, #4128
+ 906 003e 02B0     		add	sp, sp, #8
+ 907              	.LCFI20:
+ 908              		.cfi_remember_state
+ 909              		.cfi_def_cfa_offset 8
+ 910              		@ sp needed
+ 911 0040 10BD     		pop	{r4, pc}
+ 912              	.LVL83:
+ 913              	.L60:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 25
+
+
+ 914              	.LCFI21:
+ 915              		.cfi_restore_state
+ 180:User/Src/storage.c ****         } else if (res == FR_NO_FILE) {
+ 916              		.loc 1 180 13 is_stmt 1 view .LVU199
+ 917 0042 0146     		mov	r1, r0
+ 918 0044 0848     		ldr	r0, .L62+4
+ 919              	.LVL84:
+ 180:User/Src/storage.c ****         } else if (res == FR_NO_FILE) {
+ 920              		.loc 1 180 13 is_stmt 0 view .LVU200
+ 921 0046 FFF7FEFF 		bl	Storage_Print
+ 922              	.LVL85:
+ 923 004a F4E7     		b	.L56
+ 924              	.LVL86:
+ 925              	.L61:
+ 182:User/Src/storage.c ****         } else {
+ 926              		.loc 1 182 13 is_stmt 1 view .LVU201
+ 927 004c 2146     		mov	r1, r4
+ 928 004e 0748     		ldr	r0, .L62+8
+ 929              	.LVL87:
+ 182:User/Src/storage.c ****         } else {
+ 930              		.loc 1 182 13 is_stmt 0 view .LVU202
+ 931 0050 FFF7FEFF 		bl	Storage_Print
+ 932              	.LVL88:
+ 933 0054 EFE7     		b	.L56
+ 934              	.LVL89:
+ 935              	.L54:
+ 188:User/Src/storage.c ****     f_close(&file);
+ 936              		.loc 1 188 5 is_stmt 1 view .LVU203
+ 188:User/Src/storage.c ****     f_close(&file);
+ 937              		.loc 1 188 10 is_stmt 0 view .LVU204
+ 938 0056 039C     		ldr	r4, [sp, #12]
+ 939              	.LVL90:
+ 189:User/Src/storage.c ****     return fileSize;
+ 940              		.loc 1 189 5 is_stmt 1 view .LVU205
+ 941 0058 6846     		mov	r0, sp
+ 942              	.LVL91:
+ 189:User/Src/storage.c ****     return fileSize;
+ 943              		.loc 1 189 5 is_stmt 0 view .LVU206
+ 944 005a FFF7FEFF 		bl	f_close
+ 945              	.LVL92:
+ 190:User/Src/storage.c **** }
+ 946              		.loc 1 190 5 is_stmt 1 view .LVU207
+ 190:User/Src/storage.c **** }
+ 947              		.loc 1 190 12 is_stmt 0 view .LVU208
+ 948 005e EBE7     		b	.L52
+ 949              	.LVL93:
+ 950              	.L58:
+ 175:User/Src/storage.c ****     FIL file = {0};
+ 951              		.loc 1 175 30 view .LVU209
+ 952 0060 0024     		movs	r4, #0
+ 953 0062 E9E7     		b	.L52
+ 954              	.L63:
+ 955              		.align	2
+ 956              	.L62:
+ 957 0064 68000000 		.word	.LC22
+ 958 0068 00000000 		.word	.LC20
+ 959 006c 3C000000 		.word	.LC21
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 26
+
+
+ 960              		.cfi_endproc
+ 961              	.LFE73:
+ 963              		.section	.rodata.Storage_ReadFileWithCrc.str1.4,"aMS",%progbits,1
+ 964              		.align	2
+ 965              	.LC23:
+ 966 0000 CEC4BCFE 		.ascii	"\316\304\274\376\266\301\310\241\264\355\316\363: \316"
+ 966      B6C1C8A1 
+ 966      B4EDCEF3 
+ 966      3A20CE
+ 967 000f DED0A7B5 		.ascii	"\336\320\247\265\304\312\344\310\353\262\316\312\375"
+ 967      C4CAE4C8 
+ 967      EBB2CECA 
+ 967      FD
+ 968 001c 0A00     		.ascii	"\012\000"
+ 969 001e 0000     		.align	2
+ 970              	.LC24:
+ 971 0020 CEC4BCFE 		.ascii	"\316\304\274\376\266\301\310\241\264\355\316\363: \264"
+ 971      B6C1C8A1 
+ 971      B4EDCEF3 
+ 971      3A20B4
+ 972 002f F2BFAACE 		.ascii	"\362\277\252\316\304\274\376%s\312\247\260\334\243\254"
+ 972      C4BCFE25 
+ 972      73CAA7B0 
+ 972      DCA3AC
+ 973 003e B4EDCEF3 		.ascii	"\264\355\316\363\302\353%u\012\000"
+ 973      C2EB2575 
+ 973      0A00
+ 974              		.align	2
+ 975              	.LC25:
+ 976 0048 CEC4BCFE 		.ascii	"\316\304\274\376\266\301\310\241\264\355\316\363: %"
+ 976      B6C1C8A1 
+ 976      B4EDCEF3 
+ 976      3A2025
+ 977 0057 73B6C1C8 		.ascii	"s\266\301\310\241\312\247\260\334\243\254\264\355\316"
+ 977      A1CAA7B0 
+ 977      DCA3ACB4 
+ 977      EDCE
+ 978 0065 F3C2EB25 		.ascii	"\363\302\353%u\012\000"
+ 978      750A00
+ 979              		.align	2
+ 980              	.LC26:
+ 981 006c CEC4BCFE 		.ascii	"\316\304\274\376\266\301\310\241\263\311\271\246: %"
+ 981      B6C1C8A1 
+ 981      B3C9B9A6 
+ 981      3A2025
+ 982 007b 73B6C1C8 		.ascii	"s\266\301\310\241%u\327\326\275\332\243\254\320\243"
+ 982      A12575D7 
+ 982      D6BDDAA3 
+ 982      ACD0A3
+ 983 008a D1E9BACD 		.ascii	"\321\351\272\3150x%02X\012\000"
+ 983      30782530 
+ 983      32580A00 
+ 984              		.section	.text.Storage_ReadFileWithCrc,"ax",%progbits
+ 985              		.align	1
+ 986              		.global	Storage_ReadFileWithCrc
+ 987              		.syntax unified
+ 988              		.thumb
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 27
+
+
+ 989              		.thumb_func
+ 991              	Storage_ReadFileWithCrc:
+ 992              	.LVL94:
+ 993              	.LFB74:
+ 192:User/Src/storage.c **** 
+ 193:User/Src/storage.c **** /**
+ 194:User/Src/storage.c ****  * @brief 文件读取：从指定文件读取指定长度数据，带校验和输出
+ 195:User/Src/storage.c ****  * @param path 文件路径（如"test.txt"）
+ 196:User/Src/storage.c ****  * @param data 数据接收缓冲区
+ 197:User/Src/storage.c ****  * @param size 期望读取字节数
+ 198:User/Src/storage.c ****  * @param outChecksum 输出参数：读取数据的异或校验和（传入指针，可传NULL忽略）
+ 199:User/Src/storage.c ****  * @return 存储操作状态码
+ 200:User/Src/storage.c ****  */
+ 201:User/Src/storage.c **** StorageError Storage_ReadFileWithCrc(const char *path, uint8_t *data, UINT maxSize, uint8_t* outChe
+ 994              		.loc 1 201 129 is_stmt 1 view -0
+ 995              		.cfi_startproc
+ 996              		@ args = 4, pretend = 0, frame = 4144
+ 997              		@ frame_needed = 0, uses_anonymous_args = 0
+ 998              		.loc 1 201 129 is_stmt 0 view .LVU211
+ 999 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 1000              	.LCFI22:
+ 1001              		.cfi_def_cfa_offset 24
+ 1002              		.cfi_offset 4, -24
+ 1003              		.cfi_offset 5, -20
+ 1004              		.cfi_offset 6, -16
+ 1005              		.cfi_offset 7, -12
+ 1006              		.cfi_offset 8, -8
+ 1007              		.cfi_offset 14, -4
+ 1008 0004 ADF5815D 		sub	sp, sp, #4128
+ 1009              	.LCFI23:
+ 1010              		.cfi_def_cfa_offset 4152
+ 1011 0008 84B0     		sub	sp, sp, #16
+ 1012              	.LCFI24:
+ 1013              		.cfi_def_cfa_offset 4168
+ 1014 000a 1E46     		mov	r6, r3
+ 1015 000c 0DF58253 		add	r3, sp, #4160
+ 1016              	.LVL95:
+ 1017              		.loc 1 201 129 view .LVU212
+ 1018 0010 0833     		adds	r3, r3, #8
+ 1019 0012 D3F80080 		ldr	r8, [r3]
+ 202:User/Src/storage.c ****     // 新增actualReadSize输出参数：返回实际读取的字节数
+ 203:User/Src/storage.c ****     if (path == NULL || data == NULL || maxSize == 0 || actualReadSize == NULL) {
+ 1020              		.loc 1 203 5 is_stmt 1 view .LVU213
+ 1021              		.loc 1 203 8 is_stmt 0 view .LVU214
+ 1022 0016 98B3     		cbz	r0, .L65
+ 1023 0018 0C46     		mov	r4, r1
+ 1024 001a 1546     		mov	r5, r2
+ 1025 001c 0746     		mov	r7, r0
+ 1026              		.loc 1 203 22 discriminator 1 view .LVU215
+ 1027 001e 79B3     		cbz	r1, .L65
+ 1028              		.loc 1 203 38 discriminator 2 view .LVU216
+ 1029 0020 72B3     		cbz	r2, .L65
+ 1030              		.loc 1 203 54 discriminator 3 view .LVU217
+ 1031 0022 B8F1000F 		cmp	r8, #0
+ 1032 0026 2BD0     		beq	.L65
+ 204:User/Src/storage.c ****         Storage_print("文件读取错误: 无效的输入参数\n");
+ 205:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 28
+
+
+ 206:User/Src/storage.c ****     }
+ 207:User/Src/storage.c ****     *actualReadSize = 0; // 初始化实际读取字节数
+ 1033              		.loc 1 207 5 is_stmt 1 view .LVU218
+ 1034              		.loc 1 207 21 is_stmt 0 view .LVU219
+ 1035 0028 0021     		movs	r1, #0
+ 1036              	.LVL96:
+ 1037              		.loc 1 207 21 view .LVU220
+ 1038 002a C8F80010 		str	r1, [r8]
+ 208:User/Src/storage.c ****     FIL file = {0};
+ 1039              		.loc 1 208 5 is_stmt 1 view .LVU221
+ 1040              		.loc 1 208 9 is_stmt 0 view .LVU222
+ 1041 002e 41F22802 		movw	r2, #4136
+ 1042              	.LVL97:
+ 1043              		.loc 1 208 9 view .LVU223
+ 1044 0032 02A8     		add	r0, sp, #8
+ 1045              	.LVL98:
+ 1046              		.loc 1 208 9 view .LVU224
+ 1047 0034 FFF7FEFF 		bl	memset
+ 1048              	.LVL99:
+ 209:User/Src/storage.c ****     FRESULT res = f_open(&file, path, FA_READ);
+ 1049              		.loc 1 209 5 is_stmt 1 view .LVU225
+ 1050              		.loc 1 209 19 is_stmt 0 view .LVU226
+ 1051 0038 0122     		movs	r2, #1
+ 1052 003a 3946     		mov	r1, r7
+ 1053 003c 02A8     		add	r0, sp, #8
+ 1054 003e FFF7FEFF 		bl	f_open
+ 1055              	.LVL100:
+ 210:User/Src/storage.c ****     if (res != FR_OK) {
+ 1056              		.loc 1 210 5 is_stmt 1 view .LVU227
+ 1057              		.loc 1 210 8 is_stmt 0 view .LVU228
+ 1058 0042 0246     		mov	r2, r0
+ 1059 0044 30BB     		cbnz	r0, .L74
+ 211:User/Src/storage.c ****         Storage_print("文件读取错误: 打开文件%s失败，错误码%u\n", path, res);
+ 212:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 213:User/Src/storage.c ****     }
+ 214:User/Src/storage.c ****     UINT read = 0;
+ 1060              		.loc 1 214 5 is_stmt 1 view .LVU229
+ 1061              		.loc 1 214 10 is_stmt 0 view .LVU230
+ 1062 0046 0023     		movs	r3, #0
+ 1063 0048 0193     		str	r3, [sp, #4]
+ 215:User/Src/storage.c ****     res = f_read(&file, data, (UINT)maxSize, &read); // 强制转换为FatFs的16位UINT
+ 1064              		.loc 1 215 5 is_stmt 1 view .LVU231
+ 1065              		.loc 1 215 11 is_stmt 0 view .LVU232
+ 1066 004a 01AB     		add	r3, sp, #4
+ 1067 004c 2A46     		mov	r2, r5
+ 1068 004e 2146     		mov	r1, r4
+ 1069 0050 02A8     		add	r0, sp, #8
+ 1070              	.LVL101:
+ 1071              		.loc 1 215 11 view .LVU233
+ 1072 0052 FFF7FEFF 		bl	f_read
+ 1073              	.LVL102:
+ 1074 0056 0546     		mov	r5, r0
+ 1075              	.LVL103:
+ 216:User/Src/storage.c ****     f_close(&file);
+ 1076              		.loc 1 216 5 is_stmt 1 view .LVU234
+ 1077 0058 02A8     		add	r0, sp, #8
+ 1078 005a FFF7FEFF 		bl	f_close
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 29
+
+
+ 1079              	.LVL104:
+ 217:User/Src/storage.c ****     if (res != FR_OK) {
+ 1080              		.loc 1 217 5 view .LVU235
+ 1081              		.loc 1 217 8 is_stmt 0 view .LVU236
+ 1082 005e FDB9     		cbnz	r5, .L75
+ 218:User/Src/storage.c ****         Storage_print("文件读取错误: %s读取失败，错误码%u\n", path, res);
+ 219:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 220:User/Src/storage.c ****     }
+ 221:User/Src/storage.c ****     *actualReadSize = read; // 赋值实际读取字节数
+ 1083              		.loc 1 221 5 is_stmt 1 view .LVU237
+ 1084              		.loc 1 221 21 is_stmt 0 view .LVU238
+ 1085 0060 0199     		ldr	r1, [sp, #4]
+ 1086 0062 C8F80010 		str	r1, [r8]
+ 222:User/Src/storage.c ****     // 计算校验和：仅基于实际读取的有效数据（核心修复）
+ 223:User/Src/storage.c ****     if (outChecksum != NULL) {
+ 1087              		.loc 1 223 5 is_stmt 1 view .LVU239
+ 1088              		.loc 1 223 8 is_stmt 0 view .LVU240
+ 1089 0066 1EB1     		cbz	r6, .L70
+ 224:User/Src/storage.c ****         *outChecksum = calculateChecksum(data, read);
+ 1090              		.loc 1 224 9 is_stmt 1 view .LVU241
+ 1091              		.loc 1 224 24 is_stmt 0 view .LVU242
+ 1092 0068 2046     		mov	r0, r4
+ 1093 006a FFF7FEFF 		bl	calculateChecksum
+ 1094              	.LVL105:
+ 1095              		.loc 1 224 22 view .LVU243
+ 1096 006e 3070     		strb	r0, [r6]
+ 1097              	.L70:
+ 225:User/Src/storage.c ****     }
+ 226:User/Src/storage.c ****     Storage_print("文件读取成功: %s读取%u字节，校验和0x%02X\n", path, read, outChecksum ? *outCheck
+ 1098              		.loc 1 226 5 is_stmt 1 view .LVU244
+ 1099 0070 019A     		ldr	r2, [sp, #4]
+ 1100 0072 E6B1     		cbz	r6, .L72
+ 1101              		.loc 1 226 91 is_stmt 0 discriminator 1 view .LVU245
+ 1102 0074 3378     		ldrb	r3, [r6]	@ zero_extendqisi2
+ 1103              	.L71:
+ 1104              		.loc 1 226 5 discriminator 4 view .LVU246
+ 1105 0076 3946     		mov	r1, r7
+ 1106 0078 0E48     		ldr	r0, .L76
+ 1107 007a FFF7FEFF 		bl	Storage_Print
+ 1108              	.LVL106:
+ 227:User/Src/storage.c ****     return STORAGE_OK;
+ 1109              		.loc 1 227 5 is_stmt 1 discriminator 4 view .LVU247
+ 1110              		.loc 1 227 12 is_stmt 0 discriminator 4 view .LVU248
+ 1111 007e 03E0     		b	.L67
+ 1112              	.LVL107:
+ 1113              	.L65:
+ 204:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 1114              		.loc 1 204 9 is_stmt 1 view .LVU249
+ 1115 0080 0D48     		ldr	r0, .L76+4
+ 1116              	.LVL108:
+ 204:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 1117              		.loc 1 204 9 is_stmt 0 view .LVU250
+ 1118 0082 FFF7FEFF 		bl	Storage_Print
+ 1119              	.LVL109:
+ 205:User/Src/storage.c ****     }
+ 1120              		.loc 1 205 9 is_stmt 1 view .LVU251
+ 205:User/Src/storage.c ****     }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 30
+
+
+ 1121              		.loc 1 205 16 is_stmt 0 view .LVU252
+ 1122 0086 0425     		movs	r5, #4
+ 1123              	.L67:
+ 228:User/Src/storage.c **** }
+ 1124              		.loc 1 228 1 view .LVU253
+ 1125 0088 2846     		mov	r0, r5
+ 1126 008a 0DF5815D 		add	sp, sp, #4128
+ 1127 008e 04B0     		add	sp, sp, #16
+ 1128              	.LCFI25:
+ 1129              		.cfi_remember_state
+ 1130              		.cfi_def_cfa_offset 24
+ 1131              		@ sp needed
+ 1132 0090 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 1133              	.LVL110:
+ 1134              	.L74:
+ 1135              	.LCFI26:
+ 1136              		.cfi_restore_state
+ 211:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 1137              		.loc 1 211 9 is_stmt 1 view .LVU254
+ 1138 0094 3946     		mov	r1, r7
+ 1139 0096 0948     		ldr	r0, .L76+8
+ 1140              	.LVL111:
+ 211:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 1141              		.loc 1 211 9 is_stmt 0 view .LVU255
+ 1142 0098 FFF7FEFF 		bl	Storage_Print
+ 1143              	.LVL112:
+ 212:User/Src/storage.c ****     }
+ 1144              		.loc 1 212 9 is_stmt 1 view .LVU256
+ 212:User/Src/storage.c ****     }
+ 1145              		.loc 1 212 16 is_stmt 0 view .LVU257
+ 1146 009c 0425     		movs	r5, #4
+ 1147              	.LVL113:
+ 212:User/Src/storage.c ****     }
+ 1148              		.loc 1 212 16 view .LVU258
+ 1149 009e F3E7     		b	.L67
+ 1150              	.LVL114:
+ 1151              	.L75:
+ 218:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 1152              		.loc 1 218 9 is_stmt 1 view .LVU259
+ 1153 00a0 2A46     		mov	r2, r5
+ 1154 00a2 3946     		mov	r1, r7
+ 1155 00a4 0648     		ldr	r0, .L76+12
+ 1156 00a6 FFF7FEFF 		bl	Storage_Print
+ 1157              	.LVL115:
+ 219:User/Src/storage.c ****     }
+ 1158              		.loc 1 219 9 view .LVU260
+ 219:User/Src/storage.c ****     }
+ 1159              		.loc 1 219 16 is_stmt 0 view .LVU261
+ 1160 00aa 0425     		movs	r5, #4
+ 1161              	.LVL116:
+ 219:User/Src/storage.c ****     }
+ 1162              		.loc 1 219 16 view .LVU262
+ 1163 00ac ECE7     		b	.L67
+ 1164              	.LVL117:
+ 1165              	.L72:
+ 226:User/Src/storage.c ****     return STORAGE_OK;
+ 1166              		.loc 1 226 5 view .LVU263
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 31
+
+
+ 1167 00ae 0023     		movs	r3, #0
+ 1168 00b0 E1E7     		b	.L71
+ 1169              	.L77:
+ 1170 00b2 00BF     		.align	2
+ 1171              	.L76:
+ 1172 00b4 6C000000 		.word	.LC26
+ 1173 00b8 00000000 		.word	.LC23
+ 1174 00bc 20000000 		.word	.LC24
+ 1175 00c0 48000000 		.word	.LC25
+ 1176              		.cfi_endproc
+ 1177              	.LFE74:
+ 1179              		.section	.rodata.Storage_ReadFileData.str1.4,"aMS",%progbits,1
+ 1180              		.align	2
+ 1181              	.LC27:
+ 1182 0000 CDA8D3C3 		.ascii	"\315\250\323\303\316\304\274\376\266\301\310\241\264"
+ 1182      CEC4BCFE 
+ 1182      B6C1C8A1 
+ 1182      B4
+ 1183 000d EDCEF33A 		.ascii	"\355\316\363: \316\336\320\247\262\316\312\375\243\250"
+ 1183      20CEDED0 
+ 1183      A7B2CECA 
+ 1183      FDA3A8
+ 1184 001c BFD5D6B8 		.ascii	"\277\325\326\270\325\353/\273\272\263\345\307\370\264"
+ 1184      D5EB2FBB 
+ 1184      BAB3E5C7 
+ 1184      F8B4
+ 1185 002a F3D0A1CE 		.ascii	"\363\320\241\316\2520\243\251\012\000"
+ 1185      AA30A3A9 
+ 1185      0A00
+ 1186              		.align	2
+ 1187              	.LC28:
+ 1188 0034 CDA8D3C3 		.ascii	"\315\250\323\303\316\304\274\376\266\301\310\241\264"
+ 1188      CEC4BCFE 
+ 1188      B6C1C8A1 
+ 1188      B4
+ 1189 0041 EDCEF33A 		.ascii	"\355\316\363: \316\304\274\376%s\262\273\264\346\324"
+ 1189      20CEC4BC 
+ 1189      FE2573B2 
+ 1189      BBB4E6D4 
+ 1190 0051 DABBF2CE 		.ascii	"\332\273\362\316\252\277\325\243\254\316\336\304\332"
+ 1190      AABFD5A3 
+ 1190      ACCEDEC4 
+ 1190      DA
+ 1191 005e C8DDBFC9 		.ascii	"\310\335\277\311\266\301\310\241\012\000"
+ 1191      B6C1C8A1 
+ 1191      0A00
+ 1192              		.align	2
+ 1193              	.LC29:
+ 1194 0068 CDA8D3C3 		.ascii	"\315\250\323\303\316\304\274\376\266\301\310\241: \316"
+ 1194      CEC4BCFE 
+ 1194      B6C1C8A1 
+ 1194      3A20CE
+ 1195 0077 C4BCFE25 		.ascii	"\304\274\376%s\264\346\324\332\243\254\312\265\274\312"
+ 1195      73B4E6D4 
+ 1195      DAA3ACCA 
+ 1195      B5BCCA
+ 1196 0086 B4F3D0A1 		.ascii	"\264\363\320\241%u\327\326\275\332\243\254\273\272\263"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 32
+
+
+ 1196      2575D7D6 
+ 1196      BDDAA3AC 
+ 1196      BBBAB3
+ 1197 0095 E5C7F8BF 		.ascii	"\345\307\370\277\311\275\323\312\325%u\327\326\275\332"
+ 1197      C9BDD3CA 
+ 1197      D52575D7 
+ 1197      D6BDDA
+ 1198 00a4 0A00     		.ascii	"\012\000"
+ 1199 00a6 0000     		.align	2
+ 1200              	.LC30:
+ 1201 00a8 CDA8D3C3 		.ascii	"\315\250\323\303\316\304\274\376\266\301\310\241: \327"
+ 1201      CEC4BCFE 
+ 1201      B6C1C8A1 
+ 1201      3A20D7
+ 1202 00b7 BCB1B8B6 		.ascii	"\274\261\270\266\301\310\241%u\327\326\275\332\304\332"
+ 1202      C1C8A125 
+ 1202      75D7D6BD 
+ 1202      DAC4DA
+ 1203 00c6 C8DD0A00 		.ascii	"\310\335\012\000"
+ 1204 00ca 0000     		.align	2
+ 1205              	.LC31:
+ 1206 00cc CDA8D3C3 		.ascii	"\315\250\323\303\316\304\274\376\266\301\310\241\264"
+ 1206      CEC4BCFE 
+ 1206      B6C1C8A1 
+ 1206      B4
+ 1207 00d9 EDCEF33A 		.ascii	"\355\316\363: \304\332\310\335\266\301\310\241\312\247"
+ 1207      20C4DAC8 
+ 1207      DDB6C1C8 
+ 1207      A1CAA7
+ 1208 00e8 B0DCA3AC 		.ascii	"\260\334\243\254\264\355\316\363\302\353%u\243\254\312"
+ 1208      B4EDCEF3 
+ 1208      C2EB2575 
+ 1208      A3ACCA
+ 1209 00f7 B5BCCABD 		.ascii	"\265\274\312\275\366\266\301\310\241%u\327\326\275\332"
+ 1209      F6B6C1C8 
+ 1209      A12575D7 
+ 1209      D6BDDA
+ 1210 0106 0A00     		.ascii	"\012\000"
+ 1211              		.align	2
+ 1212              	.LC32:
+ 1213 0108 CDA8D3C3 		.ascii	"\315\250\323\303\316\304\274\376\266\301\310\241\263"
+ 1213      CEC4BCFE 
+ 1213      B6C1C8A1 
+ 1213      B3
+ 1214 0115 C9B9A63A 		.ascii	"\311\271\246: \271\262\266\301\263\366%u\327\326\275"
+ 1214      20B9B2B6 
+ 1214      C1B3F625 
+ 1214      75D7D6BD 
+ 1215 0125 DAD3D0D0 		.ascii	"\332\323\320\320\247\304\332\310\335\012\000"
+ 1215      A7C4DAC8 
+ 1215      DD0A00
+ 1216              		.align	2
+ 1217              	.LC33:
+ 1218 0130 CDA8D3C3 		.ascii	"\315\250\323\303\316\304\274\376\266\301\310\241: \266"
+ 1218      CEC4BCFE 
+ 1218      B6C1C8A1 
+ 1218      3A20B6
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 33
+
+
+ 1219 013f C1B3F6C4 		.ascii	"\301\263\366\304\332\310\335\265\304\320\243\321\351"
+ 1219      DAC8DDB5 
+ 1219      C4D0A3D1 
+ 1219      E9
+ 1220 014c BACDCEAA 		.ascii	"\272\315\316\2520x%02X\012\000"
+ 1220      30782530 
+ 1220      32580A00 
+ 1221              		.section	.text.Storage_ReadFileData,"ax",%progbits
+ 1222              		.align	1
+ 1223              		.global	Storage_ReadFileData
+ 1224              		.syntax unified
+ 1225              		.thumb
+ 1226              		.thumb_func
+ 1228              	Storage_ReadFileData:
+ 1229              	.LVL118:
+ 1230              	.LFB75:
+ 229:User/Src/storage.c **** 
+ 230:User/Src/storage.c **** /************************** 【优化后核心函数】通用FatFs文件数据读取（专用于读出内容） *************
+ 231:User/Src/storage.c **** /**
+ 232:User/Src/storage.c ****  * @brief 通用文件数据读取：稳定读出FatFs已写入的文件原始内容（可读全部/指定长度）
+ 233:User/Src/storage.c ****  * @param filePath 待读取文件路径（如"test.txt"，与写入路径完全一致）
+ 234:User/Src/storage.c ****  * @param readBuf  数据接收缓冲区（需外部提前分配，确保大小足够，存放读出的内容）
+ 235:User/Src/storage.c ****  * @param bufSize  接收缓冲区的最大长度（避免缓冲区溢出）
+ 236:User/Src/storage.c ****  * @param actualRead 输出参数：实际读取到的字节数（传入指针，必传，用于获取有效内容长度）
+ 237:User/Src/storage.c ****  * @param outCrc  输出参数：读取数据的异或校验和（传入指针，可传NULL忽略）
+ 238:User/Src/storage.c ****  * @return StorageError 操作状态码：STORAGE_OK成功，其他为失败
+ 239:User/Src/storage.c ****  * @note 1. 自动适配文件实际大小，优先读出全部内容；2. 读出的内容直接存入readBuf，可直接使用
+ 240:User/Src/storage.c ****  * @note 3. 开启ENABLE_STORAGE_PRINT后，可打印读出的内容十六进制/ASCII形式，方便调试
+ 241:User/Src/storage.c ****  */
+ 242:User/Src/storage.c **** StorageError Storage_ReadFileData(const char *filePath, uint8_t *readBuf, UINT bufSize, UINT *actua
+ 243:User/Src/storage.c **** {
+ 1231              		.loc 1 243 1 is_stmt 1 view -0
+ 1232              		.cfi_startproc
+ 1233              		@ args = 4, pretend = 0, frame = 0
+ 1234              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1235              		.loc 1 243 1 is_stmt 0 view .LVU265
+ 1236 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 1237              	.LCFI27:
+ 1238              		.cfi_def_cfa_offset 24
+ 1239              		.cfi_offset 4, -24
+ 1240              		.cfi_offset 5, -20
+ 1241              		.cfi_offset 6, -16
+ 1242              		.cfi_offset 7, -12
+ 1243              		.cfi_offset 8, -8
+ 1244              		.cfi_offset 14, -4
+ 1245 0004 82B0     		sub	sp, sp, #8
+ 1246              	.LCFI28:
+ 1247              		.cfi_def_cfa_offset 32
+ 244:User/Src/storage.c ****     // 1. 严格参数校验：空指针/缓冲区大小为0直接返回错误
+ 245:User/Src/storage.c ****     if (filePath == NULL || readBuf == NULL || actualRead == NULL || bufSize == 0)
+ 1248              		.loc 1 245 5 is_stmt 1 view .LVU266
+ 1249              		.loc 1 245 8 is_stmt 0 view .LVU267
+ 1250 0006 A0B3     		cbz	r0, .L79
+ 1251 0008 0E46     		mov	r6, r1
+ 1252 000a 1546     		mov	r5, r2
+ 1253 000c 1C46     		mov	r4, r3
+ 1254 000e 8046     		mov	r8, r0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 34
+
+
+ 1255              		.loc 1 245 26 discriminator 1 view .LVU268
+ 1256 0010 79B3     		cbz	r1, .L79
+ 1257              		.loc 1 245 45 discriminator 2 view .LVU269
+ 1258 0012 73B3     		cbz	r3, .L79
+ 1259              		.loc 1 245 67 discriminator 3 view .LVU270
+ 1260 0014 6AB3     		cbz	r2, .L79
+ 246:User/Src/storage.c ****     {
+ 247:User/Src/storage.c ****         Storage_print("通用文件读取错误: 无效参数（空指针/缓冲区大小为0）\n");
+ 248:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 249:User/Src/storage.c ****     }
+ 250:User/Src/storage.c ****     *actualRead = 0;                // 初始化实际读取字节数，避免脏数据
+ 1261              		.loc 1 250 5 is_stmt 1 view .LVU271
+ 1262              		.loc 1 250 17 is_stmt 0 view .LVU272
+ 1263 0016 0021     		movs	r1, #0
+ 1264              	.LVL119:
+ 1265              		.loc 1 250 17 view .LVU273
+ 1266 0018 1960     		str	r1, [r3]
+ 251:User/Src/storage.c ****     memset(readBuf, 0, bufSize);    // 清空接收缓冲区，避免残留数据干扰读出的内容
+ 1267              		.loc 1 251 5 is_stmt 1 view .LVU274
+ 1268 001a 3046     		mov	r0, r6
+ 1269              	.LVL120:
+ 1270              		.loc 1 251 5 is_stmt 0 view .LVU275
+ 1271 001c FFF7FEFF 		bl	memset
+ 1272              	.LVL121:
+ 252:User/Src/storage.c **** 
+ 253:User/Src/storage.c ****     // 2. 获取文件实际大小，判断文件是否存在/为空（不存在则无法读出内容）
+ 254:User/Src/storage.c ****     UINT fileRealSize = Storage_GetFileSize(filePath);
+ 1273              		.loc 1 254 5 is_stmt 1 view .LVU276
+ 1274              		.loc 1 254 25 is_stmt 0 view .LVU277
+ 1275 0020 4046     		mov	r0, r8
+ 1276 0022 FFF7FEFF 		bl	Storage_GetFileSize
+ 1277              	.LVL122:
+ 255:User/Src/storage.c ****     if (fileRealSize == 0)
+ 1278              		.loc 1 255 5 is_stmt 1 view .LVU278
+ 1279              		.loc 1 255 8 is_stmt 0 view .LVU279
+ 1280 0026 0746     		mov	r7, r0
+ 1281 0028 60B3     		cbz	r0, .L86
+ 256:User/Src/storage.c ****     {
+ 257:User/Src/storage.c ****         Storage_print("通用文件读取错误: 文件%s不存在或为空，无内容可读取\n", filePath);
+ 258:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 259:User/Src/storage.c ****     }
+ 260:User/Src/storage.c ****     Storage_print("通用文件读取: 文件%s存在，实际大小%u字节，缓冲区可接收%u字节\n", filePath, fileR
+ 1282              		.loc 1 260 5 is_stmt 1 view .LVU280
+ 1283 002a 2B46     		mov	r3, r5
+ 1284 002c 0246     		mov	r2, r0
+ 1285 002e 4146     		mov	r1, r8
+ 1286 0030 1D48     		ldr	r0, .L87
+ 1287              	.LVL123:
+ 1288              		.loc 1 260 5 is_stmt 0 view .LVU281
+ 1289 0032 FFF7FEFF 		bl	Storage_Print
+ 1290              	.LVL124:
+ 261:User/Src/storage.c **** 
+ 262:User/Src/storage.c ****     // 3. 确定实际读取长度：优先读出文件全部内容，缓冲区不足则读满缓冲区
+ 263:User/Src/storage.c ****     UINT readLen = (fileRealSize < bufSize) ? fileRealSize : bufSize;
+ 1291              		.loc 1 263 5 is_stmt 1 view .LVU282
+ 1292              		.loc 1 263 10 is_stmt 0 view .LVU283
+ 1293 0036 AF42     		cmp	r7, r5
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 35
+
+
+ 1294 0038 28BF     		it	cs
+ 1295 003a 2F46     		movcs	r7, r5
+ 1296              	.LVL125:
+ 264:User/Src/storage.c ****     Storage_print("通用文件读取: 准备读取%u字节内容\n", readLen);
+ 1297              		.loc 1 264 5 is_stmt 1 view .LVU284
+ 1298 003c 3946     		mov	r1, r7
+ 1299 003e 1B48     		ldr	r0, .L87+4
+ 1300 0040 FFF7FEFF 		bl	Storage_Print
+ 1301              	.LVL126:
+ 265:User/Src/storage.c **** 
+ 266:User/Src/storage.c ****     // 4. 核心：调用底层读取接口，读出文件内容到readBuf
+ 267:User/Src/storage.c ****     StorageError ret = Storage_ReadFileWithCrc(filePath, readBuf, readLen, outCrc, actualRead);
+ 1302              		.loc 1 267 5 view .LVU285
+ 1303              		.loc 1 267 24 is_stmt 0 view .LVU286
+ 1304 0044 0094     		str	r4, [sp]
+ 1305 0046 089B     		ldr	r3, [sp, #32]
+ 1306 0048 3A46     		mov	r2, r7
+ 1307 004a 3146     		mov	r1, r6
+ 1308 004c 4046     		mov	r0, r8
+ 1309 004e FFF7FEFF 		bl	Storage_ReadFileWithCrc
+ 1310              	.LVL127:
+ 268:User/Src/storage.c ****     if (ret != STORAGE_OK || *actualRead != readLen)
+ 1311              		.loc 1 268 5 is_stmt 1 view .LVU287
+ 1312              		.loc 1 268 8 is_stmt 0 view .LVU288
+ 1313 0052 8046     		mov	r8, r0
+ 1314              	.LVL128:
+ 1315              		.loc 1 268 8 view .LVU289
+ 1316 0054 10B9     		cbnz	r0, .L83
+ 1317              		.loc 1 268 30 discriminator 1 view .LVU290
+ 1318 0056 2168     		ldr	r1, [r4]
+ 1319              		.loc 1 268 27 discriminator 1 view .LVU291
+ 1320 0058 B942     		cmp	r1, r7
+ 1321 005a 1AD0     		beq	.L84
+ 1322              	.L83:
+ 269:User/Src/storage.c ****     {
+ 270:User/Src/storage.c ****         Storage_print("通用文件读取错误: 内容读取失败，错误码%u，实际仅读取%u字节\n", ret, *actualR
+ 1323              		.loc 1 270 9 is_stmt 1 view .LVU292
+ 1324 005c 2268     		ldr	r2, [r4]
+ 1325 005e 4146     		mov	r1, r8
+ 1326 0060 1348     		ldr	r0, .L87+8
+ 1327              	.LVL129:
+ 1328              		.loc 1 270 9 is_stmt 0 view .LVU293
+ 1329 0062 FFF7FEFF 		bl	Storage_Print
+ 1330              	.LVL130:
+ 271:User/Src/storage.c ****         memset(readBuf, 0, bufSize); // 读取失败清空缓冲区，避免无效数据
+ 1331              		.loc 1 271 9 is_stmt 1 view .LVU294
+ 1332 0066 2A46     		mov	r2, r5
+ 1333 0068 0021     		movs	r1, #0
+ 1334 006a 3046     		mov	r0, r6
+ 1335 006c FFF7FEFF 		bl	memset
+ 1336              	.LVL131:
+ 272:User/Src/storage.c ****         return ret;
+ 1337              		.loc 1 272 9 view .LVU295
+ 1338              		.loc 1 272 16 is_stmt 0 view .LVU296
+ 1339 0070 04E0     		b	.L81
+ 1340              	.LVL132:
+ 1341              	.L79:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 36
+
+
+ 247:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 1342              		.loc 1 247 9 is_stmt 1 view .LVU297
+ 1343 0072 1048     		ldr	r0, .L87+12
+ 1344              	.LVL133:
+ 247:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 1345              		.loc 1 247 9 is_stmt 0 view .LVU298
+ 1346 0074 FFF7FEFF 		bl	Storage_Print
+ 1347              	.LVL134:
+ 248:User/Src/storage.c ****     }
+ 1348              		.loc 1 248 9 is_stmt 1 view .LVU299
+ 248:User/Src/storage.c ****     }
+ 1349              		.loc 1 248 16 is_stmt 0 view .LVU300
+ 1350 0078 4FF00408 		mov	r8, #4
+ 1351              	.L81:
+ 273:User/Src/storage.c ****     }
+ 274:User/Src/storage.c **** 
+ 275:User/Src/storage.c ****     // 5. 读取成功：打印核心信息，可选打印读出的内容（调试用）
+ 276:User/Src/storage.c ****     Storage_print("通用文件读取成功: 共读出%u字节有效内容\n", *actualRead);
+ 277:User/Src/storage.c ****     if (outCrc != NULL)
+ 278:User/Src/storage.c ****     {
+ 279:User/Src/storage.c ****         Storage_print("通用文件读取: 读出内容的校验和为0x%02X\n", *outCrc);
+ 280:User/Src/storage.c ****     }
+ 281:User/Src/storage.c **** 
+ 282:User/Src/storage.c ****     // -------------------------- 可选：打印读出的内容（十六进制+ASCII，方便调试） ----------------
+ 283:User/Src/storage.c ****     #ifdef ENABLE_PRINT_ASCII
+ 284:User/Src/storage.c ****     if (*actualRead > 0)
+ 285:User/Src/storage.c ****     {
+ 286:User/Src/storage.c ****         Storage_print("通用文件读取: 读出的内容（十六进制）：");
+ 287:User/Src/storage.c ****         for (UINT i = 0; i < *actualRead; i++)
+ 288:User/Src/storage.c ****         {
+ 289:User/Src/storage.c ****             Storage_print("%02X ", readBuf[i]);
+ 290:User/Src/storage.c ****             // 每16个字节换行，排版更清晰
+ 291:User/Src/storage.c ****             if ((i + 1) % 16 == 0 && i != *actualRead - 1)
+ 292:User/Src/storage.c ****             {
+ 293:User/Src/storage.c ****                 Storage_print("\n");
+ 294:User/Src/storage.c ****                 Storage_print("通用文件读取: ");
+ 295:User/Src/storage.c ****             }
+ 296:User/Src/storage.c ****         }
+ 297:User/Src/storage.c ****         Storage_print("\n");
+ 298:User/Src/storage.c **** 
+ 299:User/Src/storage.c ****         Storage_print("通用文件读取: 读出的内容（ASCII）：");
+ 300:User/Src/storage.c ****         for (UINT i = 0; i < *actualRead; i++)
+ 301:User/Src/storage.c ****         {
+ 302:User/Src/storage.c ****             // 打印可显示ASCII字符，不可显示则用.替代
+ 303:User/Src/storage.c ****             Storage_print("%c", (readBuf[i] >= 0x20 && readBuf[i] <= 0x7E) ? readBuf[i] : '.');
+ 304:User/Src/storage.c ****         }
+ 305:User/Src/storage.c ****         Storage_print("\n");
+ 306:User/Src/storage.c ****     }
+ 307:User/Src/storage.c ****     #endif
+ 308:User/Src/storage.c **** 
+ 309:User/Src/storage.c ****     return STORAGE_OK;
+ 310:User/Src/storage.c **** }
+ 1352              		.loc 1 310 1 view .LVU301
+ 1353 007c 4046     		mov	r0, r8
+ 1354 007e 02B0     		add	sp, sp, #8
+ 1355              	.LCFI29:
+ 1356              		.cfi_remember_state
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 37
+
+
+ 1357              		.cfi_def_cfa_offset 24
+ 1358              		@ sp needed
+ 1359 0080 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 1360              	.LVL135:
+ 1361              	.L86:
+ 1362              	.LCFI30:
+ 1363              		.cfi_restore_state
+ 257:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 1364              		.loc 1 257 9 is_stmt 1 view .LVU302
+ 1365 0084 4146     		mov	r1, r8
+ 1366 0086 0C48     		ldr	r0, .L87+16
+ 1367              	.LVL136:
+ 257:User/Src/storage.c ****         return STORAGE_ERROR_FILE;
+ 1368              		.loc 1 257 9 is_stmt 0 view .LVU303
+ 1369 0088 FFF7FEFF 		bl	Storage_Print
+ 1370              	.LVL137:
+ 258:User/Src/storage.c ****     }
+ 1371              		.loc 1 258 9 is_stmt 1 view .LVU304
+ 258:User/Src/storage.c ****     }
+ 1372              		.loc 1 258 16 is_stmt 0 view .LVU305
+ 1373 008c 4FF00408 		mov	r8, #4
+ 1374              	.LVL138:
+ 258:User/Src/storage.c ****     }
+ 1375              		.loc 1 258 16 view .LVU306
+ 1376 0090 F4E7     		b	.L81
+ 1377              	.LVL139:
+ 1378              	.L84:
+ 276:User/Src/storage.c ****     if (outCrc != NULL)
+ 1379              		.loc 1 276 5 is_stmt 1 view .LVU307
+ 1380 0092 0A48     		ldr	r0, .L87+20
+ 1381              	.LVL140:
+ 276:User/Src/storage.c ****     if (outCrc != NULL)
+ 1382              		.loc 1 276 5 is_stmt 0 view .LVU308
+ 1383 0094 FFF7FEFF 		bl	Storage_Print
+ 1384              	.LVL141:
+ 277:User/Src/storage.c ****     {
+ 1385              		.loc 1 277 5 is_stmt 1 view .LVU309
+ 277:User/Src/storage.c ****     {
+ 1386              		.loc 1 277 8 is_stmt 0 view .LVU310
+ 1387 0098 089B     		ldr	r3, [sp, #32]
+ 1388 009a 002B     		cmp	r3, #0
+ 1389 009c EED0     		beq	.L81
+ 279:User/Src/storage.c ****     }
+ 1390              		.loc 1 279 9 is_stmt 1 view .LVU311
+ 1391 009e 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 1392 00a0 0748     		ldr	r0, .L87+24
+ 1393 00a2 FFF7FEFF 		bl	Storage_Print
+ 1394              	.LVL142:
+ 1395 00a6 E9E7     		b	.L81
+ 1396              	.L88:
+ 1397              		.align	2
+ 1398              	.L87:
+ 1399 00a8 68000000 		.word	.LC29
+ 1400 00ac A8000000 		.word	.LC30
+ 1401 00b0 CC000000 		.word	.LC31
+ 1402 00b4 00000000 		.word	.LC27
+ 1403 00b8 34000000 		.word	.LC28
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 38
+
+
+ 1404 00bc 08010000 		.word	.LC32
+ 1405 00c0 30010000 		.word	.LC33
+ 1406              		.cfi_endproc
+ 1407              	.LFE75:
+ 1409              		.section	.rodata.Storage_TestWriteRead.str1.4,"aMS",%progbits,1
+ 1410              		.align	2
+ 1411              	.LC34:
+ 1412 0000 B2BBD2BB 		.ascii	"\262\273\322\273\326\302\000"
+ 1412      D6C200
+ 1413 0007 00       		.align	2
+ 1414              	.LC35:
+ 1415 0008 D2BBD6C2 		.ascii	"\322\273\326\302\000"
+ 1415      00
+ 1416 000d 000000   		.align	2
+ 1417              	.LC38:
+ 1418 0010 0A3D3D3D 		.ascii	"\012===== \277\252\312\274\264\346\264\242\317\265\315"
+ 1418      3D3D20BF 
+ 1418      AACABCB4 
+ 1418      E6B4A2CF 
+ 1418      B5CD
+ 1419 0022 B3B6C1D0 		.ascii	"\263\266\301\320\264\262\342\312\324 =====\012\000"
+ 1419      B4B2E2CA 
+ 1419      D4203D3D 
+ 1419      3D3D3D0A 
+ 1419      00
+ 1420 0033 00       		.align	2
+ 1421              	.LC39:
+ 1422 0034 B2E2CAD4 		.ascii	"\262\342\312\324\312\247\260\334: \316\304\274\376\320"
+ 1422      CAA7B0DC 
+ 1422      3A20CEC4 
+ 1422      BCFED0
+ 1423 0043 B4C8EBB9 		.ascii	"\264\310\353\271\375\263\314\312\247\260\334\012\000"
+ 1423      FDB3CCCA 
+ 1423      A7B0DC0A 
+ 1423      00
+ 1424              		.align	2
+ 1425              	.LC40:
+ 1426 0050 B2E2CAD4 		.ascii	"\262\342\312\324\276\257\270\346: \320\264\310\353\264"
+ 1426      BEAFB8E6 
+ 1426      3A20D0B4 
+ 1426      C8EBB4
+ 1427 005f F3D0A125 		.ascii	"\363\320\241%u\327\326\275\332\243\254\316\304\274\376"
+ 1427      75D7D6BD 
+ 1427      DAA3ACCE 
+ 1427      C4BCFE
+ 1428 006e CAB5BCCA 		.ascii	"\312\265\274\312\264\363\320\241%u\327\326\275\332\012"
+ 1428      B4F3D0A1 
+ 1428      2575D7D6 
+ 1428      BDDA0A
+ 1429 007d 00       		.ascii	"\000"
+ 1430 007e 0000     		.align	2
+ 1431              	.LC41:
+ 1432 0080 B2E2CAD4 		.ascii	"\262\342\312\324\312\247\260\334: \316\304\274\376\266"
+ 1432      CAA7B0DC 
+ 1432      3A20CEC4 
+ 1432      BCFEB6
+ 1433 008f C1C8A1B9 		.ascii	"\301\310\241\271\375\263\314\312\247\260\334\012\000"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 39
+
+
+ 1433      FDB3CCCA 
+ 1433      A7B0DC0A 
+ 1433      00
+ 1434              		.align	2
+ 1435              	.LC42:
+ 1436 009c B2E2CAD4 		.ascii	"\262\342\312\324\263\311\271\246: \312\375\276\335\304"
+ 1436      B3C9B9A6 
+ 1436      3A20CAFD 
+ 1436      BEDDC4
+ 1437 00ab DAC8DDBA 		.ascii	"\332\310\335\272\315\320\243\321\351\272\315\315\352"
+ 1437      CDD0A3D1 
+ 1437      E9BACDCD 
+ 1437      EA
+ 1438 00b8 C8ABD2BB 		.ascii	"\310\253\322\273\326\302 | \320\243\321\351\272\315"
+ 1438      D6C2207C 
+ 1438      20D0A3D1 
+ 1438      E9BACD
+ 1439 00c7 30782530 		.ascii	"0x%02X\012\000"
+ 1439      32580A00 
+ 1440 00cf 00       		.align	2
+ 1441              	.LC43:
+ 1442 00d0 B2E2CAD4 		.ascii	"\262\342\312\324\312\247\260\334: \312\375\276\335\262"
+ 1442      CAA7B0DC 
+ 1442      3A20CAFD 
+ 1442      BEDDB2
+ 1443 00df BBD2BBD6 		.ascii	"\273\322\273\326\302 \012\000"
+ 1443      C2200A00 
+ 1444 00e7 00       		.align	2
+ 1445              	.LC44:
+ 1446 00e8 20202D20 		.ascii	"  - \316\304\274\376\264\363\320\241%u | \312\265\274"
+ 1446      CEC4BCFE 
+ 1446      B4F3D0A1 
+ 1446      2575207C 
+ 1446      20CAB5BC 
+ 1447 00fc CAB6C1C8 		.ascii	"\312\266\301\310\241%u\327\326\275\332\012\000"
+ 1447      A12575D7 
+ 1447      D6BDDA0A 
+ 1447      00
+ 1448 0109 000000   		.align	2
+ 1449              	.LC45:
+ 1450 010c 20202D20 		.ascii	"  - \320\264\310\353\320\243\321\351\272\3150x%02X "
+ 1450      D0B4C8EB 
+ 1450      D0A3D1E9 
+ 1450      BACD3078 
+ 1450      25303258 
+ 1451 0121 7C20B6C1 		.ascii	"| \266\301\310\241\320\243\321\351\272\3150x%02X\012"
+ 1451      C8A1D0A3 
+ 1451      D1E9BACD 
+ 1451      30782530 
+ 1451      32580A
+ 1452 0134 00       		.ascii	"\000"
+ 1453 0135 000000   		.align	2
+ 1454              	.LC46:
+ 1455 0138 20202D20 		.ascii	"  - \312\375\276\335\304\332\310\335\266\324\261\310"
+ 1455      CAFDBEDD 
+ 1455      C4DAC8DD 
+ 1455      B6D4B1C8 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 40
+
+
+ 1456 0148 3A202573 		.ascii	": %s\012\000"
+ 1456      0A00
+ 1457 014e 0000     		.align	2
+ 1458              	.LC47:
+ 1459 0150 20202D20 		.ascii	"  - \324\255\312\274\312\375\276\335\307\26020\327\326"
+ 1459      D4ADCABC 
+ 1459      CAFDBEDD 
+ 1459      C7B03230 
+ 1459      D7D6
+ 1460 0162 BDDA3A20 		.ascii	"\275\332: \000"
+ 1460      00
+ 1461 0167 00       		.align	2
+ 1462              	.LC48:
+ 1463 0168 25303258 		.ascii	"%02X \000"
+ 1463      2000
+ 1464 016e 0000     		.align	2
+ 1465              	.LC49:
+ 1466 0170 0A20202D 		.ascii	"\012  - \266\301\310\241\312\375\276\335\307\26020\327"
+ 1466      20B6C1C8 
+ 1466      A1CAFDBE 
+ 1466      DDC7B032 
+ 1466      30D7
+ 1467 0182 D6BDDA3A 		.ascii	"\326\275\332: \000"
+ 1467      2000
+ 1468              		.align	2
+ 1469              	.LC50:
+ 1470 0188 0A00     		.ascii	"\012\000"
+ 1471 018a 0000     		.align	2
+ 1472              	.LC51:
+ 1473 018c 3D3D3D3D 		.ascii	"===== \264\346\264\242\317\265\315\263\266\301\320\264"
+ 1473      3D20B4E6 
+ 1473      B4A2CFB5 
+ 1473      CDB3B6C1 
+ 1473      D0B4
+ 1474 019e B2E2CAD4 		.ascii	"\262\342\312\324\275\341\312\370 =====\012\012\000"
+ 1474      BDE1CAF8 
+ 1474      203D3D3D 
+ 1474      3D3D0A0A 
+ 1474      00
+ 1475 01af 00       		.align	2
+ 1476              	.LC36:
+ 1477 01b0 74657374 		.ascii	"test.txt\000"
+ 1477      2E747874 
+ 1477      00
+ 1478 01b9 000000   		.align	2
+ 1479              	.LC37:
+ 1480 01bc 54686973 		.ascii	"This is a test string for FatFs writing and reading"
+ 1480      20697320 
+ 1480      61207465 
+ 1480      73742073 
+ 1480      7472696E 
+ 1481 01ef 00       		.ascii	"\000"
+ 1482              		.section	.text.Storage_TestWriteRead,"ax",%progbits
+ 1483              		.align	1
+ 1484              		.global	Storage_TestWriteRead
+ 1485              		.syntax unified
+ 1486              		.thumb
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 41
+
+
+ 1487              		.thumb_func
+ 1489              	Storage_TestWriteRead:
+ 1490              	.LFB76:
+ 311:User/Src/storage.c **** 
+ 312:User/Src/storage.c **** /************************** 测试模块（独立，验证读写+校验和一致性） **************************/
+ 313:User/Src/storage.c **** /**
+ 314:User/Src/storage.c ****  * @brief 存储系统读写测试：验证文件级读写和校验和一致性
+ 315:User/Src/storage.c ****  * @return 无
+ 316:User/Src/storage.c ****  */
+ 317:User/Src/storage.c **** void Storage_TestWriteRead(void) {
+ 1491              		.loc 1 317 34 view -0
+ 1492              		.cfi_startproc
+ 1493              		@ args = 0, pretend = 0, frame = 328
+ 1494              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1495 0000 70B5     		push	{r4, r5, r6, lr}
+ 1496              	.LCFI31:
+ 1497              		.cfi_def_cfa_offset 16
+ 1498              		.cfi_offset 4, -16
+ 1499              		.cfi_offset 5, -12
+ 1500              		.cfi_offset 6, -8
+ 1501              		.cfi_offset 14, -4
+ 1502 0002 D4B0     		sub	sp, sp, #336
+ 1503              	.LCFI32:
+ 1504              		.cfi_def_cfa_offset 352
+ 318:User/Src/storage.c ****     const char testFilePath[] = "test.txt";
+ 1505              		.loc 1 318 5 view .LVU313
+ 1506              		.loc 1 318 16 is_stmt 0 view .LVU314
+ 1507 0004 4A4A     		ldr	r2, .L109
+ 1508 0006 51AB     		add	r3, sp, #324
+ 1509 0008 07CA     		ldm	r2, {r0, r1, r2}
+ 1510 000a 03C3     		stmia	r3!, {r0, r1}
+ 1511 000c 1A70     		strb	r2, [r3]
+ 319:User/Src/storage.c ****     const uint8_t testData[] = "This is a test string for FatFs writing and reading";
+ 1512              		.loc 1 319 5 is_stmt 1 view .LVU315
+ 1513              		.loc 1 319 19 is_stmt 0 view .LVU316
+ 1514 000e 44AC     		add	r4, sp, #272
+ 1515 0010 484D     		ldr	r5, .L109+4
+ 1516 0012 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 1517 0014 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 1518 0016 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 1519 0018 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 1520 001a 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 1521 001c 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 1522 001e 2B68     		ldr	r3, [r5]
+ 1523 0020 2360     		str	r3, [r4]
+ 320:User/Src/storage.c ****     const uint32_t writeSize_32 = 51; // 显式32位长度，实际测试数据的准确字节数
+ 1524              		.loc 1 320 5 is_stmt 1 view .LVU317
+ 1525              	.LVL143:
+ 321:User/Src/storage.c ****     UINT writeSize = (UINT)writeSize_32; // 主动转换为FatFs的16位UINT
+ 1526              		.loc 1 321 5 view .LVU318
+ 322:User/Src/storage.c ****     uint8_t writeCrc = 0, readCrc = 0;
+ 1527              		.loc 1 322 5 view .LVU319
+ 1528              		.loc 1 322 13 is_stmt 0 view .LVU320
+ 1529 0022 0024     		movs	r4, #0
+ 1530 0024 8DF80F41 		strb	r4, [sp, #271]
+ 1531              		.loc 1 322 27 view .LVU321
+ 1532 0028 8DF80E41 		strb	r4, [sp, #270]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 42
+
+
+ 323:User/Src/storage.c ****     uint8_t readBuffer[256] = {0}; 
+ 1533              		.loc 1 323 5 is_stmt 1 view .LVU322
+ 1534              		.loc 1 323 13 is_stmt 0 view .LVU323
+ 1535 002c 0394     		str	r4, [sp, #12]
+ 1536 002e FC22     		movs	r2, #252
+ 1537 0030 2146     		mov	r1, r4
+ 1538 0032 04A8     		add	r0, sp, #16
+ 1539 0034 FFF7FEFF 		bl	memset
+ 1540              	.LVL144:
+ 324:User/Src/storage.c ****     UINT actualReadSize = 0;       
+ 1541              		.loc 1 324 5 is_stmt 1 view .LVU324
+ 1542              		.loc 1 324 10 is_stmt 0 view .LVU325
+ 1543 0038 0294     		str	r4, [sp, #8]
+ 325:User/Src/storage.c ****     UINT fileActualSize = 0;
+ 1544              		.loc 1 325 5 is_stmt 1 view .LVU326
+ 1545              	.LVL145:
+ 326:User/Src/storage.c ****     Storage_print("\n===== 开始存储系统读写测试 =====\n");
+ 1546              		.loc 1 326 5 view .LVU327
+ 1547 003a 3F48     		ldr	r0, .L109+8
+ 1548 003c FFF7FEFF 		bl	Storage_Print
+ 1549              	.LVL146:
+ 327:User/Src/storage.c ****     // 1. 写入数据并计算写入校验和
+ 328:User/Src/storage.c ****     StorageError writeStatus = Storage_WriteFileWithCrc(testFilePath, testData, writeSize, &writeCr
+ 1550              		.loc 1 328 5 view .LVU328
+ 1551              		.loc 1 328 32 is_stmt 0 view .LVU329
+ 1552 0040 0DF20F13 		addw	r3, sp, #271
+ 1553 0044 3322     		movs	r2, #51
+ 1554 0046 44A9     		add	r1, sp, #272
+ 1555 0048 51A8     		add	r0, sp, #324
+ 1556 004a FFF7FEFF 		bl	Storage_WriteFileWithCrc
+ 1557              	.LVL147:
+ 329:User/Src/storage.c ****     if (writeStatus != STORAGE_OK) {
+ 1558              		.loc 1 329 5 is_stmt 1 view .LVU330
+ 1559              		.loc 1 329 8 is_stmt 0 view .LVU331
+ 1560 004e 0028     		cmp	r0, #0
+ 1561 0050 3ED1     		bne	.L106
+ 330:User/Src/storage.c ****         Storage_print("测试失败: 文件写入过程失败\n");
+ 331:User/Src/storage.c ****         return;
+ 332:User/Src/storage.c ****     }
+ 333:User/Src/storage.c ****     // 2. 核心新增：获取文件实际存储大小，校验写入是否和文件大小一致
+ 334:User/Src/storage.c ****     fileActualSize = Storage_GetFileSize(testFilePath);
+ 1562              		.loc 1 334 5 is_stmt 1 view .LVU332
+ 1563              		.loc 1 334 22 is_stmt 0 view .LVU333
+ 1564 0052 51A8     		add	r0, sp, #324
+ 1565              	.LVL148:
+ 1566              		.loc 1 334 22 view .LVU334
+ 1567 0054 FFF7FEFF 		bl	Storage_GetFileSize
+ 1568              	.LVL149:
+ 335:User/Src/storage.c ****     if (fileActualSize == 0 || fileActualSize != writeSize) {
+ 1569              		.loc 1 335 5 is_stmt 1 view .LVU335
+ 1570              		.loc 1 335 8 is_stmt 0 view .LVU336
+ 1571 0058 0446     		mov	r4, r0
+ 1572 005a 08B1     		cbz	r0, .L92
+ 1573              		.loc 1 335 29 discriminator 1 view .LVU337
+ 1574 005c 3328     		cmp	r0, #51
+ 1575 005e 3BD0     		beq	.L103
+ 1576              	.L92:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 43
+
+
+ 336:User/Src/storage.c ****         Storage_print("测试警告: 写入大小%u字节，文件实际大小%u字节\n", writeSize, fileActualSize);
+ 1577              		.loc 1 336 9 is_stmt 1 view .LVU338
+ 1578 0060 2246     		mov	r2, r4
+ 1579 0062 3321     		movs	r1, #51
+ 1580 0064 3548     		ldr	r0, .L109+12
+ 1581              	.LVL150:
+ 1582              		.loc 1 336 9 is_stmt 0 view .LVU339
+ 1583 0066 FFF7FEFF 		bl	Storage_Print
+ 1584              	.LVL151:
+ 337:User/Src/storage.c ****         // 若文件大小不一致，后续按文件实际大小读取
+ 338:User/Src/storage.c ****         writeSize = fileActualSize;
+ 1585              		.loc 1 338 9 is_stmt 1 view .LVU340
+ 1586              		.loc 1 338 19 is_stmt 0 view .LVU341
+ 1587 006a 2246     		mov	r2, r4
+ 1588              	.LVL152:
+ 1589              	.L93:
+ 339:User/Src/storage.c ****     }
+ 340:User/Src/storage.c ****     // 3. 读取数据：按文件实际大小读取，获取实际读取字节数和读取校验和
+ 341:User/Src/storage.c ****     StorageError readStatus = Storage_ReadFileWithCrc(testFilePath, readBuffer, writeSize, &readCrc
+ 1590              		.loc 1 341 5 is_stmt 1 view .LVU342
+ 1591              		.loc 1 341 31 is_stmt 0 view .LVU343
+ 1592 006c 02AB     		add	r3, sp, #8
+ 1593 006e 0093     		str	r3, [sp]
+ 1594 0070 0DF58773 		add	r3, sp, #270
+ 1595 0074 03A9     		add	r1, sp, #12
+ 1596 0076 51A8     		add	r0, sp, #324
+ 1597 0078 FFF7FEFF 		bl	Storage_ReadFileWithCrc
+ 1598              	.LVL153:
+ 342:User/Src/storage.c ****     if (readStatus != STORAGE_OK) {
+ 1599              		.loc 1 342 5 is_stmt 1 view .LVU344
+ 1600              		.loc 1 342 8 is_stmt 0 view .LVU345
+ 1601 007c 70BB     		cbnz	r0, .L107
+ 343:User/Src/storage.c ****         Storage_print("测试失败: 文件读取过程失败\n");
+ 344:User/Src/storage.c ****         return;
+ 345:User/Src/storage.c ****     }
+ 346:User/Src/storage.c ****     // 4. 三重一致性校验：文件大小+实际读取字节数+校验和（核心修复）
+ 347:User/Src/storage.c ****     uint8_t dataCmpResult = memcmp(testData, readBuffer, actualReadSize);
+ 1602              		.loc 1 347 5 is_stmt 1 view .LVU346
+ 1603              		.loc 1 347 29 is_stmt 0 view .LVU347
+ 1604 007e 029E     		ldr	r6, [sp, #8]
+ 1605 0080 3246     		mov	r2, r6
+ 1606 0082 03A9     		add	r1, sp, #12
+ 1607 0084 44A8     		add	r0, sp, #272
+ 1608              	.LVL154:
+ 1609              		.loc 1 347 29 view .LVU348
+ 1610 0086 FFF7FEFF 		bl	memcmp
+ 1611              	.LVL155:
+ 1612              		.loc 1 347 13 view .LVU349
+ 1613 008a C5B2     		uxtb	r5, r0
+ 1614              	.LVL156:
+ 348:User/Src/storage.c ****     if (fileActualSize == actualReadSize && dataCmpResult == 0 && writeCrc == readCrc) {
+ 1615              		.loc 1 348 5 is_stmt 1 view .LVU350
+ 1616              		.loc 1 348 8 is_stmt 0 view .LVU351
+ 1617 008c A642     		cmp	r6, r4
+ 1618 008e 06D1     		bne	.L95
+ 1619              		.loc 1 348 42 discriminator 1 view .LVU352
+ 1620 0090 2DB9     		cbnz	r5, .L95
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 44
+
+
+ 1621              		.loc 1 348 76 discriminator 2 view .LVU353
+ 1622 0092 9DF80F11 		ldrb	r1, [sp, #271]	@ zero_extendqisi2
+ 1623 0096 9DF80E31 		ldrb	r3, [sp, #270]	@ zero_extendqisi2
+ 1624              		.loc 1 348 64 discriminator 2 view .LVU354
+ 1625 009a 9942     		cmp	r1, r3
+ 1626 009c 22D0     		beq	.L108
+ 1627              	.L95:
+ 349:User/Src/storage.c ****         Storage_print("测试成功: 数据内容和校验和完全一致 | 校验和0x%02X\n", writeCrc);
+ 350:User/Src/storage.c ****     } else {
+ 351:User/Src/storage.c ****         Storage_print("测试失败: 数据不一致 \n");
+ 1628              		.loc 1 351 9 is_stmt 1 view .LVU355
+ 1629 009e 2848     		ldr	r0, .L109+16
+ 1630 00a0 FFF7FEFF 		bl	Storage_Print
+ 1631              	.LVL157:
+ 352:User/Src/storage.c ****         Storage_print("  - 文件大小%u | 实际读取%u字节\n", fileActualSize, actualReadSize);
+ 1632              		.loc 1 352 9 view .LVU356
+ 1633 00a4 029A     		ldr	r2, [sp, #8]
+ 1634 00a6 2146     		mov	r1, r4
+ 1635 00a8 2648     		ldr	r0, .L109+20
+ 1636 00aa FFF7FEFF 		bl	Storage_Print
+ 1637              	.LVL158:
+ 353:User/Src/storage.c ****         Storage_print("  - 写入校验和0x%02X | 读取校验和0x%02X\n", writeCrc, readCrc);
+ 1638              		.loc 1 353 9 view .LVU357
+ 1639 00ae 9DF80E21 		ldrb	r2, [sp, #270]	@ zero_extendqisi2
+ 1640 00b2 9DF80F11 		ldrb	r1, [sp, #271]	@ zero_extendqisi2
+ 1641 00b6 2448     		ldr	r0, .L109+24
+ 1642 00b8 FFF7FEFF 		bl	Storage_Print
+ 1643              	.LVL159:
+ 354:User/Src/storage.c ****         Storage_print("  - 数据内容对比: %s\n", dataCmpResult == 0 ? "一致" : "不一致");
+ 1644              		.loc 1 354 9 view .LVU358
+ 1645 00bc B5B9     		cbnz	r5, .L104
+ 1646 00be 2349     		ldr	r1, .L109+28
+ 1647              	.L97:
+ 1648              		.loc 1 354 9 is_stmt 0 discriminator 4 view .LVU359
+ 1649 00c0 2348     		ldr	r0, .L109+32
+ 1650 00c2 FFF7FEFF 		bl	Storage_Print
+ 1651              	.LVL160:
+ 355:User/Src/storage.c ****         // 新增：逐字节打印前20字节，查看差异
+ 356:User/Src/storage.c ****         Storage_print("  - 原始数据前20字节: ");
+ 1652              		.loc 1 356 9 is_stmt 1 discriminator 4 view .LVU360
+ 1653 00c6 2348     		ldr	r0, .L109+36
+ 1654 00c8 FFF7FEFF 		bl	Storage_Print
+ 1655              	.LVL161:
+ 357:User/Src/storage.c ****         for(uint32_t i=0; i<20; i++) Storage_print("%02X ", testData[i]);
+ 1656              		.loc 1 357 9 discriminator 4 view .LVU361
+ 1657              	.LBB5:
+ 1658              		.loc 1 357 13 discriminator 4 view .LVU362
+ 1659              		.loc 1 357 22 is_stmt 0 discriminator 4 view .LVU363
+ 1660 00cc 0024     		movs	r4, #0
+ 1661              	.LVL162:
+ 1662              		.loc 1 357 9 discriminator 4 view .LVU364
+ 1663 00ce 18E0     		b	.L98
+ 1664              	.LVL163:
+ 1665              	.L106:
+ 1666              		.loc 1 357 9 discriminator 4 view .LVU365
+ 1667              	.LBE5:
+ 330:User/Src/storage.c ****         return;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 45
+
+
+ 1668              		.loc 1 330 9 is_stmt 1 view .LVU366
+ 1669 00d0 2148     		ldr	r0, .L109+40
+ 1670              	.LVL164:
+ 330:User/Src/storage.c ****         return;
+ 1671              		.loc 1 330 9 is_stmt 0 view .LVU367
+ 1672 00d2 FFF7FEFF 		bl	Storage_Print
+ 1673              	.LVL165:
+ 331:User/Src/storage.c ****     }
+ 1674              		.loc 1 331 9 is_stmt 1 view .LVU368
+ 1675 00d6 29E0     		b	.L89
+ 1676              	.LVL166:
+ 1677              	.L103:
+ 321:User/Src/storage.c ****     uint8_t writeCrc = 0, readCrc = 0;
+ 1678              		.loc 1 321 10 is_stmt 0 view .LVU369
+ 1679 00d8 0246     		mov	r2, r0
+ 1680 00da C7E7     		b	.L93
+ 1681              	.LVL167:
+ 1682              	.L107:
+ 343:User/Src/storage.c ****         return;
+ 1683              		.loc 1 343 9 is_stmt 1 view .LVU370
+ 1684 00dc 1F48     		ldr	r0, .L109+44
+ 1685              	.LVL168:
+ 343:User/Src/storage.c ****         return;
+ 1686              		.loc 1 343 9 is_stmt 0 view .LVU371
+ 1687 00de FFF7FEFF 		bl	Storage_Print
+ 1688              	.LVL169:
+ 344:User/Src/storage.c ****     }
+ 1689              		.loc 1 344 9 is_stmt 1 view .LVU372
+ 1690 00e2 23E0     		b	.L89
+ 1691              	.LVL170:
+ 1692              	.L108:
+ 349:User/Src/storage.c ****     } else {
+ 1693              		.loc 1 349 9 view .LVU373
+ 1694 00e4 1E48     		ldr	r0, .L109+48
+ 1695 00e6 FFF7FEFF 		bl	Storage_Print
+ 1696              	.LVL171:
+ 1697 00ea 1CE0     		b	.L96
+ 1698              	.L104:
+ 354:User/Src/storage.c ****         // 新增：逐字节打印前20字节，查看差异
+ 1699              		.loc 1 354 9 is_stmt 0 view .LVU374
+ 1700 00ec 1D49     		ldr	r1, .L109+52
+ 1701 00ee E7E7     		b	.L97
+ 1702              	.LVL172:
+ 1703              	.L99:
+ 1704              	.LBB6:
+ 1705              		.loc 1 357 38 is_stmt 1 discriminator 3 view .LVU375
+ 1706              		.loc 1 357 69 is_stmt 0 discriminator 3 view .LVU376
+ 1707 00f0 04F5A873 		add	r3, r4, #336
+ 1708 00f4 6B44     		add	r3, sp, r3
+ 1709              		.loc 1 357 38 discriminator 3 view .LVU377
+ 1710 00f6 13F8401C 		ldrb	r1, [r3, #-64]	@ zero_extendqisi2
+ 1711 00fa 1B48     		ldr	r0, .L109+56
+ 1712 00fc FFF7FEFF 		bl	Storage_Print
+ 1713              	.LVL173:
+ 1714              		.loc 1 357 33 is_stmt 1 discriminator 3 view .LVU378
+ 1715              		.loc 1 357 34 is_stmt 0 discriminator 3 view .LVU379
+ 1716 0100 0134     		adds	r4, r4, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 46
+
+
+ 1717              	.LVL174:
+ 1718              	.L98:
+ 1719              		.loc 1 357 27 is_stmt 1 discriminator 1 view .LVU380
+ 1720              		.loc 1 357 9 is_stmt 0 discriminator 1 view .LVU381
+ 1721 0102 132C     		cmp	r4, #19
+ 1722 0104 F4D9     		bls	.L99
+ 1723              	.LBE6:
+ 358:User/Src/storage.c ****         Storage_print("\n  - 读取数据前20字节: ");
+ 1724              		.loc 1 358 9 is_stmt 1 view .LVU382
+ 1725 0106 1948     		ldr	r0, .L109+60
+ 1726 0108 FFF7FEFF 		bl	Storage_Print
+ 1727              	.LVL175:
+ 359:User/Src/storage.c ****         for(uint32_t i=0; i<20; i++) Storage_print("%02X ", readBuffer[i]);
+ 1728              		.loc 1 359 9 view .LVU383
+ 1729              	.LBB7:
+ 1730              		.loc 1 359 13 view .LVU384
+ 1731              		.loc 1 359 22 is_stmt 0 view .LVU385
+ 1732 010c 0024     		movs	r4, #0
+ 1733              	.LVL176:
+ 1734              		.loc 1 359 9 view .LVU386
+ 1735 010e 05E0     		b	.L100
+ 1736              	.LVL177:
+ 1737              	.L101:
+ 1738              		.loc 1 359 38 is_stmt 1 discriminator 3 view .LVU387
+ 1739 0110 03AB     		add	r3, sp, #12
+ 1740 0112 195D     		ldrb	r1, [r3, r4]	@ zero_extendqisi2
+ 1741 0114 1448     		ldr	r0, .L109+56
+ 1742 0116 FFF7FEFF 		bl	Storage_Print
+ 1743              	.LVL178:
+ 1744              		.loc 1 359 33 discriminator 3 view .LVU388
+ 1745              		.loc 1 359 34 is_stmt 0 discriminator 3 view .LVU389
+ 1746 011a 0134     		adds	r4, r4, #1
+ 1747              	.LVL179:
+ 1748              	.L100:
+ 1749              		.loc 1 359 27 is_stmt 1 discriminator 1 view .LVU390
+ 1750              		.loc 1 359 9 is_stmt 0 discriminator 1 view .LVU391
+ 1751 011c 132C     		cmp	r4, #19
+ 1752 011e F7D9     		bls	.L101
+ 1753              	.LBE7:
+ 360:User/Src/storage.c ****         Storage_print("\n");
+ 1754              		.loc 1 360 9 is_stmt 1 view .LVU392
+ 1755 0120 1348     		ldr	r0, .L109+64
+ 1756 0122 FFF7FEFF 		bl	Storage_Print
+ 1757              	.LVL180:
+ 1758              	.L96:
+ 361:User/Src/storage.c ****     }
+ 362:User/Src/storage.c ****     Storage_print("===== 存储系统读写测试结束 =====\n\n");
+ 1759              		.loc 1 362 5 view .LVU393
+ 1760 0126 1348     		ldr	r0, .L109+68
+ 1761 0128 FFF7FEFF 		bl	Storage_Print
+ 1762              	.LVL181:
+ 1763              	.L89:
+ 363:User/Src/storage.c **** }...
+ 1764              		.loc 1 363 1 is_stmt 0 view .LVU394
+ 1765 012c 54B0     		add	sp, sp, #336
+ 1766              	.LCFI33:
+ 1767              		.cfi_def_cfa_offset 16
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 47
+
+
+ 1768              		@ sp needed
+ 1769 012e 70BD     		pop	{r4, r5, r6, pc}
+ 1770              	.L110:
+ 1771              		.align	2
+ 1772              	.L109:
+ 1773 0130 B0010000 		.word	.LC36
+ 1774 0134 BC010000 		.word	.LC37
+ 1775 0138 10000000 		.word	.LC38
+ 1776 013c 50000000 		.word	.LC40
+ 1777 0140 D0000000 		.word	.LC43
+ 1778 0144 E8000000 		.word	.LC44
+ 1779 0148 0C010000 		.word	.LC45
+ 1780 014c 08000000 		.word	.LC35
+ 1781 0150 38010000 		.word	.LC46
+ 1782 0154 50010000 		.word	.LC47
+ 1783 0158 34000000 		.word	.LC39
+ 1784 015c 80000000 		.word	.LC41
+ 1785 0160 9C000000 		.word	.LC42
+ 1786 0164 00000000 		.word	.LC34
+ 1787 0168 68010000 		.word	.LC48
+ 1788 016c 70010000 		.word	.LC49
+ 1789 0170 88010000 		.word	.LC50
+ 1790 0174 8C010000 		.word	.LC51
+ 1791              		.cfi_endproc
+ 1792              	.LFE76:
+ 1794              		.section	.bss.fs,"aw",%nobits
+ 1795              		.align	2
+ 1798              	fs:
+ 1799 0000 00000000 		.space	4148
+ 1799      00000000 
+ 1799      00000000 
+ 1799      00000000 
+ 1799      00000000 
+ 1800              		.text
+ 1801              	.Letext0:
+ 1802              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1803              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1804              		.file 4 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 1805              		.file 5 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 1806              		.file 6 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 1807              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h"
+ 1808              		.file 8 "Core/FatFs/Inc/ff.h"
+ 1809              		.file 9 "User/Inc/storage.h"
+ 1810              		.file 10 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\lib\\gc
+ 1811              		.file 11 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-non
+ 1812              		.file 12 "Core/Inc/usart.h"
+ 1813              		.file 13 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-non
+ 1814              		.file 14 "<built-in>"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s 			page 48
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 storage.c
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:18     .text.Storage_Print:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:24     .text.Storage_Print:00000000 Storage_Print
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:91     .text.Storage_Print:00000034 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:96     .rodata.Storage_Format.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:114    .text.Storage_Format:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:120    .text.Storage_Format:00000000 Storage_Format
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:224    .text.Storage_Format:0000007c $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:232    .rodata.Storage_Init.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:277    .text.Storage_Init:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:283    .text.Storage_Init:00000000 Storage_Init
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:431    .text.Storage_Init:0000008c $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:1798   .bss.fs:00000000 fs
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:446    .text.calculateChecksum:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:452    .text.calculateChecksum:00000000 calculateChecksum
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:501    .rodata.Storage_WriteFileWithCrc.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:540    .text.Storage_WriteFileWithCrc:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:546    .text.Storage_WriteFileWithCrc:00000000 Storage_WriteFileWithCrc
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:803    .text.Storage_WriteFileWithCrc:00000104 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:816    .rodata.Storage_GetFileSize.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:833    .text.Storage_GetFileSize:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:839    .text.Storage_GetFileSize:00000000 Storage_GetFileSize
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:957    .text.Storage_GetFileSize:00000064 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:964    .rodata.Storage_ReadFileWithCrc.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:985    .text.Storage_ReadFileWithCrc:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:991    .text.Storage_ReadFileWithCrc:00000000 Storage_ReadFileWithCrc
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:1172   .text.Storage_ReadFileWithCrc:000000b4 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:1180   .rodata.Storage_ReadFileData.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:1222   .text.Storage_ReadFileData:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:1228   .text.Storage_ReadFileData:00000000 Storage_ReadFileData
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:1399   .text.Storage_ReadFileData:000000a8 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:1410   .rodata.Storage_TestWriteRead.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:1483   .text.Storage_TestWriteRead:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:1489   .text.Storage_TestWriteRead:00000000 Storage_TestWriteRead
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:1773   .text.Storage_TestWriteRead:00000130 $d
+C:\Users\84759\AppData\Local\Temp\ccdJLDiH.s:1795   .bss.fs:00000000 $d
+
+UNDEFINED SYMBOLS
+vsnprintf
+strlen
+HAL_UART_Transmit
+huart1
+memset
+f_mkfs
+f_mount
+f_open
+f_write
+f_close
+f_sync
+f_stat
+f_read
+memcmp

@@ -1,0 +1,1255 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"diskio.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.rodata.disk_status.str1.4,"aMS",%progbits,1
+  18              		.align	2
+  19              	.LC0:
+  20 0000 2D2D666C 		.ascii	"--flash id=0x%04x, stat=%d\015\012\000"
+  20      61736820 
+  20      69643D30 
+  20      78253034 
+  20      782C2073 
+  21              		.section	.text.disk_status,"ax",%progbits
+  22              		.align	1
+  23              		.global	disk_status
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	disk_status:
+  29              	.LVL0:
+  30              	.LFB68:
+  31              		.file 1 "Core/FatFs/Src/diskio.c"
+   1:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+   2:Core/FatFs/Src/diskio.c **** /* Low level disk I/O module SKELETON for FatFs     (C)ChaN, 2025        */
+   3:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+   4:Core/FatFs/Src/diskio.c **** /* If a working storage control module is available, it should be        */
+   5:Core/FatFs/Src/diskio.c **** /* attached to the FatFs via a glue function rather than modifying it.   */
+   6:Core/FatFs/Src/diskio.c **** /* This is an example of glue functions to attach various exsisting      */
+   7:Core/FatFs/Src/diskio.c **** /* storage control modules to the FatFs module with a defined API.       */
+   8:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+   9:Core/FatFs/Src/diskio.c **** 
+  10:Core/FatFs/Src/diskio.c **** #include "ff.h"			/* Basic definitions of FatFs */
+  11:Core/FatFs/Src/diskio.c **** #include "diskio.h"		/* Declarations FatFs MAI */
+  12:Core/FatFs/Src/diskio.c **** #include "spi.h"
+  13:Core/FatFs/Src/diskio.c **** #include "flash.h"
+  14:Core/FatFs/Src/diskio.c **** /* Example: Declarations of the platform and disk functions in the project */
+  15:Core/FatFs/Src/diskio.c **** //#include "platform.h"
+  16:Core/FatFs/Src/diskio.c **** //#include "storage.h"
+  17:Core/FatFs/Src/diskio.c **** 
+  18:Core/FatFs/Src/diskio.c **** /* Example: Mapping of physical drive number for each drive */
+  19:Core/FatFs/Src/diskio.c **** 
+  20:Core/FatFs/Src/diskio.c **** /* 物理驱动器映射 */
+  21:Core/FatFs/Src/diskio.c **** #define DEV_FLASH	0	    /* W25Q16映射到物理驱动器0 */
+  22:Core/FatFs/Src/diskio.c **** /* W25Q16 硬件参数（严格匹配实际芯片，2MB SPI Flash）*/
+  23:Core/FatFs/Src/diskio.c **** #define W25Q16_DEVICE_ID        0xEF16   // 实际芯片ID
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 2
+
+
+  24:Core/FatFs/Src/diskio.c **** #define FLASH_SECTOR_SIZE       4096     // 最小擦除单位：4KB扇区
+  25:Core/FatFs/Src/diskio.c **** const DWORD FLASH_TOTAL_SECTOR = 512;    // 总扇区数：2MB/4KB=512
+  26:Core/FatFs/Src/diskio.c **** #define FLASH_MAX_ADDR          0x1FFFFF // 最大物理地址：2MB-1
+  27:Core/FatFs/Src/diskio.c **** 
+  28:Core/FatFs/Src/diskio.c **** 
+  29:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+  30:Core/FatFs/Src/diskio.c **** /* 获取驱动器状态  */
+  31:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+  32:Core/FatFs/Src/diskio.c **** DSTATUS disk_status (BYTE pdrv)
+  33:Core/FatFs/Src/diskio.c **** {
+  32              		.loc 1 33 1 view -0
+  33              		.cfi_startproc
+  34              		@ args = 0, pretend = 0, frame = 0
+  35              		@ frame_needed = 0, uses_anonymous_args = 0
+  36              		.loc 1 33 1 is_stmt 0 view .LVU1
+  37 0000 10B5     		push	{r4, lr}
+  38              	.LCFI0:
+  39              		.cfi_def_cfa_offset 8
+  40              		.cfi_offset 4, -8
+  41              		.cfi_offset 14, -4
+  34:Core/FatFs/Src/diskio.c **** 	DSTATUS stat = STA_NOINIT; // 默认未初始化
+  42              		.loc 1 34 2 is_stmt 1 view .LVU2
+  43              	.LVL1:
+  35:Core/FatFs/Src/diskio.c **** 	switch (pdrv) {
+  44              		.loc 1 35 2 view .LVU3
+  45 0002 10B1     		cbz	r0, .L7
+  36:Core/FatFs/Src/diskio.c **** 		case DEV_FLASH :
+  37:Core/FatFs/Src/diskio.c **** 		{
+  38:Core/FatFs/Src/diskio.c **** 			uint16_t flash_id = flash_device_id();
+  39:Core/FatFs/Src/diskio.c **** 			// 匹配实际W25Q16 ID，清除未初始化标志
+  40:Core/FatFs/Src/diskio.c **** 			if (flash_id == W25Q16_DEVICE_ID) { 
+  41:Core/FatFs/Src/diskio.c **** 				stat &= ~STA_NOINIT;
+  42:Core/FatFs/Src/diskio.c **** 			}
+  43:Core/FatFs/Src/diskio.c **** 			UsbPrintf("--flash id=0x%04x, stat=%d\r\n", flash_id, stat);
+  44:Core/FatFs/Src/diskio.c **** 			return stat; 
+  45:Core/FatFs/Src/diskio.c **** 		}	
+  46:Core/FatFs/Src/diskio.c **** 		default:
+  47:Core/FatFs/Src/diskio.c **** 			stat = STA_NOINIT;
+  48:Core/FatFs/Src/diskio.c **** 			return stat;
+  46              		.loc 1 48 11 is_stmt 0 view .LVU4
+  47 0004 0124     		movs	r4, #1
+  48              	.LVL2:
+  49              	.L2:
+  49:Core/FatFs/Src/diskio.c **** 	}
+  50:Core/FatFs/Src/diskio.c **** }
+  50              		.loc 1 50 1 view .LVU5
+  51 0006 2046     		mov	r0, r4
+  52 0008 10BD     		pop	{r4, pc}
+  53              	.LVL3:
+  54              	.L7:
+  55              		.loc 1 50 1 view .LVU6
+  56 000a 0446     		mov	r4, r0
+  57              	.LBB2:
+  38:Core/FatFs/Src/diskio.c **** 			// 匹配实际W25Q16 ID，清除未初始化标志
+  58              		.loc 1 38 4 is_stmt 1 view .LVU7
+  38:Core/FatFs/Src/diskio.c **** 			// 匹配实际W25Q16 ID，清除未初始化标志
+  59              		.loc 1 38 24 is_stmt 0 view .LVU8
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 3
+
+
+  60 000c FFF7FEFF 		bl	flash_device_id
+  61              	.LVL4:
+  38:Core/FatFs/Src/diskio.c **** 			// 匹配实际W25Q16 ID，清除未初始化标志
+  62              		.loc 1 38 24 view .LVU9
+  63 0010 0146     		mov	r1, r0
+  64              	.LVL5:
+  40:Core/FatFs/Src/diskio.c **** 				stat &= ~STA_NOINIT;
+  65              		.loc 1 40 4 is_stmt 1 view .LVU10
+  40:Core/FatFs/Src/diskio.c **** 				stat &= ~STA_NOINIT;
+  66              		.loc 1 40 7 is_stmt 0 view .LVU11
+  67 0012 4EF61673 		movw	r3, #61206
+  68 0016 9842     		cmp	r0, r3
+  69 0018 00D0     		beq	.L3
+  70              	.LBE2:
+  34:Core/FatFs/Src/diskio.c **** 	switch (pdrv) {
+  71              		.loc 1 34 10 view .LVU12
+  72 001a 0124     		movs	r4, #1
+  73              	.L3:
+  74              	.LVL6:
+  75              	.LBB3:
+  43:Core/FatFs/Src/diskio.c **** 			return stat; 
+  76              		.loc 1 43 4 is_stmt 1 view .LVU13
+  77 001c 2246     		mov	r2, r4
+  78 001e 0248     		ldr	r0, .L8
+  79              	.LVL7:
+  43:Core/FatFs/Src/diskio.c **** 			return stat; 
+  80              		.loc 1 43 4 is_stmt 0 view .LVU14
+  81 0020 FFF7FEFF 		bl	UsbPrintf
+  82              	.LVL8:
+  44:Core/FatFs/Src/diskio.c **** 		}	
+  83              		.loc 1 44 4 is_stmt 1 view .LVU15
+  44:Core/FatFs/Src/diskio.c **** 		}	
+  84              		.loc 1 44 11 is_stmt 0 view .LVU16
+  85 0024 EFE7     		b	.L2
+  86              	.L9:
+  87 0026 00BF     		.align	2
+  88              	.L8:
+  89 0028 00000000 		.word	.LC0
+  90              	.LBE3:
+  91              		.cfi_endproc
+  92              	.LFE68:
+  94              		.section	.rodata.disk_initialize.str1.4,"aMS",%progbits,1
+  95              		.align	2
+  96              	.LC1:
+  97 0000 2D2D696E 		.ascii	"--init stat=%d\015\012\000"
+  97      69742073 
+  97      7461743D 
+  97      25640D0A 
+  97      00
+  98              		.section	.text.disk_initialize,"ax",%progbits
+  99              		.align	1
+ 100              		.global	disk_initialize
+ 101              		.syntax unified
+ 102              		.thumb
+ 103              		.thumb_func
+ 105              	disk_initialize:
+ 106              	.LVL9:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 4
+
+
+ 107              	.LFB69:
+  51:Core/FatFs/Src/diskio.c **** 
+  52:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+  53:Core/FatFs/Src/diskio.c **** /* 初始化驱动器  */
+  54:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+  55:Core/FatFs/Src/diskio.c **** DSTATUS disk_initialize (BYTE pdrv)
+  56:Core/FatFs/Src/diskio.c **** {
+ 108              		.loc 1 56 1 is_stmt 1 view -0
+ 109              		.cfi_startproc
+ 110              		@ args = 0, pretend = 0, frame = 0
+ 111              		@ frame_needed = 0, uses_anonymous_args = 0
+ 112              		.loc 1 56 1 is_stmt 0 view .LVU18
+ 113 0000 10B5     		push	{r4, lr}
+ 114              	.LCFI1:
+ 115              		.cfi_def_cfa_offset 8
+ 116              		.cfi_offset 4, -8
+ 117              		.cfi_offset 14, -4
+  57:Core/FatFs/Src/diskio.c **** 	DSTATUS stat = STA_NOINIT;
+ 118              		.loc 1 57 2 is_stmt 1 view .LVU19
+ 119              	.LVL10:
+  58:Core/FatFs/Src/diskio.c **** 	switch (pdrv) {
+ 120              		.loc 1 58 2 view .LVU20
+ 121 0002 98B9     		cbnz	r0, .L13
+ 122              	.LBB4:
+  59:Core/FatFs/Src/diskio.c **** 		case DEV_FLASH :
+  60:Core/FatFs/Src/diskio.c **** 		{
+  61:Core/FatFs/Src/diskio.c **** 			extern SPI_HandleTypeDef hspi1; 
+ 123              		.loc 1 61 4 view .LVU21
+  62:Core/FatFs/Src/diskio.c **** 			if (hspi1.State == HAL_SPI_STATE_RESET) {
+ 124              		.loc 1 62 4 view .LVU22
+ 125              		.loc 1 62 13 is_stmt 0 view .LVU23
+ 126 0004 0A4B     		ldr	r3, .L16
+ 127 0006 93F85130 		ldrb	r3, [r3, #81]	@ zero_extendqisi2
+ 128              		.loc 1 62 7 view .LVU24
+ 129 000a 4BB1     		cbz	r3, .L15
+ 130              	.LVL11:
+ 131              	.L12:
+  63:Core/FatFs/Src/diskio.c **** 				MX_SPI1_Init();
+  64:Core/FatFs/Src/diskio.c **** 				HAL_Delay(20);
+  65:Core/FatFs/Src/diskio.c **** 			}
+  66:Core/FatFs/Src/diskio.c **** 			stat = disk_status(DEV_FLASH);
+ 132              		.loc 1 66 4 is_stmt 1 view .LVU25
+ 133              		.loc 1 66 11 is_stmt 0 view .LVU26
+ 134 000c 0020     		movs	r0, #0
+ 135 000e FFF7FEFF 		bl	disk_status
+ 136              	.LVL12:
+ 137 0012 0446     		mov	r4, r0
+ 138              	.LVL13:
+  67:Core/FatFs/Src/diskio.c **** 			UsbPrintf("--init stat=%d\r\n", stat);
+ 139              		.loc 1 67 4 is_stmt 1 view .LVU27
+ 140 0014 0146     		mov	r1, r0
+ 141 0016 0748     		ldr	r0, .L16+4
+ 142              	.LVL14:
+ 143              		.loc 1 67 4 is_stmt 0 view .LVU28
+ 144 0018 FFF7FEFF 		bl	UsbPrintf
+ 145              	.LVL15:
+  68:Core/FatFs/Src/diskio.c **** 			return stat;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 5
+
+
+ 146              		.loc 1 68 4 is_stmt 1 view .LVU29
+ 147              	.L11:
+ 148              		.loc 1 68 4 is_stmt 0 view .LVU30
+ 149              	.LBE4:
+  69:Core/FatFs/Src/diskio.c **** 		}
+  70:Core/FatFs/Src/diskio.c **** 		default:
+  71:Core/FatFs/Src/diskio.c **** 			stat = STA_NOINIT;
+  72:Core/FatFs/Src/diskio.c **** 			return stat;
+  73:Core/FatFs/Src/diskio.c **** 	}
+  74:Core/FatFs/Src/diskio.c **** }
+ 150              		.loc 1 74 1 view .LVU31
+ 151 001c 2046     		mov	r0, r4
+ 152 001e 10BD     		pop	{r4, pc}
+ 153              	.LVL16:
+ 154              	.L15:
+ 155              	.LBB5:
+  63:Core/FatFs/Src/diskio.c **** 				HAL_Delay(20);
+ 156              		.loc 1 63 5 is_stmt 1 view .LVU32
+ 157 0020 FFF7FEFF 		bl	MX_SPI1_Init
+ 158              	.LVL17:
+  64:Core/FatFs/Src/diskio.c **** 			}
+ 159              		.loc 1 64 5 view .LVU33
+ 160 0024 1420     		movs	r0, #20
+ 161 0026 FFF7FEFF 		bl	HAL_Delay
+ 162              	.LVL18:
+ 163 002a EFE7     		b	.L12
+ 164              	.LVL19:
+ 165              	.L13:
+  64:Core/FatFs/Src/diskio.c **** 			}
+ 166              		.loc 1 64 5 is_stmt 0 view .LVU34
+ 167              	.LBE5:
+  72:Core/FatFs/Src/diskio.c **** 	}
+ 168              		.loc 1 72 11 view .LVU35
+ 169 002c 0124     		movs	r4, #1
+ 170 002e F5E7     		b	.L11
+ 171              	.L17:
+ 172              		.align	2
+ 173              	.L16:
+ 174 0030 00000000 		.word	hspi1
+ 175 0034 00000000 		.word	.LC1
+ 176              		.cfi_endproc
+ 177              	.LFE69:
+ 179              		.section	.rodata.disk_read.str1.4,"aMS",%progbits,1
+ 180              		.align	2
+ 181              	.LC2:
+ 182 0000 2D2D7265 		.ascii	"--read err: param invalid\015\012\000"
+ 182      61642065 
+ 182      72723A20 
+ 182      70617261 
+ 182      6D20696E 
+ 183              		.align	2
+ 184              	.LC3:
+ 185 001c 2D2D7265 		.ascii	"--read err: sector out of range (sect=%lu, count=%u"
+ 185      61642065 
+ 185      72723A20 
+ 185      73656374 
+ 185      6F72206F 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 6
+
+
+ 186 004f 2C20746F 		.ascii	", total=%lu)\015\012\000"
+ 186      74616C3D 
+ 186      256C7529 
+ 186      0D0A00
+ 187 005e 0000     		.align	2
+ 188              	.LC4:
+ 189 0060 2D2D7265 		.ascii	"--read err: flash read fail (res=%d, addr=0x%08X)\015"
+ 189      61642065 
+ 189      72723A20 
+ 189      666C6173 
+ 189      68207265 
+ 190 0092 0A00     		.ascii	"\012\000"
+ 191              		.align	2
+ 192              	.LC5:
+ 193 0094 2D2D7265 		.ascii	"--read sector=%lu, count=%u, address=0x%08X, res=%d"
+ 193      61642073 
+ 193      6563746F 
+ 193      723D256C 
+ 193      752C2063 
+ 194 00c7 0D0A00   		.ascii	"\015\012\000"
+ 195              		.section	.text.disk_read,"ax",%progbits
+ 196              		.align	1
+ 197              		.global	disk_read
+ 198              		.syntax unified
+ 199              		.thumb
+ 200              		.thumb_func
+ 202              	disk_read:
+ 203              	.LVL20:
+ 204              	.LFB70:
+  75:Core/FatFs/Src/diskio.c **** 
+  76:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+  77:Core/FatFs/Src/diskio.c **** /* 读取扇区（修复LBA_t打印+64位运算+地址越界严格校验）*/
+  78:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+  79:Core/FatFs/Src/diskio.c **** DRESULT disk_read (BYTE pdrv, BYTE *buff, LBA_t sector, UINT count)
+  80:Core/FatFs/Src/diskio.c **** {
+ 205              		.loc 1 80 1 is_stmt 1 view -0
+ 206              		.cfi_startproc
+ 207              		@ args = 0, pretend = 0, frame = 0
+ 208              		@ frame_needed = 0, uses_anonymous_args = 0
+ 209              		.loc 1 80 1 is_stmt 0 view .LVU37
+ 210 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 211              	.LCFI2:
+ 212              		.cfi_def_cfa_offset 20
+ 213              		.cfi_offset 4, -20
+ 214              		.cfi_offset 5, -16
+ 215              		.cfi_offset 6, -12
+ 216              		.cfi_offset 7, -8
+ 217              		.cfi_offset 14, -4
+ 218 0002 83B0     		sub	sp, sp, #12
+ 219              	.LCFI3:
+ 220              		.cfi_def_cfa_offset 32
+  81:Core/FatFs/Src/diskio.c ****     DRESULT res = RES_PARERR;
+ 221              		.loc 1 81 5 is_stmt 1 view .LVU38
+ 222              	.LVL21:
+  82:Core/FatFs/Src/diskio.c ****     // 1. 基础参数校验
+  83:Core/FatFs/Src/diskio.c ****     if (pdrv != DEV_FLASH || buff == NULL || count == 0) {
+ 223              		.loc 1 83 5 view .LVU39
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 7
+
+
+ 224              		.loc 1 83 8 is_stmt 0 view .LVU40
+ 225 0004 D8B9     		cbnz	r0, .L19
+ 226 0006 1646     		mov	r6, r2
+ 227 0008 1C46     		mov	r4, r3
+ 228 000a 0546     		mov	r5, r0
+ 229              		.loc 1 83 27 discriminator 1 view .LVU41
+ 230 000c B9B1     		cbz	r1, .L19
+ 231              		.loc 1 83 43 discriminator 2 view .LVU42
+ 232 000e B3B1     		cbz	r3, .L19
+  84:Core/FatFs/Src/diskio.c ****         UsbPrintf("--read err: param invalid\r\n");
+  85:Core/FatFs/Src/diskio.c ****         return res;
+  86:Core/FatFs/Src/diskio.c ****     }
+  87:Core/FatFs/Src/diskio.c ****     // 2. 扇区越界校验（64位转32位，避免溢出）
+  88:Core/FatFs/Src/diskio.c ****     uint32_t sect = (uint32_t)sector;
+ 233              		.loc 1 88 5 is_stmt 1 view .LVU43
+ 234              	.LVL22:
+  89:Core/FatFs/Src/diskio.c ****     if (sect + count > FLASH_TOTAL_SECTOR) {
+ 235              		.loc 1 89 5 view .LVU44
+ 236              		.loc 1 89 14 is_stmt 0 view .LVU45
+ 237 0010 1344     		add	r3, r3, r2
+ 238              	.LVL23:
+ 239              		.loc 1 89 8 view .LVU46
+ 240 0012 B3F5007F 		cmp	r3, #512
+ 241 0016 17D8     		bhi	.L25
+  90:Core/FatFs/Src/diskio.c ****         UsbPrintf("--read err: sector out of range (sect=%lu, count=%u, total=%lu)\r\n", 
+  91:Core/FatFs/Src/diskio.c ****                   sect, count, FLASH_TOTAL_SECTOR);
+  92:Core/FatFs/Src/diskio.c ****         res = RES_ERROR;
+  93:Core/FatFs/Src/diskio.c ****         return res;
+  94:Core/FatFs/Src/diskio.c ****     }
+  95:Core/FatFs/Src/diskio.c ****     // 3. 计算物理地址（4KB扇区：左移12位）
+  96:Core/FatFs/Src/diskio.c ****     uint32_t address = sect << 12;
+ 242              		.loc 1 96 5 is_stmt 1 view .LVU47
+ 243              		.loc 1 96 14 is_stmt 0 view .LVU48
+ 244 0018 1703     		lsls	r7, r2, #12
+ 245              	.LVL24:
+  97:Core/FatFs/Src/diskio.c ****     uint32_t read_len = count << 12;
+ 246              		.loc 1 97 5 is_stmt 1 view .LVU49
+ 247              		.loc 1 97 14 is_stmt 0 view .LVU50
+ 248 001a 2203     		lsls	r2, r4, #12
+ 249              	.LVL25:
+  98:Core/FatFs/Src/diskio.c ****     // 4. 底层读取
+  99:Core/FatFs/Src/diskio.c ****     int flash_res = flash_read_data(address, buff, read_len);
+ 250              		.loc 1 99 5 is_stmt 1 view .LVU51
+ 251              		.loc 1 99 21 is_stmt 0 view .LVU52
+ 252 001c 02F47042 		and	r2, r2, #61440
+ 253              	.LVL26:
+ 254              		.loc 1 99 21 view .LVU53
+ 255 0020 3846     		mov	r0, r7
+ 256              	.LVL27:
+ 257              		.loc 1 99 21 view .LVU54
+ 258 0022 FFF7FEFF 		bl	flash_read_data
+ 259              	.LVL28:
+ 100:Core/FatFs/Src/diskio.c ****     if (flash_res == 1) {
+ 260              		.loc 1 100 5 is_stmt 1 view .LVU55
+ 261              		.loc 1 100 8 is_stmt 0 view .LVU56
+ 262 0026 0128     		cmp	r0, #1
+ 263 0028 17D1     		bne	.L26
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 8
+
+
+ 264              	.LVL29:
+ 265              	.L23:
+ 101:Core/FatFs/Src/diskio.c ****         res = RES_OK;
+ 102:Core/FatFs/Src/diskio.c ****     } else {
+ 103:Core/FatFs/Src/diskio.c ****         res = RES_ERROR;
+ 104:Core/FatFs/Src/diskio.c ****         UsbPrintf("--read err: flash read fail (res=%d, addr=0x%08X)\r\n", flash_res, address);
+ 105:Core/FatFs/Src/diskio.c ****     }
+ 106:Core/FatFs/Src/diskio.c ****     // 修复打印：%lu适配uint32_t，解决乱码
+ 107:Core/FatFs/Src/diskio.c ****     UsbPrintf("--read sector=%lu, count=%u, address=0x%08X, res=%d\r\n", 
+ 266              		.loc 1 107 5 is_stmt 1 view .LVU57
+ 267 002a 0095     		str	r5, [sp]
+ 268 002c 3B46     		mov	r3, r7
+ 269 002e 2246     		mov	r2, r4
+ 270 0030 3146     		mov	r1, r6
+ 271 0032 0D48     		ldr	r0, .L27
+ 272 0034 FFF7FEFF 		bl	UsbPrintf
+ 273              	.LVL30:
+ 108:Core/FatFs/Src/diskio.c ****               sect, count, address, (int)res);
+ 109:Core/FatFs/Src/diskio.c ****     return res;
+ 274              		.loc 1 109 5 view .LVU58
+ 275              		.loc 1 109 12 is_stmt 0 view .LVU59
+ 276 0038 2846     		mov	r0, r5
+ 277              	.LVL31:
+ 278              	.L21:
+ 110:Core/FatFs/Src/diskio.c **** }
+ 279              		.loc 1 110 1 view .LVU60
+ 280 003a 03B0     		add	sp, sp, #12
+ 281              	.LCFI4:
+ 282              		.cfi_remember_state
+ 283              		.cfi_def_cfa_offset 20
+ 284              		@ sp needed
+ 285 003c F0BD     		pop	{r4, r5, r6, r7, pc}
+ 286              	.LVL32:
+ 287              	.L19:
+ 288              	.LCFI5:
+ 289              		.cfi_restore_state
+  84:Core/FatFs/Src/diskio.c ****         return res;
+ 290              		.loc 1 84 9 is_stmt 1 view .LVU61
+ 291 003e 0B48     		ldr	r0, .L27+4
+ 292              	.LVL33:
+  84:Core/FatFs/Src/diskio.c ****         return res;
+ 293              		.loc 1 84 9 is_stmt 0 view .LVU62
+ 294 0040 FFF7FEFF 		bl	UsbPrintf
+ 295              	.LVL34:
+  85:Core/FatFs/Src/diskio.c ****     }
+ 296              		.loc 1 85 9 is_stmt 1 view .LVU63
+  85:Core/FatFs/Src/diskio.c ****     }
+ 297              		.loc 1 85 16 is_stmt 0 view .LVU64
+ 298 0044 0420     		movs	r0, #4
+ 299 0046 F8E7     		b	.L21
+ 300              	.LVL35:
+ 301              	.L25:
+  90:Core/FatFs/Src/diskio.c ****                   sect, count, FLASH_TOTAL_SECTOR);
+ 302              		.loc 1 90 9 is_stmt 1 view .LVU65
+ 303 0048 4FF40073 		mov	r3, #512
+ 304 004c 2246     		mov	r2, r4
+ 305              	.LVL36:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 9
+
+
+  90:Core/FatFs/Src/diskio.c ****                   sect, count, FLASH_TOTAL_SECTOR);
+ 306              		.loc 1 90 9 is_stmt 0 view .LVU66
+ 307 004e 3146     		mov	r1, r6
+ 308              	.LVL37:
+  90:Core/FatFs/Src/diskio.c ****                   sect, count, FLASH_TOTAL_SECTOR);
+ 309              		.loc 1 90 9 view .LVU67
+ 310 0050 0748     		ldr	r0, .L27+8
+ 311              	.LVL38:
+  90:Core/FatFs/Src/diskio.c ****                   sect, count, FLASH_TOTAL_SECTOR);
+ 312              		.loc 1 90 9 view .LVU68
+ 313 0052 FFF7FEFF 		bl	UsbPrintf
+ 314              	.LVL39:
+  92:Core/FatFs/Src/diskio.c ****         return res;
+ 315              		.loc 1 92 9 is_stmt 1 view .LVU69
+  93:Core/FatFs/Src/diskio.c ****     }
+ 316              		.loc 1 93 9 view .LVU70
+  93:Core/FatFs/Src/diskio.c ****     }
+ 317              		.loc 1 93 16 is_stmt 0 view .LVU71
+ 318 0056 0120     		movs	r0, #1
+ 319 0058 EFE7     		b	.L21
+ 320              	.LVL40:
+ 321              	.L26:
+ 103:Core/FatFs/Src/diskio.c ****         UsbPrintf("--read err: flash read fail (res=%d, addr=0x%08X)\r\n", flash_res, address);
+ 322              		.loc 1 103 9 is_stmt 1 view .LVU72
+ 104:Core/FatFs/Src/diskio.c ****     }
+ 323              		.loc 1 104 9 view .LVU73
+ 324 005a 3A46     		mov	r2, r7
+ 325 005c 0146     		mov	r1, r0
+ 326 005e 0548     		ldr	r0, .L27+12
+ 327              	.LVL41:
+ 104:Core/FatFs/Src/diskio.c ****     }
+ 328              		.loc 1 104 9 is_stmt 0 view .LVU74
+ 329 0060 FFF7FEFF 		bl	UsbPrintf
+ 330              	.LVL42:
+ 103:Core/FatFs/Src/diskio.c ****         UsbPrintf("--read err: flash read fail (res=%d, addr=0x%08X)\r\n", flash_res, address);
+ 331              		.loc 1 103 13 view .LVU75
+ 332 0064 0125     		movs	r5, #1
+ 333 0066 E0E7     		b	.L23
+ 334              	.L28:
+ 335              		.align	2
+ 336              	.L27:
+ 337 0068 94000000 		.word	.LC5
+ 338 006c 00000000 		.word	.LC2
+ 339 0070 1C000000 		.word	.LC3
+ 340 0074 60000000 		.word	.LC4
+ 341              		.cfi_endproc
+ 342              	.LFE70:
+ 344              		.section	.rodata.disk_write.str1.4,"aMS",%progbits,1
+ 345              		.align	2
+ 346              	.LC6:
+ 347 0000 2D2D7772 		.ascii	"--write start: sector=%lu, count=%u\015\012\000"
+ 347      69746520 
+ 347      73746172 
+ 347      743A2073 
+ 347      6563746F 
+ 348 0026 0000     		.align	2
+ 349              	.LC7:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 10
+
+
+ 350 0028 2D2D7772 		.ascii	"--write err: param invalid\015\012\000"
+ 350      69746520 
+ 350      6572723A 
+ 350      20706172 
+ 350      616D2069 
+ 351 0045 000000   		.align	2
+ 352              	.LC8:
+ 353 0048 2D2D7772 		.ascii	"--write err: sector out of range\015\012\000"
+ 353      69746520 
+ 353      6572723A 
+ 353      20736563 
+ 353      746F7220 
+ 354 006b 00       		.align	2
+ 355              	.LC9:
+ 356 006c 2D2D7772 		.ascii	"--write err: erase sect %lu fail (addr=0x%08X)\015\012"
+ 356      69746520 
+ 356      6572723A 
+ 356      20657261 
+ 356      73652073 
+ 357 009c 00       		.ascii	"\000"
+ 358 009d 000000   		.align	2
+ 359              	.LC10:
+ 360 00a0 2D2D7772 		.ascii	"--write err: write sect %lu fail (addr=0x%08X)\015\012"
+ 360      69746520 
+ 360      6572723A 
+ 360      20777269 
+ 360      74652073 
+ 361 00d0 00       		.ascii	"\000"
+ 362 00d1 000000   		.align	2
+ 363              	.LC11:
+ 364 00d4 2D2D7772 		.ascii	"--write end: sector=%lu, count=%u, res=%d\015\012\000"
+ 364      69746520 
+ 364      656E643A 
+ 364      20736563 
+ 364      746F723D 
+ 365              		.section	.text.disk_write,"ax",%progbits
+ 366              		.align	1
+ 367              		.global	disk_write
+ 368              		.syntax unified
+ 369              		.thumb
+ 370              		.thumb_func
+ 372              	disk_write:
+ 373              	.LVL43:
+ 374              	.LFB71:
+ 111:Core/FatFs/Src/diskio.c **** 
+ 112:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+ 113:Core/FatFs/Src/diskio.c **** /* 写入扇区（先擦后写+64位适配+错误码精准返回）*/
+ 114:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+ 115:Core/FatFs/Src/diskio.c **** #if FF_FS_READONLY == 0
+ 116:Core/FatFs/Src/diskio.c **** DRESULT disk_write (BYTE pdrv, const BYTE *buff, LBA_t sector, UINT count)
+ 117:Core/FatFs/Src/diskio.c **** {
+ 375              		.loc 1 117 1 is_stmt 1 view -0
+ 376              		.cfi_startproc
+ 377              		@ args = 0, pretend = 0, frame = 0
+ 378              		@ frame_needed = 0, uses_anonymous_args = 0
+ 379              		.loc 1 117 1 is_stmt 0 view .LVU77
+ 380 0000 2DE9F84F 		push	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 11
+
+
+ 381              	.LCFI6:
+ 382              		.cfi_def_cfa_offset 40
+ 383              		.cfi_offset 3, -40
+ 384              		.cfi_offset 4, -36
+ 385              		.cfi_offset 5, -32
+ 386              		.cfi_offset 6, -28
+ 387              		.cfi_offset 7, -24
+ 388              		.cfi_offset 8, -20
+ 389              		.cfi_offset 9, -16
+ 390              		.cfi_offset 10, -12
+ 391              		.cfi_offset 11, -8
+ 392              		.cfi_offset 14, -4
+ 118:Core/FatFs/Src/diskio.c **** 	DRESULT res = RES_PARERR;
+ 393              		.loc 1 118 2 is_stmt 1 view .LVU78
+ 394              	.LVL44:
+ 119:Core/FatFs/Src/diskio.c **** 	switch (pdrv) {
+ 395              		.loc 1 119 2 view .LVU79
+ 396 0004 20B1     		cbz	r0, .L41
+ 120:Core/FatFs/Src/diskio.c **** 		case DEV_FLASH :
+ 121:Core/FatFs/Src/diskio.c **** 		{
+ 122:Core/FatFs/Src/diskio.c **** 			uint32_t sect = (uint32_t)sector;
+ 123:Core/FatFs/Src/diskio.c **** 			UsbPrintf("--write start: sector=%lu, count=%u\r\n", sect, count);
+ 124:Core/FatFs/Src/diskio.c **** 			// 1. 基础参数校验
+ 125:Core/FatFs/Src/diskio.c **** 			if (buff == NULL || count == 0) {
+ 126:Core/FatFs/Src/diskio.c **** 			    UsbPrintf("--write err: param invalid\r\n");
+ 127:Core/FatFs/Src/diskio.c **** 			    return res;
+ 128:Core/FatFs/Src/diskio.c **** 			}
+ 129:Core/FatFs/Src/diskio.c **** 			// 2. 扇区越界校验
+ 130:Core/FatFs/Src/diskio.c **** 			if (sect + count > FLASH_TOTAL_SECTOR) {
+ 131:Core/FatFs/Src/diskio.c **** 			    UsbPrintf("--write err: sector out of range\r\n");
+ 132:Core/FatFs/Src/diskio.c **** 			    res = RES_ERROR;
+ 133:Core/FatFs/Src/diskio.c **** 			    return res;
+ 134:Core/FatFs/Src/diskio.c **** 			}
+ 135:Core/FatFs/Src/diskio.c **** 			// 3. 初始化成功状态，逐扇区擦除+写入
+ 136:Core/FatFs/Src/diskio.c **** 			res = RES_OK;
+ 137:Core/FatFs/Src/diskio.c **** 			uint32_t address = sect << 12;
+ 138:Core/FatFs/Src/diskio.c **** 			for (UINT i=0; i<count; i++) {
+ 139:Core/FatFs/Src/diskio.c **** 				uint32_t curr_addr = address + i*FLASH_SECTOR_SIZE;
+ 140:Core/FatFs/Src/diskio.c **** 				// 擦除失败，立即返回错误
+ 141:Core/FatFs/Src/diskio.c **** 				if (flash_erase_sector(curr_addr) != 1) {
+ 142:Core/FatFs/Src/diskio.c **** 					UsbPrintf("--write err: erase sect %lu fail (addr=0x%08X)\r\n", sect+i, curr_addr);
+ 143:Core/FatFs/Src/diskio.c **** 					res = RES_ERROR;
+ 144:Core/FatFs/Src/diskio.c **** 					break;
+ 145:Core/FatFs/Src/diskio.c **** 				}
+ 146:Core/FatFs/Src/diskio.c **** 				// 写入失败，立即返回错误
+ 147:Core/FatFs/Src/diskio.c **** 				if (flash_write_data(curr_addr, (uint8_t*)(buff + i*FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE) != 1
+ 148:Core/FatFs/Src/diskio.c **** 					UsbPrintf("--write err: write sect %lu fail (addr=0x%08X)\r\n", sect+i, curr_addr);
+ 149:Core/FatFs/Src/diskio.c **** 					res = RES_ERROR;
+ 150:Core/FatFs/Src/diskio.c **** 					break;
+ 151:Core/FatFs/Src/diskio.c **** 				}
+ 152:Core/FatFs/Src/diskio.c **** 			}
+ 153:Core/FatFs/Src/diskio.c **** 			UsbPrintf("--write end: sector=%lu, count=%u, res=%d\r\n", sect, count, (int)res);
+ 154:Core/FatFs/Src/diskio.c **** 			return res;
+ 155:Core/FatFs/Src/diskio.c **** 		}
+ 156:Core/FatFs/Src/diskio.c **** 	}
+ 157:Core/FatFs/Src/diskio.c **** 	return res;
+ 397              		.loc 1 157 9 is_stmt 0 view .LVU80
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 12
+
+
+ 398 0006 4FF0040A 		mov	r10, #4
+ 399              	.LVL45:
+ 400              	.L30:
+ 158:Core/FatFs/Src/diskio.c **** }
+ 401              		.loc 1 158 1 view .LVU81
+ 402 000a 5046     		mov	r0, r10
+ 403 000c BDE8F88F 		pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 404              	.LVL46:
+ 405              	.L41:
+ 406              		.loc 1 158 1 view .LVU82
+ 407 0010 0F46     		mov	r7, r1
+ 408 0012 9146     		mov	r9, r2
+ 409 0014 1E46     		mov	r6, r3
+ 410 0016 8246     		mov	r10, r0
+ 411              	.LBB6:
+ 122:Core/FatFs/Src/diskio.c **** 			UsbPrintf("--write start: sector=%lu, count=%u\r\n", sect, count);
+ 412              		.loc 1 122 4 is_stmt 1 view .LVU83
+ 413              	.LVL47:
+ 123:Core/FatFs/Src/diskio.c **** 			// 1. 基础参数校验
+ 414              		.loc 1 123 4 view .LVU84
+ 415 0018 1A46     		mov	r2, r3
+ 416              	.LVL48:
+ 123:Core/FatFs/Src/diskio.c **** 			// 1. 基础参数校验
+ 417              		.loc 1 123 4 is_stmt 0 view .LVU85
+ 418 001a 4946     		mov	r1, r9
+ 419              	.LVL49:
+ 123:Core/FatFs/Src/diskio.c **** 			// 1. 基础参数校验
+ 420              		.loc 1 123 4 view .LVU86
+ 421 001c 2348     		ldr	r0, .L45
+ 422              	.LVL50:
+ 123:Core/FatFs/Src/diskio.c **** 			// 1. 基础参数校验
+ 423              		.loc 1 123 4 view .LVU87
+ 424 001e FFF7FEFF 		bl	UsbPrintf
+ 425              	.LVL51:
+ 125:Core/FatFs/Src/diskio.c **** 			    UsbPrintf("--write err: param invalid\r\n");
+ 426              		.loc 1 125 4 is_stmt 1 view .LVU88
+ 125:Core/FatFs/Src/diskio.c **** 			    UsbPrintf("--write err: param invalid\r\n");
+ 427              		.loc 1 125 7 is_stmt 0 view .LVU89
+ 428 0022 F7B1     		cbz	r7, .L31
+ 125:Core/FatFs/Src/diskio.c **** 			    UsbPrintf("--write err: param invalid\r\n");
+ 429              		.loc 1 125 21 discriminator 1 view .LVU90
+ 430 0024 EEB1     		cbz	r6, .L31
+ 130:Core/FatFs/Src/diskio.c **** 			    UsbPrintf("--write err: sector out of range\r\n");
+ 431              		.loc 1 130 4 is_stmt 1 view .LVU91
+ 130:Core/FatFs/Src/diskio.c **** 			    UsbPrintf("--write err: sector out of range\r\n");
+ 432              		.loc 1 130 13 is_stmt 0 view .LVU92
+ 433 0026 09EB0603 		add	r3, r9, r6
+ 130:Core/FatFs/Src/diskio.c **** 			    UsbPrintf("--write err: sector out of range\r\n");
+ 434              		.loc 1 130 7 view .LVU93
+ 435 002a B3F5007F 		cmp	r3, #512
+ 436 002e 1ED8     		bhi	.L42
+ 136:Core/FatFs/Src/diskio.c **** 			uint32_t address = sect << 12;
+ 437              		.loc 1 136 4 is_stmt 1 view .LVU94
+ 438              	.LVL52:
+ 137:Core/FatFs/Src/diskio.c **** 			for (UINT i=0; i<count; i++) {
+ 439              		.loc 1 137 4 view .LVU95
+ 137:Core/FatFs/Src/diskio.c **** 			for (UINT i=0; i<count; i++) {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 13
+
+
+ 440              		.loc 1 137 13 is_stmt 0 view .LVU96
+ 441 0030 4FEA093B 		lsl	fp, r9, #12
+ 442              	.LVL53:
+ 138:Core/FatFs/Src/diskio.c **** 				uint32_t curr_addr = address + i*FLASH_SECTOR_SIZE;
+ 443              		.loc 1 138 4 is_stmt 1 view .LVU97
+ 444              	.LBB7:
+ 138:Core/FatFs/Src/diskio.c **** 				uint32_t curr_addr = address + i*FLASH_SECTOR_SIZE;
+ 445              		.loc 1 138 9 view .LVU98
+ 138:Core/FatFs/Src/diskio.c **** 				uint32_t curr_addr = address + i*FLASH_SECTOR_SIZE;
+ 446              		.loc 1 138 14 is_stmt 0 view .LVU99
+ 447 0034 0024     		movs	r4, #0
+ 448              	.LVL54:
+ 449              	.L34:
+ 138:Core/FatFs/Src/diskio.c **** 				uint32_t curr_addr = address + i*FLASH_SECTOR_SIZE;
+ 450              		.loc 1 138 19 is_stmt 1 discriminator 1 view .LVU100
+ 138:Core/FatFs/Src/diskio.c **** 				uint32_t curr_addr = address + i*FLASH_SECTOR_SIZE;
+ 451              		.loc 1 138 4 is_stmt 0 discriminator 1 view .LVU101
+ 452 0036 B442     		cmp	r4, r6
+ 453 0038 27D2     		bcs	.L36
+ 454              	.LBB8:
+ 139:Core/FatFs/Src/diskio.c **** 				// 擦除失败，立即返回错误
+ 455              		.loc 1 139 5 is_stmt 1 view .LVU102
+ 139:Core/FatFs/Src/diskio.c **** 				// 擦除失败，立即返回错误
+ 456              		.loc 1 139 37 is_stmt 0 view .LVU103
+ 457 003a 4FEA0438 		lsl	r8, r4, #12
+ 139:Core/FatFs/Src/diskio.c **** 				// 擦除失败，立即返回错误
+ 458              		.loc 1 139 14 view .LVU104
+ 459 003e 0BEB0435 		add	r5, fp, r4, lsl #12
+ 460              	.LVL55:
+ 141:Core/FatFs/Src/diskio.c **** 					UsbPrintf("--write err: erase sect %lu fail (addr=0x%08X)\r\n", sect+i, curr_addr);
+ 461              		.loc 1 141 5 is_stmt 1 view .LVU105
+ 141:Core/FatFs/Src/diskio.c **** 					UsbPrintf("--write err: erase sect %lu fail (addr=0x%08X)\r\n", sect+i, curr_addr);
+ 462              		.loc 1 141 9 is_stmt 0 view .LVU106
+ 463 0042 2846     		mov	r0, r5
+ 464 0044 FFF7FEFF 		bl	flash_erase_sector
+ 465              	.LVL56:
+ 141:Core/FatFs/Src/diskio.c **** 					UsbPrintf("--write err: erase sect %lu fail (addr=0x%08X)\r\n", sect+i, curr_addr);
+ 466              		.loc 1 141 8 view .LVU107
+ 467 0048 0128     		cmp	r0, #1
+ 468 004a 16D1     		bne	.L43
+ 147:Core/FatFs/Src/diskio.c **** 					UsbPrintf("--write err: write sect %lu fail (addr=0x%08X)\r\n", sect+i, curr_addr);
+ 469              		.loc 1 147 5 is_stmt 1 view .LVU108
+ 147:Core/FatFs/Src/diskio.c **** 					UsbPrintf("--write err: write sect %lu fail (addr=0x%08X)\r\n", sect+i, curr_addr);
+ 470              		.loc 1 147 9 is_stmt 0 view .LVU109
+ 471 004c 4FF48052 		mov	r2, #4096
+ 472 0050 07EB0801 		add	r1, r7, r8
+ 473 0054 2846     		mov	r0, r5
+ 474 0056 FFF7FEFF 		bl	flash_write_data
+ 475              	.LVL57:
+ 147:Core/FatFs/Src/diskio.c **** 					UsbPrintf("--write err: write sect %lu fail (addr=0x%08X)\r\n", sect+i, curr_addr);
+ 476              		.loc 1 147 8 view .LVU110
+ 477 005a 0128     		cmp	r0, #1
+ 478 005c 1CD1     		bne	.L44
+ 479              	.LBE8:
+ 138:Core/FatFs/Src/diskio.c **** 				uint32_t curr_addr = address + i*FLASH_SECTOR_SIZE;
+ 480              		.loc 1 138 28 is_stmt 1 discriminator 2 view .LVU111
+ 138:Core/FatFs/Src/diskio.c **** 				uint32_t curr_addr = address + i*FLASH_SECTOR_SIZE;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 14
+
+
+ 481              		.loc 1 138 29 is_stmt 0 discriminator 2 view .LVU112
+ 482 005e 0134     		adds	r4, r4, #1
+ 483              	.LVL58:
+ 138:Core/FatFs/Src/diskio.c **** 				uint32_t curr_addr = address + i*FLASH_SECTOR_SIZE;
+ 484              		.loc 1 138 29 discriminator 2 view .LVU113
+ 485 0060 E9E7     		b	.L34
+ 486              	.LVL59:
+ 487              	.L31:
+ 138:Core/FatFs/Src/diskio.c **** 				uint32_t curr_addr = address + i*FLASH_SECTOR_SIZE;
+ 488              		.loc 1 138 29 discriminator 2 view .LVU114
+ 489              	.LBE7:
+ 126:Core/FatFs/Src/diskio.c **** 			    return res;
+ 490              		.loc 1 126 8 is_stmt 1 view .LVU115
+ 491 0062 1348     		ldr	r0, .L45+4
+ 492 0064 FFF7FEFF 		bl	UsbPrintf
+ 493              	.LVL60:
+ 127:Core/FatFs/Src/diskio.c **** 			}
+ 494              		.loc 1 127 8 view .LVU116
+ 127:Core/FatFs/Src/diskio.c **** 			}
+ 495              		.loc 1 127 15 is_stmt 0 view .LVU117
+ 496 0068 4FF0040A 		mov	r10, #4
+ 497 006c CDE7     		b	.L30
+ 498              	.L42:
+ 131:Core/FatFs/Src/diskio.c **** 			    res = RES_ERROR;
+ 499              		.loc 1 131 8 is_stmt 1 view .LVU118
+ 500 006e 1148     		ldr	r0, .L45+8
+ 501 0070 FFF7FEFF 		bl	UsbPrintf
+ 502              	.LVL61:
+ 132:Core/FatFs/Src/diskio.c **** 			    return res;
+ 503              		.loc 1 132 8 view .LVU119
+ 133:Core/FatFs/Src/diskio.c **** 			}
+ 504              		.loc 1 133 8 view .LVU120
+ 133:Core/FatFs/Src/diskio.c **** 			}
+ 505              		.loc 1 133 15 is_stmt 0 view .LVU121
+ 506 0074 4FF0010A 		mov	r10, #1
+ 507 0078 C7E7     		b	.L30
+ 508              	.LVL62:
+ 509              	.L43:
+ 510              	.LBB11:
+ 511              	.LBB9:
+ 142:Core/FatFs/Src/diskio.c **** 					res = RES_ERROR;
+ 512              		.loc 1 142 6 is_stmt 1 view .LVU122
+ 513 007a 2A46     		mov	r2, r5
+ 514 007c 04EB0901 		add	r1, r4, r9
+ 515 0080 0D48     		ldr	r0, .L45+12
+ 516 0082 FFF7FEFF 		bl	UsbPrintf
+ 517              	.LVL63:
+ 143:Core/FatFs/Src/diskio.c **** 					break;
+ 518              		.loc 1 143 6 view .LVU123
+ 144:Core/FatFs/Src/diskio.c **** 				}
+ 519              		.loc 1 144 6 view .LVU124
+ 143:Core/FatFs/Src/diskio.c **** 					break;
+ 520              		.loc 1 143 10 is_stmt 0 view .LVU125
+ 521 0086 4FF0010A 		mov	r10, #1
+ 522              	.LVL64:
+ 523              	.L36:
+ 143:Core/FatFs/Src/diskio.c **** 					break;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 15
+
+
+ 524              		.loc 1 143 10 view .LVU126
+ 525              	.LBE9:
+ 526              	.LBE11:
+ 153:Core/FatFs/Src/diskio.c **** 			return res;
+ 527              		.loc 1 153 4 is_stmt 1 view .LVU127
+ 528 008a 5346     		mov	r3, r10
+ 529 008c 3246     		mov	r2, r6
+ 530 008e 4946     		mov	r1, r9
+ 531 0090 0A48     		ldr	r0, .L45+16
+ 532 0092 FFF7FEFF 		bl	UsbPrintf
+ 533              	.LVL65:
+ 154:Core/FatFs/Src/diskio.c **** 		}
+ 534              		.loc 1 154 4 view .LVU128
+ 154:Core/FatFs/Src/diskio.c **** 		}
+ 535              		.loc 1 154 11 is_stmt 0 view .LVU129
+ 536 0096 B8E7     		b	.L30
+ 537              	.LVL66:
+ 538              	.L44:
+ 539              	.LBB12:
+ 540              	.LBB10:
+ 148:Core/FatFs/Src/diskio.c **** 					res = RES_ERROR;
+ 541              		.loc 1 148 6 is_stmt 1 view .LVU130
+ 542 0098 2A46     		mov	r2, r5
+ 543 009a 04EB0901 		add	r1, r4, r9
+ 544 009e 0848     		ldr	r0, .L45+20
+ 545 00a0 FFF7FEFF 		bl	UsbPrintf
+ 546              	.LVL67:
+ 149:Core/FatFs/Src/diskio.c **** 					break;
+ 547              		.loc 1 149 6 view .LVU131
+ 150:Core/FatFs/Src/diskio.c **** 				}
+ 548              		.loc 1 150 6 view .LVU132
+ 149:Core/FatFs/Src/diskio.c **** 					break;
+ 549              		.loc 1 149 10 is_stmt 0 view .LVU133
+ 550 00a4 4FF0010A 		mov	r10, #1
+ 150:Core/FatFs/Src/diskio.c **** 				}
+ 551              		.loc 1 150 6 view .LVU134
+ 552 00a8 EFE7     		b	.L36
+ 553              	.L46:
+ 554 00aa 00BF     		.align	2
+ 555              	.L45:
+ 556 00ac 00000000 		.word	.LC6
+ 557 00b0 28000000 		.word	.LC7
+ 558 00b4 48000000 		.word	.LC8
+ 559 00b8 6C000000 		.word	.LC9
+ 560 00bc D4000000 		.word	.LC11
+ 561 00c0 A0000000 		.word	.LC10
+ 562              	.LBE10:
+ 563              	.LBE12:
+ 564              	.LBE6:
+ 565              		.cfi_endproc
+ 566              	.LFE71:
+ 568              		.section	.rodata.disk_ioctl.str1.4,"aMS",%progbits,1
+ 569              		.align	2
+ 570              	.LC12:
+ 571 0000 2D2D696F 		.ascii	"--ioctl err: invalid pdrv=%d\015\012\000"
+ 571      63746C20 
+ 571      6572723A 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 16
+
+
+ 571      20696E76 
+ 571      616C6964 
+ 572 001f 00       		.align	2
+ 573              	.LC13:
+ 574 0020 2D2D696F 		.ascii	"--ioctl err: unknown cmd=%d\015\012\000"
+ 574      63746C20 
+ 574      6572723A 
+ 574      20756E6B 
+ 574      6E6F776E 
+ 575 003e 0000     		.align	2
+ 576              	.LC14:
+ 577 0040 2D2D696F 		.ascii	"--ioctl cmd=%d, res=%d, buff_val=%lu\015\012\000"
+ 577      63746C20 
+ 577      636D643D 
+ 577      25642C20 
+ 577      7265733D 
+ 578              		.section	.text.disk_ioctl,"ax",%progbits
+ 579              		.align	1
+ 580              		.global	disk_ioctl
+ 581              		.syntax unified
+ 582              		.thumb
+ 583              		.thumb_func
+ 585              	disk_ioctl:
+ 586              	.LVL68:
+ 587              	.LFB72:
+ 159:Core/FatFs/Src/diskio.c **** #endif
+ 160:Core/FatFs/Src/diskio.c **** 
+ 161:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+ 162:Core/FatFs/Src/diskio.c **** /* 设备控制（所有指令显式赋RES_OK+参数精准返回）*/
+ 163:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+ 164:Core/FatFs/Src/diskio.c **** DRESULT disk_ioctl (BYTE pdrv, BYTE cmd, void *buff)
+ 165:Core/FatFs/Src/diskio.c **** {
+ 588              		.loc 1 165 1 is_stmt 1 view -0
+ 589              		.cfi_startproc
+ 590              		@ args = 0, pretend = 0, frame = 0
+ 591              		@ frame_needed = 0, uses_anonymous_args = 0
+ 592              		.loc 1 165 1 is_stmt 0 view .LVU136
+ 593 0000 70B5     		push	{r4, r5, r6, lr}
+ 594              	.LCFI7:
+ 595              		.cfi_def_cfa_offset 16
+ 596              		.cfi_offset 4, -16
+ 597              		.cfi_offset 5, -12
+ 598              		.cfi_offset 6, -8
+ 599              		.cfi_offset 14, -4
+ 166:Core/FatFs/Src/diskio.c **** 	DRESULT res = RES_PARERR;
+ 600              		.loc 1 166 2 is_stmt 1 view .LVU137
+ 601              	.LVL69:
+ 167:Core/FatFs/Src/diskio.c **** 	if (pdrv != DEV_FLASH) {
+ 602              		.loc 1 167 2 view .LVU138
+ 603              		.loc 1 167 5 is_stmt 0 view .LVU139
+ 604 0002 0546     		mov	r5, r0
+ 605 0004 40B9     		cbnz	r0, .L60
+ 606 0006 0C46     		mov	r4, r1
+ 168:Core/FatFs/Src/diskio.c **** 	    UsbPrintf("--ioctl err: invalid pdrv=%d\r\n", pdrv);
+ 169:Core/FatFs/Src/diskio.c **** 	    return res;
+ 170:Core/FatFs/Src/diskio.c **** 	}
+ 171:Core/FatFs/Src/diskio.c **** 	// 临时变量，避免buff空指针（仅打印用）
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 17
+
+
+ 172:Core/FatFs/Src/diskio.c **** 	uint32_t buff_val = 0;
+ 607              		.loc 1 172 2 is_stmt 1 view .LVU140
+ 608              	.LVL70:
+ 173:Core/FatFs/Src/diskio.c **** 	if(buff != NULL) buff_val = *(DWORD*)buff;
+ 609              		.loc 1 173 2 view .LVU141
+ 610              		.loc 1 173 4 is_stmt 0 view .LVU142
+ 611 0008 62B1     		cbz	r2, .L58
+ 612              		.loc 1 173 19 is_stmt 1 discriminator 1 view .LVU143
+ 613              		.loc 1 173 28 is_stmt 0 discriminator 1 view .LVU144
+ 614 000a 1668     		ldr	r6, [r2]
+ 615              	.LVL71:
+ 616              	.L50:
+ 174:Core/FatFs/Src/diskio.c **** 	
+ 175:Core/FatFs/Src/diskio.c **** 	switch (cmd)  
+ 617              		.loc 1 175 2 is_stmt 1 view .LVU145
+ 618 000c 032C     		cmp	r4, #3
+ 619 000e 21D8     		bhi	.L51
+ 620 0010 DFE804F0 		tbb	[pc, r4]
+ 621              	.L53:
+ 622 0014 0A       		.byte	(.L56-.L53)/2
+ 623 0015 15       		.byte	(.L55-.L53)/2
+ 624 0016 19       		.byte	(.L54-.L53)/2
+ 625 0017 1D       		.byte	(.L52-.L53)/2
+ 626              	.LVL72:
+ 627              		.p2align 1
+ 628              	.L60:
+ 168:Core/FatFs/Src/diskio.c **** 	    return res;
+ 629              		.loc 1 168 6 view .LVU146
+ 630 0018 0146     		mov	r1, r0
+ 631              	.LVL73:
+ 168:Core/FatFs/Src/diskio.c **** 	    return res;
+ 632              		.loc 1 168 6 is_stmt 0 view .LVU147
+ 633 001a 1148     		ldr	r0, .L61
+ 634              	.LVL74:
+ 168:Core/FatFs/Src/diskio.c **** 	    return res;
+ 635              		.loc 1 168 6 view .LVU148
+ 636 001c FFF7FEFF 		bl	UsbPrintf
+ 637              	.LVL75:
+ 169:Core/FatFs/Src/diskio.c **** 	}
+ 638              		.loc 1 169 6 is_stmt 1 view .LVU149
+ 169:Core/FatFs/Src/diskio.c **** 	}
+ 639              		.loc 1 169 13 is_stmt 0 view .LVU150
+ 640 0020 0425     		movs	r5, #4
+ 641 0022 0AE0     		b	.L49
+ 642              	.LVL76:
+ 643              	.L58:
+ 172:Core/FatFs/Src/diskio.c **** 	if(buff != NULL) buff_val = *(DWORD*)buff;
+ 644              		.loc 1 172 11 view .LVU151
+ 645 0024 0026     		movs	r6, #0
+ 646 0026 F1E7     		b	.L50
+ 647              	.LVL77:
+ 648              	.L56:
+ 176:Core/FatFs/Src/diskio.c **** 	{
+ 177:Core/FatFs/Src/diskio.c **** 		case CTRL_SYNC :        // 等待Flash操作完成
+ 178:Core/FatFs/Src/diskio.c **** 			CheckBusy();
+ 649              		.loc 1 178 4 is_stmt 1 view .LVU152
+ 650 0028 FFF7FEFF 		bl	CheckBusy
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 18
+
+
+ 651              	.LVL78:
+ 179:Core/FatFs/Src/diskio.c **** 			res = RES_OK;
+ 652              		.loc 1 179 4 view .LVU153
+ 180:Core/FatFs/Src/diskio.c **** 			break;
+ 653              		.loc 1 180 4 view .LVU154
+ 179:Core/FatFs/Src/diskio.c **** 			res = RES_OK;
+ 654              		.loc 1 179 8 is_stmt 0 view .LVU155
+ 655 002c 2546     		mov	r5, r4
+ 656              	.LVL79:
+ 657              	.L57:
+ 181:Core/FatFs/Src/diskio.c **** 		case GET_SECTOR_COUNT:  // 获取总扇区数：512
+ 182:Core/FatFs/Src/diskio.c ****             *(DWORD*)buff = FLASH_TOTAL_SECTOR;
+ 183:Core/FatFs/Src/diskio.c ****             buff_val = FLASH_TOTAL_SECTOR;
+ 184:Core/FatFs/Src/diskio.c ****             res = RES_OK;
+ 185:Core/FatFs/Src/diskio.c ****             break;
+ 186:Core/FatFs/Src/diskio.c ****         case GET_SECTOR_SIZE:   // 获取扇区大小：4096
+ 187:Core/FatFs/Src/diskio.c ****             *(WORD*)buff = FLASH_SECTOR_SIZE;
+ 188:Core/FatFs/Src/diskio.c ****             buff_val = FLASH_SECTOR_SIZE;
+ 189:Core/FatFs/Src/diskio.c ****             res = RES_OK;
+ 190:Core/FatFs/Src/diskio.c ****             break;  
+ 191:Core/FatFs/Src/diskio.c ****         case GET_BLOCK_SIZE:    // 擦除块大小：16个4KB扇区（64KB）
+ 192:Core/FatFs/Src/diskio.c ****             *(DWORD*)buff = 16;
+ 193:Core/FatFs/Src/diskio.c ****             buff_val = 16;
+ 194:Core/FatFs/Src/diskio.c ****             res = RES_OK;
+ 195:Core/FatFs/Src/diskio.c ****             break;
+ 196:Core/FatFs/Src/diskio.c ****         default: // 未知指令
+ 197:Core/FatFs/Src/diskio.c ****             UsbPrintf("--ioctl err: unknown cmd=%d\r\n", cmd);
+ 198:Core/FatFs/Src/diskio.c ****             res = RES_PARERR;
+ 199:Core/FatFs/Src/diskio.c ****             break;
+ 200:Core/FatFs/Src/diskio.c ****     }
+ 201:Core/FatFs/Src/diskio.c **** 	UsbPrintf("--ioctl cmd=%d, res=%d, buff_val=%lu\r\n", cmd, (int)res, buff_val);
+ 658              		.loc 1 201 2 is_stmt 1 view .LVU156
+ 659 002e 3346     		mov	r3, r6
+ 660 0030 2A46     		mov	r2, r5
+ 661 0032 2146     		mov	r1, r4
+ 662 0034 0B48     		ldr	r0, .L61+4
+ 663 0036 FFF7FEFF 		bl	UsbPrintf
+ 664              	.LVL80:
+ 202:Core/FatFs/Src/diskio.c **** 	return res;
+ 665              		.loc 1 202 2 view .LVU157
+ 666              	.L49:
+ 203:Core/FatFs/Src/diskio.c **** }
+ 667              		.loc 1 203 1 is_stmt 0 view .LVU158
+ 668 003a 2846     		mov	r0, r5
+ 669 003c 70BD     		pop	{r4, r5, r6, pc}
+ 670              	.LVL81:
+ 671              	.L55:
+ 182:Core/FatFs/Src/diskio.c ****             buff_val = FLASH_TOTAL_SECTOR;
+ 672              		.loc 1 182 13 is_stmt 1 view .LVU159
+ 182:Core/FatFs/Src/diskio.c ****             buff_val = FLASH_TOTAL_SECTOR;
+ 673              		.loc 1 182 27 is_stmt 0 view .LVU160
+ 674 003e 4FF40076 		mov	r6, #512
+ 675              	.LVL82:
+ 182:Core/FatFs/Src/diskio.c ****             buff_val = FLASH_TOTAL_SECTOR;
+ 676              		.loc 1 182 27 view .LVU161
+ 677 0042 1660     		str	r6, [r2]
+ 183:Core/FatFs/Src/diskio.c ****             res = RES_OK;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 19
+
+
+ 678              		.loc 1 183 13 is_stmt 1 view .LVU162
+ 679              	.LVL83:
+ 184:Core/FatFs/Src/diskio.c ****             break;
+ 680              		.loc 1 184 13 view .LVU163
+ 185:Core/FatFs/Src/diskio.c ****         case GET_SECTOR_SIZE:   // 获取扇区大小：4096
+ 681              		.loc 1 185 13 view .LVU164
+ 682 0044 F3E7     		b	.L57
+ 683              	.LVL84:
+ 684              	.L54:
+ 187:Core/FatFs/Src/diskio.c ****             buff_val = FLASH_SECTOR_SIZE;
+ 685              		.loc 1 187 13 view .LVU165
+ 187:Core/FatFs/Src/diskio.c ****             buff_val = FLASH_SECTOR_SIZE;
+ 686              		.loc 1 187 26 is_stmt 0 view .LVU166
+ 687 0046 4FF48056 		mov	r6, #4096
+ 688              	.LVL85:
+ 187:Core/FatFs/Src/diskio.c ****             buff_val = FLASH_SECTOR_SIZE;
+ 689              		.loc 1 187 26 view .LVU167
+ 690 004a 1680     		strh	r6, [r2]	@ movhi
+ 188:Core/FatFs/Src/diskio.c ****             res = RES_OK;
+ 691              		.loc 1 188 13 is_stmt 1 view .LVU168
+ 692              	.LVL86:
+ 189:Core/FatFs/Src/diskio.c ****             break;  
+ 693              		.loc 1 189 13 view .LVU169
+ 190:Core/FatFs/Src/diskio.c ****         case GET_BLOCK_SIZE:    // 擦除块大小：16个4KB扇区（64KB）
+ 694              		.loc 1 190 13 view .LVU170
+ 695 004c EFE7     		b	.L57
+ 696              	.LVL87:
+ 697              	.L52:
+ 192:Core/FatFs/Src/diskio.c ****             buff_val = 16;
+ 698              		.loc 1 192 13 view .LVU171
+ 192:Core/FatFs/Src/diskio.c ****             buff_val = 16;
+ 699              		.loc 1 192 27 is_stmt 0 view .LVU172
+ 700 004e 1026     		movs	r6, #16
+ 701              	.LVL88:
+ 192:Core/FatFs/Src/diskio.c ****             buff_val = 16;
+ 702              		.loc 1 192 27 view .LVU173
+ 703 0050 1660     		str	r6, [r2]
+ 193:Core/FatFs/Src/diskio.c ****             res = RES_OK;
+ 704              		.loc 1 193 13 is_stmt 1 view .LVU174
+ 705              	.LVL89:
+ 194:Core/FatFs/Src/diskio.c ****             break;
+ 706              		.loc 1 194 13 view .LVU175
+ 195:Core/FatFs/Src/diskio.c ****         default: // 未知指令
+ 707              		.loc 1 195 13 view .LVU176
+ 708 0052 ECE7     		b	.L57
+ 709              	.LVL90:
+ 710              	.L51:
+ 197:Core/FatFs/Src/diskio.c ****             res = RES_PARERR;
+ 711              		.loc 1 197 13 view .LVU177
+ 712 0054 2146     		mov	r1, r4
+ 713              	.LVL91:
+ 197:Core/FatFs/Src/diskio.c ****             res = RES_PARERR;
+ 714              		.loc 1 197 13 is_stmt 0 view .LVU178
+ 715 0056 0448     		ldr	r0, .L61+8
+ 716              	.LVL92:
+ 197:Core/FatFs/Src/diskio.c ****             res = RES_PARERR;
+ 717              		.loc 1 197 13 view .LVU179
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 20
+
+
+ 718 0058 FFF7FEFF 		bl	UsbPrintf
+ 719              	.LVL93:
+ 198:Core/FatFs/Src/diskio.c ****             break;
+ 720              		.loc 1 198 13 is_stmt 1 view .LVU180
+ 199:Core/FatFs/Src/diskio.c ****     }
+ 721              		.loc 1 199 13 view .LVU181
+ 198:Core/FatFs/Src/diskio.c ****             break;
+ 722              		.loc 1 198 17 is_stmt 0 view .LVU182
+ 723 005c 0425     		movs	r5, #4
+ 199:Core/FatFs/Src/diskio.c ****     }
+ 724              		.loc 1 199 13 view .LVU183
+ 725 005e E6E7     		b	.L57
+ 726              	.L62:
+ 727              		.align	2
+ 728              	.L61:
+ 729 0060 00000000 		.word	.LC12
+ 730 0064 40000000 		.word	.LC14
+ 731 0068 20000000 		.word	.LC13
+ 732              		.cfi_endproc
+ 733              	.LFE72:
+ 735              		.section	.text.get_fattime,"ax",%progbits
+ 736              		.align	1
+ 737              		.global	get_fattime
+ 738              		.syntax unified
+ 739              		.thumb
+ 740              		.thumb_func
+ 742              	get_fattime:
+ 743              	.LFB73:
+ 204:Core/FatFs/Src/diskio.c **** 
+ 205:Core/FatFs/Src/diskio.c **** 
+ 206:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+ 207:Core/FatFs/Src/diskio.c **** /* 获取文件时间（FatFs必需，无RTC返回0即可）*/
+ 208:Core/FatFs/Src/diskio.c **** /*-----------------------------------------------------------------------*/
+ 209:Core/FatFs/Src/diskio.c **** DWORD get_fattime (void)
+ 210:Core/FatFs/Src/diskio.c **** {
+ 744              		.loc 1 210 1 is_stmt 1 view -0
+ 745              		.cfi_startproc
+ 746              		@ args = 0, pretend = 0, frame = 0
+ 747              		@ frame_needed = 0, uses_anonymous_args = 0
+ 748              		@ link register save eliminated.
+ 211:Core/FatFs/Src/diskio.c **** 	return 0;
+ 749              		.loc 1 211 2 view .LVU185
+ 212:Core/FatFs/Src/diskio.c **** }
+ 750              		.loc 1 212 1 is_stmt 0 view .LVU186
+ 751 0000 0020     		movs	r0, #0
+ 752 0002 7047     		bx	lr
+ 753              		.cfi_endproc
+ 754              	.LFE73:
+ 756              		.global	FLASH_TOTAL_SECTOR
+ 757              		.section	.rodata.FLASH_TOTAL_SECTOR,"a"
+ 758              		.align	2
+ 761              	FLASH_TOTAL_SECTOR:
+ 762 0000 00020000 		.word	512
+ 763              		.text
+ 764              	.Letext0:
+ 765              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 766              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 21
+
+
+ 767              		.file 4 "Core/FatFs/Inc/ff.h"
+ 768              		.file 5 "Core/FatFs/Inc/diskio.h"
+ 769              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 770              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 771              		.file 8 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 772              		.file 9 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h"
+ 773              		.file 10 "Core/Inc/spi.h"
+ 774              		.file 11 "Core/Inc/main.h"
+ 775              		.file 12 "Core/Inc/flash.h"
+ 776              		.file 13 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s 			page 22
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 diskio.c
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:18     .rodata.disk_status.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:22     .text.disk_status:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:28     .text.disk_status:00000000 disk_status
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:89     .text.disk_status:00000028 $d
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:95     .rodata.disk_initialize.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:99     .text.disk_initialize:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:105    .text.disk_initialize:00000000 disk_initialize
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:174    .text.disk_initialize:00000030 $d
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:180    .rodata.disk_read.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:196    .text.disk_read:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:202    .text.disk_read:00000000 disk_read
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:337    .text.disk_read:00000068 $d
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:345    .rodata.disk_write.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:366    .text.disk_write:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:372    .text.disk_write:00000000 disk_write
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:556    .text.disk_write:000000ac $d
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:569    .rodata.disk_ioctl.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:579    .text.disk_ioctl:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:585    .text.disk_ioctl:00000000 disk_ioctl
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:622    .text.disk_ioctl:00000014 $d
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:627    .text.disk_ioctl:00000018 $t
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:729    .text.disk_ioctl:00000060 $d
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:736    .text.get_fattime:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:742    .text.get_fattime:00000000 get_fattime
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:761    .rodata.FLASH_TOTAL_SECTOR:00000000 FLASH_TOTAL_SECTOR
+C:\Users\84759\AppData\Local\Temp\ccYWjT6M.s:758    .rodata.FLASH_TOTAL_SECTOR:00000000 $d
+
+UNDEFINED SYMBOLS
+flash_device_id
+UsbPrintf
+MX_SPI1_Init
+HAL_Delay
+hspi1
+flash_read_data
+flash_erase_sector
+flash_write_data
+CheckBusy

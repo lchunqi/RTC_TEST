@@ -1,0 +1,2454 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"command.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.rodata.AT_HELP_Handle.str1.4,"aMS",%progbits,1
+  18              		.align	2
+  19              	.LC0:
+  20 0000 0A00     		.ascii	"\012\000"
+  21 0002 0000     		.align	2
+  22              	.LC1:
+  23 0004 25642E20 		.ascii	"%d. %s\012\000"
+  23      25730A00 
+  24              		.align	2
+  25              	.LC2:
+  26 000c 636F6D6D 		.ascii	"command number: %d\012\000"
+  26      616E6420 
+  26      6E756D62 
+  26      65723A20 
+  26      25640A00 
+  27              		.section	.text.AT_HELP_Handle,"ax",%progbits
+  28              		.align	1
+  29              		.global	AT_HELP_Handle
+  30              		.syntax unified
+  31              		.thumb
+  32              		.thumb_func
+  34              	AT_HELP_Handle:
+  35              	.LVL0:
+  36              	.LFB73:
+  37              		.file 1 "User/Src/command.c"
+   1:User/Src/command.c **** #include "command.h"
+   2:User/Src/command.c **** #include "usart.h"
+   3:User/Src/command.c **** #include "main.h"
+   4:User/Src/command.c **** #include <stdint.h>
+   5:User/Src/command.c **** #include "flash.h"
+   6:User/Src/command.c **** #include "../FatFs/Inc/diskio.h"
+   7:User/Src/command.c **** #include "../FatFs/Inc/ff.h"
+   8:User/Src/command.c **** 
+   9:User/Src/command.c **** 
+  10:User/Src/command.c **** #define UART_RECEIVE_BUFF_NUMBER    200
+  11:User/Src/command.c **** #define UART_TRANSMIT_BUFF_NUMBER   300
+  12:User/Src/command.c **** #define USB_UART_TICK_CLEAR         100
+  13:User/Src/command.c **** 
+  14:User/Src/command.c **** extern UART_HandleTypeDef huart1;
+  15:User/Src/command.c **** extern UART_HandleTypeDef huart2;
+  16:User/Src/command.c **** uint16_t usb_Rx_Cnt = 0;		
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 2
+
+
+  17:User/Src/command.c **** uint8_t usbRxBuf;
+  18:User/Src/command.c **** uint8_t g_UsbRxBuff[UART_RECEIVE_BUFF_NUMBER] = {0};
+  19:User/Src/command.c **** uint8_t g_UsbATStatus = 0;
+  20:User/Src/command.c **** 
+  21:User/Src/command.c **** uint16_t device_Rx_Cnt = 0;		
+  22:User/Src/command.c **** uint8_t deviceRxBuf;
+  23:User/Src/command.c **** uint8_t g_DeviceRxBuff[UART_RECEIVE_BUFF_NUMBER] = {0};
+  24:User/Src/command.c **** uint8_t g_DeviceTxBuff[UART_TRANSMIT_BUFF_NUMBER] = {0};
+  25:User/Src/command.c **** uint8_t g_DeviceATStatus = 0;
+  26:User/Src/command.c **** 
+  27:User/Src/command.c **** 
+  28:User/Src/command.c **** char Command_buf[200] = {0};
+  29:User/Src/command.c **** 
+  30:User/Src/command.c **** #define MAX_COMMAND_NUMBER  40
+  31:User/Src/command.c **** #define MAX_COMMAND_LENGTH  20
+  32:User/Src/command.c **** static char CommandList[MAX_COMMAND_NUMBER][MAX_COMMAND_LENGTH] = {
+  33:User/Src/command.c **** 	"AT^HELP",
+  34:User/Src/command.c **** 	"AT^TEST",
+  35:User/Src/command.c **** 	"AT^FATFS_MOUNT",
+  36:User/Src/command.c ****     "AT^FATFS_WRITE",
+  37:User/Src/command.c ****     "AT^FATFS_READ",
+  38:User/Src/command.c **** 	
+  39:User/Src/command.c **** };
+  40:User/Src/command.c **** 
+  41:User/Src/command.c **** 
+  42:User/Src/command.c **** void DevicePrintf(char* fmt,...)  
+  43:User/Src/command.c **** {  
+  44:User/Src/command.c **** 	va_list ap;
+  45:User/Src/command.c **** 	memset(g_DeviceTxBuff, 0, UART_TRANSMIT_BUFF_NUMBER);
+  46:User/Src/command.c **** 	va_start(ap, fmt);
+  47:User/Src/command.c **** 	vsnprintf((char*)g_DeviceTxBuff, UART_TRANSMIT_BUFF_NUMBER, fmt, ap);
+  48:User/Src/command.c **** 	va_end(ap);
+  49:User/Src/command.c **** 	HAL_UART_Transmit(&huart2, g_DeviceTxBuff, strlen((char*)g_DeviceTxBuff), 1000);
+  50:User/Src/command.c **** }
+  51:User/Src/command.c **** 
+  52:User/Src/command.c **** int strSearch(char* source, char* target)
+  53:User/Src/command.c **** {
+  54:User/Src/command.c **** 	int len_source = strlen(source);
+  55:User/Src/command.c **** 	int len_target = strlen(target);
+  56:User/Src/command.c **** 	int i, j;
+  57:User/Src/command.c **** 	if (len_source < len_target) {
+  58:User/Src/command.c **** 		return -1;
+  59:User/Src/command.c **** 	}		
+  60:User/Src/command.c **** 	for (i = 0; i <= len_source - len_target; i++) {
+  61:User/Src/command.c **** 		for (j = 0; j < len_target; j++) {
+  62:User/Src/command.c **** 			if (source[i + j] != target[j]) { break;}
+  63:User/Src/command.c **** 		}
+  64:User/Src/command.c **** 		if (j == len_target) { return i;}
+  65:User/Src/command.c **** 	}
+  66:User/Src/command.c **** 	return -1;	
+  67:User/Src/command.c **** }
+  68:User/Src/command.c **** 
+  69:User/Src/command.c **** uint16_t CharToInt(char* source, uint8_t start, int* number)
+  70:User/Src/command.c **** {
+  71:User/Src/command.c **** 	uint16_t length;
+  72:User/Src/command.c **** 	uint16_t i;
+  73:User/Src/command.c **** 	int sum = 0;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 3
+
+
+  74:User/Src/command.c **** 	int state = 0;
+  75:User/Src/command.c **** 	uint8_t hex = 0;
+  76:User/Src/command.c **** 	length = strlen(source);
+  77:User/Src/command.c **** 	if (start >= length) {
+  78:User/Src/command.c **** 		*number = 0;
+  79:User/Src/command.c **** 		return 0;
+  80:User/Src/command.c **** 	}
+  81:User/Src/command.c **** 	if (source[start] == '-') {
+  82:User/Src/command.c **** 		state = -1;
+  83:User/Src/command.c **** 		start++;
+  84:User/Src/command.c **** 	} else {
+  85:User/Src/command.c **** 		state = 1;
+  86:User/Src/command.c **** 		if (start + 1 < length ) {
+  87:User/Src/command.c **** 			if (source[start] == '0' && (source[start + 1] == 'x' ||source[start + 1] == 'X')) {
+  88:User/Src/command.c **** 				start += 2;
+  89:User/Src/command.c **** 				hex = 1;
+  90:User/Src/command.c **** 			}
+  91:User/Src/command.c **** 		}
+  92:User/Src/command.c **** 	}
+  93:User/Src/command.c **** 	for (i = start; i < length; i++) {
+  94:User/Src/command.c **** 		if (source[i] >= '0' && source[i] <= '9') {
+  95:User/Src/command.c **** 			if (hex == 1) {
+  96:User/Src/command.c **** 				sum = sum * 16 + source[i] - '0';
+  97:User/Src/command.c **** 			} else {
+  98:User/Src/command.c **** 				sum = sum * 10 + source[i] - '0';
+  99:User/Src/command.c **** 			}
+ 100:User/Src/command.c **** 		} else if (source[i] >= 'a' && source[i] <= 'f') {
+ 101:User/Src/command.c **** 			if (hex == 1) {
+ 102:User/Src/command.c **** 				sum = sum * 16  + source[i] - 'a' + 10;
+ 103:User/Src/command.c **** 			} else {
+ 104:User/Src/command.c **** 				*number = 0;
+ 105:User/Src/command.c **** 				return 0;
+ 106:User/Src/command.c **** 			}
+ 107:User/Src/command.c **** 		}else if (source[i] >= 'A' && source[i] <= 'F') {
+ 108:User/Src/command.c **** 			if (hex == 1) {
+ 109:User/Src/command.c **** 				sum = sum * 16  + source[i] - 'A' + 10;
+ 110:User/Src/command.c **** 			} else {
+ 111:User/Src/command.c **** 				*number = 0;
+ 112:User/Src/command.c **** 				return 0;
+ 113:User/Src/command.c **** 			}
+ 114:User/Src/command.c **** 		} else if (source[i] == ' ' || source[i] == ',') {
+ 115:User/Src/command.c **** 			break;
+ 116:User/Src/command.c **** 		}
+ 117:User/Src/command.c **** 	}
+ 118:User/Src/command.c **** 	*number = state * sum;
+ 119:User/Src/command.c **** 	return 1;
+ 120:User/Src/command.c **** }
+ 121:User/Src/command.c **** 
+ 122:User/Src/command.c **** uint8_t CharToFloat(char* source, uint8_t start, float* number)
+ 123:User/Src/command.c **** {
+ 124:User/Src/command.c **** 		uint8_t length;
+ 125:User/Src/command.c **** 		uint8_t i;
+ 126:User/Src/command.c **** 		float sum = 0;
+ 127:User/Src/command.c **** 		int state = 1;
+ 128:User/Src/command.c **** 		float smallNumber = 0.1;
+ 129:User/Src/command.c **** 		length = strlen(source);
+ 130:User/Src/command.c **** 		if (length <= start) {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 4
+
+
+ 131:User/Src/command.c **** 				*number = 0;
+ 132:User/Src/command.c **** 				return 0;
+ 133:User/Src/command.c **** 		}
+ 134:User/Src/command.c **** 		
+ 135:User/Src/command.c **** 		if (source[start] == '-') {
+ 136:User/Src/command.c **** 				state = -1;
+ 137:User/Src/command.c **** 				start++;
+ 138:User/Src/command.c **** 		}
+ 139:User/Src/command.c **** 		for (i = start; i < length; i++){
+ 140:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 141:User/Src/command.c **** 						sum = sum * 10 + source[i] - '0';
+ 142:User/Src/command.c **** 				} else if (source[i] == '.') {
+ 143:User/Src/command.c **** 						i++;
+ 144:User/Src/command.c **** 						break;
+ 145:User/Src/command.c **** 				} else if (source[i] == ' ' || source[i] == ',') {
+ 146:User/Src/command.c **** 						break;
+ 147:User/Src/command.c **** 				}	else {
+ 148:User/Src/command.c **** 						*number = 0;
+ 149:User/Src/command.c **** 						return 0;
+ 150:User/Src/command.c **** 				}					
+ 151:User/Src/command.c **** 		}
+ 152:User/Src/command.c **** 		for (; i < length; i++) {
+ 153:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 154:User/Src/command.c **** 						sum += smallNumber * (source[i] - '0');
+ 155:User/Src/command.c **** 						smallNumber = smallNumber * 0.1;
+ 156:User/Src/command.c **** 				} else if (source[i] == ' ' || source[i] == ',') {
+ 157:User/Src/command.c **** 						break;
+ 158:User/Src/command.c **** 				}	else {
+ 159:User/Src/command.c **** 						*number = 0;
+ 160:User/Src/command.c **** 						return 0;
+ 161:User/Src/command.c **** 				}	
+ 162:User/Src/command.c **** 		}
+ 163:User/Src/command.c **** 		*number = state * sum;
+ 164:User/Src/command.c **** 		return 1;
+ 165:User/Src/command.c **** }
+ 166:User/Src/command.c **** 
+ 167:User/Src/command.c **** /**
+ 168:User/Src/command.c ****  * @brief 自定义字符串复制函数：从源字符串指定位置复制指定长度到目标字符串
+ 169:User/Src/command.c ****  * @param dest 目标字符串（存放复制结果）
+ 170:User/Src/command.c ****  * @param src 源字符串
+ 171:User/Src/command.c ****  * @param start_pos 源字符串的起始复制位置（从0开始计数）
+ 172:User/Src/command.c ****  * @param copy_len 需要复制的长度
+ 173:User/Src/command.c ****  * @return int 成功返回1，失败返回0（参数非法）
+ 174:User/Src/command.c ****  */
+ 175:User/Src/command.c **** uint8_t Data_copy_from_pos(char *dest, const char *src, uint16_t start_pos, uint16_t copy_len) {
+ 176:User/Src/command.c ****     // 1. 安全校验：空指针检查
+ 177:User/Src/command.c ****     if (dest == NULL || src == NULL) {
+ 178:User/Src/command.c ****         UsbPrintf("error pointer null !\n");
+ 179:User/Src/command.c ****         return 0;
+ 180:User/Src/command.c ****     }
+ 181:User/Src/command.c **** 
+ 182:User/Src/command.c ****     // 2. 计算源字符串长度，校验起始位置是否合法
+ 183:User/Src/command.c ****     int src_len = strlen(src);
+ 184:User/Src/command.c ****     if (start_pos < 0 || start_pos >= src_len) {
+ 185:User/Src/command.c ****         UsbPrintf("error start len ng ! src_len:%d,start:%d\n", src_len, start_pos);
+ 186:User/Src/command.c ****         return 0;
+ 187:User/Src/command.c ****     }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 5
+
+
+ 188:User/Src/command.c **** 
+ 189:User/Src/command.c ****     // 3. 校验复制长度：长度不能为负，且不能超出源字符串剩余长度
+ 190:User/Src/command.c ****     if (copy_len < 0 || (start_pos + copy_len) > src_len) {
+ 191:User/Src/command.c ****         UsbPrintf("error copy_len ! left_len:%d,copy_len:%d\n", src_len - start_pos, copy_len);
+ 192:User/Src/command.c ****         return 0;
+ 193:User/Src/command.c ****     }
+ 194:User/Src/command.c **** 
+ 195:User/Src/command.c ****     // 4. 核心复制逻辑：从start_pos开始，复制copy_len个字符
+ 196:User/Src/command.c ****     for (int i = 0; i < copy_len; i++) {
+ 197:User/Src/command.c ****         dest[i] = src[start_pos + i];
+ 198:User/Src/command.c ****     }
+ 199:User/Src/command.c **** 
+ 200:User/Src/command.c ****     // 5. 手动添加字符串结束符（必须！否则目标字符串会乱码）
+ 201:User/Src/command.c ****     dest[copy_len] = '\0';
+ 202:User/Src/command.c **** 
+ 203:User/Src/command.c ****     return 1;
+ 204:User/Src/command.c **** }
+ 205:User/Src/command.c **** 
+ 206:User/Src/command.c **** 
+ 207:User/Src/command.c **** void  AT_HELP_Handle(char* command)
+ 208:User/Src/command.c **** {
+  38              		.loc 1 208 1 view -0
+  39              		.cfi_startproc
+  40              		@ args = 0, pretend = 0, frame = 0
+  41              		@ frame_needed = 0, uses_anonymous_args = 0
+  42              		.loc 1 208 1 is_stmt 0 view .LVU1
+  43 0000 70B5     		push	{r4, r5, r6, lr}
+  44              	.LCFI0:
+  45              		.cfi_def_cfa_offset 16
+  46              		.cfi_offset 4, -16
+  47              		.cfi_offset 5, -12
+  48              		.cfi_offset 6, -8
+  49              		.cfi_offset 14, -4
+ 209:User/Src/command.c ****     int i = 0, number = 0;
+  50              		.loc 1 209 5 is_stmt 1 view .LVU2
+  51              	.LVL1:
+ 210:User/Src/command.c ****     command = NULL;
+  52              		.loc 1 210 5 view .LVU3
+ 211:User/Src/command.c ****     for (i = 0; i < MAX_COMMAND_NUMBER; i++) {
+  53              		.loc 1 211 5 view .LVU4
+ 209:User/Src/command.c ****     int i = 0, number = 0;
+  54              		.loc 1 209 16 is_stmt 0 view .LVU5
+  55 0002 0025     		movs	r5, #0
+  56              		.loc 1 211 12 view .LVU6
+  57 0004 2C46     		mov	r4, r5
+  58              		.loc 1 211 5 view .LVU7
+  59 0006 06E0     		b	.L2
+  60              	.LVL2:
+  61              	.L4:
+ 212:User/Src/command.c **** 		if (strlen(CommandList[i]) > 0) {
+ 213:User/Src/command.c ****             if(i==0)    { UsbPrintf("\n"); }
+ 214:User/Src/command.c ****         	UsbPrintf("%d. %s\n", number, CommandList[i]);
+  62              		.loc 1 214 10 is_stmt 1 view .LVU8
+  63 0008 3246     		mov	r2, r6
+  64 000a 2946     		mov	r1, r5
+  65 000c 0C48     		ldr	r0, .L8
+  66 000e FFF7FEFF 		bl	UsbPrintf
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 6
+
+
+  67              	.LVL3:
+ 215:User/Src/command.c **** 			number++;
+  68              		.loc 1 215 4 view .LVU9
+  69              		.loc 1 215 10 is_stmt 0 view .LVU10
+  70 0012 0135     		adds	r5, r5, #1
+  71              	.LVL4:
+  72              	.L3:
+ 211:User/Src/command.c ****     for (i = 0; i < MAX_COMMAND_NUMBER; i++) {
+  73              		.loc 1 211 41 is_stmt 1 discriminator 2 view .LVU11
+ 211:User/Src/command.c ****     for (i = 0; i < MAX_COMMAND_NUMBER; i++) {
+  74              		.loc 1 211 42 is_stmt 0 discriminator 2 view .LVU12
+  75 0014 0134     		adds	r4, r4, #1
+  76              	.LVL5:
+  77              	.L2:
+ 211:User/Src/command.c ****     for (i = 0; i < MAX_COMMAND_NUMBER; i++) {
+  78              		.loc 1 211 17 is_stmt 1 discriminator 1 view .LVU13
+ 211:User/Src/command.c ****     for (i = 0; i < MAX_COMMAND_NUMBER; i++) {
+  79              		.loc 1 211 5 is_stmt 0 discriminator 1 view .LVU14
+  80 0016 272C     		cmp	r4, #39
+  81 0018 0DDC     		bgt	.L7
+ 212:User/Src/command.c **** 		if (strlen(CommandList[i]) > 0) {
+  82              		.loc 1 212 3 is_stmt 1 view .LVU15
+ 212:User/Src/command.c **** 		if (strlen(CommandList[i]) > 0) {
+  83              		.loc 1 212 25 is_stmt 0 view .LVU16
+  84 001a 0A4A     		ldr	r2, .L8+4
+  85 001c 04EB8401 		add	r1, r4, r4, lsl #2
+  86 0020 8B00     		lsls	r3, r1, #2
+  87 0022 D618     		adds	r6, r2, r3
+ 212:User/Src/command.c **** 		if (strlen(CommandList[i]) > 0) {
+  88              		.loc 1 212 30 view .LVU17
+  89 0024 D35C     		ldrb	r3, [r2, r3]	@ zero_extendqisi2
+ 212:User/Src/command.c **** 		if (strlen(CommandList[i]) > 0) {
+  90              		.loc 1 212 6 view .LVU18
+  91 0026 002B     		cmp	r3, #0
+  92 0028 F4D0     		beq	.L3
+ 213:User/Src/command.c ****         	UsbPrintf("%d. %s\n", number, CommandList[i]);
+  93              		.loc 1 213 13 is_stmt 1 view .LVU19
+ 213:User/Src/command.c ****         	UsbPrintf("%d. %s\n", number, CommandList[i]);
+  94              		.loc 1 213 15 is_stmt 0 view .LVU20
+  95 002a 002C     		cmp	r4, #0
+  96 002c ECD1     		bne	.L4
+ 213:User/Src/command.c ****         	UsbPrintf("%d. %s\n", number, CommandList[i]);
+  97              		.loc 1 213 27 is_stmt 1 discriminator 1 view .LVU21
+  98 002e 0648     		ldr	r0, .L8+8
+  99 0030 FFF7FEFF 		bl	UsbPrintf
+ 100              	.LVL6:
+ 101 0034 E8E7     		b	.L4
+ 102              	.L7:
+ 216:User/Src/command.c **** 		}
+ 217:User/Src/command.c ****     }
+ 218:User/Src/command.c **** 	UsbPrintf("command number: %d\n", number);
+ 103              		.loc 1 218 2 view .LVU22
+ 104 0036 2946     		mov	r1, r5
+ 105 0038 0448     		ldr	r0, .L8+12
+ 106 003a FFF7FEFF 		bl	UsbPrintf
+ 107              	.LVL7:
+ 219:User/Src/command.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 7
+
+
+ 108              		.loc 1 219 1 is_stmt 0 view .LVU23
+ 109 003e 70BD     		pop	{r4, r5, r6, pc}
+ 110              	.LVL8:
+ 111              	.L9:
+ 112              		.loc 1 219 1 view .LVU24
+ 113              		.align	2
+ 114              	.L8:
+ 115 0040 04000000 		.word	.LC1
+ 116 0044 00000000 		.word	.LANCHOR0
+ 117 0048 00000000 		.word	.LC0
+ 118 004c 0C000000 		.word	.LC2
+ 119              		.cfi_endproc
+ 120              	.LFE73:
+ 122              		.section	.rodata.AT_TEST_Handle.str1.4,"aMS",%progbits,1
+ 123              		.align	2
+ 124              	.LC3:
+ 125 0000 74657374 		.ascii	"test.txt\000"
+ 125      2E747874 
+ 125      00
+ 126              		.section	.text.AT_TEST_Handle,"ax",%progbits
+ 127              		.align	1
+ 128              		.global	AT_TEST_Handle
+ 129              		.syntax unified
+ 130              		.thumb
+ 131              		.thumb_func
+ 133              	AT_TEST_Handle:
+ 134              	.LVL9:
+ 135              	.LFB74:
+ 220:User/Src/command.c **** 
+ 221:User/Src/command.c **** void  AT_TEST_Handle(char* command)
+ 222:User/Src/command.c **** {
+ 136              		.loc 1 222 1 is_stmt 1 view -0
+ 137              		.cfi_startproc
+ 138              		@ args = 0, pretend = 0, frame = 0
+ 139              		@ frame_needed = 0, uses_anonymous_args = 0
+ 140              		.loc 1 222 1 is_stmt 0 view .LVU26
+ 141 0000 08B5     		push	{r3, lr}
+ 142              	.LCFI1:
+ 143              		.cfi_def_cfa_offset 8
+ 144              		.cfi_offset 3, -8
+ 145              		.cfi_offset 14, -4
+ 223:User/Src/command.c **** 
+ 224:User/Src/command.c **** 	//uint8_t test_buf[4096] = {0};
+ 225:User/Src/command.c **** 	fatfs_read_file("test.txt");
+ 146              		.loc 1 225 2 is_stmt 1 view .LVU27
+ 147 0002 0248     		ldr	r0, .L12
+ 148              	.LVL10:
+ 149              		.loc 1 225 2 is_stmt 0 view .LVU28
+ 150 0004 FFF7FEFF 		bl	fatfs_read_file
+ 151              	.LVL11:
+ 226:User/Src/command.c **** }
+ 152              		.loc 1 226 1 view .LVU29
+ 153 0008 08BD     		pop	{r3, pc}
+ 154              	.L13:
+ 155 000a 00BF     		.align	2
+ 156              	.L12:
+ 157 000c 00000000 		.word	.LC3
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 8
+
+
+ 158              		.cfi_endproc
+ 159              	.LFE74:
+ 161              		.section	.text.AT_FATFS_MOUNT_Handle,"ax",%progbits
+ 162              		.align	1
+ 163              		.global	AT_FATFS_MOUNT_Handle
+ 164              		.syntax unified
+ 165              		.thumb
+ 166              		.thumb_func
+ 168              	AT_FATFS_MOUNT_Handle:
+ 169              	.LVL12:
+ 170              	.LFB75:
+ 227:User/Src/command.c **** 
+ 228:User/Src/command.c **** void  AT_FATFS_MOUNT_Handle(char* command)
+ 229:User/Src/command.c **** {
+ 171              		.loc 1 229 1 is_stmt 1 view -0
+ 172              		.cfi_startproc
+ 173              		@ args = 0, pretend = 0, frame = 0
+ 174              		@ frame_needed = 0, uses_anonymous_args = 0
+ 175              		.loc 1 229 1 is_stmt 0 view .LVU31
+ 176 0000 08B5     		push	{r3, lr}
+ 177              	.LCFI2:
+ 178              		.cfi_def_cfa_offset 8
+ 179              		.cfi_offset 3, -8
+ 180              		.cfi_offset 14, -4
+ 230:User/Src/command.c ****     Fatfs_Mount();  
+ 181              		.loc 1 230 5 is_stmt 1 view .LVU32
+ 182 0002 FFF7FEFF 		bl	Fatfs_Mount
+ 183              	.LVL13:
+ 231:User/Src/command.c **** }
+ 184              		.loc 1 231 1 is_stmt 0 view .LVU33
+ 185 0006 08BD     		pop	{r3, pc}
+ 186              		.cfi_endproc
+ 187              	.LFE75:
+ 189              		.section	.text.AT_FATFS_WRITE_Handle,"ax",%progbits
+ 190              		.align	1
+ 191              		.global	AT_FATFS_WRITE_Handle
+ 192              		.syntax unified
+ 193              		.thumb
+ 194              		.thumb_func
+ 196              	AT_FATFS_WRITE_Handle:
+ 197              	.LVL14:
+ 198              	.LFB76:
+ 232:User/Src/command.c **** 
+ 233:User/Src/command.c **** void  AT_FATFS_WRITE_Handle(char* command)
+ 234:User/Src/command.c **** {
+ 199              		.loc 1 234 1 is_stmt 1 view -0
+ 200              		.cfi_startproc
+ 201              		@ args = 0, pretend = 0, frame = 0
+ 202              		@ frame_needed = 0, uses_anonymous_args = 0
+ 203              		.loc 1 234 1 is_stmt 0 view .LVU35
+ 204 0000 08B5     		push	{r3, lr}
+ 205              	.LCFI3:
+ 206              		.cfi_def_cfa_offset 8
+ 207              		.cfi_offset 3, -8
+ 208              		.cfi_offset 14, -4
+ 235:User/Src/command.c ****     Fatfs_Write(command);
+ 209              		.loc 1 235 5 is_stmt 1 view .LVU36
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 9
+
+
+ 210 0002 FFF7FEFF 		bl	Fatfs_Write
+ 211              	.LVL15:
+ 236:User/Src/command.c **** 	
+ 237:User/Src/command.c **** }
+ 212              		.loc 1 237 1 is_stmt 0 view .LVU37
+ 213 0006 08BD     		pop	{r3, pc}
+ 214              		.cfi_endproc
+ 215              	.LFE76:
+ 217              		.section	.text.DevicePrintf,"ax",%progbits
+ 218              		.align	1
+ 219              		.global	DevicePrintf
+ 220              		.syntax unified
+ 221              		.thumb
+ 222              		.thumb_func
+ 224              	DevicePrintf:
+ 225              	.LVL16:
+ 226              	.LFB68:
+  43:User/Src/command.c **** 	va_list ap;
+ 227              		.loc 1 43 1 is_stmt 1 view -0
+ 228              		.cfi_startproc
+ 229              		@ args = 4, pretend = 16, frame = 8
+ 230              		@ frame_needed = 0, uses_anonymous_args = 1
+  43:User/Src/command.c **** 	va_list ap;
+ 231              		.loc 1 43 1 is_stmt 0 view .LVU39
+ 232 0000 0FB4     		push	{r0, r1, r2, r3}
+ 233              	.LCFI4:
+ 234              		.cfi_def_cfa_offset 16
+ 235              		.cfi_offset 0, -16
+ 236              		.cfi_offset 1, -12
+ 237              		.cfi_offset 2, -8
+ 238              		.cfi_offset 3, -4
+ 239 0002 F0B5     		push	{r4, r5, r6, r7, lr}
+ 240              	.LCFI5:
+ 241              		.cfi_def_cfa_offset 36
+ 242              		.cfi_offset 4, -36
+ 243              		.cfi_offset 5, -32
+ 244              		.cfi_offset 6, -28
+ 245              		.cfi_offset 7, -24
+ 246              		.cfi_offset 14, -20
+ 247 0004 83B0     		sub	sp, sp, #12
+ 248              	.LCFI6:
+ 249              		.cfi_def_cfa_offset 48
+ 250 0006 08AD     		add	r5, sp, #32
+ 251 0008 55F8047B 		ldr	r7, [r5], #4
+  44:User/Src/command.c **** 	memset(g_DeviceTxBuff, 0, UART_TRANSMIT_BUFF_NUMBER);
+ 252              		.loc 1 44 2 is_stmt 1 view .LVU40
+  45:User/Src/command.c **** 	va_start(ap, fmt);
+ 253              		.loc 1 45 2 view .LVU41
+ 254 000c 0E4C     		ldr	r4, .L20
+ 255 000e 4FF49676 		mov	r6, #300
+ 256 0012 3246     		mov	r2, r6
+ 257 0014 0021     		movs	r1, #0
+ 258 0016 2046     		mov	r0, r4
+ 259 0018 FFF7FEFF 		bl	memset
+ 260              	.LVL17:
+  46:User/Src/command.c **** 	vsnprintf((char*)g_DeviceTxBuff, UART_TRANSMIT_BUFF_NUMBER, fmt, ap);
+ 261              		.loc 1 46 2 view .LVU42
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 10
+
+
+ 262 001c 0195     		str	r5, [sp, #4]
+  47:User/Src/command.c **** 	va_end(ap);
+ 263              		.loc 1 47 2 view .LVU43
+ 264 001e 2B46     		mov	r3, r5
+ 265 0020 3A46     		mov	r2, r7
+ 266 0022 3146     		mov	r1, r6
+ 267 0024 2046     		mov	r0, r4
+ 268 0026 FFF7FEFF 		bl	vsnprintf
+ 269              	.LVL18:
+  48:User/Src/command.c **** 	HAL_UART_Transmit(&huart2, g_DeviceTxBuff, strlen((char*)g_DeviceTxBuff), 1000);
+ 270              		.loc 1 48 2 view .LVU44
+  49:User/Src/command.c **** }
+ 271              		.loc 1 49 2 view .LVU45
+  49:User/Src/command.c **** }
+ 272              		.loc 1 49 45 is_stmt 0 view .LVU46
+ 273 002a 2046     		mov	r0, r4
+ 274 002c FFF7FEFF 		bl	strlen
+ 275              	.LVL19:
+  49:User/Src/command.c **** }
+ 276              		.loc 1 49 2 view .LVU47
+ 277 0030 4FF47A73 		mov	r3, #1000
+ 278 0034 82B2     		uxth	r2, r0
+ 279 0036 2146     		mov	r1, r4
+ 280 0038 0448     		ldr	r0, .L20+4
+ 281 003a FFF7FEFF 		bl	HAL_UART_Transmit
+ 282              	.LVL20:
+  50:User/Src/command.c **** 
+ 283              		.loc 1 50 1 view .LVU48
+ 284 003e 03B0     		add	sp, sp, #12
+ 285              	.LCFI7:
+ 286              		.cfi_def_cfa_offset 36
+ 287              		@ sp needed
+ 288 0040 BDE8F040 		pop	{r4, r5, r6, r7, lr}
+ 289              	.LCFI8:
+ 290              		.cfi_restore 14
+ 291              		.cfi_restore 7
+ 292              		.cfi_restore 6
+ 293              		.cfi_restore 5
+ 294              		.cfi_restore 4
+ 295              		.cfi_def_cfa_offset 16
+ 296 0044 04B0     		add	sp, sp, #16
+ 297              	.LCFI9:
+ 298              		.cfi_restore 3
+ 299              		.cfi_restore 2
+ 300              		.cfi_restore 1
+ 301              		.cfi_restore 0
+ 302              		.cfi_def_cfa_offset 0
+ 303 0046 7047     		bx	lr
+ 304              	.L21:
+ 305              		.align	2
+ 306              	.L20:
+ 307 0048 00000000 		.word	.LANCHOR1
+ 308 004c 00000000 		.word	huart2
+ 309              		.cfi_endproc
+ 310              	.LFE68:
+ 312              		.section	.text.strSearch,"ax",%progbits
+ 313              		.align	1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 11
+
+
+ 314              		.global	strSearch
+ 315              		.syntax unified
+ 316              		.thumb
+ 317              		.thumb_func
+ 319              	strSearch:
+ 320              	.LVL21:
+ 321              	.LFB69:
+  53:User/Src/command.c **** 	int len_source = strlen(source);
+ 322              		.loc 1 53 1 is_stmt 1 view -0
+ 323              		.cfi_startproc
+ 324              		@ args = 0, pretend = 0, frame = 0
+ 325              		@ frame_needed = 0, uses_anonymous_args = 0
+  53:User/Src/command.c **** 	int len_source = strlen(source);
+ 326              		.loc 1 53 1 is_stmt 0 view .LVU50
+ 327 0000 70B5     		push	{r4, r5, r6, lr}
+ 328              	.LCFI10:
+ 329              		.cfi_def_cfa_offset 16
+ 330              		.cfi_offset 4, -16
+ 331              		.cfi_offset 5, -12
+ 332              		.cfi_offset 6, -8
+ 333              		.cfi_offset 14, -4
+ 334 0002 0546     		mov	r5, r0
+ 335 0004 0C46     		mov	r4, r1
+  54:User/Src/command.c **** 	int len_target = strlen(target);
+ 336              		.loc 1 54 2 is_stmt 1 view .LVU51
+  54:User/Src/command.c **** 	int len_target = strlen(target);
+ 337              		.loc 1 54 19 is_stmt 0 view .LVU52
+ 338 0006 FFF7FEFF 		bl	strlen
+ 339              	.LVL22:
+  54:User/Src/command.c **** 	int len_target = strlen(target);
+ 340              		.loc 1 54 19 view .LVU53
+ 341 000a 0646     		mov	r6, r0
+ 342              	.LVL23:
+  55:User/Src/command.c **** 	int i, j;
+ 343              		.loc 1 55 2 is_stmt 1 view .LVU54
+  55:User/Src/command.c **** 	int i, j;
+ 344              		.loc 1 55 19 is_stmt 0 view .LVU55
+ 345 000c 2046     		mov	r0, r4
+ 346              	.LVL24:
+  55:User/Src/command.c **** 	int i, j;
+ 347              		.loc 1 55 19 view .LVU56
+ 348 000e FFF7FEFF 		bl	strlen
+ 349              	.LVL25:
+  56:User/Src/command.c **** 	if (len_source < len_target) {
+ 350              		.loc 1 56 2 is_stmt 1 view .LVU57
+  57:User/Src/command.c **** 		return -1;
+ 351              		.loc 1 57 2 view .LVU58
+  57:User/Src/command.c **** 		return -1;
+ 352              		.loc 1 57 5 is_stmt 0 view .LVU59
+ 353 0012 8642     		cmp	r6, r0
+ 354 0014 16DB     		blt	.L28
+ 355 0016 0146     		mov	r1, r0
+  60:User/Src/command.c **** 		for (j = 0; j < len_target; j++) {
+ 356              		.loc 1 60 9 view .LVU60
+ 357 0018 0020     		movs	r0, #0
+ 358              	.LVL26:
+  60:User/Src/command.c **** 		for (j = 0; j < len_target; j++) {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 12
+
+
+ 359              		.loc 1 60 9 view .LVU61
+ 360 001a 02E0     		b	.L24
+ 361              	.LVL27:
+ 362              	.L25:
+  64:User/Src/command.c **** 	}
+ 363              		.loc 1 64 3 is_stmt 1 view .LVU62
+  64:User/Src/command.c **** 	}
+ 364              		.loc 1 64 6 is_stmt 0 view .LVU63
+ 365 001c 8B42     		cmp	r3, r1
+ 366 001e 10D0     		beq	.L22
+  60:User/Src/command.c **** 		for (j = 0; j < len_target; j++) {
+ 367              		.loc 1 60 44 is_stmt 1 discriminator 2 view .LVU64
+  60:User/Src/command.c **** 		for (j = 0; j < len_target; j++) {
+ 368              		.loc 1 60 45 is_stmt 0 discriminator 2 view .LVU65
+ 369 0020 0130     		adds	r0, r0, #1
+ 370              	.LVL28:
+ 371              	.L24:
+  60:User/Src/command.c **** 		for (j = 0; j < len_target; j++) {
+ 372              		.loc 1 60 14 is_stmt 1 discriminator 1 view .LVU66
+  60:User/Src/command.c **** 		for (j = 0; j < len_target; j++) {
+ 373              		.loc 1 60 30 is_stmt 0 discriminator 1 view .LVU67
+ 374 0022 731A     		subs	r3, r6, r1
+  60:User/Src/command.c **** 		for (j = 0; j < len_target; j++) {
+ 375              		.loc 1 60 2 discriminator 1 view .LVU68
+ 376 0024 8342     		cmp	r3, r0
+ 377 0026 0ADB     		blt	.L31
+  61:User/Src/command.c **** 			if (source[i + j] != target[j]) { break;}
+ 378              		.loc 1 61 10 view .LVU69
+ 379 0028 0023     		movs	r3, #0
+ 380              	.L27:
+ 381              	.LVL29:
+  61:User/Src/command.c **** 			if (source[i + j] != target[j]) { break;}
+ 382              		.loc 1 61 15 is_stmt 1 discriminator 1 view .LVU70
+  61:User/Src/command.c **** 			if (source[i + j] != target[j]) { break;}
+ 383              		.loc 1 61 3 is_stmt 0 discriminator 1 view .LVU71
+ 384 002a 8B42     		cmp	r3, r1
+ 385 002c F6DA     		bge	.L25
+  62:User/Src/command.c **** 		}
+ 386              		.loc 1 62 4 is_stmt 1 view .LVU72
+  62:User/Src/command.c **** 		}
+ 387              		.loc 1 62 17 is_stmt 0 view .LVU73
+ 388 002e C218     		adds	r2, r0, r3
+  62:User/Src/command.c **** 		}
+ 389              		.loc 1 62 14 view .LVU74
+ 390 0030 15F802C0 		ldrb	ip, [r5, r2]	@ zero_extendqisi2
+  62:User/Src/command.c **** 		}
+ 391              		.loc 1 62 31 view .LVU75
+ 392 0034 E25C     		ldrb	r2, [r4, r3]	@ zero_extendqisi2
+  62:User/Src/command.c **** 		}
+ 393              		.loc 1 62 7 view .LVU76
+ 394 0036 9445     		cmp	ip, r2
+ 395 0038 F0D1     		bne	.L25
+  61:User/Src/command.c **** 			if (source[i + j] != target[j]) { break;}
+ 396              		.loc 1 61 31 is_stmt 1 discriminator 2 view .LVU77
+  61:User/Src/command.c **** 			if (source[i + j] != target[j]) { break;}
+ 397              		.loc 1 61 32 is_stmt 0 discriminator 2 view .LVU78
+ 398 003a 0133     		adds	r3, r3, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 13
+
+
+ 399              	.LVL30:
+  61:User/Src/command.c **** 			if (source[i + j] != target[j]) { break;}
+ 400              		.loc 1 61 32 discriminator 2 view .LVU79
+ 401 003c F5E7     		b	.L27
+ 402              	.LVL31:
+ 403              	.L31:
+  66:User/Src/command.c **** }
+ 404              		.loc 1 66 9 view .LVU80
+ 405 003e 4FF0FF30 		mov	r0, #-1
+ 406              	.LVL32:
+ 407              	.L22:
+  67:User/Src/command.c **** 
+ 408              		.loc 1 67 1 view .LVU81
+ 409 0042 70BD     		pop	{r4, r5, r6, pc}
+ 410              	.LVL33:
+ 411              	.L28:
+  58:User/Src/command.c **** 	}		
+ 412              		.loc 1 58 10 view .LVU82
+ 413 0044 4FF0FF30 		mov	r0, #-1
+ 414              	.LVL34:
+  58:User/Src/command.c **** 	}		
+ 415              		.loc 1 58 10 view .LVU83
+ 416 0048 FBE7     		b	.L22
+ 417              		.cfi_endproc
+ 418              	.LFE69:
+ 420              		.section	.text.CharToInt,"ax",%progbits
+ 421              		.align	1
+ 422              		.global	CharToInt
+ 423              		.syntax unified
+ 424              		.thumb
+ 425              		.thumb_func
+ 427              	CharToInt:
+ 428              	.LVL35:
+ 429              	.LFB70:
+  70:User/Src/command.c **** 	uint16_t length;
+ 430              		.loc 1 70 1 is_stmt 1 view -0
+ 431              		.cfi_startproc
+ 432              		@ args = 0, pretend = 0, frame = 0
+ 433              		@ frame_needed = 0, uses_anonymous_args = 0
+  70:User/Src/command.c **** 	uint16_t length;
+ 434              		.loc 1 70 1 is_stmt 0 view .LVU85
+ 435 0000 70B5     		push	{r4, r5, r6, lr}
+ 436              	.LCFI11:
+ 437              		.cfi_def_cfa_offset 16
+ 438              		.cfi_offset 4, -16
+ 439              		.cfi_offset 5, -12
+ 440              		.cfi_offset 6, -8
+ 441              		.cfi_offset 14, -4
+ 442 0002 0546     		mov	r5, r0
+ 443 0004 0E46     		mov	r6, r1
+ 444 0006 1446     		mov	r4, r2
+  71:User/Src/command.c **** 	uint16_t i;
+ 445              		.loc 1 71 2 is_stmt 1 view .LVU86
+  72:User/Src/command.c **** 	int sum = 0;
+ 446              		.loc 1 72 2 view .LVU87
+  73:User/Src/command.c **** 	int state = 0;
+ 447              		.loc 1 73 2 view .LVU88
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 14
+
+
+ 448              	.LVL36:
+  74:User/Src/command.c **** 	uint8_t hex = 0;
+ 449              		.loc 1 74 2 view .LVU89
+  75:User/Src/command.c **** 	length = strlen(source);
+ 450              		.loc 1 75 2 view .LVU90
+  76:User/Src/command.c **** 	if (start >= length) {
+ 451              		.loc 1 76 2 view .LVU91
+  76:User/Src/command.c **** 	if (start >= length) {
+ 452              		.loc 1 76 11 is_stmt 0 view .LVU92
+ 453 0008 FFF7FEFF 		bl	strlen
+ 454              	.LVL37:
+  76:User/Src/command.c **** 	if (start >= length) {
+ 455              		.loc 1 76 9 view .LVU93
+ 456 000c 82B2     		uxth	r2, r0
+ 457              	.LVL38:
+  77:User/Src/command.c **** 		*number = 0;
+ 458              		.loc 1 77 2 is_stmt 1 view .LVU94
+  77:User/Src/command.c **** 		*number = 0;
+ 459              		.loc 1 77 12 is_stmt 0 view .LVU95
+ 460 000e B3B2     		uxth	r3, r6
+  77:User/Src/command.c **** 		*number = 0;
+ 461              		.loc 1 77 5 view .LVU96
+ 462 0010 9342     		cmp	r3, r2
+ 463 0012 15D2     		bcs	.L52
+  81:User/Src/command.c **** 		state = -1;
+ 464              		.loc 1 81 2 is_stmt 1 view .LVU97
+  81:User/Src/command.c **** 		state = -1;
+ 465              		.loc 1 81 12 is_stmt 0 view .LVU98
+ 466 0014 B446     		mov	ip, r6
+ 467 0016 A95D     		ldrb	r1, [r5, r6]	@ zero_extendqisi2
+  81:User/Src/command.c **** 		state = -1;
+ 468              		.loc 1 81 5 view .LVU99
+ 469 0018 2D29     		cmp	r1, #45
+ 470 001a 14D0     		beq	.L53
+  85:User/Src/command.c **** 		if (start + 1 < length ) {
+ 471              		.loc 1 85 3 is_stmt 1 view .LVU100
+ 472              	.LVL39:
+  86:User/Src/command.c **** 			if (source[start] == '0' && (source[start + 1] == 'x' ||source[start + 1] == 'X')) {
+ 473              		.loc 1 86 3 view .LVU101
+  86:User/Src/command.c **** 			if (source[start] == '0' && (source[start + 1] == 'x' ||source[start + 1] == 'X')) {
+ 474              		.loc 1 86 13 is_stmt 0 view .LVU102
+ 475 001c 731C     		adds	r3, r6, #1
+  86:User/Src/command.c **** 			if (source[start] == '0' && (source[start + 1] == 'x' ||source[start + 1] == 'X')) {
+ 476              		.loc 1 86 17 view .LVU103
+ 477 001e 80B2     		uxth	r0, r0
+  86:User/Src/command.c **** 			if (source[start] == '0' && (source[start + 1] == 'x' ||source[start + 1] == 'X')) {
+ 478              		.loc 1 86 6 view .LVU104
+ 479 0020 8342     		cmp	r3, r0
+ 480 0022 18DA     		bge	.L48
+  87:User/Src/command.c **** 				start += 2;
+ 481              		.loc 1 87 4 is_stmt 1 view .LVU105
+  87:User/Src/command.c **** 				start += 2;
+ 482              		.loc 1 87 7 is_stmt 0 view .LVU106
+ 483 0024 3029     		cmp	r1, #48
+ 484 0026 1AD1     		bne	.L49
+  87:User/Src/command.c **** 				start += 2;
+ 485              		.loc 1 87 39 discriminator 1 view .LVU107
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 15
+
+
+ 486 0028 AC44     		add	ip, ip, r5
+ 487 002a 9CF80130 		ldrb	r3, [ip, #1]	@ zero_extendqisi2
+  87:User/Src/command.c **** 				start += 2;
+ 488              		.loc 1 87 29 discriminator 1 view .LVU108
+ 489 002e 782B     		cmp	r3, #120
+ 490 0030 01D0     		beq	.L37
+  87:User/Src/command.c **** 				start += 2;
+ 491              		.loc 1 87 58 discriminator 2 view .LVU109
+ 492 0032 582B     		cmp	r3, #88
+ 493 0034 17D1     		bne	.L50
+ 494              	.L37:
+  88:User/Src/command.c **** 				hex = 1;
+ 495              		.loc 1 88 5 is_stmt 1 view .LVU110
+  88:User/Src/command.c **** 				hex = 1;
+ 496              		.loc 1 88 11 is_stmt 0 view .LVU111
+ 497 0036 B31C     		adds	r3, r6, #2
+ 498 0038 DEB2     		uxtb	r6, r3
+ 499              	.LVL40:
+  89:User/Src/command.c **** 			}
+ 500              		.loc 1 89 5 is_stmt 1 view .LVU112
+  89:User/Src/command.c **** 			}
+ 501              		.loc 1 89 9 is_stmt 0 view .LVU113
+ 502 003a 0120     		movs	r0, #1
+  85:User/Src/command.c **** 		if (start + 1 < length ) {
+ 503              		.loc 1 85 9 view .LVU114
+ 504 003c 8646     		mov	lr, r0
+ 505 003e 07E0     		b	.L36
+ 506              	.LVL41:
+ 507              	.L52:
+  78:User/Src/command.c **** 		return 0;
+ 508              		.loc 1 78 3 is_stmt 1 view .LVU115
+  78:User/Src/command.c **** 		return 0;
+ 509              		.loc 1 78 11 is_stmt 0 view .LVU116
+ 510 0040 0020     		movs	r0, #0
+ 511 0042 2060     		str	r0, [r4]
+  79:User/Src/command.c **** 	}
+ 512              		.loc 1 79 3 is_stmt 1 view .LVU117
+  79:User/Src/command.c **** 	}
+ 513              		.loc 1 79 10 is_stmt 0 view .LVU118
+ 514 0044 50E0     		b	.L34
+ 515              	.L53:
+  82:User/Src/command.c **** 		start++;
+ 516              		.loc 1 82 3 is_stmt 1 view .LVU119
+ 517              	.LVL42:
+  83:User/Src/command.c **** 	} else {
+ 518              		.loc 1 83 3 view .LVU120
+  83:User/Src/command.c **** 	} else {
+ 519              		.loc 1 83 8 is_stmt 0 view .LVU121
+ 520 0046 731C     		adds	r3, r6, #1
+ 521 0048 DEB2     		uxtb	r6, r3
+ 522              	.LVL43:
+  75:User/Src/command.c **** 	length = strlen(source);
+ 523              		.loc 1 75 10 view .LVU122
+ 524 004a 0020     		movs	r0, #0
+  82:User/Src/command.c **** 		start++;
+ 525              		.loc 1 82 9 view .LVU123
+ 526 004c 4FF0FF3E 		mov	lr, #-1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 16
+
+
+ 527              	.LVL44:
+ 528              	.L36:
+  93:User/Src/command.c **** 		if (source[i] >= '0' && source[i] <= '9') {
+ 529              		.loc 1 93 2 is_stmt 1 view .LVU124
+  93:User/Src/command.c **** 		if (source[i] >= '0' && source[i] <= '9') {
+ 530              		.loc 1 93 9 is_stmt 0 view .LVU125
+ 531 0050 B3B2     		uxth	r3, r6
+ 532              	.LVL45:
+  73:User/Src/command.c **** 	int state = 0;
+ 533              		.loc 1 73 6 view .LVU126
+ 534 0052 0021     		movs	r1, #0
+  93:User/Src/command.c **** 		if (source[i] >= '0' && source[i] <= '9') {
+ 535              		.loc 1 93 2 view .LVU127
+ 536 0054 12E0     		b	.L38
+ 537              	.LVL46:
+ 538              	.L48:
+  75:User/Src/command.c **** 	length = strlen(source);
+ 539              		.loc 1 75 10 view .LVU128
+ 540 0056 0020     		movs	r0, #0
+  85:User/Src/command.c **** 		if (start + 1 < length ) {
+ 541              		.loc 1 85 9 view .LVU129
+ 542 0058 4FF0010E 		mov	lr, #1
+ 543 005c F8E7     		b	.L36
+ 544              	.L49:
+  75:User/Src/command.c **** 	length = strlen(source);
+ 545              		.loc 1 75 10 view .LVU130
+ 546 005e 0020     		movs	r0, #0
+  85:User/Src/command.c **** 		if (start + 1 < length ) {
+ 547              		.loc 1 85 9 view .LVU131
+ 548 0060 4FF0010E 		mov	lr, #1
+ 549 0064 F4E7     		b	.L36
+ 550              	.L50:
+  75:User/Src/command.c **** 	length = strlen(source);
+ 551              		.loc 1 75 10 view .LVU132
+ 552 0066 0020     		movs	r0, #0
+  85:User/Src/command.c **** 		if (start + 1 < length ) {
+ 553              		.loc 1 85 9 view .LVU133
+ 554 0068 4FF0010E 		mov	lr, #1
+ 555 006c F0E7     		b	.L36
+ 556              	.LVL47:
+ 557              	.L40:
+  98:User/Src/command.c **** 			}
+ 558              		.loc 1 98 5 is_stmt 1 view .LVU134
+  98:User/Src/command.c **** 			}
+ 559              		.loc 1 98 15 is_stmt 0 view .LVU135
+ 560 006e 01EB8101 		add	r1, r1, r1, lsl #2
+ 561              	.LVL48:
+  98:User/Src/command.c **** 			}
+ 562              		.loc 1 98 20 view .LVU136
+ 563 0072 06EB4101 		add	r1, r6, r1, lsl #1
+  98:User/Src/command.c **** 			}
+ 564              		.loc 1 98 9 view .LVU137
+ 565 0076 3039     		subs	r1, r1, #48
+ 566              	.LVL49:
+ 567              	.L41:
+  93:User/Src/command.c **** 		if (source[i] >= '0' && source[i] <= '9') {
+ 568              		.loc 1 93 30 is_stmt 1 discriminator 2 view .LVU138
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 17
+
+
+  93:User/Src/command.c **** 		if (source[i] >= '0' && source[i] <= '9') {
+ 569              		.loc 1 93 31 is_stmt 0 discriminator 2 view .LVU139
+ 570 0078 0133     		adds	r3, r3, #1
+ 571              	.LVL50:
+  93:User/Src/command.c **** 		if (source[i] >= '0' && source[i] <= '9') {
+ 572              		.loc 1 93 31 discriminator 2 view .LVU140
+ 573 007a 9BB2     		uxth	r3, r3
+ 574              	.LVL51:
+ 575              	.L38:
+  93:User/Src/command.c **** 		if (source[i] >= '0' && source[i] <= '9') {
+ 576              		.loc 1 93 18 is_stmt 1 discriminator 1 view .LVU141
+  93:User/Src/command.c **** 		if (source[i] >= '0' && source[i] <= '9') {
+ 577              		.loc 1 93 2 is_stmt 0 discriminator 1 view .LVU142
+ 578 007c 9342     		cmp	r3, r2
+ 579 007e 2FD2     		bcs	.L46
+  94:User/Src/command.c **** 			if (hex == 1) {
+ 580              		.loc 1 94 3 is_stmt 1 view .LVU143
+  94:User/Src/command.c **** 			if (hex == 1) {
+ 581              		.loc 1 94 13 is_stmt 0 view .LVU144
+ 582 0080 EE5C     		ldrb	r6, [r5, r3]	@ zero_extendqisi2
+  94:User/Src/command.c **** 			if (hex == 1) {
+ 583              		.loc 1 94 24 view .LVU145
+ 584 0082 A6F1300C 		sub	ip, r6, #48
+ 585 0086 5FFA8CFC 		uxtb	ip, ip
+  94:User/Src/command.c **** 			if (hex == 1) {
+ 586              		.loc 1 94 6 view .LVU146
+ 587 008a BCF1090F 		cmp	ip, #9
+ 588 008e 05D8     		bhi	.L39
+  95:User/Src/command.c **** 				sum = sum * 16 + source[i] - '0';
+ 589              		.loc 1 95 4 is_stmt 1 view .LVU147
+  95:User/Src/command.c **** 				sum = sum * 16 + source[i] - '0';
+ 590              		.loc 1 95 7 is_stmt 0 view .LVU148
+ 591 0090 0028     		cmp	r0, #0
+ 592 0092 ECD0     		beq	.L40
+  96:User/Src/command.c **** 			} else {
+ 593              		.loc 1 96 5 is_stmt 1 view .LVU149
+  96:User/Src/command.c **** 			} else {
+ 594              		.loc 1 96 20 is_stmt 0 view .LVU150
+ 595 0094 06EB0111 		add	r1, r6, r1, lsl #4
+ 596              	.LVL52:
+  96:User/Src/command.c **** 			} else {
+ 597              		.loc 1 96 9 view .LVU151
+ 598 0098 3039     		subs	r1, r1, #48
+ 599              	.LVL53:
+  96:User/Src/command.c **** 			} else {
+ 600              		.loc 1 96 9 view .LVU152
+ 601 009a EDE7     		b	.L41
+ 602              	.L39:
+ 100:User/Src/command.c **** 			if (hex == 1) {
+ 603              		.loc 1 100 10 is_stmt 1 view .LVU153
+ 100:User/Src/command.c **** 			if (hex == 1) {
+ 604              		.loc 1 100 31 is_stmt 0 view .LVU154
+ 605 009c A6F1610C 		sub	ip, r6, #97
+ 606 00a0 5FFA8CFC 		uxtb	ip, ip
+ 100:User/Src/command.c **** 			if (hex == 1) {
+ 607              		.loc 1 100 13 view .LVU155
+ 608 00a4 BCF1050F 		cmp	ip, #5
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 18
+
+
+ 609 00a8 07D8     		bhi	.L42
+ 101:User/Src/command.c **** 				sum = sum * 16  + source[i] - 'a' + 10;
+ 610              		.loc 1 101 4 is_stmt 1 view .LVU156
+ 101:User/Src/command.c **** 				sum = sum * 16  + source[i] - 'a' + 10;
+ 611              		.loc 1 101 7 is_stmt 0 view .LVU157
+ 612 00aa 18B1     		cbz	r0, .L43
+ 102:User/Src/command.c **** 			} else {
+ 613              		.loc 1 102 5 is_stmt 1 view .LVU158
+ 102:User/Src/command.c **** 			} else {
+ 614              		.loc 1 102 21 is_stmt 0 view .LVU159
+ 615 00ac 06EB0111 		add	r1, r6, r1, lsl #4
+ 616              	.LVL54:
+ 102:User/Src/command.c **** 			} else {
+ 617              		.loc 1 102 9 view .LVU160
+ 618 00b0 5739     		subs	r1, r1, #87
+ 619              	.LVL55:
+ 102:User/Src/command.c **** 			} else {
+ 620              		.loc 1 102 9 view .LVU161
+ 621 00b2 E1E7     		b	.L41
+ 622              	.L43:
+ 104:User/Src/command.c **** 				return 0;
+ 623              		.loc 1 104 5 is_stmt 1 view .LVU162
+ 104:User/Src/command.c **** 				return 0;
+ 624              		.loc 1 104 13 is_stmt 0 view .LVU163
+ 625 00b4 0020     		movs	r0, #0
+ 626              	.LVL56:
+ 104:User/Src/command.c **** 				return 0;
+ 627              		.loc 1 104 13 view .LVU164
+ 628 00b6 2060     		str	r0, [r4]
+ 105:User/Src/command.c **** 			}
+ 629              		.loc 1 105 5 is_stmt 1 view .LVU165
+ 105:User/Src/command.c **** 			}
+ 630              		.loc 1 105 12 is_stmt 0 view .LVU166
+ 631 00b8 16E0     		b	.L34
+ 632              	.LVL57:
+ 633              	.L42:
+ 107:User/Src/command.c **** 			if (hex == 1) {
+ 634              		.loc 1 107 9 is_stmt 1 view .LVU167
+ 107:User/Src/command.c **** 			if (hex == 1) {
+ 635              		.loc 1 107 30 is_stmt 0 view .LVU168
+ 636 00ba A6F1410C 		sub	ip, r6, #65
+ 637 00be 5FFA8CFC 		uxtb	ip, ip
+ 107:User/Src/command.c **** 			if (hex == 1) {
+ 638              		.loc 1 107 12 view .LVU169
+ 639 00c2 BCF1050F 		cmp	ip, #5
+ 640 00c6 07D8     		bhi	.L44
+ 108:User/Src/command.c **** 				sum = sum * 16  + source[i] - 'A' + 10;
+ 641              		.loc 1 108 4 is_stmt 1 view .LVU170
+ 108:User/Src/command.c **** 				sum = sum * 16  + source[i] - 'A' + 10;
+ 642              		.loc 1 108 7 is_stmt 0 view .LVU171
+ 643 00c8 18B1     		cbz	r0, .L45
+ 109:User/Src/command.c **** 			} else {
+ 644              		.loc 1 109 5 is_stmt 1 view .LVU172
+ 109:User/Src/command.c **** 			} else {
+ 645              		.loc 1 109 21 is_stmt 0 view .LVU173
+ 646 00ca 06EB0111 		add	r1, r6, r1, lsl #4
+ 647              	.LVL58:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 19
+
+
+ 109:User/Src/command.c **** 			} else {
+ 648              		.loc 1 109 9 view .LVU174
+ 649 00ce 3739     		subs	r1, r1, #55
+ 650              	.LVL59:
+ 109:User/Src/command.c **** 			} else {
+ 651              		.loc 1 109 9 view .LVU175
+ 652 00d0 D2E7     		b	.L41
+ 653              	.L45:
+ 111:User/Src/command.c **** 				return 0;
+ 654              		.loc 1 111 5 is_stmt 1 view .LVU176
+ 111:User/Src/command.c **** 				return 0;
+ 655              		.loc 1 111 13 is_stmt 0 view .LVU177
+ 656 00d2 0020     		movs	r0, #0
+ 657              	.LVL60:
+ 111:User/Src/command.c **** 				return 0;
+ 658              		.loc 1 111 13 view .LVU178
+ 659 00d4 2060     		str	r0, [r4]
+ 112:User/Src/command.c **** 			}
+ 660              		.loc 1 112 5 is_stmt 1 view .LVU179
+ 112:User/Src/command.c **** 			}
+ 661              		.loc 1 112 12 is_stmt 0 view .LVU180
+ 662 00d6 07E0     		b	.L34
+ 663              	.LVL61:
+ 664              	.L44:
+ 114:User/Src/command.c **** 			break;
+ 665              		.loc 1 114 10 is_stmt 1 view .LVU181
+ 114:User/Src/command.c **** 			break;
+ 666              		.loc 1 114 13 is_stmt 0 view .LVU182
+ 667 00d8 202E     		cmp	r6, #32
+ 668 00da 01D0     		beq	.L46
+ 114:User/Src/command.c **** 			break;
+ 669              		.loc 1 114 31 discriminator 1 view .LVU183
+ 670 00dc 2C2E     		cmp	r6, #44
+ 671 00de CBD1     		bne	.L41
+ 672              	.L46:
+ 118:User/Src/command.c **** 	return 1;
+ 673              		.loc 1 118 2 is_stmt 1 view .LVU184
+ 118:User/Src/command.c **** 	return 1;
+ 674              		.loc 1 118 18 is_stmt 0 view .LVU185
+ 675 00e0 0EFB01F1 		mul	r1, lr, r1
+ 676              	.LVL62:
+ 118:User/Src/command.c **** 	return 1;
+ 677              		.loc 1 118 10 view .LVU186
+ 678 00e4 2160     		str	r1, [r4]
+ 119:User/Src/command.c **** }
+ 679              		.loc 1 119 2 is_stmt 1 view .LVU187
+ 119:User/Src/command.c **** }
+ 680              		.loc 1 119 9 is_stmt 0 view .LVU188
+ 681 00e6 0120     		movs	r0, #1
+ 682              	.LVL63:
+ 683              	.L34:
+ 120:User/Src/command.c **** 
+ 684              		.loc 1 120 1 view .LVU189
+ 685 00e8 70BD     		pop	{r4, r5, r6, pc}
+ 120:User/Src/command.c **** 
+ 686              		.loc 1 120 1 view .LVU190
+ 687              		.cfi_endproc
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 20
+
+
+ 688              	.LFE70:
+ 690              		.section	.text.AT_FATFS_READ_Handle,"ax",%progbits
+ 691              		.align	1
+ 692              		.global	AT_FATFS_READ_Handle
+ 693              		.syntax unified
+ 694              		.thumb
+ 695              		.thumb_func
+ 697              	AT_FATFS_READ_Handle:
+ 698              	.LVL64:
+ 699              	.LFB77:
+ 238:User/Src/command.c **** void AT_FATFS_READ_Handle(char* command)
+ 239:User/Src/command.c **** {
+ 700              		.loc 1 239 1 is_stmt 1 view -0
+ 701              		.cfi_startproc
+ 702              		@ args = 0, pretend = 0, frame = 8
+ 703              		@ frame_needed = 0, uses_anonymous_args = 0
+ 704              		.loc 1 239 1 is_stmt 0 view .LVU192
+ 705 0000 00B5     		push	{lr}
+ 706              	.LCFI12:
+ 707              		.cfi_def_cfa_offset 4
+ 708              		.cfi_offset 14, -4
+ 709 0002 83B0     		sub	sp, sp, #12
+ 710              	.LCFI13:
+ 711              		.cfi_def_cfa_offset 16
+ 240:User/Src/command.c ****     int i=0;
+ 712              		.loc 1 240 5 is_stmt 1 view .LVU193
+ 713              		.loc 1 240 9 is_stmt 0 view .LVU194
+ 714 0004 0023     		movs	r3, #0
+ 715 0006 0193     		str	r3, [sp, #4]
+ 241:User/Src/command.c ****     CharToInt(command, 13, &i);
+ 716              		.loc 1 241 5 is_stmt 1 view .LVU195
+ 717 0008 01AA     		add	r2, sp, #4
+ 718 000a 0D21     		movs	r1, #13
+ 719 000c FFF7FEFF 		bl	CharToInt
+ 720              	.LVL65:
+ 242:User/Src/command.c **** 	
+ 243:User/Src/command.c ****     Fatfs_Read(i);
+ 721              		.loc 1 243 5 view .LVU196
+ 722 0010 0198     		ldr	r0, [sp, #4]
+ 723 0012 FFF7FEFF 		bl	Fatfs_Read
+ 724              	.LVL66:
+ 244:User/Src/command.c **** }
+ 725              		.loc 1 244 1 is_stmt 0 view .LVU197
+ 726 0016 03B0     		add	sp, sp, #12
+ 727              	.LCFI14:
+ 728              		.cfi_def_cfa_offset 4
+ 729              		@ sp needed
+ 730 0018 5DF804FB 		ldr	pc, [sp], #4
+ 731              		.cfi_endproc
+ 732              	.LFE77:
+ 734              		.global	__aeabi_fmul
+ 735              		.global	__aeabi_i2f
+ 736              		.global	__aeabi_fadd
+ 737              		.global	__aeabi_fsub
+ 738              		.global	__aeabi_f2d
+ 739              		.global	__aeabi_dmul
+ 740              		.global	__aeabi_d2f
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 21
+
+
+ 741              		.section	.text.CharToFloat,"ax",%progbits
+ 742              		.align	1
+ 743              		.global	CharToFloat
+ 744              		.syntax unified
+ 745              		.thumb
+ 746              		.thumb_func
+ 748              	CharToFloat:
+ 749              	.LVL67:
+ 750              	.LFB71:
+ 123:User/Src/command.c **** 		uint8_t length;
+ 751              		.loc 1 123 1 is_stmt 1 view -0
+ 752              		.cfi_startproc
+ 753              		@ args = 0, pretend = 0, frame = 0
+ 754              		@ frame_needed = 0, uses_anonymous_args = 0
+ 123:User/Src/command.c **** 		uint8_t length;
+ 755              		.loc 1 123 1 is_stmt 0 view .LVU199
+ 756 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 757              	.LCFI15:
+ 758              		.cfi_def_cfa_offset 32
+ 759              		.cfi_offset 4, -32
+ 760              		.cfi_offset 5, -28
+ 761              		.cfi_offset 6, -24
+ 762              		.cfi_offset 7, -20
+ 763              		.cfi_offset 8, -16
+ 764              		.cfi_offset 9, -12
+ 765              		.cfi_offset 10, -8
+ 766              		.cfi_offset 14, -4
+ 767 0004 8046     		mov	r8, r0
+ 768 0006 0C46     		mov	r4, r1
+ 769 0008 9146     		mov	r9, r2
+ 124:User/Src/command.c **** 		uint8_t i;
+ 770              		.loc 1 124 3 is_stmt 1 view .LVU200
+ 125:User/Src/command.c **** 		float sum = 0;
+ 771              		.loc 1 125 3 view .LVU201
+ 126:User/Src/command.c **** 		int state = 1;
+ 772              		.loc 1 126 3 view .LVU202
+ 773              	.LVL68:
+ 127:User/Src/command.c **** 		float smallNumber = 0.1;
+ 774              		.loc 1 127 3 view .LVU203
+ 128:User/Src/command.c **** 		length = strlen(source);
+ 775              		.loc 1 128 3 view .LVU204
+ 129:User/Src/command.c **** 		if (length <= start) {
+ 776              		.loc 1 129 3 view .LVU205
+ 129:User/Src/command.c **** 		if (length <= start) {
+ 777              		.loc 1 129 12 is_stmt 0 view .LVU206
+ 778 000a FFF7FEFF 		bl	strlen
+ 779              	.LVL69:
+ 129:User/Src/command.c **** 		if (length <= start) {
+ 780              		.loc 1 129 10 view .LVU207
+ 781 000e C7B2     		uxtb	r7, r0
+ 782              	.LVL70:
+ 130:User/Src/command.c **** 				*number = 0;
+ 783              		.loc 1 130 3 is_stmt 1 view .LVU208
+ 130:User/Src/command.c **** 				*number = 0;
+ 784              		.loc 1 130 6 is_stmt 0 view .LVU209
+ 785 0010 A742     		cmp	r7, r4
+ 786 0012 21D9     		bls	.L71
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 22
+
+
+ 135:User/Src/command.c **** 				state = -1;
+ 787              		.loc 1 135 3 is_stmt 1 view .LVU210
+ 135:User/Src/command.c **** 				state = -1;
+ 788              		.loc 1 135 13 is_stmt 0 view .LVU211
+ 789 0014 18F80430 		ldrb	r3, [r8, r4]	@ zero_extendqisi2
+ 135:User/Src/command.c **** 				state = -1;
+ 790              		.loc 1 135 6 view .LVU212
+ 791 0018 2D2B     		cmp	r3, #45
+ 792 001a 22D0     		beq	.L72
+ 127:User/Src/command.c **** 		float smallNumber = 0.1;
+ 793              		.loc 1 127 7 view .LVU213
+ 794 001c 4FF0010A 		mov	r10, #1
+ 795              	.LVL71:
+ 796              	.L59:
+ 139:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 797              		.loc 1 139 3 is_stmt 1 view .LVU214
+ 126:User/Src/command.c **** 		int state = 1;
+ 798              		.loc 1 126 9 is_stmt 0 view .LVU215
+ 799 0020 0025     		movs	r5, #0
+ 800              	.LVL72:
+ 801              	.L60:
+ 139:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 802              		.loc 1 139 19 is_stmt 1 discriminator 1 view .LVU216
+ 139:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 803              		.loc 1 139 3 is_stmt 0 discriminator 1 view .LVU217
+ 804 0022 BC42     		cmp	r4, r7
+ 805 0024 2FD2     		bcs	.L64
+ 140:User/Src/command.c **** 						sum = sum * 10 + source[i] - '0';
+ 806              		.loc 1 140 5 is_stmt 1 view .LVU218
+ 140:User/Src/command.c **** 						sum = sum * 10 + source[i] - '0';
+ 807              		.loc 1 140 15 is_stmt 0 view .LVU219
+ 808 0026 18F80460 		ldrb	r6, [r8, r4]	@ zero_extendqisi2
+ 140:User/Src/command.c **** 						sum = sum * 10 + source[i] - '0';
+ 809              		.loc 1 140 26 view .LVU220
+ 810 002a A6F13003 		sub	r3, r6, #48
+ 811 002e DBB2     		uxtb	r3, r3
+ 140:User/Src/command.c **** 						sum = sum * 10 + source[i] - '0';
+ 812              		.loc 1 140 8 view .LVU221
+ 813 0030 092B     		cmp	r3, #9
+ 814 0032 1BD8     		bhi	.L61
+ 141:User/Src/command.c **** 				} else if (source[i] == '.') {
+ 815              		.loc 1 141 7 is_stmt 1 view .LVU222
+ 141:User/Src/command.c **** 				} else if (source[i] == '.') {
+ 816              		.loc 1 141 17 is_stmt 0 view .LVU223
+ 817 0034 3249     		ldr	r1, .L75+8
+ 818 0036 2846     		mov	r0, r5
+ 819 0038 FFF7FEFF 		bl	__aeabi_fmul
+ 820              	.LVL73:
+ 821 003c 0546     		mov	r5, r0
+ 822              	.LVL74:
+ 141:User/Src/command.c **** 				} else if (source[i] == '.') {
+ 823              		.loc 1 141 22 view .LVU224
+ 824 003e 3046     		mov	r0, r6
+ 825 0040 FFF7FEFF 		bl	__aeabi_i2f
+ 826              	.LVL75:
+ 827 0044 2946     		mov	r1, r5
+ 828 0046 FFF7FEFF 		bl	__aeabi_fadd
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 23
+
+
+ 829              	.LVL76:
+ 141:User/Src/command.c **** 				} else if (source[i] == '.') {
+ 830              		.loc 1 141 11 view .LVU225
+ 831 004a 2E49     		ldr	r1, .L75+12
+ 832 004c FFF7FEFF 		bl	__aeabi_fsub
+ 833              	.LVL77:
+ 834 0050 0546     		mov	r5, r0
+ 835              	.LVL78:
+ 139:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 836              		.loc 1 139 31 is_stmt 1 view .LVU226
+ 139:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 837              		.loc 1 139 32 is_stmt 0 view .LVU227
+ 838 0052 0134     		adds	r4, r4, #1
+ 839              	.LVL79:
+ 139:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 840              		.loc 1 139 32 view .LVU228
+ 841 0054 E4B2     		uxtb	r4, r4
+ 842              	.LVL80:
+ 139:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 843              		.loc 1 139 32 view .LVU229
+ 844 0056 E4E7     		b	.L60
+ 845              	.LVL81:
+ 846              	.L71:
+ 131:User/Src/command.c **** 				return 0;
+ 847              		.loc 1 131 5 is_stmt 1 view .LVU230
+ 131:User/Src/command.c **** 				return 0;
+ 848              		.loc 1 131 13 is_stmt 0 view .LVU231
+ 849 0058 0023     		movs	r3, #0
+ 850 005a C9F80030 		str	r3, [r9]	@ float
+ 132:User/Src/command.c **** 		}
+ 851              		.loc 1 132 5 is_stmt 1 view .LVU232
+ 132:User/Src/command.c **** 		}
+ 852              		.loc 1 132 12 is_stmt 0 view .LVU233
+ 853 005e 0020     		movs	r0, #0
+ 854 0060 46E0     		b	.L58
+ 855              	.L72:
+ 136:User/Src/command.c **** 				start++;
+ 856              		.loc 1 136 5 is_stmt 1 view .LVU234
+ 857              	.LVL82:
+ 137:User/Src/command.c **** 		}
+ 858              		.loc 1 137 5 view .LVU235
+ 137:User/Src/command.c **** 		}
+ 859              		.loc 1 137 10 is_stmt 0 view .LVU236
+ 860 0062 0134     		adds	r4, r4, #1
+ 861 0064 E4B2     		uxtb	r4, r4
+ 862              	.LVL83:
+ 136:User/Src/command.c **** 				start++;
+ 863              		.loc 1 136 11 view .LVU237
+ 864 0066 4FF0FF3A 		mov	r10, #-1
+ 865 006a D9E7     		b	.L59
+ 866              	.LVL84:
+ 867              	.L61:
+ 142:User/Src/command.c **** 						i++;
+ 868              		.loc 1 142 12 is_stmt 1 view .LVU238
+ 142:User/Src/command.c **** 						i++;
+ 869              		.loc 1 142 15 is_stmt 0 view .LVU239
+ 870 006c 2E2E     		cmp	r6, #46
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 24
+
+
+ 871 006e 08D0     		beq	.L73
+ 145:User/Src/command.c **** 						break;
+ 872              		.loc 1 145 12 is_stmt 1 view .LVU240
+ 145:User/Src/command.c **** 						break;
+ 873              		.loc 1 145 15 is_stmt 0 view .LVU241
+ 874 0070 202E     		cmp	r6, #32
+ 875 0072 08D0     		beq	.L64
+ 145:User/Src/command.c **** 						break;
+ 876              		.loc 1 145 33 discriminator 1 view .LVU242
+ 877 0074 2C2E     		cmp	r6, #44
+ 878 0076 06D0     		beq	.L64
+ 148:User/Src/command.c **** 						return 0;
+ 879              		.loc 1 148 7 is_stmt 1 view .LVU243
+ 148:User/Src/command.c **** 						return 0;
+ 880              		.loc 1 148 15 is_stmt 0 view .LVU244
+ 881 0078 0023     		movs	r3, #0
+ 882 007a C9F80030 		str	r3, [r9]	@ float
+ 149:User/Src/command.c **** 				}					
+ 883              		.loc 1 149 7 is_stmt 1 view .LVU245
+ 149:User/Src/command.c **** 				}					
+ 884              		.loc 1 149 14 is_stmt 0 view .LVU246
+ 885 007e 0020     		movs	r0, #0
+ 886 0080 36E0     		b	.L58
+ 887              	.L73:
+ 143:User/Src/command.c **** 						break;
+ 888              		.loc 1 143 7 is_stmt 1 view .LVU247
+ 143:User/Src/command.c **** 						break;
+ 889              		.loc 1 143 8 is_stmt 0 view .LVU248
+ 890 0082 0134     		adds	r4, r4, #1
+ 891              	.LVL85:
+ 143:User/Src/command.c **** 						break;
+ 892              		.loc 1 143 8 view .LVU249
+ 893 0084 E4B2     		uxtb	r4, r4
+ 894              	.LVL86:
+ 144:User/Src/command.c **** 				} else if (source[i] == ' ' || source[i] == ',') {
+ 895              		.loc 1 144 7 is_stmt 1 view .LVU250
+ 896              	.L64:
+ 126:User/Src/command.c **** 		int state = 1;
+ 897              		.loc 1 126 9 is_stmt 0 discriminator 1 view .LVU251
+ 898 0086 204E     		ldr	r6, .L75+16
+ 899 0088 17E0     		b	.L63
+ 900              	.LVL87:
+ 901              	.L74:
+ 154:User/Src/command.c **** 						smallNumber = smallNumber * 0.1;
+ 902              		.loc 1 154 7 is_stmt 1 view .LVU252
+ 154:User/Src/command.c **** 						smallNumber = smallNumber * 0.1;
+ 903              		.loc 1 154 26 is_stmt 0 view .LVU253
+ 904 008a 3038     		subs	r0, r0, #48
+ 905 008c FFF7FEFF 		bl	__aeabi_i2f
+ 906              	.LVL88:
+ 907 0090 3146     		mov	r1, r6
+ 908 0092 FFF7FEFF 		bl	__aeabi_fmul
+ 909              	.LVL89:
+ 910 0096 0146     		mov	r1, r0
+ 154:User/Src/command.c **** 						smallNumber = smallNumber * 0.1;
+ 911              		.loc 1 154 11 view .LVU254
+ 912 0098 2846     		mov	r0, r5
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 25
+
+
+ 913 009a FFF7FEFF 		bl	__aeabi_fadd
+ 914              	.LVL90:
+ 915 009e 0546     		mov	r5, r0
+ 916              	.LVL91:
+ 155:User/Src/command.c **** 				} else if (source[i] == ' ' || source[i] == ',') {
+ 917              		.loc 1 155 7 is_stmt 1 view .LVU255
+ 155:User/Src/command.c **** 				} else if (source[i] == ' ' || source[i] == ',') {
+ 918              		.loc 1 155 33 is_stmt 0 view .LVU256
+ 919 00a0 3046     		mov	r0, r6
+ 920              	.LVL92:
+ 155:User/Src/command.c **** 				} else if (source[i] == ' ' || source[i] == ',') {
+ 921              		.loc 1 155 33 view .LVU257
+ 922 00a2 FFF7FEFF 		bl	__aeabi_f2d
+ 923              	.LVL93:
+ 924 00a6 14A3     		adr	r3, .L75
+ 925 00a8 D3E90023 		ldrd	r2, [r3]
+ 926 00ac FFF7FEFF 		bl	__aeabi_dmul
+ 927              	.LVL94:
+ 155:User/Src/command.c **** 				} else if (source[i] == ' ' || source[i] == ',') {
+ 928              		.loc 1 155 19 view .LVU258
+ 929 00b0 FFF7FEFF 		bl	__aeabi_d2f
+ 930              	.LVL95:
+ 931 00b4 0646     		mov	r6, r0
+ 932              	.LVL96:
+ 152:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 933              		.loc 1 152 22 is_stmt 1 view .LVU259
+ 152:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 934              		.loc 1 152 23 is_stmt 0 view .LVU260
+ 935 00b6 0134     		adds	r4, r4, #1
+ 936              	.LVL97:
+ 152:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 937              		.loc 1 152 23 view .LVU261
+ 938 00b8 E4B2     		uxtb	r4, r4
+ 939              	.LVL98:
+ 940              	.L63:
+ 152:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 941              		.loc 1 152 10 is_stmt 1 discriminator 1 view .LVU262
+ 152:User/Src/command.c **** 				if (source[i] >= '0' && source[i] <= '9') {
+ 942              		.loc 1 152 3 is_stmt 0 discriminator 1 view .LVU263
+ 943 00ba BC42     		cmp	r4, r7
+ 944 00bc 0FD2     		bcs	.L67
+ 153:User/Src/command.c **** 						sum += smallNumber * (source[i] - '0');
+ 945              		.loc 1 153 5 is_stmt 1 view .LVU264
+ 153:User/Src/command.c **** 						sum += smallNumber * (source[i] - '0');
+ 946              		.loc 1 153 15 is_stmt 0 view .LVU265
+ 947 00be 18F80400 		ldrb	r0, [r8, r4]	@ zero_extendqisi2
+ 153:User/Src/command.c **** 						sum += smallNumber * (source[i] - '0');
+ 948              		.loc 1 153 26 view .LVU266
+ 949 00c2 A0F13003 		sub	r3, r0, #48
+ 950 00c6 DBB2     		uxtb	r3, r3
+ 153:User/Src/command.c **** 						sum += smallNumber * (source[i] - '0');
+ 951              		.loc 1 153 8 view .LVU267
+ 952 00c8 092B     		cmp	r3, #9
+ 953 00ca DED9     		bls	.L74
+ 156:User/Src/command.c **** 						break;
+ 954              		.loc 1 156 12 is_stmt 1 view .LVU268
+ 156:User/Src/command.c **** 						break;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 26
+
+
+ 955              		.loc 1 156 15 is_stmt 0 view .LVU269
+ 956 00cc 2028     		cmp	r0, #32
+ 957 00ce 06D0     		beq	.L67
+ 156:User/Src/command.c **** 						break;
+ 958              		.loc 1 156 33 discriminator 1 view .LVU270
+ 959 00d0 2C28     		cmp	r0, #44
+ 960 00d2 04D0     		beq	.L67
+ 159:User/Src/command.c **** 						return 0;
+ 961              		.loc 1 159 7 is_stmt 1 view .LVU271
+ 159:User/Src/command.c **** 						return 0;
+ 962              		.loc 1 159 15 is_stmt 0 view .LVU272
+ 963 00d4 0023     		movs	r3, #0
+ 964 00d6 C9F80030 		str	r3, [r9]	@ float
+ 160:User/Src/command.c **** 				}	
+ 965              		.loc 1 160 7 is_stmt 1 view .LVU273
+ 160:User/Src/command.c **** 				}	
+ 966              		.loc 1 160 14 is_stmt 0 view .LVU274
+ 967 00da 0020     		movs	r0, #0
+ 968 00dc 08E0     		b	.L58
+ 969              	.L67:
+ 163:User/Src/command.c **** 		return 1;
+ 970              		.loc 1 163 3 is_stmt 1 view .LVU275
+ 163:User/Src/command.c **** 		return 1;
+ 971              		.loc 1 163 19 is_stmt 0 view .LVU276
+ 972 00de 5046     		mov	r0, r10
+ 973 00e0 FFF7FEFF 		bl	__aeabi_i2f
+ 974              	.LVL99:
+ 975 00e4 2946     		mov	r1, r5
+ 976 00e6 FFF7FEFF 		bl	__aeabi_fmul
+ 977              	.LVL100:
+ 163:User/Src/command.c **** 		return 1;
+ 978              		.loc 1 163 11 view .LVU277
+ 979 00ea C9F80000 		str	r0, [r9]	@ float
+ 164:User/Src/command.c **** }
+ 980              		.loc 1 164 3 is_stmt 1 view .LVU278
+ 164:User/Src/command.c **** }
+ 981              		.loc 1 164 10 is_stmt 0 view .LVU279
+ 982 00ee 0120     		movs	r0, #1
+ 983              	.LVL101:
+ 984              	.L58:
+ 165:User/Src/command.c **** 
+ 985              		.loc 1 165 1 view .LVU280
+ 986 00f0 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 987              	.LVL102:
+ 988              	.L76:
+ 165:User/Src/command.c **** 
+ 989              		.loc 1 165 1 view .LVU281
+ 990 00f4 AFF30080 		.align	3
+ 991              	.L75:
+ 992 00f8 9A999999 		.word	-1717986918
+ 993 00fc 9999B93F 		.word	1069128089
+ 994 0100 00002041 		.word	1092616192
+ 995 0104 00004042 		.word	1111490560
+ 996 0108 CDCCCC3D 		.word	1036831949
+ 997              		.cfi_endproc
+ 998              	.LFE71:
+ 1000              		.section	.rodata.Data_copy_from_pos.str1.4,"aMS",%progbits,1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 27
+
+
+ 1001              		.align	2
+ 1002              	.LC4:
+ 1003 0000 6572726F 		.ascii	"error pointer null !\012\000"
+ 1003      7220706F 
+ 1003      696E7465 
+ 1003      72206E75 
+ 1003      6C6C2021 
+ 1004 0016 0000     		.align	2
+ 1005              	.LC5:
+ 1006 0018 6572726F 		.ascii	"error start len ng ! src_len:%d,start:%d\012\000"
+ 1006      72207374 
+ 1006      61727420 
+ 1006      6C656E20 
+ 1006      6E672021 
+ 1007 0042 0000     		.align	2
+ 1008              	.LC6:
+ 1009 0044 6572726F 		.ascii	"error copy_len ! left_len:%d,copy_len:%d\012\000"
+ 1009      7220636F 
+ 1009      70795F6C 
+ 1009      656E2021 
+ 1009      206C6566 
+ 1010              		.section	.text.Data_copy_from_pos,"ax",%progbits
+ 1011              		.align	1
+ 1012              		.global	Data_copy_from_pos
+ 1013              		.syntax unified
+ 1014              		.thumb
+ 1015              		.thumb_func
+ 1017              	Data_copy_from_pos:
+ 1018              	.LVL103:
+ 1019              	.LFB72:
+ 175:User/Src/command.c ****     // 1. 安全校验：空指针检查
+ 1020              		.loc 1 175 96 is_stmt 1 view -0
+ 1021              		.cfi_startproc
+ 1022              		@ args = 0, pretend = 0, frame = 0
+ 1023              		@ frame_needed = 0, uses_anonymous_args = 0
+ 175:User/Src/command.c ****     // 1. 安全校验：空指针检查
+ 1024              		.loc 1 175 96 is_stmt 0 view .LVU283
+ 1025 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 1026              	.LCFI16:
+ 1027              		.cfi_def_cfa_offset 24
+ 1028              		.cfi_offset 3, -24
+ 1029              		.cfi_offset 4, -20
+ 1030              		.cfi_offset 5, -16
+ 1031              		.cfi_offset 6, -12
+ 1032              		.cfi_offset 7, -8
+ 1033              		.cfi_offset 14, -4
+ 177:User/Src/command.c ****         UsbPrintf("error pointer null !\n");
+ 1034              		.loc 1 177 5 is_stmt 1 view .LVU284
+ 177:User/Src/command.c ****         UsbPrintf("error pointer null !\n");
+ 1035              		.loc 1 177 8 is_stmt 0 view .LVU285
+ 1036 0002 78B1     		cbz	r0, .L78
+ 1037 0004 0D46     		mov	r5, r1
+ 1038 0006 1646     		mov	r6, r2
+ 1039 0008 1C46     		mov	r4, r3
+ 1040 000a 0746     		mov	r7, r0
+ 177:User/Src/command.c ****         UsbPrintf("error pointer null !\n");
+ 1041              		.loc 1 177 22 discriminator 1 view .LVU286
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 28
+
+
+ 1042 000c 51B1     		cbz	r1, .L78
+ 183:User/Src/command.c ****     if (start_pos < 0 || start_pos >= src_len) {
+ 1043              		.loc 1 183 5 is_stmt 1 view .LVU287
+ 183:User/Src/command.c ****     if (start_pos < 0 || start_pos >= src_len) {
+ 1044              		.loc 1 183 19 is_stmt 0 view .LVU288
+ 1045 000e 0846     		mov	r0, r1
+ 1046              	.LVL104:
+ 183:User/Src/command.c ****     if (start_pos < 0 || start_pos >= src_len) {
+ 1047              		.loc 1 183 19 view .LVU289
+ 1048 0010 FFF7FEFF 		bl	strlen
+ 1049              	.LVL105:
+ 184:User/Src/command.c ****         UsbPrintf("error start len ng ! src_len:%d,start:%d\n", src_len, start_pos);
+ 1050              		.loc 1 184 5 is_stmt 1 view .LVU290
+ 184:User/Src/command.c ****         UsbPrintf("error start len ng ! src_len:%d,start:%d\n", src_len, start_pos);
+ 1051              		.loc 1 184 8 is_stmt 0 view .LVU291
+ 1052 0014 8642     		cmp	r6, r0
+ 1053 0016 0ADA     		bge	.L86
+ 190:User/Src/command.c ****         UsbPrintf("error copy_len ! left_len:%d,copy_len:%d\n", src_len - start_pos, copy_len);
+ 1054              		.loc 1 190 5 is_stmt 1 view .LVU292
+ 190:User/Src/command.c ****         UsbPrintf("error copy_len ! left_len:%d,copy_len:%d\n", src_len - start_pos, copy_len);
+ 1055              		.loc 1 190 36 is_stmt 0 view .LVU293
+ 1056 0018 3319     		adds	r3, r6, r4
+ 190:User/Src/command.c ****         UsbPrintf("error copy_len ! left_len:%d,copy_len:%d\n", src_len - start_pos, copy_len);
+ 1057              		.loc 1 190 8 view .LVU294
+ 1058 001a 8342     		cmp	r3, r0
+ 1059 001c 0EDC     		bgt	.L87
+ 1060              	.LBB2:
+ 196:User/Src/command.c ****         dest[i] = src[start_pos + i];
+ 1061              		.loc 1 196 14 view .LVU295
+ 1062 001e 4FF0000C 		mov	ip, #0
+ 1063 0022 19E0     		b	.L82
+ 1064              	.LVL106:
+ 1065              	.L78:
+ 196:User/Src/command.c ****         dest[i] = src[start_pos + i];
+ 1066              		.loc 1 196 14 view .LVU296
+ 1067              	.LBE2:
+ 178:User/Src/command.c ****         return 0;
+ 1068              		.loc 1 178 9 is_stmt 1 view .LVU297
+ 1069 0024 0F48     		ldr	r0, .L88
+ 1070              	.LVL107:
+ 178:User/Src/command.c ****         return 0;
+ 1071              		.loc 1 178 9 is_stmt 0 view .LVU298
+ 1072 0026 FFF7FEFF 		bl	UsbPrintf
+ 1073              	.LVL108:
+ 179:User/Src/command.c ****     }
+ 1074              		.loc 1 179 9 is_stmt 1 view .LVU299
+ 179:User/Src/command.c ****     }
+ 1075              		.loc 1 179 16 is_stmt 0 view .LVU300
+ 1076 002a 0020     		movs	r0, #0
+ 1077 002c 19E0     		b	.L80
+ 1078              	.LVL109:
+ 1079              	.L86:
+ 185:User/Src/command.c ****         return 0;
+ 1080              		.loc 1 185 9 is_stmt 1 view .LVU301
+ 1081 002e 3246     		mov	r2, r6
+ 1082 0030 0146     		mov	r1, r0
+ 1083 0032 0D48     		ldr	r0, .L88+4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 29
+
+
+ 1084              	.LVL110:
+ 185:User/Src/command.c ****         return 0;
+ 1085              		.loc 1 185 9 is_stmt 0 view .LVU302
+ 1086 0034 FFF7FEFF 		bl	UsbPrintf
+ 1087              	.LVL111:
+ 186:User/Src/command.c ****     }
+ 1088              		.loc 1 186 9 is_stmt 1 view .LVU303
+ 186:User/Src/command.c ****     }
+ 1089              		.loc 1 186 16 is_stmt 0 view .LVU304
+ 1090 0038 0020     		movs	r0, #0
+ 1091 003a 12E0     		b	.L80
+ 1092              	.LVL112:
+ 1093              	.L87:
+ 191:User/Src/command.c ****         return 0;
+ 1094              		.loc 1 191 9 is_stmt 1 view .LVU305
+ 1095 003c 2246     		mov	r2, r4
+ 1096 003e 811B     		subs	r1, r0, r6
+ 1097 0040 0A48     		ldr	r0, .L88+8
+ 1098              	.LVL113:
+ 191:User/Src/command.c ****         return 0;
+ 1099              		.loc 1 191 9 is_stmt 0 view .LVU306
+ 1100 0042 FFF7FEFF 		bl	UsbPrintf
+ 1101              	.LVL114:
+ 192:User/Src/command.c ****     }
+ 1102              		.loc 1 192 9 is_stmt 1 view .LVU307
+ 192:User/Src/command.c ****     }
+ 1103              		.loc 1 192 16 is_stmt 0 view .LVU308
+ 1104 0046 0020     		movs	r0, #0
+ 1105 0048 0BE0     		b	.L80
+ 1106              	.LVL115:
+ 1107              	.L83:
+ 1108              	.LBB3:
+ 197:User/Src/command.c ****     }
+ 1109              		.loc 1 197 9 is_stmt 1 discriminator 3 view .LVU309
+ 197:User/Src/command.c ****     }
+ 1110              		.loc 1 197 33 is_stmt 0 discriminator 3 view .LVU310
+ 1111 004a 06EB0C03 		add	r3, r6, ip
+ 197:User/Src/command.c ****     }
+ 1112              		.loc 1 197 22 discriminator 3 view .LVU311
+ 1113 004e EB5C     		ldrb	r3, [r5, r3]	@ zero_extendqisi2
+ 197:User/Src/command.c ****     }
+ 1114              		.loc 1 197 17 discriminator 3 view .LVU312
+ 1115 0050 07F80C30 		strb	r3, [r7, ip]
+ 196:User/Src/command.c ****         dest[i] = src[start_pos + i];
+ 1116              		.loc 1 196 35 is_stmt 1 discriminator 3 view .LVU313
+ 196:User/Src/command.c ****         dest[i] = src[start_pos + i];
+ 1117              		.loc 1 196 36 is_stmt 0 discriminator 3 view .LVU314
+ 1118 0054 0CF1010C 		add	ip, ip, #1
+ 1119              	.LVL116:
+ 1120              	.L82:
+ 196:User/Src/command.c ****         dest[i] = src[start_pos + i];
+ 1121              		.loc 1 196 21 is_stmt 1 discriminator 1 view .LVU315
+ 196:User/Src/command.c ****         dest[i] = src[start_pos + i];
+ 1122              		.loc 1 196 5 is_stmt 0 discriminator 1 view .LVU316
+ 1123 0058 6445     		cmp	r4, ip
+ 1124 005a F6DC     		bgt	.L83
+ 1125              	.LBE3:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 30
+
+
+ 201:User/Src/command.c **** 
+ 1126              		.loc 1 201 5 is_stmt 1 view .LVU317
+ 201:User/Src/command.c **** 
+ 1127              		.loc 1 201 20 is_stmt 0 view .LVU318
+ 1128 005c 0023     		movs	r3, #0
+ 1129 005e 3B55     		strb	r3, [r7, r4]
+ 203:User/Src/command.c **** }
+ 1130              		.loc 1 203 5 is_stmt 1 view .LVU319
+ 203:User/Src/command.c **** }
+ 1131              		.loc 1 203 12 is_stmt 0 view .LVU320
+ 1132 0060 0120     		movs	r0, #1
+ 1133              	.LVL117:
+ 1134              	.L80:
+ 204:User/Src/command.c **** 
+ 1135              		.loc 1 204 1 view .LVU321
+ 1136 0062 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 1137              	.L89:
+ 1138              		.align	2
+ 1139              	.L88:
+ 1140 0064 00000000 		.word	.LC4
+ 1141 0068 18000000 		.word	.LC5
+ 1142 006c 44000000 		.word	.LC6
+ 1143              		.cfi_endproc
+ 1144              	.LFE72:
+ 1146              		.section	.rodata.CheckCommandList.str1.4,"aMS",%progbits,1
+ 1147              		.align	2
+ 1148              	.LC7:
+ 1149 0000 0A4E6F20 		.ascii	"\012No this commmand !\012\000"
+ 1149      74686973 
+ 1149      20636F6D 
+ 1149      6D6D616E 
+ 1149      6420210A 
+ 1150              		.section	.text.CheckCommandList,"ax",%progbits
+ 1151              		.align	1
+ 1152              		.global	CheckCommandList
+ 1153              		.syntax unified
+ 1154              		.thumb
+ 1155              		.thumb_func
+ 1157              	CheckCommandList:
+ 1158              	.LFB78:
+ 245:User/Src/command.c **** 
+ 246:User/Src/command.c **** typedef void(*function)(char* s);
+ 247:User/Src/command.c **** function UsbCommand[MAX_COMMAND_NUMBER] = {
+ 248:User/Src/command.c ****     AT_HELP_Handle,
+ 249:User/Src/command.c ****     AT_TEST_Handle,
+ 250:User/Src/command.c **** 	AT_FATFS_MOUNT_Handle,
+ 251:User/Src/command.c ****     AT_FATFS_WRITE_Handle,
+ 252:User/Src/command.c ****     AT_FATFS_READ_Handle,
+ 253:User/Src/command.c ****     
+ 254:User/Src/command.c **** };
+ 255:User/Src/command.c **** 
+ 256:User/Src/command.c **** 
+ 257:User/Src/command.c **** //DMA处理命令
+ 258:User/Src/command.c **** void CheckCommandList(void)
+ 259:User/Src/command.c **** {
+ 1159              		.loc 1 259 1 is_stmt 1 view -0
+ 1160              		.cfi_startproc
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 31
+
+
+ 1161              		@ args = 0, pretend = 0, frame = 0
+ 1162              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1163 0000 38B5     		push	{r3, r4, r5, lr}
+ 1164              	.LCFI17:
+ 1165              		.cfi_def_cfa_offset 16
+ 1166              		.cfi_offset 3, -16
+ 1167              		.cfi_offset 4, -12
+ 1168              		.cfi_offset 5, -8
+ 1169              		.cfi_offset 14, -4
+ 260:User/Src/command.c ****     uint8_t i;
+ 1170              		.loc 1 260 5 view .LVU323
+ 261:User/Src/command.c ****     static uint16_t usbTick = 0;
+ 1171              		.loc 1 261 5 view .LVU324
+ 262:User/Src/command.c ****     static uint16_t lastUsbRx = 0;
+ 1172              		.loc 1 262 5 view .LVU325
+ 263:User/Src/command.c ****     if (g_usart1_rx_done == 0 && g_usart1_rx_len == 0) {
+ 1173              		.loc 1 263 5 view .LVU326
+ 1174              		.loc 1 263 26 is_stmt 0 view .LVU327
+ 1175 0002 2C4B     		ldr	r3, .L106
+ 1176 0004 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1177              		.loc 1 263 8 view .LVU328
+ 1178 0006 1BB9     		cbnz	r3, .L91
+ 1179              		.loc 1 263 50 discriminator 1 view .LVU329
+ 1180 0008 2B4B     		ldr	r3, .L106+4
+ 1181 000a 1B88     		ldrh	r3, [r3]
+ 1182 000c 9BB2     		uxth	r3, r3
+ 1183              		.loc 1 263 31 discriminator 1 view .LVU330
+ 1184 000e C3B1     		cbz	r3, .L104
+ 1185              	.L91:
+ 264:User/Src/command.c ****         usbTick = 0;
+ 265:User/Src/command.c ****         lastUsbRx = 0;
+ 266:User/Src/command.c ****         return;
+ 267:User/Src/command.c ****     }
+ 268:User/Src/command.c ****     if (g_usart1_rx_len > lastUsbRx) {
+ 1186              		.loc 1 268 5 is_stmt 1 view .LVU331
+ 1187              		.loc 1 268 25 is_stmt 0 view .LVU332
+ 1188 0010 294B     		ldr	r3, .L106+4
+ 1189 0012 1B88     		ldrh	r3, [r3]
+ 1190 0014 9BB2     		uxth	r3, r3
+ 1191 0016 294A     		ldr	r2, .L106+8
+ 1192 0018 1288     		ldrh	r2, [r2]
+ 1193              		.loc 1 268 8 view .LVU333
+ 1194 001a 9342     		cmp	r3, r2
+ 1195 001c 16D9     		bls	.L93
+ 269:User/Src/command.c ****         lastUsbRx = g_usart1_rx_len;
+ 1196              		.loc 1 269 9 is_stmt 1 view .LVU334
+ 1197              		.loc 1 269 19 is_stmt 0 view .LVU335
+ 1198 001e 264B     		ldr	r3, .L106+4
+ 1199 0020 1A88     		ldrh	r2, [r3]
+ 1200 0022 264B     		ldr	r3, .L106+8
+ 1201 0024 1A80     		strh	r2, [r3]	@ movhi
+ 270:User/Src/command.c ****         usbTick = 0;
+ 1202              		.loc 1 270 9 is_stmt 1 view .LVU336
+ 1203              		.loc 1 270 17 is_stmt 0 view .LVU337
+ 1204 0026 264B     		ldr	r3, .L106+12
+ 1205 0028 0022     		movs	r2, #0
+ 1206 002a 1A80     		strh	r2, [r3]	@ movhi
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 32
+
+
+ 1207              	.L94:
+ 271:User/Src/command.c ****     } else {
+ 272:User/Src/command.c ****         usbTick++;
+ 273:User/Src/command.c ****     }
+ 274:User/Src/command.c ****     if (usbTick >= USB_UART_TICK_CLEAR || g_usart1_rx_done == 1) {
+ 1208              		.loc 1 274 5 is_stmt 1 view .LVU338
+ 1209              		.loc 1 274 17 is_stmt 0 view .LVU339
+ 1210 002c 244B     		ldr	r3, .L106+12
+ 1211 002e 1B88     		ldrh	r3, [r3]
+ 1212              		.loc 1 274 8 view .LVU340
+ 1213 0030 632B     		cmp	r3, #99
+ 1214 0032 38D8     		bhi	.L101
+ 1215              		.loc 1 274 60 discriminator 1 view .LVU341
+ 1216 0034 1F4B     		ldr	r3, .L106
+ 1217 0036 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1218 0038 DBB2     		uxtb	r3, r3
+ 1219              		.loc 1 274 40 discriminator 1 view .LVU342
+ 1220 003a 012B     		cmp	r3, #1
+ 1221 003c 32D1     		bne	.L90
+ 1222 003e 0024     		movs	r4, #0
+ 1223 0040 0BE0     		b	.L98
+ 1224              	.L104:
+ 264:User/Src/command.c ****         lastUsbRx = 0;
+ 1225              		.loc 1 264 9 is_stmt 1 view .LVU343
+ 264:User/Src/command.c ****         lastUsbRx = 0;
+ 1226              		.loc 1 264 17 is_stmt 0 view .LVU344
+ 1227 0042 1F4A     		ldr	r2, .L106+12
+ 1228 0044 1380     		strh	r3, [r2]	@ movhi
+ 265:User/Src/command.c ****         return;
+ 1229              		.loc 1 265 9 is_stmt 1 view .LVU345
+ 265:User/Src/command.c ****         return;
+ 1230              		.loc 1 265 19 is_stmt 0 view .LVU346
+ 1231 0046 1D4A     		ldr	r2, .L106+8
+ 1232 0048 1380     		strh	r3, [r2]	@ movhi
+ 266:User/Src/command.c ****     }
+ 1233              		.loc 1 266 9 is_stmt 1 view .LVU347
+ 1234 004a 2BE0     		b	.L90
+ 1235              	.L93:
+ 272:User/Src/command.c ****     }
+ 1236              		.loc 1 272 9 view .LVU348
+ 272:User/Src/command.c ****     }
+ 1237              		.loc 1 272 16 is_stmt 0 view .LVU349
+ 1238 004c 1C4A     		ldr	r2, .L106+12
+ 1239 004e 1388     		ldrh	r3, [r2]
+ 1240 0050 0133     		adds	r3, r3, #1
+ 1241 0052 1380     		strh	r3, [r2]	@ movhi
+ 1242 0054 EAE7     		b	.L94
+ 1243              	.LVL118:
+ 1244              	.L96:
+ 275:User/Src/command.c ****         for (i = 0; i < MAX_COMMAND_NUMBER; i++) {
+ 1245              		.loc 1 275 45 is_stmt 1 discriminator 2 view .LVU350
+ 1246              		.loc 1 275 46 is_stmt 0 discriminator 2 view .LVU351
+ 1247 0056 0134     		adds	r4, r4, #1
+ 1248              	.LVL119:
+ 1249              		.loc 1 275 46 discriminator 2 view .LVU352
+ 1250 0058 E4B2     		uxtb	r4, r4
+ 1251              	.LVL120:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 33
+
+
+ 1252              	.L98:
+ 1253              		.loc 1 275 21 is_stmt 1 discriminator 1 view .LVU353
+ 1254              		.loc 1 275 9 is_stmt 0 discriminator 1 view .LVU354
+ 1255 005a 272C     		cmp	r4, #39
+ 1256 005c 12D8     		bhi	.L97
+ 276:User/Src/command.c ****             if (strlen(CommandList[i]) > 0 && strSearch((char*)g_usart1_dma_rx_buff, CommandList[i]
+ 1257              		.loc 1 276 13 is_stmt 1 view .LVU355
+ 1258              		.loc 1 276 35 is_stmt 0 view .LVU356
+ 1259 005e 194B     		ldr	r3, .L106+16
+ 1260 0060 04EB8402 		add	r2, r4, r4, lsl #2
+ 1261 0064 03EB8201 		add	r1, r3, r2, lsl #2
+ 1262              		.loc 1 276 40 view .LVU357
+ 1263 0068 13F82230 		ldrb	r3, [r3, r2, lsl #2]	@ zero_extendqisi2
+ 1264              		.loc 1 276 16 view .LVU358
+ 1265 006c 002B     		cmp	r3, #0
+ 1266 006e F2D0     		beq	.L96
+ 1267              		.loc 1 276 47 discriminator 1 view .LVU359
+ 1268 0070 1548     		ldr	r0, .L106+20
+ 1269 0072 FFF7FEFF 		bl	strSearch
+ 1270              	.LVL121:
+ 1271              		.loc 1 276 44 discriminator 1 view .LVU360
+ 1272 0076 0028     		cmp	r0, #0
+ 1273 0078 EDD1     		bne	.L96
+ 277:User/Src/command.c ****                 UsbCommand[i]((char*)g_usart1_dma_rx_buff);
+ 1274              		.loc 1 277 17 is_stmt 1 view .LVU361
+ 1275              		.loc 1 277 27 is_stmt 0 view .LVU362
+ 1276 007a 144B     		ldr	r3, .L106+24
+ 1277 007c 53F82430 		ldr	r3, [r3, r4, lsl #2]
+ 1278              		.loc 1 277 17 view .LVU363
+ 1279 0080 1148     		ldr	r0, .L106+20
+ 1280 0082 9847     		blx	r3
+ 1281              	.LVL122:
+ 278:User/Src/command.c ****                 break;
+ 1282              		.loc 1 278 17 is_stmt 1 view .LVU364
+ 1283              	.L97:
+ 279:User/Src/command.c ****             }
+ 280:User/Src/command.c ****         }				
+ 281:User/Src/command.c ****         if (i == MAX_COMMAND_NUMBER) {
+ 1284              		.loc 1 281 9 view .LVU365
+ 1285              		.loc 1 281 12 is_stmt 0 view .LVU366
+ 1286 0084 282C     		cmp	r4, #40
+ 1287 0086 10D0     		beq	.L105
+ 1288              	.L100:
+ 282:User/Src/command.c ****            UsbPrintf("\nNo this commmand !\n");
+ 283:User/Src/command.c ****         }
+ 284:User/Src/command.c ****         memset(g_usart1_dma_rx_buff, 0, UART_RECEIVE_BUFF_NUMBER);
+ 1289              		.loc 1 284 9 is_stmt 1 view .LVU367
+ 1290 0088 C822     		movs	r2, #200
+ 1291 008a 0021     		movs	r1, #0
+ 1292 008c 0E48     		ldr	r0, .L106+20
+ 1293 008e FFF7FEFF 		bl	memset
+ 1294              	.LVL123:
+ 285:User/Src/command.c ****         g_usart1_rx_len = 0;
+ 1295              		.loc 1 285 9 view .LVU368
+ 1296              		.loc 1 285 25 is_stmt 0 view .LVU369
+ 1297 0092 0023     		movs	r3, #0
+ 1298 0094 084A     		ldr	r2, .L106+4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 34
+
+
+ 1299 0096 1380     		strh	r3, [r2]	@ movhi
+ 286:User/Src/command.c ****         g_usart1_rx_done = 0;
+ 1300              		.loc 1 286 9 is_stmt 1 view .LVU370
+ 1301              		.loc 1 286 26 is_stmt 0 view .LVU371
+ 1302 0098 064A     		ldr	r2, .L106
+ 1303 009a 1370     		strb	r3, [r2]
+ 287:User/Src/command.c ****         usbTick = 0;
+ 1304              		.loc 1 287 9 is_stmt 1 view .LVU372
+ 1305              		.loc 1 287 17 is_stmt 0 view .LVU373
+ 1306 009c 084A     		ldr	r2, .L106+12
+ 1307 009e 1380     		strh	r3, [r2]	@ movhi
+ 288:User/Src/command.c ****         lastUsbRx = 0;
+ 1308              		.loc 1 288 9 is_stmt 1 view .LVU374
+ 1309              		.loc 1 288 19 is_stmt 0 view .LVU375
+ 1310 00a0 064A     		ldr	r2, .L106+8
+ 1311 00a2 1380     		strh	r3, [r2]	@ movhi
+ 1312              	.LVL124:
+ 1313              	.L90:
+ 289:User/Src/command.c ****     }
+ 290:User/Src/command.c **** }
+ 1314              		.loc 1 290 1 view .LVU376
+ 1315 00a4 38BD     		pop	{r3, r4, r5, pc}
+ 1316              	.L101:
+ 1317 00a6 0024     		movs	r4, #0
+ 1318 00a8 D7E7     		b	.L98
+ 1319              	.LVL125:
+ 1320              	.L105:
+ 282:User/Src/command.c ****         }
+ 1321              		.loc 1 282 12 is_stmt 1 view .LVU377
+ 1322 00aa 0948     		ldr	r0, .L106+28
+ 1323 00ac FFF7FEFF 		bl	UsbPrintf
+ 1324              	.LVL126:
+ 1325 00b0 EAE7     		b	.L100
+ 1326              	.L107:
+ 1327 00b2 00BF     		.align	2
+ 1328              	.L106:
+ 1329 00b4 00000000 		.word	g_usart1_rx_done
+ 1330 00b8 00000000 		.word	g_usart1_rx_len
+ 1331 00bc 00000000 		.word	.LANCHOR3
+ 1332 00c0 00000000 		.word	.LANCHOR2
+ 1333 00c4 00000000 		.word	.LANCHOR0
+ 1334 00c8 00000000 		.word	g_usart1_dma_rx_buff
+ 1335 00cc 00000000 		.word	.LANCHOR4
+ 1336 00d0 00000000 		.word	.LC7
+ 1337              		.cfi_endproc
+ 1338              	.LFE78:
+ 1340              		.section	.text.DeviceMassage,"ax",%progbits
+ 1341              		.align	1
+ 1342              		.global	DeviceMassage
+ 1343              		.syntax unified
+ 1344              		.thumb
+ 1345              		.thumb_func
+ 1347              	DeviceMassage:
+ 1348              	.LFB79:
+ 291:User/Src/command.c **** 
+ 292:User/Src/command.c **** void DeviceMassage(void)
+ 293:User/Src/command.c **** {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 35
+
+
+ 1349              		.loc 1 293 1 view -0
+ 1350              		.cfi_startproc
+ 1351              		@ args = 0, pretend = 0, frame = 0
+ 1352              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1353 0000 08B5     		push	{r3, lr}
+ 1354              	.LCFI18:
+ 1355              		.cfi_def_cfa_offset 8
+ 1356              		.cfi_offset 3, -8
+ 1357              		.cfi_offset 14, -4
+ 294:User/Src/command.c **** 
+ 295:User/Src/command.c ****     static uint16_t deviceTick = 0;
+ 1358              		.loc 1 295 5 view .LVU379
+ 296:User/Src/command.c ****     static uint16_t lastDeviceRx = 0;
+ 1359              		.loc 1 296 5 view .LVU380
+ 297:User/Src/command.c ****     if (g_DeviceATStatus == 0 && device_Rx_Cnt == 0) {
+ 1360              		.loc 1 297 5 view .LVU381
+ 1361              		.loc 1 297 26 is_stmt 0 view .LVU382
+ 1362 0002 184B     		ldr	r3, .L116
+ 1363 0004 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1364              		.loc 1 297 8 view .LVU383
+ 1365 0006 13B9     		cbnz	r3, .L109
+ 1366              		.loc 1 297 48 discriminator 1 view .LVU384
+ 1367 0008 174A     		ldr	r2, .L116+4
+ 1368 000a 1288     		ldrh	r2, [r2]
+ 1369              		.loc 1 297 31 discriminator 1 view .LVU385
+ 1370 000c FAB1     		cbz	r2, .L115
+ 1371              	.L109:
+ 298:User/Src/command.c ****         deviceTick = 0;
+ 299:User/Src/command.c ****         lastDeviceRx = 0;
+ 300:User/Src/command.c ****         return;
+ 301:User/Src/command.c ****     }
+ 302:User/Src/command.c ****     if (device_Rx_Cnt > lastDeviceRx) {
+ 1372              		.loc 1 302 5 is_stmt 1 view .LVU386
+ 1373              		.loc 1 302 23 is_stmt 0 view .LVU387
+ 1374 000e 164A     		ldr	r2, .L116+4
+ 1375 0010 1288     		ldrh	r2, [r2]
+ 1376 0012 1649     		ldr	r1, .L116+8
+ 1377 0014 0988     		ldrh	r1, [r1]
+ 1378              		.loc 1 302 8 view .LVU388
+ 1379 0016 8A42     		cmp	r2, r1
+ 1380 0018 1ED9     		bls	.L111
+ 303:User/Src/command.c ****         lastDeviceRx = device_Rx_Cnt;
+ 1381              		.loc 1 303 9 is_stmt 1 view .LVU389
+ 1382              		.loc 1 303 22 is_stmt 0 view .LVU390
+ 1383 001a 1449     		ldr	r1, .L116+8
+ 1384 001c 0A80     		strh	r2, [r1]	@ movhi
+ 304:User/Src/command.c ****         deviceTick = 0;
+ 1385              		.loc 1 304 9 is_stmt 1 view .LVU391
+ 1386              		.loc 1 304 20 is_stmt 0 view .LVU392
+ 1387 001e 144A     		ldr	r2, .L116+12
+ 1388 0020 0021     		movs	r1, #0
+ 1389 0022 1180     		strh	r1, [r2]	@ movhi
+ 1390              	.L112:
+ 305:User/Src/command.c ****     } else {
+ 306:User/Src/command.c ****         deviceTick++;
+ 307:User/Src/command.c ****     }
+ 308:User/Src/command.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 36
+
+
+ 309:User/Src/command.c **** 	if (deviceTick >= USB_UART_TICK_CLEAR || g_DeviceATStatus == 1) {
+ 1391              		.loc 1 309 2 is_stmt 1 view .LVU393
+ 1392              		.loc 1 309 17 is_stmt 0 view .LVU394
+ 1393 0024 124A     		ldr	r2, .L116+12
+ 1394 0026 1288     		ldrh	r2, [r2]
+ 1395              		.loc 1 309 5 view .LVU395
+ 1396 0028 632A     		cmp	r2, #99
+ 1397 002a 01D8     		bhi	.L113
+ 1398              		.loc 1 309 40 discriminator 1 view .LVU396
+ 1399 002c 012B     		cmp	r3, #1
+ 1400 002e 0DD1     		bne	.L108
+ 1401              	.L113:
+ 310:User/Src/command.c **** 
+ 311:User/Src/command.c **** 		if(g_DeviceRxBuff[0] == 0xFA && g_DeviceRxBuff[1] == 0xFB && g_DeviceRxBuff[device_Rx_Cnt]=='\0' 
+ 1402              		.loc 1 311 3 is_stmt 1 view .LVU397
+ 312:User/Src/command.c **** 		{
+ 313:User/Src/command.c **** 			//需要处理的代码命令  比如:Command_analyse(g_DeviceRxBuff);
+ 314:User/Src/command.c **** 		}
+ 1403              		.loc 1 314 3 view .LVU398
+ 315:User/Src/command.c ****         memset(g_DeviceRxBuff, 0, UART_RECEIVE_BUFF_NUMBER);
+ 1404              		.loc 1 315 9 view .LVU399
+ 1405 0030 C822     		movs	r2, #200
+ 1406 0032 0021     		movs	r1, #0
+ 1407 0034 0F48     		ldr	r0, .L116+16
+ 1408 0036 FFF7FEFF 		bl	memset
+ 1409              	.LVL127:
+ 316:User/Src/command.c ****         device_Rx_Cnt = 0;
+ 1410              		.loc 1 316 9 view .LVU400
+ 1411              		.loc 1 316 23 is_stmt 0 view .LVU401
+ 1412 003a 0023     		movs	r3, #0
+ 1413 003c 0A4A     		ldr	r2, .L116+4
+ 1414 003e 1380     		strh	r3, [r2]	@ movhi
+ 317:User/Src/command.c ****         g_DeviceATStatus = 0;
+ 1415              		.loc 1 317 9 is_stmt 1 view .LVU402
+ 1416              		.loc 1 317 26 is_stmt 0 view .LVU403
+ 1417 0040 084A     		ldr	r2, .L116
+ 1418 0042 1370     		strb	r3, [r2]
+ 318:User/Src/command.c ****         deviceTick = 0;
+ 1419              		.loc 1 318 9 is_stmt 1 view .LVU404
+ 1420              		.loc 1 318 20 is_stmt 0 view .LVU405
+ 1421 0044 0A4A     		ldr	r2, .L116+12
+ 1422 0046 1380     		strh	r3, [r2]	@ movhi
+ 319:User/Src/command.c ****         lastDeviceRx = 0;
+ 1423              		.loc 1 319 9 is_stmt 1 view .LVU406
+ 1424              		.loc 1 319 22 is_stmt 0 view .LVU407
+ 1425 0048 084A     		ldr	r2, .L116+8
+ 1426 004a 1380     		strh	r3, [r2]	@ movhi
+ 1427              	.L108:
+ 320:User/Src/command.c **** 	 }
+ 321:User/Src/command.c **** }
+ 1428              		.loc 1 321 1 view .LVU408
+ 1429 004c 08BD     		pop	{r3, pc}
+ 1430              	.L115:
+ 298:User/Src/command.c ****         lastDeviceRx = 0;
+ 1431              		.loc 1 298 9 is_stmt 1 view .LVU409
+ 298:User/Src/command.c ****         lastDeviceRx = 0;
+ 1432              		.loc 1 298 20 is_stmt 0 view .LVU410
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 37
+
+
+ 1433 004e 084A     		ldr	r2, .L116+12
+ 1434 0050 1380     		strh	r3, [r2]	@ movhi
+ 299:User/Src/command.c ****         return;
+ 1435              		.loc 1 299 9 is_stmt 1 view .LVU411
+ 299:User/Src/command.c ****         return;
+ 1436              		.loc 1 299 22 is_stmt 0 view .LVU412
+ 1437 0052 064A     		ldr	r2, .L116+8
+ 1438 0054 1380     		strh	r3, [r2]	@ movhi
+ 300:User/Src/command.c ****     }
+ 1439              		.loc 1 300 9 is_stmt 1 view .LVU413
+ 1440 0056 F9E7     		b	.L108
+ 1441              	.L111:
+ 306:User/Src/command.c ****     }
+ 1442              		.loc 1 306 9 view .LVU414
+ 306:User/Src/command.c ****     }
+ 1443              		.loc 1 306 19 is_stmt 0 view .LVU415
+ 1444 0058 0549     		ldr	r1, .L116+12
+ 1445 005a 0A88     		ldrh	r2, [r1]
+ 1446 005c 0132     		adds	r2, r2, #1
+ 1447 005e 0A80     		strh	r2, [r1]	@ movhi
+ 1448 0060 E0E7     		b	.L112
+ 1449              	.L117:
+ 1450 0062 00BF     		.align	2
+ 1451              	.L116:
+ 1452 0064 00000000 		.word	.LANCHOR5
+ 1453 0068 00000000 		.word	.LANCHOR6
+ 1454 006c 00000000 		.word	.LANCHOR8
+ 1455 0070 00000000 		.word	.LANCHOR7
+ 1456 0074 00000000 		.word	.LANCHOR9
+ 1457              		.cfi_endproc
+ 1458              	.LFE79:
+ 1460              		.global	UsbCommand
+ 1461              		.global	Command_buf
+ 1462              		.global	g_DeviceATStatus
+ 1463              		.global	g_DeviceTxBuff
+ 1464              		.global	g_DeviceRxBuff
+ 1465              		.global	deviceRxBuf
+ 1466              		.global	device_Rx_Cnt
+ 1467              		.global	g_UsbATStatus
+ 1468              		.global	g_UsbRxBuff
+ 1469              		.global	usbRxBuf
+ 1470              		.global	usb_Rx_Cnt
+ 1471              		.section	.bss.Command_buf,"aw",%nobits
+ 1472              		.align	2
+ 1475              	Command_buf:
+ 1476 0000 00000000 		.space	200
+ 1476      00000000 
+ 1476      00000000 
+ 1476      00000000 
+ 1476      00000000 
+ 1477              		.section	.bss.deviceRxBuf,"aw",%nobits
+ 1480              	deviceRxBuf:
+ 1481 0000 00       		.space	1
+ 1482              		.section	.bss.deviceTick.1,"aw",%nobits
+ 1483              		.align	1
+ 1484              		.set	.LANCHOR7,. + 0
+ 1487              	deviceTick.1:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 38
+
+
+ 1488 0000 0000     		.space	2
+ 1489              		.section	.bss.device_Rx_Cnt,"aw",%nobits
+ 1490              		.align	1
+ 1491              		.set	.LANCHOR6,. + 0
+ 1494              	device_Rx_Cnt:
+ 1495 0000 0000     		.space	2
+ 1496              		.section	.bss.g_DeviceATStatus,"aw",%nobits
+ 1497              		.set	.LANCHOR5,. + 0
+ 1500              	g_DeviceATStatus:
+ 1501 0000 00       		.space	1
+ 1502              		.section	.bss.g_DeviceRxBuff,"aw",%nobits
+ 1503              		.align	2
+ 1504              		.set	.LANCHOR9,. + 0
+ 1507              	g_DeviceRxBuff:
+ 1508 0000 00000000 		.space	200
+ 1508      00000000 
+ 1508      00000000 
+ 1508      00000000 
+ 1508      00000000 
+ 1509              		.section	.bss.g_DeviceTxBuff,"aw",%nobits
+ 1510              		.align	2
+ 1511              		.set	.LANCHOR1,. + 0
+ 1514              	g_DeviceTxBuff:
+ 1515 0000 00000000 		.space	300
+ 1515      00000000 
+ 1515      00000000 
+ 1515      00000000 
+ 1515      00000000 
+ 1516              		.section	.bss.g_UsbATStatus,"aw",%nobits
+ 1519              	g_UsbATStatus:
+ 1520 0000 00       		.space	1
+ 1521              		.section	.bss.g_UsbRxBuff,"aw",%nobits
+ 1522              		.align	2
+ 1525              	g_UsbRxBuff:
+ 1526 0000 00000000 		.space	200
+ 1526      00000000 
+ 1526      00000000 
+ 1526      00000000 
+ 1526      00000000 
+ 1527              		.section	.bss.lastDeviceRx.0,"aw",%nobits
+ 1528              		.align	1
+ 1529              		.set	.LANCHOR8,. + 0
+ 1532              	lastDeviceRx.0:
+ 1533 0000 0000     		.space	2
+ 1534              		.section	.bss.lastUsbRx.2,"aw",%nobits
+ 1535              		.align	1
+ 1536              		.set	.LANCHOR3,. + 0
+ 1539              	lastUsbRx.2:
+ 1540 0000 0000     		.space	2
+ 1541              		.section	.bss.usbRxBuf,"aw",%nobits
+ 1544              	usbRxBuf:
+ 1545 0000 00       		.space	1
+ 1546              		.section	.bss.usbTick.3,"aw",%nobits
+ 1547              		.align	1
+ 1548              		.set	.LANCHOR2,. + 0
+ 1551              	usbTick.3:
+ 1552 0000 0000     		.space	2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 39
+
+
+ 1553              		.section	.bss.usb_Rx_Cnt,"aw",%nobits
+ 1554              		.align	1
+ 1557              	usb_Rx_Cnt:
+ 1558 0000 0000     		.space	2
+ 1559              		.section	.data.CommandList,"aw"
+ 1560              		.align	2
+ 1561              		.set	.LANCHOR0,. + 0
+ 1564              	CommandList:
+ 1565 0000 41545E48 		.ascii	"AT^HELP\000"
+ 1565      454C5000 
+ 1566 0008 00000000 		.space	12
+ 1566      00000000 
+ 1566      00000000 
+ 1567 0014 41545E54 		.ascii	"AT^TEST\000"
+ 1567      45535400 
+ 1568 001c 00000000 		.space	12
+ 1568      00000000 
+ 1568      00000000 
+ 1569 0028 41545E46 		.ascii	"AT^FATFS_MOUNT\000"
+ 1569      41544653 
+ 1569      5F4D4F55 
+ 1569      4E5400
+ 1570 0037 00000000 		.space	5
+ 1570      00
+ 1571 003c 41545E46 		.ascii	"AT^FATFS_WRITE\000"
+ 1571      41544653 
+ 1571      5F575249 
+ 1571      544500
+ 1572 004b 00000000 		.space	5
+ 1572      00
+ 1573 0050 41545E46 		.ascii	"AT^FATFS_READ\000"
+ 1573      41544653 
+ 1573      5F524541 
+ 1573      4400
+ 1574 005e 00000000 		.space	6
+ 1574      0000
+ 1575 0064 00000000 		.space	700
+ 1575      00000000 
+ 1575      00000000 
+ 1575      00000000 
+ 1575      00000000 
+ 1576              		.section	.data.UsbCommand,"aw"
+ 1577              		.align	2
+ 1578              		.set	.LANCHOR4,. + 0
+ 1581              	UsbCommand:
+ 1582 0000 00000000 		.word	AT_HELP_Handle
+ 1583 0004 00000000 		.word	AT_TEST_Handle
+ 1584 0008 00000000 		.word	AT_FATFS_MOUNT_Handle
+ 1585 000c 00000000 		.word	AT_FATFS_WRITE_Handle
+ 1586 0010 00000000 		.word	AT_FATFS_READ_Handle
+ 1587 0014 00000000 		.space	140
+ 1587      00000000 
+ 1587      00000000 
+ 1587      00000000 
+ 1587      00000000 
+ 1588              		.text
+ 1589              	.Letext0:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 40
+
+
+ 1590              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1591              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1592              		.file 4 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 1593              		.file 5 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 1594              		.file 6 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 1595              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h"
+ 1596              		.file 8 "User/Inc/command.h"
+ 1597              		.file 9 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\lib\\gcc
+ 1598              		.file 10 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-non
+ 1599              		.file 11 "Core/Inc/usart.h"
+ 1600              		.file 12 "Core/Inc/main.h"
+ 1601              		.file 13 "Core/Inc/../FatFs/Inc/diskio.h"
+ 1602              		.file 14 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-non
+ 1603              		.file 15 "<built-in>"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 41
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 command.c
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:18     .rodata.AT_HELP_Handle.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:28     .text.AT_HELP_Handle:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:34     .text.AT_HELP_Handle:00000000 AT_HELP_Handle
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:115    .text.AT_HELP_Handle:00000040 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:123    .rodata.AT_TEST_Handle.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:127    .text.AT_TEST_Handle:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:133    .text.AT_TEST_Handle:00000000 AT_TEST_Handle
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:157    .text.AT_TEST_Handle:0000000c $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:162    .text.AT_FATFS_MOUNT_Handle:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:168    .text.AT_FATFS_MOUNT_Handle:00000000 AT_FATFS_MOUNT_Handle
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:190    .text.AT_FATFS_WRITE_Handle:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:196    .text.AT_FATFS_WRITE_Handle:00000000 AT_FATFS_WRITE_Handle
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:218    .text.DevicePrintf:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:224    .text.DevicePrintf:00000000 DevicePrintf
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:307    .text.DevicePrintf:00000048 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:313    .text.strSearch:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:319    .text.strSearch:00000000 strSearch
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:421    .text.CharToInt:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:427    .text.CharToInt:00000000 CharToInt
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:691    .text.AT_FATFS_READ_Handle:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:697    .text.AT_FATFS_READ_Handle:00000000 AT_FATFS_READ_Handle
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:742    .text.CharToFloat:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:748    .text.CharToFloat:00000000 CharToFloat
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:992    .text.CharToFloat:000000f8 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1001   .rodata.Data_copy_from_pos.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1011   .text.Data_copy_from_pos:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1017   .text.Data_copy_from_pos:00000000 Data_copy_from_pos
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1140   .text.Data_copy_from_pos:00000064 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1147   .rodata.CheckCommandList.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1151   .text.CheckCommandList:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1157   .text.CheckCommandList:00000000 CheckCommandList
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1329   .text.CheckCommandList:000000b4 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1341   .text.DeviceMassage:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1347   .text.DeviceMassage:00000000 DeviceMassage
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1452   .text.DeviceMassage:00000064 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1581   .data.UsbCommand:00000000 UsbCommand
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1475   .bss.Command_buf:00000000 Command_buf
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1500   .bss.g_DeviceATStatus:00000000 g_DeviceATStatus
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1514   .bss.g_DeviceTxBuff:00000000 g_DeviceTxBuff
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1507   .bss.g_DeviceRxBuff:00000000 g_DeviceRxBuff
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1480   .bss.deviceRxBuf:00000000 deviceRxBuf
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1494   .bss.device_Rx_Cnt:00000000 device_Rx_Cnt
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1519   .bss.g_UsbATStatus:00000000 g_UsbATStatus
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1525   .bss.g_UsbRxBuff:00000000 g_UsbRxBuff
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1544   .bss.usbRxBuf:00000000 usbRxBuf
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1557   .bss.usb_Rx_Cnt:00000000 usb_Rx_Cnt
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1472   .bss.Command_buf:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1481   .bss.deviceRxBuf:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1483   .bss.deviceTick.1:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1487   .bss.deviceTick.1:00000000 deviceTick.1
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1490   .bss.device_Rx_Cnt:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1501   .bss.g_DeviceATStatus:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1503   .bss.g_DeviceRxBuff:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1510   .bss.g_DeviceTxBuff:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1520   .bss.g_UsbATStatus:00000000 $d
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s 			page 42
+
+
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1522   .bss.g_UsbRxBuff:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1528   .bss.lastDeviceRx.0:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1532   .bss.lastDeviceRx.0:00000000 lastDeviceRx.0
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1535   .bss.lastUsbRx.2:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1539   .bss.lastUsbRx.2:00000000 lastUsbRx.2
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1545   .bss.usbRxBuf:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1547   .bss.usbTick.3:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1551   .bss.usbTick.3:00000000 usbTick.3
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1554   .bss.usb_Rx_Cnt:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1560   .data.CommandList:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1564   .data.CommandList:00000000 CommandList
+C:\Users\84759\AppData\Local\Temp\ccJrI7lo.s:1577   .data.UsbCommand:00000000 $d
+
+UNDEFINED SYMBOLS
+UsbPrintf
+fatfs_read_file
+Fatfs_Mount
+Fatfs_Write
+memset
+vsnprintf
+strlen
+HAL_UART_Transmit
+huart2
+Fatfs_Read
+__aeabi_fmul
+__aeabi_i2f
+__aeabi_fadd
+__aeabi_fsub
+__aeabi_f2d
+__aeabi_dmul
+__aeabi_d2f
+g_usart1_rx_done
+g_usart1_rx_len
+g_usart1_dma_rx_buff

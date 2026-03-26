@@ -1,0 +1,1749 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"multi_button.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.button_handler,"ax",%progbits
+  18              		.align	1
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  23              	button_handler:
+  24              	.LVL0:
+  25              	.LFB68:
+  26              		.file 1 "User/Src/multi_button.c"
+   1:User/Src/multi_button.c **** /*
+   2:User/Src/multi_button.c ****  * Copyright (c) 2016 Zibin Zheng <znbin@qq.com>
+   3:User/Src/multi_button.c ****  * All rights reserved
+   4:User/Src/multi_button.c ****  */
+   5:User/Src/multi_button.c **** #include "multi_button.h"
+   6:User/Src/multi_button.c **** 
+   7:User/Src/multi_button.c **** 
+   8:User/Src/multi_button.c **** #define EVENT_CB(ev)   if(handle->cb[ev])handle->cb[ev]((void*)handle)
+   9:User/Src/multi_button.c **** #define PRESS_REPEAT_MAX_NUM  20 /*!< The maximum value of the repeat counter */
+  10:User/Src/multi_button.c **** 
+  11:User/Src/multi_button.c **** //button handle list head.
+  12:User/Src/multi_button.c **** static struct Button* head_handle = NULL;
+  13:User/Src/multi_button.c **** 
+  14:User/Src/multi_button.c **** static void button_handler(struct Button* handle);
+  15:User/Src/multi_button.c **** 
+  16:User/Src/multi_button.c **** /**
+  17:User/Src/multi_button.c ****   * @brief  Initializes the button struct handle.
+  18:User/Src/multi_button.c ****   * @param  handle: the button handle struct.
+  19:User/Src/multi_button.c ****   * @param  pin_level: read the HAL GPIO of the connected button level.
+  20:User/Src/multi_button.c ****   * @param  active_level: pressed GPIO level.
+  21:User/Src/multi_button.c ****   * @param  button_id: the button id.
+  22:User/Src/multi_button.c ****   * @retval None
+  23:User/Src/multi_button.c ****   */
+  24:User/Src/multi_button.c **** void button_init(struct Button* handle, uint8_t(*pin_level)(uint8_t), uint8_t active_level, uint8_t
+  25:User/Src/multi_button.c **** {
+  26:User/Src/multi_button.c **** 	memset(handle, 0, sizeof(struct Button));
+  27:User/Src/multi_button.c **** 	handle->event = (uint8_t)NONE_PRESS;
+  28:User/Src/multi_button.c **** 	handle->hal_button_Level = pin_level;
+  29:User/Src/multi_button.c **** 	handle->button_level = !active_level;
+  30:User/Src/multi_button.c **** 	handle->active_level = active_level;
+  31:User/Src/multi_button.c **** 	handle->button_id = button_id;
+  32:User/Src/multi_button.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 2
+
+
+  33:User/Src/multi_button.c **** 
+  34:User/Src/multi_button.c **** /**
+  35:User/Src/multi_button.c ****   * @brief  Attach the button event callback function.
+  36:User/Src/multi_button.c ****   * @param  handle: the button handle struct.
+  37:User/Src/multi_button.c ****   * @param  event: trigger event type.
+  38:User/Src/multi_button.c ****   * @param  cb: callback function.
+  39:User/Src/multi_button.c ****   * @retval None
+  40:User/Src/multi_button.c ****   */
+  41:User/Src/multi_button.c **** void button_attach(struct Button* handle, PressEvent event, BtnCallback cb)
+  42:User/Src/multi_button.c **** {
+  43:User/Src/multi_button.c **** 	handle->cb[event] = cb;
+  44:User/Src/multi_button.c **** }
+  45:User/Src/multi_button.c **** 
+  46:User/Src/multi_button.c **** /**
+  47:User/Src/multi_button.c ****   * @brief  Inquire the button event happen.
+  48:User/Src/multi_button.c ****   * @param  handle: the button handle struct.
+  49:User/Src/multi_button.c ****   * @retval button event.
+  50:User/Src/multi_button.c ****   */
+  51:User/Src/multi_button.c **** PressEvent get_button_event(struct Button* handle)
+  52:User/Src/multi_button.c **** {
+  53:User/Src/multi_button.c **** 	return (PressEvent)(handle->event);
+  54:User/Src/multi_button.c **** }
+  55:User/Src/multi_button.c **** 
+  56:User/Src/multi_button.c **** /**
+  57:User/Src/multi_button.c ****   * @brief  Button driver core function, driver state machine.
+  58:User/Src/multi_button.c ****   * @param  handle: the button handle struct.
+  59:User/Src/multi_button.c ****   * @retval None
+  60:User/Src/multi_button.c ****   */
+  61:User/Src/multi_button.c **** static void button_handler(struct Button* handle)
+  62:User/Src/multi_button.c **** {
+  27              		.loc 1 62 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		.loc 1 62 1 is_stmt 0 view .LVU1
+  32 0000 10B5     		push	{r4, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 4, -8
+  36              		.cfi_offset 14, -4
+  37 0002 0446     		mov	r4, r0
+  63:User/Src/multi_button.c **** 	uint8_t read_gpio_level = handle->hal_button_Level(handle->button_id);
+  38              		.loc 1 63 2 is_stmt 1 view .LVU2
+  39              		.loc 1 63 34 is_stmt 0 view .LVU3
+  40 0004 8368     		ldr	r3, [r0, #8]
+  41              		.loc 1 63 28 view .LVU4
+  42 0006 0079     		ldrb	r0, [r0, #4]	@ zero_extendqisi2
+  43              	.LVL1:
+  44              		.loc 1 63 28 view .LVU5
+  45 0008 9847     		blx	r3
+  46              	.LVL2:
+  64:User/Src/multi_button.c **** 
+  65:User/Src/multi_button.c **** 	//ticks counter working..
+  66:User/Src/multi_button.c **** 	if((handle->state) > 0) handle->ticks++;
+  47              		.loc 1 66 2 is_stmt 1 view .LVU6
+  48              		.loc 1 66 21 is_stmt 0 view .LVU7
+  49 000a E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 3
+
+
+  50              		.loc 1 66 4 view .LVU8
+  51 000c 13F0070F 		tst	r3, #7
+  52 0010 02D0     		beq	.L2
+  53              		.loc 1 66 26 is_stmt 1 discriminator 1 view .LVU9
+  54              		.loc 1 66 32 is_stmt 0 discriminator 1 view .LVU10
+  55 0012 2388     		ldrh	r3, [r4]
+  56              		.loc 1 66 39 discriminator 1 view .LVU11
+  57 0014 0133     		adds	r3, r3, #1
+  58 0016 2380     		strh	r3, [r4]	@ movhi
+  59              	.L2:
+  67:User/Src/multi_button.c **** 
+  68:User/Src/multi_button.c **** 	/*------------button debounce handle---------------*/
+  69:User/Src/multi_button.c **** 	if(read_gpio_level != handle->button_level) { //not equal to prev one
+  60              		.loc 1 69 2 is_stmt 1 view .LVU12
+  61              		.loc 1 69 30 is_stmt 0 view .LVU13
+  62 0018 E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+  63              		.loc 1 69 4 view .LVU14
+  64 001a B0EBD31F 		cmp	r0, r3, lsr #7
+  65 001e 13D0     		beq	.L3
+  70:User/Src/multi_button.c **** 		//continue read 3 times same new level change
+  71:User/Src/multi_button.c **** 		if(++(handle->debounce_cnt) >= DEBOUNCE_TICKS) {
+  66              		.loc 1 71 3 is_stmt 1 view .LVU15
+  67              		.loc 1 71 15 is_stmt 0 view .LVU16
+  68 0020 1A46     		mov	r2, r3
+  69 0022 C3F3C203 		ubfx	r3, r3, #3, #3
+  70              		.loc 1 71 6 view .LVU17
+  71 0026 0133     		adds	r3, r3, #1
+  72 0028 03F00703 		and	r3, r3, #7
+  73              		.loc 1 71 5 view .LVU18
+  74 002c 63F3C502 		bfi	r2, r3, #3, #3
+  75 0030 E270     		strb	r2, [r4, #3]
+  76 0032 022B     		cmp	r3, #2
+  77 0034 0CD9     		bls	.L4
+  72:User/Src/multi_button.c **** 			handle->button_level = read_gpio_level;
+  78              		.loc 1 72 4 is_stmt 1 view .LVU19
+  79              		.loc 1 72 25 is_stmt 0 view .LVU20
+  80 0036 D3B2     		uxtb	r3, r2
+  81 0038 60F3C713 		bfi	r3, r0, #7, #1
+  82              	.LVL3:
+  83              		.loc 1 72 25 view .LVU21
+  84 003c E370     		strb	r3, [r4, #3]
+  73:User/Src/multi_button.c **** 			handle->debounce_cnt = 0;
+  85              		.loc 1 73 4 is_stmt 1 view .LVU22
+  86              		.loc 1 73 25 is_stmt 0 view .LVU23
+  87 003e DBB2     		uxtb	r3, r3
+  88 0040 6FF3C503 		bfc	r3, #3, #3
+  89 0044 E370     		strb	r3, [r4, #3]
+  90 0046 03E0     		b	.L4
+  91              	.LVL4:
+  92              	.L3:
+  74:User/Src/multi_button.c **** 		}
+  75:User/Src/multi_button.c **** 	} else { //level not change ,counter reset.
+  76:User/Src/multi_button.c **** 		handle->debounce_cnt = 0;
+  93              		.loc 1 76 3 is_stmt 1 view .LVU24
+  94              		.loc 1 76 24 is_stmt 0 view .LVU25
+  95 0048 E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+  96 004a 6FF3C503 		bfc	r3, #3, #3
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 4
+
+
+  97 004e E370     		strb	r3, [r4, #3]
+  98              	.LVL5:
+  99              	.L4:
+  77:User/Src/multi_button.c **** 	}
+  78:User/Src/multi_button.c **** 
+  79:User/Src/multi_button.c **** 	/*-----------------State machine-------------------*/
+  80:User/Src/multi_button.c **** 	switch (handle->state) {
+ 100              		.loc 1 80 2 is_stmt 1 view .LVU26
+ 101              		.loc 1 80 16 is_stmt 0 view .LVU27
+ 102 0050 E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 103 0052 03F00703 		and	r3, r3, #7
+ 104              		.loc 1 80 2 view .LVU28
+ 105 0056 052B     		cmp	r3, #5
+ 106 0058 00F2DF80 		bhi	.L5
+ 107 005c DFE813F0 		tbh	[pc, r3, lsl #1]
+ 108              	.L7:
+ 109 0060 0600     		.2byte	(.L11-.L7)/2
+ 110 0062 2600     		.2byte	(.L10-.L7)/2
+ 111 0064 5000     		.2byte	(.L9-.L7)/2
+ 112 0066 9700     		.2byte	(.L8-.L7)/2
+ 113 0068 DD00     		.2byte	(.L5-.L7)/2
+ 114 006a BF00     		.2byte	(.L6-.L7)/2
+ 115              		.p2align 1
+ 116              	.L11:
+  81:User/Src/multi_button.c **** 	case 0:
+  82:User/Src/multi_button.c **** 		if(handle->button_level == handle->active_level) {	//start press down
+ 117              		.loc 1 82 3 is_stmt 1 view .LVU29
+ 118              		.loc 1 82 12 is_stmt 0 view .LVU30
+ 119 006c E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 120              		.loc 1 82 36 view .LVU31
+ 121 006e C3F38012 		ubfx	r2, r3, #6, #1
+ 122              		.loc 1 82 5 view .LVU32
+ 123 0072 B2EBD31F 		cmp	r2, r3, lsr #7
+ 124 0076 05D0     		beq	.L29
+  83:User/Src/multi_button.c **** 			handle->event = (uint8_t)PRESS_DOWN;
+  84:User/Src/multi_button.c **** 			EVENT_CB(PRESS_DOWN);
+  85:User/Src/multi_button.c **** 			handle->ticks = 0;
+  86:User/Src/multi_button.c **** 			handle->repeat = 1;
+  87:User/Src/multi_button.c **** 			handle->state = 1;
+  88:User/Src/multi_button.c **** 		} else {
+  89:User/Src/multi_button.c **** 			handle->event = (uint8_t)NONE_PRESS;
+ 125              		.loc 1 89 4 is_stmt 1 view .LVU33
+ 126              		.loc 1 89 18 is_stmt 0 view .LVU34
+ 127 0078 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 128 007a 0822     		movs	r2, #8
+ 129 007c 62F30713 		bfi	r3, r2, #4, #4
+ 130 0080 A370     		strb	r3, [r4, #2]
+ 131 0082 CEE0     		b	.L1
+ 132              	.L29:
+  83:User/Src/multi_button.c **** 			handle->event = (uint8_t)PRESS_DOWN;
+ 133              		.loc 1 83 4 is_stmt 1 view .LVU35
+  83:User/Src/multi_button.c **** 			handle->event = (uint8_t)PRESS_DOWN;
+ 134              		.loc 1 83 18 is_stmt 0 view .LVU36
+ 135 0084 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 136 0086 6FF30713 		bfc	r3, #4, #4
+ 137 008a A370     		strb	r3, [r4, #2]
+  84:User/Src/multi_button.c **** 			handle->ticks = 0;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 5
+
+
+ 138              		.loc 1 84 4 is_stmt 1 view .LVU37
+ 139 008c E368     		ldr	r3, [r4, #12]
+ 140 008e 0BB1     		cbz	r3, .L13
+  84:User/Src/multi_button.c **** 			handle->ticks = 0;
+ 141              		.loc 1 84 4 discriminator 1 view .LVU38
+ 142 0090 2046     		mov	r0, r4
+ 143 0092 9847     		blx	r3
+ 144              	.LVL6:
+ 145              	.L13:
+  85:User/Src/multi_button.c **** 			handle->repeat = 1;
+ 146              		.loc 1 85 4 view .LVU39
+  85:User/Src/multi_button.c **** 			handle->repeat = 1;
+ 147              		.loc 1 85 18 is_stmt 0 view .LVU40
+ 148 0094 0023     		movs	r3, #0
+ 149 0096 2380     		strh	r3, [r4]	@ movhi
+  86:User/Src/multi_button.c **** 			handle->state = 1;
+ 150              		.loc 1 86 4 is_stmt 1 view .LVU41
+  86:User/Src/multi_button.c **** 			handle->state = 1;
+ 151              		.loc 1 86 19 is_stmt 0 view .LVU42
+ 152 0098 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 153 009a 0122     		movs	r2, #1
+ 154 009c 62F30303 		bfi	r3, r2, #0, #4
+ 155 00a0 A370     		strb	r3, [r4, #2]
+  87:User/Src/multi_button.c **** 		} else {
+ 156              		.loc 1 87 4 is_stmt 1 view .LVU43
+  87:User/Src/multi_button.c **** 		} else {
+ 157              		.loc 1 87 18 is_stmt 0 view .LVU44
+ 158 00a2 E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 159 00a4 62F30203 		bfi	r3, r2, #0, #3
+ 160 00a8 E370     		strb	r3, [r4, #3]
+ 161 00aa BAE0     		b	.L1
+ 162              	.L10:
+  90:User/Src/multi_button.c **** 		}
+  91:User/Src/multi_button.c **** 		break;
+  92:User/Src/multi_button.c **** 
+  93:User/Src/multi_button.c **** 	case 1:
+  94:User/Src/multi_button.c **** 		if(handle->button_level != handle->active_level) { //released press up
+ 163              		.loc 1 94 3 is_stmt 1 view .LVU45
+ 164              		.loc 1 94 12 is_stmt 0 view .LVU46
+ 165 00ac E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 166              		.loc 1 94 36 view .LVU47
+ 167 00ae C3F38012 		ubfx	r2, r3, #6, #1
+ 168              		.loc 1 94 5 view .LVU48
+ 169 00b2 B2EBD31F 		cmp	r2, r3, lsr #7
+ 170 00b6 10D0     		beq	.L15
+  95:User/Src/multi_button.c **** 			handle->event = (uint8_t)PRESS_UP;
+ 171              		.loc 1 95 4 is_stmt 1 view .LVU49
+ 172              		.loc 1 95 18 is_stmt 0 view .LVU50
+ 173 00b8 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 174 00ba 0122     		movs	r2, #1
+ 175 00bc 62F30713 		bfi	r3, r2, #4, #4
+ 176 00c0 A370     		strb	r3, [r4, #2]
+  96:User/Src/multi_button.c **** 			EVENT_CB(PRESS_UP);
+ 177              		.loc 1 96 4 is_stmt 1 view .LVU51
+ 178 00c2 2369     		ldr	r3, [r4, #16]
+ 179 00c4 0BB1     		cbz	r3, .L16
+ 180              		.loc 1 96 4 discriminator 1 view .LVU52
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 6
+
+
+ 181 00c6 2046     		mov	r0, r4
+ 182 00c8 9847     		blx	r3
+ 183              	.LVL7:
+ 184              	.L16:
+  97:User/Src/multi_button.c **** 			handle->ticks = 0;
+ 185              		.loc 1 97 4 view .LVU53
+ 186              		.loc 1 97 18 is_stmt 0 view .LVU54
+ 187 00ca 0023     		movs	r3, #0
+ 188 00cc 2380     		strh	r3, [r4]	@ movhi
+  98:User/Src/multi_button.c **** 			handle->state = 2;
+ 189              		.loc 1 98 4 is_stmt 1 view .LVU55
+ 190              		.loc 1 98 18 is_stmt 0 view .LVU56
+ 191 00ce E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 192 00d0 0222     		movs	r2, #2
+ 193 00d2 62F30203 		bfi	r3, r2, #0, #3
+ 194 00d6 E370     		strb	r3, [r4, #3]
+ 195 00d8 A3E0     		b	.L1
+ 196              	.L15:
+  99:User/Src/multi_button.c **** 		} else if(handle->ticks > LONG_TICKS) {
+ 197              		.loc 1 99 10 is_stmt 1 view .LVU57
+ 198              		.loc 1 99 19 is_stmt 0 view .LVU58
+ 199 00da 2388     		ldrh	r3, [r4]
+ 200              		.loc 1 99 12 view .LVU59
+ 201 00dc C82B     		cmp	r3, #200
+ 202 00de 40F2A080 		bls	.L1
+ 100:User/Src/multi_button.c **** 			handle->event = (uint8_t)LONG_PRESS_START;
+ 203              		.loc 1 100 4 is_stmt 1 view .LVU60
+ 204              		.loc 1 100 18 is_stmt 0 view .LVU61
+ 205 00e2 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 206 00e4 0522     		movs	r2, #5
+ 207 00e6 62F30713 		bfi	r3, r2, #4, #4
+ 208 00ea A370     		strb	r3, [r4, #2]
+ 101:User/Src/multi_button.c **** 			EVENT_CB(LONG_PRESS_START);
+ 209              		.loc 1 101 4 is_stmt 1 view .LVU62
+ 210 00ec 236A     		ldr	r3, [r4, #32]
+ 211 00ee 0BB1     		cbz	r3, .L17
+ 212              		.loc 1 101 4 discriminator 1 view .LVU63
+ 213 00f0 2046     		mov	r0, r4
+ 214 00f2 9847     		blx	r3
+ 215              	.LVL8:
+ 216              	.L17:
+ 102:User/Src/multi_button.c **** 			handle->state = 5;
+ 217              		.loc 1 102 4 view .LVU64
+ 218              		.loc 1 102 18 is_stmt 0 view .LVU65
+ 219 00f4 E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 220 00f6 0522     		movs	r2, #5
+ 221 00f8 62F30203 		bfi	r3, r2, #0, #3
+ 222 00fc E370     		strb	r3, [r4, #3]
+ 223 00fe 90E0     		b	.L1
+ 224              	.L9:
+ 103:User/Src/multi_button.c **** 		}
+ 104:User/Src/multi_button.c **** 		break;
+ 105:User/Src/multi_button.c **** 
+ 106:User/Src/multi_button.c **** 	case 2:
+ 107:User/Src/multi_button.c **** 		if(handle->button_level == handle->active_level) { //press down again
+ 225              		.loc 1 107 3 is_stmt 1 view .LVU66
+ 226              		.loc 1 107 12 is_stmt 0 view .LVU67
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 7
+
+
+ 227 0100 E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 228              		.loc 1 107 36 view .LVU68
+ 229 0102 C3F38012 		ubfx	r2, r3, #6, #1
+ 230              		.loc 1 107 5 view .LVU69
+ 231 0106 B2EBD31F 		cmp	r2, r3, lsr #7
+ 232 010a 0FD0     		beq	.L30
+ 108:User/Src/multi_button.c **** 			handle->event = (uint8_t)PRESS_DOWN;
+ 109:User/Src/multi_button.c **** 			EVENT_CB(PRESS_DOWN);
+ 110:User/Src/multi_button.c **** 			if(handle->repeat != PRESS_REPEAT_MAX_NUM) {
+ 111:User/Src/multi_button.c **** 				handle->repeat++;
+ 112:User/Src/multi_button.c **** 			}
+ 113:User/Src/multi_button.c **** 			EVENT_CB(PRESS_REPEAT); // repeat hit
+ 114:User/Src/multi_button.c **** 			handle->ticks = 0;
+ 115:User/Src/multi_button.c **** 			handle->state = 3;
+ 116:User/Src/multi_button.c **** 		} else if(handle->ticks > SHORT_TICKS) { //released timeout
+ 233              		.loc 1 116 10 is_stmt 1 view .LVU70
+ 234              		.loc 1 116 19 is_stmt 0 view .LVU71
+ 235 010c 2388     		ldrh	r3, [r4]
+ 236              		.loc 1 116 12 view .LVU72
+ 237 010e 3C2B     		cmp	r3, #60
+ 238 0110 40F28780 		bls	.L1
+ 117:User/Src/multi_button.c **** 			if(handle->repeat == 1) {
+ 239              		.loc 1 117 4 is_stmt 1 view .LVU73
+ 240              		.loc 1 117 22 is_stmt 0 view .LVU74
+ 241 0114 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 242 0116 03F00F03 		and	r3, r3, #15
+ 243              		.loc 1 117 6 view .LVU75
+ 244 011a 012B     		cmp	r3, #1
+ 245 011c 21D0     		beq	.L31
+ 118:User/Src/multi_button.c **** 				handle->event = (uint8_t)SINGLE_CLICK;
+ 119:User/Src/multi_button.c **** 				EVENT_CB(SINGLE_CLICK);
+ 120:User/Src/multi_button.c **** 			} else if(handle->repeat == 2) {
+ 246              		.loc 1 120 11 is_stmt 1 view .LVU76
+ 247              		.loc 1 120 13 is_stmt 0 view .LVU77
+ 248 011e 022B     		cmp	r3, #2
+ 249 0120 2AD0     		beq	.L32
+ 250              	.L22:
+ 121:User/Src/multi_button.c **** 				handle->event = (uint8_t)DOUBLE_CLICK;
+ 122:User/Src/multi_button.c **** 				EVENT_CB(DOUBLE_CLICK); // repeat hit
+ 123:User/Src/multi_button.c **** 			}
+ 124:User/Src/multi_button.c **** 			handle->state = 0;
+ 251              		.loc 1 124 4 is_stmt 1 view .LVU78
+ 252              		.loc 1 124 18 is_stmt 0 view .LVU79
+ 253 0122 E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 254 0124 6FF30203 		bfc	r3, #0, #3
+ 255 0128 E370     		strb	r3, [r4, #3]
+ 256 012a 7AE0     		b	.L1
+ 257              	.L30:
+ 108:User/Src/multi_button.c **** 			EVENT_CB(PRESS_DOWN);
+ 258              		.loc 1 108 4 is_stmt 1 view .LVU80
+ 108:User/Src/multi_button.c **** 			EVENT_CB(PRESS_DOWN);
+ 259              		.loc 1 108 18 is_stmt 0 view .LVU81
+ 260 012c A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 261 012e 6FF30713 		bfc	r3, #4, #4
+ 262 0132 A370     		strb	r3, [r4, #2]
+ 109:User/Src/multi_button.c **** 			if(handle->repeat != PRESS_REPEAT_MAX_NUM) {
+ 263              		.loc 1 109 4 is_stmt 1 view .LVU82
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 8
+
+
+ 264 0134 E368     		ldr	r3, [r4, #12]
+ 265 0136 0BB1     		cbz	r3, .L19
+ 109:User/Src/multi_button.c **** 			if(handle->repeat != PRESS_REPEAT_MAX_NUM) {
+ 266              		.loc 1 109 4 discriminator 1 view .LVU83
+ 267 0138 2046     		mov	r0, r4
+ 268 013a 9847     		blx	r3
+ 269              	.LVL9:
+ 270              	.L19:
+ 110:User/Src/multi_button.c **** 				handle->repeat++;
+ 271              		.loc 1 110 4 view .LVU84
+ 111:User/Src/multi_button.c **** 			}
+ 272              		.loc 1 111 5 view .LVU85
+ 111:User/Src/multi_button.c **** 			}
+ 273              		.loc 1 111 11 is_stmt 0 view .LVU86
+ 274 013c A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 275 013e 03F00F02 		and	r2, r3, #15
+ 111:User/Src/multi_button.c **** 			}
+ 276              		.loc 1 111 19 view .LVU87
+ 277 0142 0132     		adds	r2, r2, #1
+ 278 0144 62F30303 		bfi	r3, r2, #0, #4
+ 279 0148 A370     		strb	r3, [r4, #2]
+ 113:User/Src/multi_button.c **** 			handle->ticks = 0;
+ 280              		.loc 1 113 4 is_stmt 1 view .LVU88
+ 281 014a 6369     		ldr	r3, [r4, #20]
+ 282 014c 0BB1     		cbz	r3, .L20
+ 113:User/Src/multi_button.c **** 			handle->ticks = 0;
+ 283              		.loc 1 113 4 discriminator 1 view .LVU89
+ 284 014e 2046     		mov	r0, r4
+ 285 0150 9847     		blx	r3
+ 286              	.LVL10:
+ 287              	.L20:
+ 114:User/Src/multi_button.c **** 			handle->state = 3;
+ 288              		.loc 1 114 4 view .LVU90
+ 114:User/Src/multi_button.c **** 			handle->state = 3;
+ 289              		.loc 1 114 18 is_stmt 0 view .LVU91
+ 290 0152 0023     		movs	r3, #0
+ 291 0154 2380     		strh	r3, [r4]	@ movhi
+ 115:User/Src/multi_button.c **** 		} else if(handle->ticks > SHORT_TICKS) { //released timeout
+ 292              		.loc 1 115 4 is_stmt 1 view .LVU92
+ 115:User/Src/multi_button.c **** 		} else if(handle->ticks > SHORT_TICKS) { //released timeout
+ 293              		.loc 1 115 18 is_stmt 0 view .LVU93
+ 294 0156 E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 295 0158 0322     		movs	r2, #3
+ 296 015a 62F30203 		bfi	r3, r2, #0, #3
+ 297 015e E370     		strb	r3, [r4, #3]
+ 298 0160 5FE0     		b	.L1
+ 299              	.L31:
+ 118:User/Src/multi_button.c **** 				EVENT_CB(SINGLE_CLICK);
+ 300              		.loc 1 118 5 is_stmt 1 view .LVU94
+ 118:User/Src/multi_button.c **** 				EVENT_CB(SINGLE_CLICK);
+ 301              		.loc 1 118 19 is_stmt 0 view .LVU95
+ 302 0162 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 303 0164 0322     		movs	r2, #3
+ 304 0166 62F30713 		bfi	r3, r2, #4, #4
+ 305 016a A370     		strb	r3, [r4, #2]
+ 119:User/Src/multi_button.c **** 			} else if(handle->repeat == 2) {
+ 306              		.loc 1 119 5 is_stmt 1 view .LVU96
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 9
+
+
+ 307 016c A369     		ldr	r3, [r4, #24]
+ 308 016e 002B     		cmp	r3, #0
+ 309 0170 D7D0     		beq	.L22
+ 119:User/Src/multi_button.c **** 			} else if(handle->repeat == 2) {
+ 310              		.loc 1 119 5 discriminator 1 view .LVU97
+ 311 0172 2046     		mov	r0, r4
+ 312 0174 9847     		blx	r3
+ 313              	.LVL11:
+ 314 0176 D4E7     		b	.L22
+ 315              	.L32:
+ 121:User/Src/multi_button.c **** 				EVENT_CB(DOUBLE_CLICK); // repeat hit
+ 316              		.loc 1 121 5 view .LVU98
+ 121:User/Src/multi_button.c **** 				EVENT_CB(DOUBLE_CLICK); // repeat hit
+ 317              		.loc 1 121 19 is_stmt 0 view .LVU99
+ 318 0178 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 319 017a 0422     		movs	r2, #4
+ 320 017c 62F30713 		bfi	r3, r2, #4, #4
+ 321 0180 A370     		strb	r3, [r4, #2]
+ 122:User/Src/multi_button.c **** 			}
+ 322              		.loc 1 122 5 is_stmt 1 view .LVU100
+ 323 0182 E369     		ldr	r3, [r4, #28]
+ 324 0184 002B     		cmp	r3, #0
+ 325 0186 CCD0     		beq	.L22
+ 122:User/Src/multi_button.c **** 			}
+ 326              		.loc 1 122 5 discriminator 1 view .LVU101
+ 327 0188 2046     		mov	r0, r4
+ 328 018a 9847     		blx	r3
+ 329              	.LVL12:
+ 330 018c C9E7     		b	.L22
+ 331              	.L8:
+ 125:User/Src/multi_button.c **** 		}
+ 126:User/Src/multi_button.c **** 		break;
+ 127:User/Src/multi_button.c **** 
+ 128:User/Src/multi_button.c **** 	case 3:
+ 129:User/Src/multi_button.c **** 		if(handle->button_level != handle->active_level) { //released press up
+ 332              		.loc 1 129 3 view .LVU102
+ 333              		.loc 1 129 12 is_stmt 0 view .LVU103
+ 334 018e E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 335              		.loc 1 129 36 view .LVU104
+ 336 0190 C3F38012 		ubfx	r2, r3, #6, #1
+ 337              		.loc 1 129 5 view .LVU105
+ 338 0194 B2EBD31F 		cmp	r2, r3, lsr #7
+ 339 0198 18D0     		beq	.L23
+ 130:User/Src/multi_button.c **** 			handle->event = (uint8_t)PRESS_UP;
+ 340              		.loc 1 130 4 is_stmt 1 view .LVU106
+ 341              		.loc 1 130 18 is_stmt 0 view .LVU107
+ 342 019a A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 343 019c 0122     		movs	r2, #1
+ 344 019e 62F30713 		bfi	r3, r2, #4, #4
+ 345 01a2 A370     		strb	r3, [r4, #2]
+ 131:User/Src/multi_button.c **** 			EVENT_CB(PRESS_UP);
+ 346              		.loc 1 131 4 is_stmt 1 view .LVU108
+ 347 01a4 2369     		ldr	r3, [r4, #16]
+ 348 01a6 0BB1     		cbz	r3, .L24
+ 349              		.loc 1 131 4 discriminator 1 view .LVU109
+ 350 01a8 2046     		mov	r0, r4
+ 351 01aa 9847     		blx	r3
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 10
+
+
+ 352              	.LVL13:
+ 353              	.L24:
+ 132:User/Src/multi_button.c **** 			if(handle->ticks < SHORT_TICKS) {
+ 354              		.loc 1 132 4 view .LVU110
+ 355              		.loc 1 132 13 is_stmt 0 view .LVU111
+ 356 01ac 2388     		ldrh	r3, [r4]
+ 357              		.loc 1 132 6 view .LVU112
+ 358 01ae 3B2B     		cmp	r3, #59
+ 359 01b0 07D8     		bhi	.L25
+ 133:User/Src/multi_button.c **** 				handle->ticks = 0;
+ 360              		.loc 1 133 5 is_stmt 1 view .LVU113
+ 361              		.loc 1 133 19 is_stmt 0 view .LVU114
+ 362 01b2 0023     		movs	r3, #0
+ 363 01b4 2380     		strh	r3, [r4]	@ movhi
+ 134:User/Src/multi_button.c **** 				handle->state = 2; //repeat press
+ 364              		.loc 1 134 5 is_stmt 1 view .LVU115
+ 365              		.loc 1 134 19 is_stmt 0 view .LVU116
+ 366 01b6 E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 367 01b8 0222     		movs	r2, #2
+ 368 01ba 62F30203 		bfi	r3, r2, #0, #3
+ 369 01be E370     		strb	r3, [r4, #3]
+ 370 01c0 2FE0     		b	.L1
+ 371              	.L25:
+ 135:User/Src/multi_button.c **** 			} else {
+ 136:User/Src/multi_button.c **** 				handle->state = 0;
+ 372              		.loc 1 136 5 is_stmt 1 view .LVU117
+ 373              		.loc 1 136 19 is_stmt 0 view .LVU118
+ 374 01c2 E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 375 01c4 6FF30203 		bfc	r3, #0, #3
+ 376 01c8 E370     		strb	r3, [r4, #3]
+ 377 01ca 2AE0     		b	.L1
+ 378              	.L23:
+ 137:User/Src/multi_button.c **** 			}
+ 138:User/Src/multi_button.c **** 		} else if(handle->ticks > SHORT_TICKS) { // SHORT_TICKS < press down hold time < LONG_TICKS
+ 379              		.loc 1 138 10 is_stmt 1 view .LVU119
+ 380              		.loc 1 138 19 is_stmt 0 view .LVU120
+ 381 01cc 2388     		ldrh	r3, [r4]
+ 382              		.loc 1 138 12 view .LVU121
+ 383 01ce 3C2B     		cmp	r3, #60
+ 384 01d0 27D9     		bls	.L1
+ 139:User/Src/multi_button.c **** 			handle->state = 1;
+ 385              		.loc 1 139 4 is_stmt 1 view .LVU122
+ 386              		.loc 1 139 18 is_stmt 0 view .LVU123
+ 387 01d2 E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 388 01d4 0122     		movs	r2, #1
+ 389 01d6 62F30203 		bfi	r3, r2, #0, #3
+ 390 01da E370     		strb	r3, [r4, #3]
+ 391 01dc 21E0     		b	.L1
+ 392              	.L6:
+ 140:User/Src/multi_button.c **** 		}
+ 141:User/Src/multi_button.c **** 		break;
+ 142:User/Src/multi_button.c **** 
+ 143:User/Src/multi_button.c **** 	case 5:
+ 144:User/Src/multi_button.c **** 		if(handle->button_level == handle->active_level) {
+ 393              		.loc 1 144 3 is_stmt 1 view .LVU124
+ 394              		.loc 1 144 12 is_stmt 0 view .LVU125
+ 395 01de E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 11
+
+
+ 396              		.loc 1 144 36 view .LVU126
+ 397 01e0 C3F38012 		ubfx	r2, r3, #6, #1
+ 398              		.loc 1 144 5 view .LVU127
+ 399 01e4 B2EBD31F 		cmp	r2, r3, lsr #7
+ 400 01e8 0DD0     		beq	.L33
+ 145:User/Src/multi_button.c **** 			//continue hold trigger
+ 146:User/Src/multi_button.c **** 			handle->event = (uint8_t)LONG_PRESS_HOLD;
+ 147:User/Src/multi_button.c **** 			EVENT_CB(LONG_PRESS_HOLD);
+ 148:User/Src/multi_button.c **** 		} else { //released
+ 149:User/Src/multi_button.c **** 			handle->event = (uint8_t)PRESS_UP;
+ 401              		.loc 1 149 4 is_stmt 1 view .LVU128
+ 402              		.loc 1 149 18 is_stmt 0 view .LVU129
+ 403 01ea A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 404 01ec 0122     		movs	r2, #1
+ 405 01ee 62F30713 		bfi	r3, r2, #4, #4
+ 406 01f2 A370     		strb	r3, [r4, #2]
+ 150:User/Src/multi_button.c **** 			EVENT_CB(PRESS_UP);
+ 407              		.loc 1 150 4 is_stmt 1 view .LVU130
+ 408 01f4 2369     		ldr	r3, [r4, #16]
+ 409 01f6 0BB1     		cbz	r3, .L27
+ 410              		.loc 1 150 4 discriminator 1 view .LVU131
+ 411 01f8 2046     		mov	r0, r4
+ 412 01fa 9847     		blx	r3
+ 413              	.LVL14:
+ 414              	.L27:
+ 151:User/Src/multi_button.c **** 			handle->state = 0; //reset
+ 415              		.loc 1 151 4 view .LVU132
+ 416              		.loc 1 151 18 is_stmt 0 view .LVU133
+ 417 01fc E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 418 01fe 6FF30203 		bfc	r3, #0, #3
+ 419 0202 E370     		strb	r3, [r4, #3]
+ 420 0204 0DE0     		b	.L1
+ 421              	.L33:
+ 146:User/Src/multi_button.c **** 			EVENT_CB(LONG_PRESS_HOLD);
+ 422              		.loc 1 146 4 is_stmt 1 view .LVU134
+ 146:User/Src/multi_button.c **** 			EVENT_CB(LONG_PRESS_HOLD);
+ 423              		.loc 1 146 18 is_stmt 0 view .LVU135
+ 424 0206 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 425 0208 0622     		movs	r2, #6
+ 426 020a 62F30713 		bfi	r3, r2, #4, #4
+ 427 020e A370     		strb	r3, [r4, #2]
+ 147:User/Src/multi_button.c **** 		} else { //released
+ 428              		.loc 1 147 4 is_stmt 1 view .LVU136
+ 429 0210 636A     		ldr	r3, [r4, #36]
+ 430 0212 33B1     		cbz	r3, .L1
+ 147:User/Src/multi_button.c **** 		} else { //released
+ 431              		.loc 1 147 4 discriminator 1 view .LVU137
+ 432 0214 2046     		mov	r0, r4
+ 433 0216 9847     		blx	r3
+ 434              	.LVL15:
+ 435 0218 03E0     		b	.L1
+ 436              	.L5:
+ 152:User/Src/multi_button.c **** 		}
+ 153:User/Src/multi_button.c **** 		break;
+ 154:User/Src/multi_button.c **** 	default:
+ 155:User/Src/multi_button.c **** 		handle->state = 0; //reset
+ 437              		.loc 1 155 3 view .LVU138
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 12
+
+
+ 438              		.loc 1 155 17 is_stmt 0 view .LVU139
+ 439 021a E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 440 021c 6FF30203 		bfc	r3, #0, #3
+ 441 0220 E370     		strb	r3, [r4, #3]
+ 156:User/Src/multi_button.c **** 		break;
+ 442              		.loc 1 156 3 is_stmt 1 view .LVU140
+ 443              	.L1:
+ 157:User/Src/multi_button.c **** 	}
+ 158:User/Src/multi_button.c **** }
+ 444              		.loc 1 158 1 is_stmt 0 view .LVU141
+ 445 0222 10BD     		pop	{r4, pc}
+ 446              		.loc 1 158 1 view .LVU142
+ 447              		.cfi_endproc
+ 448              	.LFE68:
+ 450              		.section	.text.read_button_GPIO,"ax",%progbits
+ 451              		.align	1
+ 452              		.global	read_button_GPIO
+ 453              		.syntax unified
+ 454              		.thumb
+ 455              		.thumb_func
+ 457              	read_button_GPIO:
+ 458              	.LVL16:
+ 459              	.LFB72:
+ 159:User/Src/multi_button.c **** 
+ 160:User/Src/multi_button.c **** /**
+ 161:User/Src/multi_button.c ****   * @brief  Start the button work, add the handle into work list.
+ 162:User/Src/multi_button.c ****   * @param  handle: target handle struct.
+ 163:User/Src/multi_button.c ****   * @retval 0: succeed. -1: already exist.
+ 164:User/Src/multi_button.c ****   */
+ 165:User/Src/multi_button.c **** int button_start(struct Button* handle)
+ 166:User/Src/multi_button.c **** {
+ 167:User/Src/multi_button.c **** 	struct Button* target = head_handle;
+ 168:User/Src/multi_button.c **** 	while(target) {
+ 169:User/Src/multi_button.c **** 		if(target == handle) return -1;	//already exist.
+ 170:User/Src/multi_button.c **** 		target = target->next;
+ 171:User/Src/multi_button.c **** 	}
+ 172:User/Src/multi_button.c **** 	handle->next = head_handle;
+ 173:User/Src/multi_button.c **** 	head_handle = handle;
+ 174:User/Src/multi_button.c **** 	return 0;
+ 175:User/Src/multi_button.c **** }
+ 176:User/Src/multi_button.c **** 
+ 177:User/Src/multi_button.c **** /**
+ 178:User/Src/multi_button.c ****   * @brief  Stop the button work, remove the handle off work list.
+ 179:User/Src/multi_button.c ****   * @param  handle: target handle struct.
+ 180:User/Src/multi_button.c ****   * @retval None
+ 181:User/Src/multi_button.c ****   */
+ 182:User/Src/multi_button.c **** void button_stop(struct Button* handle)
+ 183:User/Src/multi_button.c **** {
+ 184:User/Src/multi_button.c **** 	struct Button** curr;
+ 185:User/Src/multi_button.c **** 	for(curr = &head_handle; *curr; ) {
+ 186:User/Src/multi_button.c **** 		struct Button* entry = *curr;
+ 187:User/Src/multi_button.c **** 		if(entry == handle) {
+ 188:User/Src/multi_button.c **** 			*curr = entry->next;
+ 189:User/Src/multi_button.c **** //			free(entry);
+ 190:User/Src/multi_button.c **** 			return;//glacier add 2021-8-18
+ 191:User/Src/multi_button.c **** 		} else {
+ 192:User/Src/multi_button.c **** 			curr = &entry->next;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 13
+
+
+ 193:User/Src/multi_button.c **** 		}
+ 194:User/Src/multi_button.c **** 	}
+ 195:User/Src/multi_button.c **** }
+ 196:User/Src/multi_button.c **** 
+ 197:User/Src/multi_button.c **** /**
+ 198:User/Src/multi_button.c ****   * @brief  background ticks, timer repeat invoking interval 5ms.
+ 199:User/Src/multi_button.c ****   * @param  None.
+ 200:User/Src/multi_button.c ****   * @retval None
+ 201:User/Src/multi_button.c ****   */
+ 202:User/Src/multi_button.c **** void button_ticks(void)
+ 203:User/Src/multi_button.c **** {
+ 204:User/Src/multi_button.c **** 	struct Button* target;
+ 205:User/Src/multi_button.c **** 	for(target=head_handle; target; target=target->next) {
+ 206:User/Src/multi_button.c **** 		button_handler(target);
+ 207:User/Src/multi_button.c **** 	}
+ 208:User/Src/multi_button.c **** 		
+ 209:User/Src/multi_button.c **** }
+ 210:User/Src/multi_button.c **** 
+ 211:User/Src/multi_button.c **** 
+ 212:User/Src/multi_button.c **** 
+ 213:User/Src/multi_button.c **** struct Button btn1;
+ 214:User/Src/multi_button.c **** struct Button btn2;
+ 215:User/Src/multi_button.c **** 
+ 216:User/Src/multi_button.c **** 
+ 217:User/Src/multi_button.c **** enum Button_IDs {
+ 218:User/Src/multi_button.c **** 	btn1_id=1,
+ 219:User/Src/multi_button.c **** 	btn2_id,
+ 220:User/Src/multi_button.c **** };
+ 221:User/Src/multi_button.c ****  
+ 222:User/Src/multi_button.c **** 
+ 223:User/Src/multi_button.c **** uint8_t read_button_GPIO(uint8_t button_id)
+ 224:User/Src/multi_button.c **** {
+ 460              		.loc 1 224 1 is_stmt 1 view -0
+ 461              		.cfi_startproc
+ 462              		@ args = 0, pretend = 0, frame = 8
+ 463              		@ frame_needed = 0, uses_anonymous_args = 0
+ 464              		.loc 1 224 1 is_stmt 0 view .LVU144
+ 465 0000 00B5     		push	{lr}
+ 466              	.LCFI1:
+ 467              		.cfi_def_cfa_offset 4
+ 468              		.cfi_offset 14, -4
+ 469 0002 83B0     		sub	sp, sp, #12
+ 470              	.LCFI2:
+ 471              		.cfi_def_cfa_offset 16
+ 225:User/Src/multi_button.c **** 	// you can share the GPIO read function with multiple Buttons
+ 226:User/Src/multi_button.c **** 	__HAL_RCC_GPIOA_CLK_ENABLE();
+ 472              		.loc 1 226 2 is_stmt 1 view .LVU145
+ 473              	.LBB2:
+ 474              		.loc 1 226 2 view .LVU146
+ 475              		.loc 1 226 2 view .LVU147
+ 476 0004 124B     		ldr	r3, .L39
+ 477 0006 9A69     		ldr	r2, [r3, #24]
+ 478 0008 42F00402 		orr	r2, r2, #4
+ 479 000c 9A61     		str	r2, [r3, #24]
+ 480              		.loc 1 226 2 view .LVU148
+ 481 000e 9A69     		ldr	r2, [r3, #24]
+ 482 0010 02F00402 		and	r2, r2, #4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 14
+
+
+ 483 0014 0092     		str	r2, [sp]
+ 484              		.loc 1 226 2 view .LVU149
+ 485 0016 009A     		ldr	r2, [sp]
+ 486              	.LBE2:
+ 487              		.loc 1 226 2 view .LVU150
+ 227:User/Src/multi_button.c **** 	__HAL_RCC_GPIOC_CLK_ENABLE();
+ 488              		.loc 1 227 2 view .LVU151
+ 489              	.LBB3:
+ 490              		.loc 1 227 2 view .LVU152
+ 491              		.loc 1 227 2 view .LVU153
+ 492 0018 9A69     		ldr	r2, [r3, #24]
+ 493 001a 42F01002 		orr	r2, r2, #16
+ 494 001e 9A61     		str	r2, [r3, #24]
+ 495              		.loc 1 227 2 view .LVU154
+ 496 0020 9B69     		ldr	r3, [r3, #24]
+ 497 0022 03F01003 		and	r3, r3, #16
+ 498 0026 0193     		str	r3, [sp, #4]
+ 499              		.loc 1 227 2 view .LVU155
+ 500 0028 019B     		ldr	r3, [sp, #4]
+ 501              	.LBE3:
+ 502              		.loc 1 227 2 view .LVU156
+ 228:User/Src/multi_button.c **** 	switch(button_id)
+ 503              		.loc 1 228 2 view .LVU157
+ 504 002a 0128     		cmp	r0, #1
+ 505 002c 05D0     		beq	.L35
+ 506 002e 0228     		cmp	r0, #2
+ 507 0030 08D0     		beq	.L36
+ 508 0032 0020     		movs	r0, #0
+ 509              	.LVL17:
+ 510              	.L37:
+ 229:User/Src/multi_button.c **** 	{
+ 230:User/Src/multi_button.c **** 		case btn1_id:
+ 231:User/Src/multi_button.c **** 			return HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0);//1
+ 232:User/Src/multi_button.c **** 		case btn2_id:
+ 233:User/Src/multi_button.c **** 			return HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);//2
+ 234:User/Src/multi_button.c **** 		default:
+ 235:User/Src/multi_button.c **** 			return 0;
+ 236:User/Src/multi_button.c **** 	}
+ 237:User/Src/multi_button.c **** }
+ 511              		.loc 1 237 1 is_stmt 0 view .LVU158
+ 512 0034 03B0     		add	sp, sp, #12
+ 513              	.LCFI3:
+ 514              		.cfi_remember_state
+ 515              		.cfi_def_cfa_offset 4
+ 516              		@ sp needed
+ 517 0036 5DF804FB 		ldr	pc, [sp], #4
+ 518              	.LVL18:
+ 519              	.L35:
+ 520              	.LCFI4:
+ 521              		.cfi_restore_state
+ 231:User/Src/multi_button.c **** 		case btn2_id:
+ 522              		.loc 1 231 4 is_stmt 1 view .LVU159
+ 231:User/Src/multi_button.c **** 		case btn2_id:
+ 523              		.loc 1 231 11 is_stmt 0 view .LVU160
+ 524 003a 0121     		movs	r1, #1
+ 525 003c 0548     		ldr	r0, .L39+4
+ 526              	.LVL19:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 15
+
+
+ 231:User/Src/multi_button.c **** 		case btn2_id:
+ 527              		.loc 1 231 11 view .LVU161
+ 528 003e FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 529              	.LVL20:
+ 530 0042 F7E7     		b	.L37
+ 531              	.LVL21:
+ 532              	.L36:
+ 233:User/Src/multi_button.c **** 		default:
+ 533              		.loc 1 233 4 is_stmt 1 view .LVU162
+ 233:User/Src/multi_button.c **** 		default:
+ 534              		.loc 1 233 11 is_stmt 0 view .LVU163
+ 535 0044 4FF40051 		mov	r1, #8192
+ 536 0048 0348     		ldr	r0, .L39+8
+ 537              	.LVL22:
+ 233:User/Src/multi_button.c **** 		default:
+ 538              		.loc 1 233 11 view .LVU164
+ 539 004a FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 540              	.LVL23:
+ 541 004e F1E7     		b	.L37
+ 542              	.L40:
+ 543              		.align	2
+ 544              	.L39:
+ 545 0050 00100240 		.word	1073876992
+ 546 0054 00080140 		.word	1073809408
+ 547 0058 00100140 		.word	1073811456
+ 548              		.cfi_endproc
+ 549              	.LFE72:
+ 551              		.section	.rodata.BTN1_LONG_PRESS_START_Handler.str1.4,"aMS",%progbits,1
+ 552              		.align	2
+ 553              	.LC0:
+ 554 0000 206B6579 		.ascii	" key1 LONG_PRESS_START\015\012\000"
+ 554      31204C4F 
+ 554      4E475F50 
+ 554      52455353 
+ 554      5F535441 
+ 555              		.section	.text.BTN1_LONG_PRESS_START_Handler,"ax",%progbits
+ 556              		.align	1
+ 557              		.global	BTN1_LONG_PRESS_START_Handler
+ 558              		.syntax unified
+ 559              		.thumb
+ 560              		.thumb_func
+ 562              	BTN1_LONG_PRESS_START_Handler:
+ 563              	.LVL24:
+ 564              	.LFB74:
+ 238:User/Src/multi_button.c **** 
+ 239:User/Src/multi_button.c **** 
+ 240:User/Src/multi_button.c **** void BTN1_SINGLE_CLICK_Handler(void* btn)
+ 241:User/Src/multi_button.c **** {
+ 242:User/Src/multi_button.c **** 	//get_button_event(btn);
+ 243:User/Src/multi_button.c **** 	UsbPrintf(" key1 SINGLE_CLICK \r\n");
+ 244:User/Src/multi_button.c **** 	HAL_GPIO_TogglePin(GPIOF,GPIO_PIN_8);
+ 245:User/Src/multi_button.c **** }
+ 246:User/Src/multi_button.c **** 
+ 247:User/Src/multi_button.c **** void BTN1_LONG_PRESS_START_Handler(void* btn)
+ 248:User/Src/multi_button.c **** {
+ 565              		.loc 1 248 1 is_stmt 1 view -0
+ 566              		.cfi_startproc
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 16
+
+
+ 567              		@ args = 0, pretend = 0, frame = 0
+ 568              		@ frame_needed = 0, uses_anonymous_args = 0
+ 569              		.loc 1 248 1 is_stmt 0 view .LVU166
+ 570 0000 08B5     		push	{r3, lr}
+ 571              	.LCFI5:
+ 572              		.cfi_def_cfa_offset 8
+ 573              		.cfi_offset 3, -8
+ 574              		.cfi_offset 14, -4
+ 249:User/Src/multi_button.c **** 	UsbPrintf(" key1 LONG_PRESS_START\r\n");
+ 575              		.loc 1 249 2 is_stmt 1 view .LVU167
+ 576 0002 0248     		ldr	r0, .L43
+ 577              	.LVL25:
+ 578              		.loc 1 249 2 is_stmt 0 view .LVU168
+ 579 0004 FFF7FEFF 		bl	UsbPrintf
+ 580              	.LVL26:
+ 250:User/Src/multi_button.c **** }
+ 581              		.loc 1 250 1 view .LVU169
+ 582 0008 08BD     		pop	{r3, pc}
+ 583              	.L44:
+ 584 000a 00BF     		.align	2
+ 585              	.L43:
+ 586 000c 00000000 		.word	.LC0
+ 587              		.cfi_endproc
+ 588              	.LFE74:
+ 590              		.section	.rodata.BTN1_DOUBLE_CLICK_Handler.str1.4,"aMS",%progbits,1
+ 591              		.align	2
+ 592              	.LC1:
+ 593 0000 206B6579 		.ascii	" key1 DOUBLE_CLICK\015\012\000"
+ 593      3120444F 
+ 593      55424C45 
+ 593      5F434C49 
+ 593      434B0D0A 
+ 594              		.section	.text.BTN1_DOUBLE_CLICK_Handler,"ax",%progbits
+ 595              		.align	1
+ 596              		.global	BTN1_DOUBLE_CLICK_Handler
+ 597              		.syntax unified
+ 598              		.thumb
+ 599              		.thumb_func
+ 601              	BTN1_DOUBLE_CLICK_Handler:
+ 602              	.LVL27:
+ 603              	.LFB75:
+ 251:User/Src/multi_button.c **** void BTN1_DOUBLE_CLICK_Handler(void* btn)
+ 252:User/Src/multi_button.c **** {
+ 604              		.loc 1 252 1 is_stmt 1 view -0
+ 605              		.cfi_startproc
+ 606              		@ args = 0, pretend = 0, frame = 0
+ 607              		@ frame_needed = 0, uses_anonymous_args = 0
+ 608              		.loc 1 252 1 is_stmt 0 view .LVU171
+ 609 0000 08B5     		push	{r3, lr}
+ 610              	.LCFI6:
+ 611              		.cfi_def_cfa_offset 8
+ 612              		.cfi_offset 3, -8
+ 613              		.cfi_offset 14, -4
+ 253:User/Src/multi_button.c **** 	UsbPrintf(" key1 DOUBLE_CLICK\r\n");
+ 614              		.loc 1 253 2 is_stmt 1 view .LVU172
+ 615 0002 0248     		ldr	r0, .L47
+ 616              	.LVL28:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 17
+
+
+ 617              		.loc 1 253 2 is_stmt 0 view .LVU173
+ 618 0004 FFF7FEFF 		bl	UsbPrintf
+ 619              	.LVL29:
+ 254:User/Src/multi_button.c **** }
+ 620              		.loc 1 254 1 view .LVU174
+ 621 0008 08BD     		pop	{r3, pc}
+ 622              	.L48:
+ 623 000a 00BF     		.align	2
+ 624              	.L47:
+ 625 000c 00000000 		.word	.LC1
+ 626              		.cfi_endproc
+ 627              	.LFE75:
+ 629              		.section	.rodata.BTN2_DOUBLE_CLICK_Handler.str1.4,"aMS",%progbits,1
+ 630              		.align	2
+ 631              	.LC2:
+ 632 0000 206B6579 		.ascii	" key2 DOUBLE_CLICK\015\012\000"
+ 632      3220444F 
+ 632      55424C45 
+ 632      5F434C49 
+ 632      434B0D0A 
+ 633              		.section	.text.BTN2_DOUBLE_CLICK_Handler,"ax",%progbits
+ 634              		.align	1
+ 635              		.global	BTN2_DOUBLE_CLICK_Handler
+ 636              		.syntax unified
+ 637              		.thumb
+ 638              		.thumb_func
+ 640              	BTN2_DOUBLE_CLICK_Handler:
+ 641              	.LVL30:
+ 642              	.LFB77:
+ 255:User/Src/multi_button.c **** 
+ 256:User/Src/multi_button.c **** void BTN2_PRESS_DOWN_Handler(void* btn)
+ 257:User/Src/multi_button.c **** {
+ 258:User/Src/multi_button.c **** 	UsbPrintf(" key2 PRESS_DOWN\r\n");
+ 259:User/Src/multi_button.c **** 	HAL_GPIO_TogglePin(GPIOF,GPIO_PIN_7);
+ 260:User/Src/multi_button.c **** }
+ 261:User/Src/multi_button.c **** 
+ 262:User/Src/multi_button.c **** void BTN2_DOUBLE_CLICK_Handler(void* btn)
+ 263:User/Src/multi_button.c **** {
+ 643              		.loc 1 263 1 is_stmt 1 view -0
+ 644              		.cfi_startproc
+ 645              		@ args = 0, pretend = 0, frame = 0
+ 646              		@ frame_needed = 0, uses_anonymous_args = 0
+ 647              		.loc 1 263 1 is_stmt 0 view .LVU176
+ 648 0000 08B5     		push	{r3, lr}
+ 649              	.LCFI7:
+ 650              		.cfi_def_cfa_offset 8
+ 651              		.cfi_offset 3, -8
+ 652              		.cfi_offset 14, -4
+ 264:User/Src/multi_button.c **** 	UsbPrintf(" key2 DOUBLE_CLICK\r\n");
+ 653              		.loc 1 264 2 is_stmt 1 view .LVU177
+ 654 0002 0248     		ldr	r0, .L51
+ 655              	.LVL31:
+ 656              		.loc 1 264 2 is_stmt 0 view .LVU178
+ 657 0004 FFF7FEFF 		bl	UsbPrintf
+ 658              	.LVL32:
+ 265:User/Src/multi_button.c **** }
+ 659              		.loc 1 265 1 view .LVU179
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 18
+
+
+ 660 0008 08BD     		pop	{r3, pc}
+ 661              	.L52:
+ 662 000a 00BF     		.align	2
+ 663              	.L51:
+ 664 000c 00000000 		.word	.LC2
+ 665              		.cfi_endproc
+ 666              	.LFE77:
+ 668              		.section	.rodata.BTN1_SINGLE_CLICK_Handler.str1.4,"aMS",%progbits,1
+ 669              		.align	2
+ 670              	.LC3:
+ 671 0000 206B6579 		.ascii	" key1 SINGLE_CLICK \015\012\000"
+ 671      31205349 
+ 671      4E474C45 
+ 671      5F434C49 
+ 671      434B200D 
+ 672              		.section	.text.BTN1_SINGLE_CLICK_Handler,"ax",%progbits
+ 673              		.align	1
+ 674              		.global	BTN1_SINGLE_CLICK_Handler
+ 675              		.syntax unified
+ 676              		.thumb
+ 677              		.thumb_func
+ 679              	BTN1_SINGLE_CLICK_Handler:
+ 680              	.LVL33:
+ 681              	.LFB73:
+ 241:User/Src/multi_button.c **** 	//get_button_event(btn);
+ 682              		.loc 1 241 1 is_stmt 1 view -0
+ 683              		.cfi_startproc
+ 684              		@ args = 0, pretend = 0, frame = 0
+ 685              		@ frame_needed = 0, uses_anonymous_args = 0
+ 241:User/Src/multi_button.c **** 	//get_button_event(btn);
+ 686              		.loc 1 241 1 is_stmt 0 view .LVU181
+ 687 0000 08B5     		push	{r3, lr}
+ 688              	.LCFI8:
+ 689              		.cfi_def_cfa_offset 8
+ 690              		.cfi_offset 3, -8
+ 691              		.cfi_offset 14, -4
+ 243:User/Src/multi_button.c **** 	HAL_GPIO_TogglePin(GPIOF,GPIO_PIN_8);
+ 692              		.loc 1 243 2 is_stmt 1 view .LVU182
+ 693 0002 0448     		ldr	r0, .L55
+ 694              	.LVL34:
+ 243:User/Src/multi_button.c **** 	HAL_GPIO_TogglePin(GPIOF,GPIO_PIN_8);
+ 695              		.loc 1 243 2 is_stmt 0 view .LVU183
+ 696 0004 FFF7FEFF 		bl	UsbPrintf
+ 697              	.LVL35:
+ 244:User/Src/multi_button.c **** }
+ 698              		.loc 1 244 2 is_stmt 1 view .LVU184
+ 699 0008 4FF48071 		mov	r1, #256
+ 700 000c 0248     		ldr	r0, .L55+4
+ 701 000e FFF7FEFF 		bl	HAL_GPIO_TogglePin
+ 702              	.LVL36:
+ 245:User/Src/multi_button.c **** 
+ 703              		.loc 1 245 1 is_stmt 0 view .LVU185
+ 704 0012 08BD     		pop	{r3, pc}
+ 705              	.L56:
+ 706              		.align	2
+ 707              	.L55:
+ 708 0014 00000000 		.word	.LC3
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 19
+
+
+ 709 0018 001C0140 		.word	1073814528
+ 710              		.cfi_endproc
+ 711              	.LFE73:
+ 713              		.section	.rodata.BTN2_PRESS_DOWN_Handler.str1.4,"aMS",%progbits,1
+ 714              		.align	2
+ 715              	.LC4:
+ 716 0000 206B6579 		.ascii	" key2 PRESS_DOWN\015\012\000"
+ 716      32205052 
+ 716      4553535F 
+ 716      444F574E 
+ 716      0D0A00
+ 717              		.section	.text.BTN2_PRESS_DOWN_Handler,"ax",%progbits
+ 718              		.align	1
+ 719              		.global	BTN2_PRESS_DOWN_Handler
+ 720              		.syntax unified
+ 721              		.thumb
+ 722              		.thumb_func
+ 724              	BTN2_PRESS_DOWN_Handler:
+ 725              	.LVL37:
+ 726              	.LFB76:
+ 257:User/Src/multi_button.c **** 	UsbPrintf(" key2 PRESS_DOWN\r\n");
+ 727              		.loc 1 257 1 is_stmt 1 view -0
+ 728              		.cfi_startproc
+ 729              		@ args = 0, pretend = 0, frame = 0
+ 730              		@ frame_needed = 0, uses_anonymous_args = 0
+ 257:User/Src/multi_button.c **** 	UsbPrintf(" key2 PRESS_DOWN\r\n");
+ 731              		.loc 1 257 1 is_stmt 0 view .LVU187
+ 732 0000 08B5     		push	{r3, lr}
+ 733              	.LCFI9:
+ 734              		.cfi_def_cfa_offset 8
+ 735              		.cfi_offset 3, -8
+ 736              		.cfi_offset 14, -4
+ 258:User/Src/multi_button.c **** 	HAL_GPIO_TogglePin(GPIOF,GPIO_PIN_7);
+ 737              		.loc 1 258 2 is_stmt 1 view .LVU188
+ 738 0002 0448     		ldr	r0, .L59
+ 739              	.LVL38:
+ 258:User/Src/multi_button.c **** 	HAL_GPIO_TogglePin(GPIOF,GPIO_PIN_7);
+ 740              		.loc 1 258 2 is_stmt 0 view .LVU189
+ 741 0004 FFF7FEFF 		bl	UsbPrintf
+ 742              	.LVL39:
+ 259:User/Src/multi_button.c **** }
+ 743              		.loc 1 259 2 is_stmt 1 view .LVU190
+ 744 0008 8021     		movs	r1, #128
+ 745 000a 0348     		ldr	r0, .L59+4
+ 746 000c FFF7FEFF 		bl	HAL_GPIO_TogglePin
+ 747              	.LVL40:
+ 260:User/Src/multi_button.c **** 
+ 748              		.loc 1 260 1 is_stmt 0 view .LVU191
+ 749 0010 08BD     		pop	{r3, pc}
+ 750              	.L60:
+ 751 0012 00BF     		.align	2
+ 752              	.L59:
+ 753 0014 00000000 		.word	.LC4
+ 754 0018 001C0140 		.word	1073814528
+ 755              		.cfi_endproc
+ 756              	.LFE76:
+ 758              		.section	.text.button_init,"ax",%progbits
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 20
+
+
+ 759              		.align	1
+ 760              		.global	button_init
+ 761              		.syntax unified
+ 762              		.thumb
+ 763              		.thumb_func
+ 765              	button_init:
+ 766              	.LVL41:
+ 767              	.LFB65:
+  25:User/Src/multi_button.c **** 	memset(handle, 0, sizeof(struct Button));
+ 768              		.loc 1 25 1 is_stmt 1 view -0
+ 769              		.cfi_startproc
+ 770              		@ args = 0, pretend = 0, frame = 0
+ 771              		@ frame_needed = 0, uses_anonymous_args = 0
+  25:User/Src/multi_button.c **** 	memset(handle, 0, sizeof(struct Button));
+ 772              		.loc 1 25 1 is_stmt 0 view .LVU193
+ 773 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 774              	.LCFI10:
+ 775              		.cfi_def_cfa_offset 24
+ 776              		.cfi_offset 3, -24
+ 777              		.cfi_offset 4, -20
+ 778              		.cfi_offset 5, -16
+ 779              		.cfi_offset 6, -12
+ 780              		.cfi_offset 7, -8
+ 781              		.cfi_offset 14, -4
+ 782 0002 0446     		mov	r4, r0
+ 783 0004 0F46     		mov	r7, r1
+ 784 0006 1546     		mov	r5, r2
+ 785 0008 1E46     		mov	r6, r3
+  26:User/Src/multi_button.c **** 	handle->event = (uint8_t)NONE_PRESS;
+ 786              		.loc 1 26 2 is_stmt 1 view .LVU194
+ 787 000a 2C22     		movs	r2, #44
+ 788              	.LVL42:
+  26:User/Src/multi_button.c **** 	handle->event = (uint8_t)NONE_PRESS;
+ 789              		.loc 1 26 2 is_stmt 0 view .LVU195
+ 790 000c 0021     		movs	r1, #0
+ 791              	.LVL43:
+  26:User/Src/multi_button.c **** 	handle->event = (uint8_t)NONE_PRESS;
+ 792              		.loc 1 26 2 view .LVU196
+ 793 000e FFF7FEFF 		bl	memset
+ 794              	.LVL44:
+  27:User/Src/multi_button.c **** 	handle->hal_button_Level = pin_level;
+ 795              		.loc 1 27 2 is_stmt 1 view .LVU197
+  27:User/Src/multi_button.c **** 	handle->hal_button_Level = pin_level;
+ 796              		.loc 1 27 16 is_stmt 0 view .LVU198
+ 797 0012 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 798 0014 0822     		movs	r2, #8
+ 799 0016 62F30713 		bfi	r3, r2, #4, #4
+ 800 001a A370     		strb	r3, [r4, #2]
+  28:User/Src/multi_button.c **** 	handle->button_level = !active_level;
+ 801              		.loc 1 28 2 is_stmt 1 view .LVU199
+  28:User/Src/multi_button.c **** 	handle->button_level = !active_level;
+ 802              		.loc 1 28 27 is_stmt 0 view .LVU200
+ 803 001c A760     		str	r7, [r4, #8]
+  29:User/Src/multi_button.c **** 	handle->active_level = active_level;
+ 804              		.loc 1 29 2 is_stmt 1 view .LVU201
+  29:User/Src/multi_button.c **** 	handle->active_level = active_level;
+ 805              		.loc 1 29 25 is_stmt 0 view .LVU202
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 21
+
+
+ 806 001e B5FA85F3 		clz	r3, r5
+ 807 0022 5B09     		lsrs	r3, r3, #5
+  29:User/Src/multi_button.c **** 	handle->active_level = active_level;
+ 808              		.loc 1 29 23 view .LVU203
+ 809 0024 E278     		ldrb	r2, [r4, #3]	@ zero_extendqisi2
+ 810 0026 63F3C712 		bfi	r2, r3, #7, #1
+ 811 002a E270     		strb	r2, [r4, #3]
+  30:User/Src/multi_button.c **** 	handle->button_id = button_id;
+ 812              		.loc 1 30 2 is_stmt 1 view .LVU204
+  30:User/Src/multi_button.c **** 	handle->button_id = button_id;
+ 813              		.loc 1 30 23 is_stmt 0 view .LVU205
+ 814 002c D3B2     		uxtb	r3, r2
+ 815 002e 65F38613 		bfi	r3, r5, #6, #1
+ 816              	.LVL45:
+  30:User/Src/multi_button.c **** 	handle->button_id = button_id;
+ 817              		.loc 1 30 23 view .LVU206
+ 818 0032 E370     		strb	r3, [r4, #3]
+  31:User/Src/multi_button.c **** }
+ 819              		.loc 1 31 2 is_stmt 1 view .LVU207
+  31:User/Src/multi_button.c **** }
+ 820              		.loc 1 31 20 is_stmt 0 view .LVU208
+ 821 0034 2671     		strb	r6, [r4, #4]
+  32:User/Src/multi_button.c **** 
+ 822              		.loc 1 32 1 view .LVU209
+ 823 0036 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+  32:User/Src/multi_button.c **** 
+ 824              		.loc 1 32 1 view .LVU210
+ 825              		.cfi_endproc
+ 826              	.LFE65:
+ 828              		.section	.text.button_attach,"ax",%progbits
+ 829              		.align	1
+ 830              		.global	button_attach
+ 831              		.syntax unified
+ 832              		.thumb
+ 833              		.thumb_func
+ 835              	button_attach:
+ 836              	.LVL46:
+ 837              	.LFB66:
+  42:User/Src/multi_button.c **** 	handle->cb[event] = cb;
+ 838              		.loc 1 42 1 is_stmt 1 view -0
+ 839              		.cfi_startproc
+ 840              		@ args = 0, pretend = 0, frame = 0
+ 841              		@ frame_needed = 0, uses_anonymous_args = 0
+ 842              		@ link register save eliminated.
+  43:User/Src/multi_button.c **** }
+ 843              		.loc 1 43 2 view .LVU212
+  43:User/Src/multi_button.c **** }
+ 844              		.loc 1 43 20 is_stmt 0 view .LVU213
+ 845 0000 0231     		adds	r1, r1, #2
+ 846              	.LVL47:
+  43:User/Src/multi_button.c **** }
+ 847              		.loc 1 43 20 view .LVU214
+ 848 0002 00EB8100 		add	r0, r0, r1, lsl #2
+ 849              	.LVL48:
+  43:User/Src/multi_button.c **** }
+ 850              		.loc 1 43 20 view .LVU215
+ 851 0006 4260     		str	r2, [r0, #4]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 22
+
+
+  44:User/Src/multi_button.c **** 
+ 852              		.loc 1 44 1 view .LVU216
+ 853 0008 7047     		bx	lr
+ 854              		.cfi_endproc
+ 855              	.LFE66:
+ 857              		.section	.text.get_button_event,"ax",%progbits
+ 858              		.align	1
+ 859              		.global	get_button_event
+ 860              		.syntax unified
+ 861              		.thumb
+ 862              		.thumb_func
+ 864              	get_button_event:
+ 865              	.LVL49:
+ 866              	.LFB67:
+  52:User/Src/multi_button.c **** 	return (PressEvent)(handle->event);
+ 867              		.loc 1 52 1 is_stmt 1 view -0
+ 868              		.cfi_startproc
+ 869              		@ args = 0, pretend = 0, frame = 0
+ 870              		@ frame_needed = 0, uses_anonymous_args = 0
+ 871              		@ link register save eliminated.
+  53:User/Src/multi_button.c **** }
+ 872              		.loc 1 53 2 view .LVU218
+  53:User/Src/multi_button.c **** }
+ 873              		.loc 1 53 28 is_stmt 0 view .LVU219
+ 874 0000 8078     		ldrb	r0, [r0, #2]	@ zero_extendqisi2
+ 875              	.LVL50:
+  54:User/Src/multi_button.c **** 
+ 876              		.loc 1 54 1 view .LVU220
+ 877 0002 0009     		lsrs	r0, r0, #4
+ 878 0004 7047     		bx	lr
+ 879              		.cfi_endproc
+ 880              	.LFE67:
+ 882              		.section	.text.button_start,"ax",%progbits
+ 883              		.align	1
+ 884              		.global	button_start
+ 885              		.syntax unified
+ 886              		.thumb
+ 887              		.thumb_func
+ 889              	button_start:
+ 890              	.LVL51:
+ 891              	.LFB69:
+ 166:User/Src/multi_button.c **** 	struct Button* target = head_handle;
+ 892              		.loc 1 166 1 is_stmt 1 view -0
+ 893              		.cfi_startproc
+ 894              		@ args = 0, pretend = 0, frame = 0
+ 895              		@ frame_needed = 0, uses_anonymous_args = 0
+ 896              		@ link register save eliminated.
+ 167:User/Src/multi_button.c **** 	while(target) {
+ 897              		.loc 1 167 2 view .LVU222
+ 167:User/Src/multi_button.c **** 	while(target) {
+ 898              		.loc 1 167 17 is_stmt 0 view .LVU223
+ 899 0000 074B     		ldr	r3, .L72
+ 900 0002 1A68     		ldr	r2, [r3]
+ 901              	.LVL52:
+ 168:User/Src/multi_button.c **** 		if(target == handle) return -1;	//already exist.
+ 902              		.loc 1 168 2 is_stmt 1 view .LVU224
+ 167:User/Src/multi_button.c **** 	while(target) {
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 23
+
+
+ 903              		.loc 1 167 17 is_stmt 0 view .LVU225
+ 904 0004 1346     		mov	r3, r2
+ 168:User/Src/multi_button.c **** 		if(target == handle) return -1;	//already exist.
+ 905              		.loc 1 168 7 view .LVU226
+ 906 0006 00E0     		b	.L66
+ 907              	.LVL53:
+ 908              	.L71:
+ 170:User/Src/multi_button.c **** 	}
+ 909              		.loc 1 170 3 is_stmt 1 view .LVU227
+ 170:User/Src/multi_button.c **** 	}
+ 910              		.loc 1 170 10 is_stmt 0 view .LVU228
+ 911 0008 9B6A     		ldr	r3, [r3, #40]
+ 912              	.LVL54:
+ 913              	.L66:
+ 168:User/Src/multi_button.c **** 		if(target == handle) return -1;	//already exist.
+ 914              		.loc 1 168 7 is_stmt 1 view .LVU229
+ 915 000a 23B1     		cbz	r3, .L70
+ 169:User/Src/multi_button.c **** 		target = target->next;
+ 916              		.loc 1 169 3 view .LVU230
+ 169:User/Src/multi_button.c **** 		target = target->next;
+ 917              		.loc 1 169 5 is_stmt 0 view .LVU231
+ 918 000c 8342     		cmp	r3, r0
+ 919 000e FBD1     		bne	.L71
+ 169:User/Src/multi_button.c **** 		target = target->next;
+ 920              		.loc 1 169 31 view .LVU232
+ 921 0010 4FF0FF30 		mov	r0, #-1
+ 922              	.LVL55:
+ 175:User/Src/multi_button.c **** 
+ 923              		.loc 1 175 1 view .LVU233
+ 924 0014 7047     		bx	lr
+ 925              	.LVL56:
+ 926              	.L70:
+ 172:User/Src/multi_button.c **** 	head_handle = handle;
+ 927              		.loc 1 172 2 is_stmt 1 view .LVU234
+ 172:User/Src/multi_button.c **** 	head_handle = handle;
+ 928              		.loc 1 172 15 is_stmt 0 view .LVU235
+ 929 0016 8262     		str	r2, [r0, #40]
+ 173:User/Src/multi_button.c **** 	return 0;
+ 930              		.loc 1 173 2 is_stmt 1 view .LVU236
+ 173:User/Src/multi_button.c **** 	return 0;
+ 931              		.loc 1 173 14 is_stmt 0 view .LVU237
+ 932 0018 014B     		ldr	r3, .L72
+ 933              	.LVL57:
+ 173:User/Src/multi_button.c **** 	return 0;
+ 934              		.loc 1 173 14 view .LVU238
+ 935 001a 1860     		str	r0, [r3]
+ 174:User/Src/multi_button.c **** }
+ 936              		.loc 1 174 2 is_stmt 1 view .LVU239
+ 174:User/Src/multi_button.c **** }
+ 937              		.loc 1 174 9 is_stmt 0 view .LVU240
+ 938 001c 0020     		movs	r0, #0
+ 939              	.LVL58:
+ 174:User/Src/multi_button.c **** }
+ 940              		.loc 1 174 9 view .LVU241
+ 941 001e 7047     		bx	lr
+ 942              	.L73:
+ 943              		.align	2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 24
+
+
+ 944              	.L72:
+ 945 0020 00000000 		.word	.LANCHOR0
+ 946              		.cfi_endproc
+ 947              	.LFE69:
+ 949              		.section	.text.button_stop,"ax",%progbits
+ 950              		.align	1
+ 951              		.global	button_stop
+ 952              		.syntax unified
+ 953              		.thumb
+ 954              		.thumb_func
+ 956              	button_stop:
+ 957              	.LVL59:
+ 958              	.LFB70:
+ 183:User/Src/multi_button.c **** 	struct Button** curr;
+ 959              		.loc 1 183 1 is_stmt 1 view -0
+ 960              		.cfi_startproc
+ 961              		@ args = 0, pretend = 0, frame = 0
+ 962              		@ frame_needed = 0, uses_anonymous_args = 0
+ 963              		@ link register save eliminated.
+ 184:User/Src/multi_button.c **** 	for(curr = &head_handle; *curr; ) {
+ 964              		.loc 1 184 2 view .LVU243
+ 185:User/Src/multi_button.c **** 		struct Button* entry = *curr;
+ 965              		.loc 1 185 2 view .LVU244
+ 185:User/Src/multi_button.c **** 		struct Button* entry = *curr;
+ 966              		.loc 1 185 11 is_stmt 0 view .LVU245
+ 967 0000 054A     		ldr	r2, .L80
+ 185:User/Src/multi_button.c **** 		struct Button* entry = *curr;
+ 968              		.loc 1 185 2 view .LVU246
+ 969 0002 01E0     		b	.L75
+ 970              	.LVL60:
+ 971              	.L76:
+ 972              	.LBB4:
+ 192:User/Src/multi_button.c **** 		}
+ 973              		.loc 1 192 4 is_stmt 1 view .LVU247
+ 192:User/Src/multi_button.c **** 		}
+ 974              		.loc 1 192 9 is_stmt 0 view .LVU248
+ 975 0004 03F12802 		add	r2, r3, #40
+ 976              	.LVL61:
+ 977              	.L75:
+ 192:User/Src/multi_button.c **** 		}
+ 978              		.loc 1 192 9 view .LVU249
+ 979              	.LBE4:
+ 185:User/Src/multi_button.c **** 		struct Button* entry = *curr;
+ 980              		.loc 1 185 27 is_stmt 1 discriminator 1 view .LVU250
+ 981 0008 1368     		ldr	r3, [r2]
+ 185:User/Src/multi_button.c **** 		struct Button* entry = *curr;
+ 982              		.loc 1 185 2 is_stmt 0 discriminator 1 view .LVU251
+ 983 000a 23B1     		cbz	r3, .L79
+ 984              	.LBB5:
+ 186:User/Src/multi_button.c **** 		if(entry == handle) {
+ 985              		.loc 1 186 3 is_stmt 1 view .LVU252
+ 986              	.LVL62:
+ 187:User/Src/multi_button.c **** 			*curr = entry->next;
+ 987              		.loc 1 187 3 view .LVU253
+ 187:User/Src/multi_button.c **** 			*curr = entry->next;
+ 988              		.loc 1 187 5 is_stmt 0 view .LVU254
+ 989 000c 8342     		cmp	r3, r0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 25
+
+
+ 990 000e F9D1     		bne	.L76
+ 188:User/Src/multi_button.c **** //			free(entry);
+ 991              		.loc 1 188 4 is_stmt 1 view .LVU255
+ 188:User/Src/multi_button.c **** //			free(entry);
+ 992              		.loc 1 188 17 is_stmt 0 view .LVU256
+ 993 0010 9B6A     		ldr	r3, [r3, #40]
+ 994              	.LVL63:
+ 188:User/Src/multi_button.c **** //			free(entry);
+ 995              		.loc 1 188 10 view .LVU257
+ 996 0012 1360     		str	r3, [r2]
+ 997              	.LVL64:
+ 190:User/Src/multi_button.c **** 		} else {
+ 998              		.loc 1 190 4 is_stmt 1 view .LVU258
+ 999 0014 7047     		bx	lr
+ 1000              	.L79:
+ 190:User/Src/multi_button.c **** 		} else {
+ 1001              		.loc 1 190 4 is_stmt 0 view .LVU259
+ 1002              	.LBE5:
+ 195:User/Src/multi_button.c **** 
+ 1003              		.loc 1 195 1 view .LVU260
+ 1004 0016 7047     		bx	lr
+ 1005              	.L81:
+ 1006              		.align	2
+ 1007              	.L80:
+ 1008 0018 00000000 		.word	.LANCHOR0
+ 1009              		.cfi_endproc
+ 1010              	.LFE70:
+ 1012              		.section	.text.button_ticks,"ax",%progbits
+ 1013              		.align	1
+ 1014              		.global	button_ticks
+ 1015              		.syntax unified
+ 1016              		.thumb
+ 1017              		.thumb_func
+ 1019              	button_ticks:
+ 1020              	.LFB71:
+ 203:User/Src/multi_button.c **** 	struct Button* target;
+ 1021              		.loc 1 203 1 is_stmt 1 view -0
+ 1022              		.cfi_startproc
+ 1023              		@ args = 0, pretend = 0, frame = 0
+ 1024              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1025 0000 10B5     		push	{r4, lr}
+ 1026              	.LCFI11:
+ 1027              		.cfi_def_cfa_offset 8
+ 1028              		.cfi_offset 4, -8
+ 1029              		.cfi_offset 14, -4
+ 204:User/Src/multi_button.c **** 	for(target=head_handle; target; target=target->next) {
+ 1030              		.loc 1 204 2 view .LVU262
+ 205:User/Src/multi_button.c **** 		button_handler(target);
+ 1031              		.loc 1 205 2 view .LVU263
+ 205:User/Src/multi_button.c **** 		button_handler(target);
+ 1032              		.loc 1 205 12 is_stmt 0 view .LVU264
+ 1033 0002 054B     		ldr	r3, .L86
+ 1034 0004 1C68     		ldr	r4, [r3]
+ 1035              	.LVL65:
+ 205:User/Src/multi_button.c **** 		button_handler(target);
+ 1036              		.loc 1 205 2 view .LVU265
+ 1037 0006 03E0     		b	.L83
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 26
+
+
+ 1038              	.L84:
+ 206:User/Src/multi_button.c **** 	}
+ 1039              		.loc 1 206 3 is_stmt 1 discriminator 3 view .LVU266
+ 1040 0008 2046     		mov	r0, r4
+ 1041 000a FFF7FEFF 		bl	button_handler
+ 1042              	.LVL66:
+ 205:User/Src/multi_button.c **** 		button_handler(target);
+ 1043              		.loc 1 205 34 discriminator 3 view .LVU267
+ 205:User/Src/multi_button.c **** 		button_handler(target);
+ 1044              		.loc 1 205 40 is_stmt 0 discriminator 3 view .LVU268
+ 1045 000e A46A     		ldr	r4, [r4, #40]
+ 1046              	.LVL67:
+ 1047              	.L83:
+ 205:User/Src/multi_button.c **** 		button_handler(target);
+ 1048              		.loc 1 205 26 is_stmt 1 discriminator 1 view .LVU269
+ 205:User/Src/multi_button.c **** 		button_handler(target);
+ 1049              		.loc 1 205 2 is_stmt 0 discriminator 1 view .LVU270
+ 1050 0010 002C     		cmp	r4, #0
+ 1051 0012 F9D1     		bne	.L84
+ 209:User/Src/multi_button.c **** 
+ 1052              		.loc 1 209 1 view .LVU271
+ 1053 0014 10BD     		pop	{r4, pc}
+ 1054              	.LVL68:
+ 1055              	.L87:
+ 209:User/Src/multi_button.c **** 
+ 1056              		.loc 1 209 1 view .LVU272
+ 1057 0016 00BF     		.align	2
+ 1058              	.L86:
+ 1059 0018 00000000 		.word	.LANCHOR0
+ 1060              		.cfi_endproc
+ 1061              	.LFE71:
+ 1063              		.section	.text.Button_Manage,"ax",%progbits
+ 1064              		.align	1
+ 1065              		.global	Button_Manage
+ 1066              		.syntax unified
+ 1067              		.thumb
+ 1068              		.thumb_func
+ 1070              	Button_Manage:
+ 1071              	.LFB78:
+ 266:User/Src/multi_button.c **** 
+ 267:User/Src/multi_button.c **** 
+ 268:User/Src/multi_button.c **** void Button_Manage(void)
+ 269:User/Src/multi_button.c **** {
+ 1072              		.loc 1 269 1 is_stmt 1 view -0
+ 1073              		.cfi_startproc
+ 1074              		@ args = 0, pretend = 0, frame = 0
+ 1075              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1076 0000 70B5     		push	{r4, r5, r6, lr}
+ 1077              	.LCFI12:
+ 1078              		.cfi_def_cfa_offset 16
+ 1079              		.cfi_offset 4, -16
+ 1080              		.cfi_offset 5, -12
+ 1081              		.cfi_offset 6, -8
+ 1082              		.cfi_offset 14, -4
+ 270:User/Src/multi_button.c ****     button_init(&btn1, read_button_GPIO, 1, btn1_id);
+ 1083              		.loc 1 270 5 view .LVU274
+ 1084 0002 174E     		ldr	r6, .L90
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 27
+
+
+ 1085 0004 174C     		ldr	r4, .L90+4
+ 1086 0006 0123     		movs	r3, #1
+ 1087 0008 1A46     		mov	r2, r3
+ 1088 000a 3146     		mov	r1, r6
+ 1089 000c 2046     		mov	r0, r4
+ 1090 000e FFF7FEFF 		bl	button_init
+ 1091              	.LVL69:
+ 271:User/Src/multi_button.c **** 	button_init(&btn2, read_button_GPIO, 1, btn2_id);
+ 1092              		.loc 1 271 2 view .LVU275
+ 1093 0012 154D     		ldr	r5, .L90+8
+ 1094 0014 0223     		movs	r3, #2
+ 1095 0016 0122     		movs	r2, #1
+ 1096 0018 3146     		mov	r1, r6
+ 1097 001a 2846     		mov	r0, r5
+ 1098 001c FFF7FEFF 		bl	button_init
+ 1099              	.LVL70:
+ 272:User/Src/multi_button.c **** 	
+ 273:User/Src/multi_button.c **** 	button_attach(&btn1, SINGLE_CLICK, BTN1_SINGLE_CLICK_Handler);
+ 1100              		.loc 1 273 2 view .LVU276
+ 1101 0020 124A     		ldr	r2, .L90+12
+ 1102 0022 0321     		movs	r1, #3
+ 1103 0024 2046     		mov	r0, r4
+ 1104 0026 FFF7FEFF 		bl	button_attach
+ 1105              	.LVL71:
+ 274:User/Src/multi_button.c **** 	button_attach(&btn1, LONG_PRESS_START, BTN1_LONG_PRESS_START_Handler);
+ 1106              		.loc 1 274 2 view .LVU277
+ 1107 002a 114A     		ldr	r2, .L90+16
+ 1108 002c 0521     		movs	r1, #5
+ 1109 002e 2046     		mov	r0, r4
+ 1110 0030 FFF7FEFF 		bl	button_attach
+ 1111              	.LVL72:
+ 275:User/Src/multi_button.c **** 	button_attach(&btn1, DOUBLE_CLICK, BTN1_DOUBLE_CLICK_Handler);
+ 1112              		.loc 1 275 2 view .LVU278
+ 1113 0034 0F4A     		ldr	r2, .L90+20
+ 1114 0036 0421     		movs	r1, #4
+ 1115 0038 2046     		mov	r0, r4
+ 1116 003a FFF7FEFF 		bl	button_attach
+ 1117              	.LVL73:
+ 276:User/Src/multi_button.c **** 
+ 277:User/Src/multi_button.c **** 	button_attach(&btn2, PRESS_DOWN, BTN2_PRESS_DOWN_Handler);
+ 1118              		.loc 1 277 2 view .LVU279
+ 1119 003e 0E4A     		ldr	r2, .L90+24
+ 1120 0040 0021     		movs	r1, #0
+ 1121 0042 2846     		mov	r0, r5
+ 1122 0044 FFF7FEFF 		bl	button_attach
+ 1123              	.LVL74:
+ 278:User/Src/multi_button.c **** 	button_attach(&btn2, DOUBLE_CLICK, BTN2_DOUBLE_CLICK_Handler);
+ 1124              		.loc 1 278 2 view .LVU280
+ 1125 0048 0C4A     		ldr	r2, .L90+28
+ 1126 004a 0421     		movs	r1, #4
+ 1127 004c 2846     		mov	r0, r5
+ 1128 004e FFF7FEFF 		bl	button_attach
+ 1129              	.LVL75:
+ 279:User/Src/multi_button.c **** 
+ 280:User/Src/multi_button.c **** 	button_start(&btn1);
+ 1130              		.loc 1 280 2 view .LVU281
+ 1131 0052 2046     		mov	r0, r4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 28
+
+
+ 1132 0054 FFF7FEFF 		bl	button_start
+ 1133              	.LVL76:
+ 281:User/Src/multi_button.c **** 	button_start(&btn2);
+ 1134              		.loc 1 281 2 view .LVU282
+ 1135 0058 2846     		mov	r0, r5
+ 1136 005a FFF7FEFF 		bl	button_start
+ 1137              	.LVL77:
+ 282:User/Src/multi_button.c **** 	//UsbPrintf("  on\r\n");
+ 283:User/Src/multi_button.c **** }
+ 1138              		.loc 1 283 1 is_stmt 0 view .LVU283
+ 1139 005e 70BD     		pop	{r4, r5, r6, pc}
+ 1140              	.L91:
+ 1141              		.align	2
+ 1142              	.L90:
+ 1143 0060 00000000 		.word	read_button_GPIO
+ 1144 0064 00000000 		.word	.LANCHOR1
+ 1145 0068 00000000 		.word	.LANCHOR2
+ 1146 006c 00000000 		.word	BTN1_SINGLE_CLICK_Handler
+ 1147 0070 00000000 		.word	BTN1_LONG_PRESS_START_Handler
+ 1148 0074 00000000 		.word	BTN1_DOUBLE_CLICK_Handler
+ 1149 0078 00000000 		.word	BTN2_PRESS_DOWN_Handler
+ 1150 007c 00000000 		.word	BTN2_DOUBLE_CLICK_Handler
+ 1151              		.cfi_endproc
+ 1152              	.LFE78:
+ 1154              		.global	btn2
+ 1155              		.global	btn1
+ 1156              		.section	.bss.btn1,"aw",%nobits
+ 1157              		.align	2
+ 1158              		.set	.LANCHOR1,. + 0
+ 1161              	btn1:
+ 1162 0000 00000000 		.space	44
+ 1162      00000000 
+ 1162      00000000 
+ 1162      00000000 
+ 1162      00000000 
+ 1163              		.section	.bss.btn2,"aw",%nobits
+ 1164              		.align	2
+ 1165              		.set	.LANCHOR2,. + 0
+ 1168              	btn2:
+ 1169 0000 00000000 		.space	44
+ 1169      00000000 
+ 1169      00000000 
+ 1169      00000000 
+ 1169      00000000 
+ 1170              		.section	.bss.head_handle,"aw",%nobits
+ 1171              		.align	2
+ 1172              		.set	.LANCHOR0,. + 0
+ 1175              	head_handle:
+ 1176 0000 00000000 		.space	4
+ 1177              		.text
+ 1178              	.Letext0:
+ 1179              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1180              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1181              		.file 4 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 1182              		.file 5 "User/Inc/multi_button.h"
+ 1183              		.file 6 "Core/Inc/main.h"
+ 1184              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 29
+
+
+ 1185              		.file 8 "<built-in>"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 30
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 multi_button.c
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:18     .text.button_handler:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:23     .text.button_handler:00000000 button_handler
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:109    .text.button_handler:00000060 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:115    .text.button_handler:0000006c $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:451    .text.read_button_GPIO:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:457    .text.read_button_GPIO:00000000 read_button_GPIO
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:545    .text.read_button_GPIO:00000050 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:552    .rodata.BTN1_LONG_PRESS_START_Handler.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:556    .text.BTN1_LONG_PRESS_START_Handler:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:562    .text.BTN1_LONG_PRESS_START_Handler:00000000 BTN1_LONG_PRESS_START_Handler
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:586    .text.BTN1_LONG_PRESS_START_Handler:0000000c $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:591    .rodata.BTN1_DOUBLE_CLICK_Handler.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:595    .text.BTN1_DOUBLE_CLICK_Handler:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:601    .text.BTN1_DOUBLE_CLICK_Handler:00000000 BTN1_DOUBLE_CLICK_Handler
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:625    .text.BTN1_DOUBLE_CLICK_Handler:0000000c $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:630    .rodata.BTN2_DOUBLE_CLICK_Handler.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:634    .text.BTN2_DOUBLE_CLICK_Handler:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:640    .text.BTN2_DOUBLE_CLICK_Handler:00000000 BTN2_DOUBLE_CLICK_Handler
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:664    .text.BTN2_DOUBLE_CLICK_Handler:0000000c $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:669    .rodata.BTN1_SINGLE_CLICK_Handler.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:673    .text.BTN1_SINGLE_CLICK_Handler:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:679    .text.BTN1_SINGLE_CLICK_Handler:00000000 BTN1_SINGLE_CLICK_Handler
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:708    .text.BTN1_SINGLE_CLICK_Handler:00000014 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:714    .rodata.BTN2_PRESS_DOWN_Handler.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:718    .text.BTN2_PRESS_DOWN_Handler:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:724    .text.BTN2_PRESS_DOWN_Handler:00000000 BTN2_PRESS_DOWN_Handler
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:753    .text.BTN2_PRESS_DOWN_Handler:00000014 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:759    .text.button_init:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:765    .text.button_init:00000000 button_init
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:829    .text.button_attach:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:835    .text.button_attach:00000000 button_attach
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:858    .text.get_button_event:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:864    .text.get_button_event:00000000 get_button_event
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:883    .text.button_start:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:889    .text.button_start:00000000 button_start
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:945    .text.button_start:00000020 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:950    .text.button_stop:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:956    .text.button_stop:00000000 button_stop
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1008   .text.button_stop:00000018 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1013   .text.button_ticks:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1019   .text.button_ticks:00000000 button_ticks
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1059   .text.button_ticks:00000018 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1064   .text.Button_Manage:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1070   .text.Button_Manage:00000000 Button_Manage
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1143   .text.Button_Manage:00000060 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1168   .bss.btn2:00000000 btn2
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1161   .bss.btn1:00000000 btn1
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1157   .bss.btn1:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1164   .bss.btn2:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1171   .bss.head_handle:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s:1175   .bss.head_handle:00000000 head_handle
+
+UNDEFINED SYMBOLS
+HAL_GPIO_ReadPin
+UsbPrintf
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cc5oc7Wx.s 			page 31
+
+
+HAL_GPIO_TogglePin
+memset

@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "iic_soft.h": "c",
+        "string.h": "c",
+        "gpio.h": "c",
+        "main.h": "c",
+        "esp8266.h": "c"
+    }
+}

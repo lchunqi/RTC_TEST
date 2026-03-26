@@ -1,0 +1,1652 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"diskio.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.Diskio_Print,"ax",%progbits
+  18              		.align	1
+  19              		.global	Diskio_Print
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	Diskio_Print:
+  25              	.LVL0:
+  26              	.LFB68:
+  27              		.file 1 "Core/FatFs/Src/diskio.c"
+   1:Core/FatFs/Src/diskio.c **** 
+   2:Core/FatFs/Src/diskio.c **** #include "diskio.h"
+   3:Core/FatFs/Src/diskio.c **** #include "flash.h"
+   4:Core/FatFs/Src/diskio.c **** #include "string.h"
+   5:Core/FatFs/Src/diskio.c **** #include <stdio.h>
+   6:Core/FatFs/Src/diskio.c **** #include <stdarg.h>
+   7:Core/FatFs/Src/diskio.c **** #include "usart.h"
+   8:Core/FatFs/Src/diskio.c **** 
+   9:Core/FatFs/Src/diskio.c **** // 仅支持1个FLASH设备
+  10:Core/FatFs/Src/diskio.c **** #define DEV_COUNT 1
+  11:Core/FatFs/Src/diskio.c **** 
+  12:Core/FatFs/Src/diskio.c **** // 串口打印模块（按需开启，和storage.c打印逻辑一致）
+  13:Core/FatFs/Src/diskio.c **** #ifdef ENABLE_DISKIO_PRINT
+  14:Core/FatFs/Src/diskio.c **** void Diskio_Print(const char *fmt,...) {
+  28              		.loc 1 14 40 view -0
+  29              		.cfi_startproc
+  30              		@ args = 4, pretend = 16, frame = 264
+  31              		@ frame_needed = 0, uses_anonymous_args = 1
+  32              		.loc 1 14 40 is_stmt 0 view .LVU1
+  33 0000 0FB4     		push	{r0, r1, r2, r3}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 16
+  36              		.cfi_offset 0, -16
+  37              		.cfi_offset 1, -12
+  38              		.cfi_offset 2, -8
+  39              		.cfi_offset 3, -4
+  40 0002 00B5     		push	{lr}
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_offset 20
+  43              		.cfi_offset 14, -20
+  44 0004 C3B0     		sub	sp, sp, #268
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 2
+
+
+  45              	.LCFI2:
+  46              		.cfi_def_cfa_offset 288
+  47 0006 44AB     		add	r3, sp, #272
+  48 0008 53F8042B 		ldr	r2, [r3], #4
+  15:Core/FatFs/Src/diskio.c ****     va_list args;
+  49              		.loc 1 15 5 is_stmt 1 view .LVU2
+  16:Core/FatFs/Src/diskio.c ****     char buffer[256];
+  50              		.loc 1 16 5 view .LVU3
+  17:Core/FatFs/Src/diskio.c ****     va_start(args, fmt);
+  51              		.loc 1 17 5 view .LVU4
+  52 000c 4193     		str	r3, [sp, #260]
+  18:Core/FatFs/Src/diskio.c ****     vsnprintf(buffer, sizeof(buffer), fmt, args);
+  53              		.loc 1 18 5 view .LVU5
+  54 000e 4FF48071 		mov	r1, #256
+  55 0012 01A8     		add	r0, sp, #4
+  56 0014 FFF7FEFF 		bl	vsnprintf
+  57              	.LVL1:
+  19:Core/FatFs/Src/diskio.c ****     va_end(args);
+  58              		.loc 1 19 5 view .LVU6
+  20:Core/FatFs/Src/diskio.c ****     HAL_UART_Transmit(&huart1, (uint8_t *)buffer, strlen(buffer), 100);
+  59              		.loc 1 20 5 view .LVU7
+  60              		.loc 1 20 51 is_stmt 0 view .LVU8
+  61 0018 01A8     		add	r0, sp, #4
+  62 001a FFF7FEFF 		bl	strlen
+  63              	.LVL2:
+  64              		.loc 1 20 5 view .LVU9
+  65 001e 6423     		movs	r3, #100
+  66 0020 82B2     		uxth	r2, r0
+  67 0022 01A9     		add	r1, sp, #4
+  68 0024 0348     		ldr	r0, .L3
+  69 0026 FFF7FEFF 		bl	HAL_UART_Transmit
+  70              	.LVL3:
+  21:Core/FatFs/Src/diskio.c **** }
+  71              		.loc 1 21 1 view .LVU10
+  72 002a 43B0     		add	sp, sp, #268
+  73              	.LCFI3:
+  74              		.cfi_def_cfa_offset 20
+  75              		@ sp needed
+  76 002c 5DF804EB 		ldr	lr, [sp], #4
+  77              	.LCFI4:
+  78              		.cfi_restore 14
+  79              		.cfi_def_cfa_offset 16
+  80 0030 04B0     		add	sp, sp, #16
+  81              	.LCFI5:
+  82              		.cfi_restore 3
+  83              		.cfi_restore 2
+  84              		.cfi_restore 1
+  85              		.cfi_restore 0
+  86              		.cfi_def_cfa_offset 0
+  87 0032 7047     		bx	lr
+  88              	.L4:
+  89              		.align	2
+  90              	.L3:
+  91 0034 00000000 		.word	huart1
+  92              		.cfi_endproc
+  93              	.LFE68:
+  95              		.section	.rodata.disk_initialize.str1.4,"aMS",%progbits,1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 3
+
+
+  96              		.align	2
+  97              	.LC0:
+  98 0000 B4C5C5CC 		.ascii	"\264\305\305\314\263\365\312\274\273\257: \316\336\320"
+  98      B3F5CABC 
+  98      BBAF3A20 
+  98      CEDED0
+  99 000f A7C7FDB6 		.ascii	"\247\307\375\266\257\306\367\272\305 %d\012\000"
+  99      AFC6F7BA 
+  99      C5202564 
+  99      0A00
+ 100 001d 000000   		.align	2
+ 101              	.LC1:
+ 102 0020 B4C5C5CC 		.ascii	"\264\305\305\314\263\365\312\274\273\257: \266\301\310"
+ 102      B3F5CABC 
+ 102      BBAF3A20 
+ 102      B6C1C8
+ 103 002f A1464C41 		.ascii	"\241FLASH ID = 0x%04X\012\000"
+ 103      53482049 
+ 103      44203D20 
+ 103      30782530 
+ 103      34580A00 
+ 104 0043 00       		.align	2
+ 105              	.LC2:
+ 106 0044 B4C5C5CC 		.ascii	"\264\305\305\314\263\365\312\274\273\257: FLASH\263"
+ 106      B3F5CABC 
+ 106      BBAF3A20 
+ 106      464C4153 
+ 106      48B3
+ 107 0056 F5CABCBB 		.ascii	"\365\312\274\273\257\263\311\271\246\012\000"
+ 107      AFB3C9B9 
+ 107      A60A00
+ 108 0061 000000   		.align	2
+ 109              	.LC3:
+ 110 0064 B4C5C5CC 		.ascii	"\264\305\305\314\263\365\312\274\273\257: FLASH ID\262"
+ 110      B3F5CABC 
+ 110      BBAF3A20 
+ 110      464C4153 
+ 110      48204944 
+ 111 0079 BBC6A5C5 		.ascii	"\273\306\245\305\344\243\254\263\365\312\274\273\257"
+ 111      E4A3ACB3 
+ 111      F5CABCBB 
+ 111      AF
+ 112 0086 CAA7B0DC 		.ascii	"\312\247\260\334\012\000"
+ 112      0A00
+ 113              		.section	.text.disk_initialize,"ax",%progbits
+ 114              		.align	1
+ 115              		.global	disk_initialize
+ 116              		.syntax unified
+ 117              		.thumb
+ 118              		.thumb_func
+ 120              	disk_initialize:
+ 121              	.LVL4:
+ 122              	.LFB69:
+  22:Core/FatFs/Src/diskio.c **** #else
+  23:Core/FatFs/Src/diskio.c **** #define Diskio_Print(...)
+  24:Core/FatFs/Src/diskio.c **** #endif
+  25:Core/FatFs/Src/diskio.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 4
+
+
+  26:Core/FatFs/Src/diskio.c **** // 全局磁盘状态
+  27:Core/FatFs/Src/diskio.c **** static DSTATUS Stat = STA_NOINIT;
+  28:Core/FatFs/Src/diskio.c **** 
+  29:Core/FatFs/Src/diskio.c **** /************************** 磁盘初始化 **************************/
+  30:Core/FatFs/Src/diskio.c **** DSTATUS disk_initialize(BYTE pdrv) {
+ 123              		.loc 1 30 36 is_stmt 1 view -0
+ 124              		.cfi_startproc
+ 125              		@ args = 0, pretend = 0, frame = 0
+ 126              		@ frame_needed = 0, uses_anonymous_args = 0
+ 127              		.loc 1 30 36 is_stmt 0 view .LVU12
+ 128 0000 10B5     		push	{r4, lr}
+ 129              	.LCFI6:
+ 130              		.cfi_def_cfa_offset 8
+ 131              		.cfi_offset 4, -8
+ 132              		.cfi_offset 14, -4
+  31:Core/FatFs/Src/diskio.c ****     if (pdrv >= DEV_COUNT) {
+ 133              		.loc 1 31 5 is_stmt 1 view .LVU13
+ 134              		.loc 1 31 8 is_stmt 0 view .LVU14
+ 135 0002 E0B9     		cbnz	r0, .L11
+ 136              	.LVL5:
+ 137              	.L6:
+  32:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘初始化: 无效驱动器号 %d\n", pdrv);
+  33:Core/FatFs/Src/diskio.c ****         return STA_NOINIT;
+  34:Core/FatFs/Src/diskio.c ****     }
+  35:Core/FatFs/Src/diskio.c **** 
+  36:Core/FatFs/Src/diskio.c ****     // 初始化前等待FLASH忙状态结束
+  37:Core/FatFs/Src/diskio.c ****     while (W25Q64_ReadStatus() & 0x01);
+ 138              		.loc 1 37 39 is_stmt 1 discriminator 1 view .LVU15
+ 139              		.loc 1 37 11 discriminator 1 view .LVU16
+ 140              		.loc 1 37 12 is_stmt 0 discriminator 1 view .LVU17
+ 141 0004 FFF7FEFF 		bl	W25Q64_ReadStatus
+ 142              	.LVL6:
+ 143              		.loc 1 37 11 discriminator 1 view .LVU18
+ 144 0008 10F0010F 		tst	r0, #1
+ 145 000c FAD1     		bne	.L6
+  38:Core/FatFs/Src/diskio.c ****     // 初始化FLASH硬件
+  39:Core/FatFs/Src/diskio.c ****     W25Q64_Init();
+ 146              		.loc 1 39 5 is_stmt 1 view .LVU19
+ 147 000e FFF7FEFF 		bl	W25Q64_Init
+ 148              	.LVL7:
+  40:Core/FatFs/Src/diskio.c ****     // 读取FLASH ID校验硬件连接
+  41:Core/FatFs/Src/diskio.c ****     uint16_t flash_id = W25Q64_ReadID();
+ 149              		.loc 1 41 5 view .LVU20
+ 150              		.loc 1 41 25 is_stmt 0 view .LVU21
+ 151 0012 FFF7FEFF 		bl	W25Q64_ReadID
+ 152              	.LVL8:
+ 153 0016 0446     		mov	r4, r0
+ 154              	.LVL9:
+  42:Core/FatFs/Src/diskio.c ****     Diskio_Print("磁盘初始化: 读取FLASH ID = 0x%04X\n", flash_id);
+ 155              		.loc 1 42 5 is_stmt 1 view .LVU22
+ 156 0018 0146     		mov	r1, r0
+ 157 001a 1048     		ldr	r0, .L13
+ 158              	.LVL10:
+ 159              		.loc 1 42 5 is_stmt 0 view .LVU23
+ 160 001c FFF7FEFF 		bl	Diskio_Print
+ 161              	.LVL11:
+  43:Core/FatFs/Src/diskio.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 5
+
+
+  44:Core/FatFs/Src/diskio.c ****     // 校验ID（沿用diskio.h的宏，兼容W25Q64ID/ W25Q64_EXPECTED_ID）
+  45:Core/FatFs/Src/diskio.c ****     if (flash_id == W25Q64_EXPECTED_ID ) {
+ 162              		.loc 1 45 5 is_stmt 1 view .LVU24
+ 163              		.loc 1 45 8 is_stmt 0 view .LVU25
+ 164 0020 4EF61773 		movw	r3, #61207
+ 165 0024 9C42     		cmp	r4, r3
+ 166 0026 10D0     		beq	.L12
+  46:Core/FatFs/Src/diskio.c ****         Stat &= ~STA_NOINIT; // 清除未初始化标志
+  47:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘初始化: FLASH初始化成功\n");
+  48:Core/FatFs/Src/diskio.c ****     } else {
+  49:Core/FatFs/Src/diskio.c ****         Stat |= STA_NOINIT;
+ 167              		.loc 1 49 9 is_stmt 1 view .LVU26
+ 168              		.loc 1 49 14 is_stmt 0 view .LVU27
+ 169 0028 0D4A     		ldr	r2, .L13+4
+ 170 002a 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 171 002c 43F00103 		orr	r3, r3, #1
+ 172 0030 1370     		strb	r3, [r2]
+  50:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘初始化: FLASH ID不匹配，初始化失败\n");
+ 173              		.loc 1 50 9 is_stmt 1 view .LVU28
+ 174 0032 0C48     		ldr	r0, .L13+8
+ 175 0034 FFF7FEFF 		bl	Diskio_Print
+ 176              	.LVL12:
+ 177              	.L9:
+  51:Core/FatFs/Src/diskio.c ****     }
+  52:Core/FatFs/Src/diskio.c ****     return Stat;
+ 178              		.loc 1 52 5 view .LVU29
+ 179              		.loc 1 52 12 is_stmt 0 view .LVU30
+ 180 0038 094B     		ldr	r3, .L13+4
+ 181 003a 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 182              	.L7:
+  53:Core/FatFs/Src/diskio.c **** }
+ 183              		.loc 1 53 1 view .LVU31
+ 184 003c 10BD     		pop	{r4, pc}
+ 185              	.LVL13:
+ 186              	.L11:
+ 187              		.loc 1 53 1 view .LVU32
+ 188 003e 0146     		mov	r1, r0
+  32:Core/FatFs/Src/diskio.c ****         return STA_NOINIT;
+ 189              		.loc 1 32 9 is_stmt 1 view .LVU33
+ 190 0040 0948     		ldr	r0, .L13+12
+ 191              	.LVL14:
+  32:Core/FatFs/Src/diskio.c ****         return STA_NOINIT;
+ 192              		.loc 1 32 9 is_stmt 0 view .LVU34
+ 193 0042 FFF7FEFF 		bl	Diskio_Print
+ 194              	.LVL15:
+  33:Core/FatFs/Src/diskio.c ****     }
+ 195              		.loc 1 33 9 is_stmt 1 view .LVU35
+  33:Core/FatFs/Src/diskio.c ****     }
+ 196              		.loc 1 33 16 is_stmt 0 view .LVU36
+ 197 0046 0120     		movs	r0, #1
+ 198 0048 F8E7     		b	.L7
+ 199              	.L12:
+  46:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘初始化: FLASH初始化成功\n");
+ 200              		.loc 1 46 9 is_stmt 1 view .LVU37
+  46:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘初始化: FLASH初始化成功\n");
+ 201              		.loc 1 46 14 is_stmt 0 view .LVU38
+ 202 004a 054A     		ldr	r2, .L13+4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 6
+
+
+ 203 004c 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 204 004e 23F00103 		bic	r3, r3, #1
+ 205 0052 1370     		strb	r3, [r2]
+  47:Core/FatFs/Src/diskio.c ****     } else {
+ 206              		.loc 1 47 9 is_stmt 1 view .LVU39
+ 207 0054 0548     		ldr	r0, .L13+16
+ 208 0056 FFF7FEFF 		bl	Diskio_Print
+ 209              	.LVL16:
+ 210 005a EDE7     		b	.L9
+ 211              	.L14:
+ 212              		.align	2
+ 213              	.L13:
+ 214 005c 20000000 		.word	.LC1
+ 215 0060 00000000 		.word	.LANCHOR0
+ 216 0064 64000000 		.word	.LC3
+ 217 0068 00000000 		.word	.LC0
+ 218 006c 44000000 		.word	.LC2
+ 219              		.cfi_endproc
+ 220              	.LFE69:
+ 222              		.section	.text.disk_status,"ax",%progbits
+ 223              		.align	1
+ 224              		.global	disk_status
+ 225              		.syntax unified
+ 226              		.thumb
+ 227              		.thumb_func
+ 229              	disk_status:
+ 230              	.LVL17:
+ 231              	.LFB70:
+  54:Core/FatFs/Src/diskio.c **** 
+  55:Core/FatFs/Src/diskio.c **** /************************** 获取磁盘状态 **************************/
+  56:Core/FatFs/Src/diskio.c **** DSTATUS disk_status(BYTE pdrv) {
+ 232              		.loc 1 56 32 view -0
+ 233              		.cfi_startproc
+ 234              		@ args = 0, pretend = 0, frame = 0
+ 235              		@ frame_needed = 0, uses_anonymous_args = 0
+ 236              		@ link register save eliminated.
+  57:Core/FatFs/Src/diskio.c ****     if (pdrv >= DEV_COUNT) {
+ 237              		.loc 1 57 5 view .LVU41
+ 238              		.loc 1 57 8 is_stmt 0 view .LVU42
+ 239 0000 10B9     		cbnz	r0, .L17
+  58:Core/FatFs/Src/diskio.c ****         return STA_NOINIT;
+  59:Core/FatFs/Src/diskio.c ****     }
+  60:Core/FatFs/Src/diskio.c ****     return Stat;
+ 240              		.loc 1 60 5 is_stmt 1 view .LVU43
+ 241              		.loc 1 60 12 is_stmt 0 view .LVU44
+ 242 0002 024B     		ldr	r3, .L18
+ 243 0004 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 244              	.LVL18:
+ 245              		.loc 1 60 12 view .LVU45
+ 246 0006 7047     		bx	lr
+ 247              	.LVL19:
+ 248              	.L17:
+  58:Core/FatFs/Src/diskio.c ****         return STA_NOINIT;
+ 249              		.loc 1 58 16 view .LVU46
+ 250 0008 0120     		movs	r0, #1
+ 251              	.LVL20:
+  61:Core/FatFs/Src/diskio.c **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 7
+
+
+ 252              		.loc 1 61 1 view .LVU47
+ 253 000a 7047     		bx	lr
+ 254              	.L19:
+ 255              		.align	2
+ 256              	.L18:
+ 257 000c 00000000 		.word	.LANCHOR0
+ 258              		.cfi_endproc
+ 259              	.LFE70:
+ 261              		.section	.rodata.disk_read.str1.4,"aMS",%progbits,1
+ 262              		.align	2
+ 263              	.LC4:
+ 264 0000 B4C5C5CC 		.ascii	"\264\305\305\314\266\301\310\241: \316\336\320\247\262"
+ 264      B6C1C8A1 
+ 264      3A20CEDE 
+ 264      D0A7B2
+ 265 000f CECAFDBB 		.ascii	"\316\312\375\273\362\316\264\263\365\312\274\273\257"
+ 265      F2CEB4B3 
+ 265      F5CABCBB 
+ 265      AF
+ 266 001c 0A00     		.ascii	"\012\000"
+ 267 001e 0000     		.align	2
+ 268              	.LC5:
+ 269 0020 B4C5C5CC 		.ascii	"\264\305\305\314\266\301\310\241: \311\310\307\370%"
+ 269      B6C1C8A1 
+ 269      3A20C9C8 
+ 269      C7F825
+ 270 002f 6C7520A1 		.ascii	"lu \241\372 \265\330\326\2670x%08X\243\254\266\301\310"
+ 270      FA20B5D8 
+ 270      D6B73078 
+ 270      25303858 
+ 270      A3ACB6C1 
+ 271 0044 A1256C75 		.ascii	"\241%lu\327\326\275\332\012\000"
+ 271      D7D6BDDA 
+ 271      0A00
+ 272 004e 0000     		.align	2
+ 273              	.LC6:
+ 274 0050 B4C5C5CC 		.ascii	"\264\305\305\314\266\301\310\241: \276\257\270\346\243"
+ 274      B6C1C8A1 
+ 274      3A20BEAF 
+ 274      B8E6A3
+ 275 005f A1B6C1C8 		.ascii	"\241\266\301\310\241\312\375\276\335\310\253\316\252"
+ 275      A1CAFDBE 
+ 275      DDC8ABCE 
+ 275      AA
+ 276 006c 30A3ACBF 		.ascii	"0\243\254\277\311\304\334\266\301\262\331\327\367\312"
+ 276      C9C4DCB6 
+ 276      C1B2D9D7 
+ 276      F7CA
+ 277 007a A7B0DC0A 		.ascii	"\247\260\334\012\000"
+ 277      00
+ 278              		.section	.text.disk_read,"ax",%progbits
+ 279              		.align	1
+ 280              		.global	disk_read
+ 281              		.syntax unified
+ 282              		.thumb
+ 283              		.thumb_func
+ 285              	disk_read:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 8
+
+
+ 286              	.LVL21:
+ 287              	.LFB71:
+  62:Core/FatFs/Src/diskio.c **** 
+  63:Core/FatFs/Src/diskio.c **** /************************** 磁盘扇区读取（FatFs标准接口） **************************/
+  64:Core/FatFs/Src/diskio.c **** DRESULT disk_read(BYTE pdrv, BYTE *buff, DWORD sector, UINT count) {
+ 288              		.loc 1 64 68 is_stmt 1 view -0
+ 289              		.cfi_startproc
+ 290              		@ args = 0, pretend = 0, frame = 0
+ 291              		@ frame_needed = 0, uses_anonymous_args = 0
+ 292              		.loc 1 64 68 is_stmt 0 view .LVU49
+ 293 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 294              	.LCFI7:
+ 295              		.cfi_def_cfa_offset 24
+ 296              		.cfi_offset 4, -24
+ 297              		.cfi_offset 5, -20
+ 298              		.cfi_offset 6, -16
+ 299              		.cfi_offset 7, -12
+ 300              		.cfi_offset 8, -8
+ 301              		.cfi_offset 14, -4
+  65:Core/FatFs/Src/diskio.c ****     if (pdrv >= DEV_COUNT || buff == NULL || count == 0 || (Stat & STA_NOINIT)) {
+ 302              		.loc 1 65 5 is_stmt 1 view .LVU50
+ 303              		.loc 1 65 8 is_stmt 0 view .LVU51
+ 304 0004 28BB     		cbnz	r0, .L21
+ 305 0006 0E46     		mov	r6, r1
+ 306 0008 1746     		mov	r7, r2
+ 307 000a 1D46     		mov	r5, r3
+ 308              		.loc 1 65 27 discriminator 1 view .LVU52
+ 309 000c 09B3     		cbz	r1, .L21
+ 310              		.loc 1 65 43 discriminator 2 view .LVU53
+ 311 000e 03B3     		cbz	r3, .L21
+ 312              		.loc 1 65 66 discriminator 3 view .LVU54
+ 313 0010 184B     		ldr	r3, .L30
+ 314              	.LVL22:
+ 315              		.loc 1 65 66 discriminator 3 view .LVU55
+ 316 0012 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 317              		.loc 1 65 57 discriminator 3 view .LVU56
+ 318 0014 13F0010F 		tst	r3, #1
+ 319 0018 1BD1     		bne	.L21
+ 320              	.LVL23:
+ 321              	.L22:
+  66:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘读取: 无效参数或未初始化\n");
+  67:Core/FatFs/Src/diskio.c ****         return RES_PARERR;
+  68:Core/FatFs/Src/diskio.c ****     }
+  69:Core/FatFs/Src/diskio.c ****     while (W25Q64_ReadStatus() & 0x01); // 读前等忙
+ 322              		.loc 1 69 39 is_stmt 1 discriminator 1 view .LVU57
+ 323              		.loc 1 69 11 discriminator 1 view .LVU58
+ 324              		.loc 1 69 12 is_stmt 0 discriminator 1 view .LVU59
+ 325 001a FFF7FEFF 		bl	W25Q64_ReadStatus
+ 326              	.LVL24:
+ 327              		.loc 1 69 11 discriminator 1 view .LVU60
+ 328 001e 10F00104 		ands	r4, r0, #1
+ 329 0022 FAD1     		bne	.L22
+  70:Core/FatFs/Src/diskio.c **** 
+  71:Core/FatFs/Src/diskio.c ****     uint32_t read_addr = sector * 4096;
+ 330              		.loc 1 71 5 is_stmt 1 view .LVU61
+ 331              		.loc 1 71 14 is_stmt 0 view .LVU62
+ 332 0024 4FEA0738 		lsl	r8, r7, #12
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 9
+
+
+ 333              	.LVL25:
+  72:Core/FatFs/Src/diskio.c ****     uint32_t read_size = count * 4096;
+ 334              		.loc 1 72 5 is_stmt 1 view .LVU63
+ 335              		.loc 1 72 14 is_stmt 0 view .LVU64
+ 336 0028 2D03     		lsls	r5, r5, #12
+ 337              	.LVL26:
+  73:Core/FatFs/Src/diskio.c ****     Diskio_Print("磁盘读取: 扇区%lu → 地址0x%08X，读取%lu字节\n", sector, read_addr, read_size);
+ 338              		.loc 1 73 5 is_stmt 1 view .LVU65
+ 339 002a 2B46     		mov	r3, r5
+ 340 002c 4246     		mov	r2, r8
+ 341 002e 3946     		mov	r1, r7
+ 342 0030 1148     		ldr	r0, .L30+4
+ 343 0032 FFF7FEFF 		bl	Diskio_Print
+ 344              	.LVL27:
+  74:Core/FatFs/Src/diskio.c **** 
+  75:Core/FatFs/Src/diskio.c ****     // 调用FLASH读函数，增加返回值校验
+  76:Core/FatFs/Src/diskio.c ****     W25Q64_ReadData(read_addr, buff, read_size);
+ 345              		.loc 1 76 5 view .LVU66
+ 346 0036 2A46     		mov	r2, r5
+ 347 0038 3146     		mov	r1, r6
+ 348 003a 4046     		mov	r0, r8
+ 349 003c FFF7FEFF 		bl	W25Q64_ReadData
+ 350              	.LVL28:
+  77:Core/FatFs/Src/diskio.c ****     // 验证读取后的数据是否为全0（若全0可能是读失败）
+  78:Core/FatFs/Src/diskio.c ****     uint8_t all_zero = 1;
+ 351              		.loc 1 78 5 view .LVU67
+  79:Core/FatFs/Src/diskio.c ****     for (uint32_t i=0; i<read_size && i<32; i++) { // 检查前32字节
+ 352              		.loc 1 79 5 view .LVU68
+ 353              	.LBB2:
+ 354              		.loc 1 79 10 view .LVU69
+ 355              		.loc 1 79 19 is_stmt 0 view .LVU70
+ 356 0040 0023     		movs	r3, #0
+ 357              	.LVL29:
+ 358              	.L24:
+ 359              		.loc 1 79 24 is_stmt 1 discriminator 1 view .LVU71
+ 360              		.loc 1 79 5 is_stmt 0 discriminator 1 view .LVU72
+ 361 0042 AB42     		cmp	r3, r5
+ 362 0044 0ED2     		bcs	.L27
+ 363              		.loc 1 79 36 discriminator 3 view .LVU73
+ 364 0046 1F2B     		cmp	r3, #31
+ 365 0048 0AD8     		bhi	.L29
+  80:Core/FatFs/Src/diskio.c ****         if (buff[i] != 0x00) {
+ 366              		.loc 1 80 9 is_stmt 1 view .LVU74
+ 367              		.loc 1 80 17 is_stmt 0 view .LVU75
+ 368 004a F25C     		ldrb	r2, [r6, r3]	@ zero_extendqisi2
+ 369              		.loc 1 80 12 view .LVU76
+ 370 004c 5AB9     		cbnz	r2, .L25
+  79:Core/FatFs/Src/diskio.c ****     for (uint32_t i=0; i<read_size && i<32; i++) { // 检查前32字节
+ 371              		.loc 1 79 45 is_stmt 1 discriminator 2 view .LVU77
+  79:Core/FatFs/Src/diskio.c ****     for (uint32_t i=0; i<read_size && i<32; i++) { // 检查前32字节
+ 372              		.loc 1 79 46 is_stmt 0 discriminator 2 view .LVU78
+ 373 004e 0133     		adds	r3, r3, #1
+ 374              	.LVL30:
+  79:Core/FatFs/Src/diskio.c ****     for (uint32_t i=0; i<read_size && i<32; i++) { // 检查前32字节
+ 375              		.loc 1 79 46 discriminator 2 view .LVU79
+ 376 0050 F7E7     		b	.L24
+ 377              	.LVL31:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 10
+
+
+ 378              	.L21:
+  79:Core/FatFs/Src/diskio.c ****     for (uint32_t i=0; i<read_size && i<32; i++) { // 检查前32字节
+ 379              		.loc 1 79 46 discriminator 2 view .LVU80
+ 380              	.LBE2:
+  66:Core/FatFs/Src/diskio.c ****         return RES_PARERR;
+ 381              		.loc 1 66 9 is_stmt 1 view .LVU81
+ 382 0052 0A48     		ldr	r0, .L30+8
+ 383              	.LVL32:
+  66:Core/FatFs/Src/diskio.c ****         return RES_PARERR;
+ 384              		.loc 1 66 9 is_stmt 0 view .LVU82
+ 385 0054 FFF7FEFF 		bl	Diskio_Print
+ 386              	.LVL33:
+  67:Core/FatFs/Src/diskio.c ****     }
+ 387              		.loc 1 67 9 is_stmt 1 view .LVU83
+  67:Core/FatFs/Src/diskio.c ****     }
+ 388              		.loc 1 67 16 is_stmt 0 view .LVU84
+ 389 0058 0424     		movs	r4, #4
+ 390              	.L23:
+  81:Core/FatFs/Src/diskio.c ****             all_zero = 0;
+  82:Core/FatFs/Src/diskio.c ****             break;
+  83:Core/FatFs/Src/diskio.c ****         }
+  84:Core/FatFs/Src/diskio.c ****     }
+  85:Core/FatFs/Src/diskio.c ****     if (all_zero) {
+  86:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘读取: 警告！读取数据全为0，可能读操作失败\n");
+  87:Core/FatFs/Src/diskio.c ****         return RES_ERROR; // 返回I/O错误，让FatFs识别
+  88:Core/FatFs/Src/diskio.c ****     }
+  89:Core/FatFs/Src/diskio.c ****     return RES_OK;
+  90:Core/FatFs/Src/diskio.c **** }
+ 391              		.loc 1 90 1 view .LVU85
+ 392 005a 2046     		mov	r0, r4
+ 393 005c BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 394              	.LVL34:
+ 395              	.L29:
+  78:Core/FatFs/Src/diskio.c ****     for (uint32_t i=0; i<read_size && i<32; i++) { // 检查前32字节
+ 396              		.loc 1 78 13 view .LVU86
+ 397 0060 0124     		movs	r4, #1
+ 398              	.LBB3:
+ 399 0062 00E0     		b	.L25
+ 400              	.L27:
+ 401              	.LBE3:
+ 402 0064 0124     		movs	r4, #1
+ 403              	.L25:
+ 404              	.LVL35:
+  85:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘读取: 警告！读取数据全为0，可能读操作失败\n");
+ 405              		.loc 1 85 5 is_stmt 1 view .LVU87
+  85:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘读取: 警告！读取数据全为0，可能读操作失败\n");
+ 406              		.loc 1 85 8 is_stmt 0 view .LVU88
+ 407 0066 002C     		cmp	r4, #0
+ 408 0068 F7D0     		beq	.L23
+  86:Core/FatFs/Src/diskio.c ****         return RES_ERROR; // 返回I/O错误，让FatFs识别
+ 409              		.loc 1 86 9 is_stmt 1 view .LVU89
+ 410 006a 0548     		ldr	r0, .L30+12
+ 411 006c FFF7FEFF 		bl	Diskio_Print
+ 412              	.LVL36:
+  87:Core/FatFs/Src/diskio.c ****     }
+ 413              		.loc 1 87 9 view .LVU90
+  87:Core/FatFs/Src/diskio.c ****     }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 11
+
+
+ 414              		.loc 1 87 16 is_stmt 0 view .LVU91
+ 415 0070 F3E7     		b	.L23
+ 416              	.L31:
+ 417 0072 00BF     		.align	2
+ 418              	.L30:
+ 419 0074 00000000 		.word	.LANCHOR0
+ 420 0078 20000000 		.word	.LC5
+ 421 007c 00000000 		.word	.LC4
+ 422 0080 50000000 		.word	.LC6
+ 423              		.cfi_endproc
+ 424              	.LFE71:
+ 426              		.section	.rodata.disk_write_any.str1.4,"aMS",%progbits,1
+ 427              		.align	2
+ 428              	.LC7:
+ 429 0000 D7D6BDDA 		.ascii	"\327\326\275\332\320\264\310\353: \316\336\320\247\262"
+ 429      D0B4C8EB 
+ 429      3A20CEDE 
+ 429      D0A7B2
+ 430 000f CECAFDBB 		.ascii	"\316\312\375\273\362\316\264\263\365\312\274\273\257"
+ 430      F2CEB4B3 
+ 430      F5CABCBB 
+ 430      AF
+ 431 001c 0A00     		.ascii	"\012\000"
+ 432 001e 0000     		.align	2
+ 433              	.LC8:
+ 434 0020 D7D6BDDA 		.ascii	"\327\326\275\332\320\264\310\353: \306\360\312\274\265"
+ 434      D0B4C8EB 
+ 434      3A20C6F0 
+ 434      CABCB5
+ 435 002f D8D6B730 		.ascii	"\330\326\2670x%08X\243\254\327\334\264\363\320\241%"
+ 435      78253038 
+ 435      58A3ACD7 
+ 435      DCB4F3D0 
+ 435      A125
+ 436 0041 75D7D6BD 		.ascii	"u\327\326\275\332\012\000"
+ 436      DA0A00
+ 437              		.align	2
+ 438              	.LC9:
+ 439 0048 D7D6BDDA 		.ascii	"\327\326\275\332\320\264\310\353: \311\310\307\370%"
+ 439      D0B4C8EB 
+ 439      3A20C9C8 
+ 439      C7F825
+ 440 0057 6C75B2C1 		.ascii	"lu\262\301\263\375\312\247\260\334\243\241\012\000"
+ 440      B3FDCAA7 
+ 440      B0DCA3A1 
+ 440      0A00
+ 441 0065 000000   		.align	2
+ 442              	.LC10:
+ 443 0068 D7D6BDDA 		.ascii	"\327\326\275\332\320\264\310\353: \265\330\326\2670"
+ 443      D0B4C8EB 
+ 443      3A20B5D8 
+ 443      D6B730
+ 444 0077 78253038 		.ascii	"x%08X\320\264\310\353\312\247\260\334\243\250\321\351"
+ 444      58D0B4C8 
+ 444      EBCAA7B0 
+ 444      DCA3A8D1 
+ 444      E9
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 12
+
+
+ 445 0088 D6A4B2BB 		.ascii	"\326\244\262\273\315\250\271\375\243\251\012\000"
+ 445      CDA8B9FD 
+ 445      A3A90A00 
+ 446              		.align	2
+ 447              	.LC11:
+ 448 0094 D7D6BDDA 		.ascii	"\327\326\275\332\320\264\310\353: \265\330\326\2670"
+ 448      D0B4C8EB 
+ 448      3A20B5D8 
+ 448      D6B730
+ 449 00a3 78253038 		.ascii	"x%08X\243\254\263\311\271\246\320\264\310\353%u\327"
+ 449      58A3ACB3 
+ 449      C9B9A6D0 
+ 449      B4C8EB25 
+ 449      75D7
+ 450 00b5 D6BDDA0A 		.ascii	"\326\275\332\012\000"
+ 450      00
+ 451              		.section	.text.disk_write_any,"ax",%progbits
+ 452              		.align	1
+ 453              		.global	disk_write_any
+ 454              		.syntax unified
+ 455              		.thumb
+ 456              		.thumb_func
+ 458              	disk_write_any:
+ 459              	.LVL37:
+ 460              	.LFB73:
+  91:Core/FatFs/Src/diskio.c **** 
+  92:Core/FatFs/Src/diskio.c **** /************************** 磁盘扇区写入（FatFs标准接口） **************************/
+  93:Core/FatFs/Src/diskio.c **** DRESULT disk_write(BYTE pdrv, const BYTE *buff, DWORD sector, UINT count) {
+  94:Core/FatFs/Src/diskio.c ****     // 转发到自定义字节级写入函数，适配原有storage.c逻辑
+  95:Core/FatFs/Src/diskio.c ****     if (pdrv >= DEV_COUNT || buff == NULL || count == 0 || (Stat & STA_NOINIT)) {
+  96:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘写入: 无效参数或设备未初始化\n");
+  97:Core/FatFs/Src/diskio.c ****         return RES_PARERR;
+  98:Core/FatFs/Src/diskio.c ****     }
+  99:Core/FatFs/Src/diskio.c ****     // FatFs扇区→FLASH字节地址
+ 100:Core/FatFs/Src/diskio.c ****     return disk_write_any(pdrv, buff, sector * 512, count * 512);
+ 101:Core/FatFs/Src/diskio.c **** }
+ 102:Core/FatFs/Src/diskio.c **** 
+ 103:Core/FatFs/Src/diskio.c **** /************************** 自定义字节级写入（兼容原有逻辑） **************************/
+ 104:Core/FatFs/Src/diskio.c **** DRESULT disk_write_any(BYTE pdrv, const BYTE *buff, DWORD start_addr, UINT size) {
+ 461              		.loc 1 104 82 is_stmt 1 view -0
+ 462              		.cfi_startproc
+ 463              		@ args = 0, pretend = 0, frame = 264
+ 464              		@ frame_needed = 0, uses_anonymous_args = 0
+ 465              		.loc 1 104 82 is_stmt 0 view .LVU93
+ 466 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 467              	.LCFI8:
+ 468              		.cfi_def_cfa_offset 36
+ 469              		.cfi_offset 4, -36
+ 470              		.cfi_offset 5, -32
+ 471              		.cfi_offset 6, -28
+ 472              		.cfi_offset 7, -24
+ 473              		.cfi_offset 8, -20
+ 474              		.cfi_offset 9, -16
+ 475              		.cfi_offset 10, -12
+ 476              		.cfi_offset 11, -8
+ 477              		.cfi_offset 14, -4
+ 478 0004 C3B0     		sub	sp, sp, #268
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 13
+
+
+ 479              	.LCFI9:
+ 480              		.cfi_def_cfa_offset 304
+ 481 0006 0192     		str	r2, [sp, #4]
+ 105:Core/FatFs/Src/diskio.c ****     if (pdrv >= DEV_COUNT || buff == NULL || size == 0 || (Stat & STA_NOINIT)) {
+ 482              		.loc 1 105 5 is_stmt 1 view .LVU94
+ 483              		.loc 1 105 8 is_stmt 0 view .LVU95
+ 484 0008 D8B9     		cbnz	r0, .L33
+ 485 000a 8946     		mov	r9, r1
+ 486 000c 9B46     		mov	fp, r3
+ 487              		.loc 1 105 27 discriminator 1 view .LVU96
+ 488 000e C1B1     		cbz	r1, .L33
+ 489              		.loc 1 105 43 discriminator 2 view .LVU97
+ 490 0010 BBB1     		cbz	r3, .L33
+ 491              		.loc 1 105 65 discriminator 3 view .LVU98
+ 492 0012 3E4B     		ldr	r3, .L54
+ 493              	.LVL38:
+ 494              		.loc 1 105 65 discriminator 3 view .LVU99
+ 495 0014 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 496              		.loc 1 105 56 discriminator 3 view .LVU100
+ 497 0016 13F0010F 		tst	r3, #1
+ 498 001a 12D1     		bne	.L33
+ 499              	.LVL39:
+ 500              	.L34:
+ 106:Core/FatFs/Src/diskio.c ****         Diskio_Print("字节写入: 无效参数或未初始化\n");
+ 107:Core/FatFs/Src/diskio.c ****         return RES_PARERR;
+ 108:Core/FatFs/Src/diskio.c ****     }
+ 109:Core/FatFs/Src/diskio.c ****     while (W25Q64_ReadStatus() & 0x01);
+ 501              		.loc 1 109 39 is_stmt 1 discriminator 1 view .LVU101
+ 502              		.loc 1 109 11 discriminator 1 view .LVU102
+ 503              		.loc 1 109 12 is_stmt 0 discriminator 1 view .LVU103
+ 504 001c FFF7FEFF 		bl	W25Q64_ReadStatus
+ 505              	.LVL40:
+ 506              		.loc 1 109 11 discriminator 1 view .LVU104
+ 507 0020 10F00106 		ands	r6, r0, #1
+ 508 0024 FAD1     		bne	.L34
+ 110:Core/FatFs/Src/diskio.c **** 
+ 111:Core/FatFs/Src/diskio.c ****     uint32_t curr_addr = start_addr;
+ 509              		.loc 1 111 5 is_stmt 1 view .LVU105
+ 510              	.LVL41:
+ 112:Core/FatFs/Src/diskio.c ****     uint32_t remain_size = size;
+ 511              		.loc 1 112 5 view .LVU106
+ 113:Core/FatFs/Src/diskio.c ****     const uint8_t *data_ptr = buff;
+ 512              		.loc 1 113 5 view .LVU107
+ 114:Core/FatFs/Src/diskio.c ****     Diskio_Print("字节写入: 起始地址0x%08X，总大小%u字节\n", start_addr, size);
+ 513              		.loc 1 114 5 view .LVU108
+ 514 0026 5A46     		mov	r2, fp
+ 515 0028 019C     		ldr	r4, [sp, #4]
+ 516 002a 2146     		mov	r1, r4
+ 517 002c 3848     		ldr	r0, .L54+4
+ 518 002e FFF7FEFF 		bl	Diskio_Print
+ 519              	.LVL42:
+ 115:Core/FatFs/Src/diskio.c **** 
+ 116:Core/FatFs/Src/diskio.c ****     // 擦除扇区（保留原有逻辑，增加错误校验）
+ 117:Core/FatFs/Src/diskio.c ****     uint32_t start_sector = curr_addr / W25Q64_SECTOR_SIZE;
+ 520              		.loc 1 117 5 view .LVU109
+ 521              		.loc 1 117 14 is_stmt 0 view .LVU110
+ 522 0032 270B     		lsrs	r7, r4, #12
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 14
+
+
+ 523              	.LVL43:
+ 118:Core/FatFs/Src/diskio.c ****     uint32_t end_sector = (curr_addr + remain_size - 1) / W25Q64_SECTOR_SIZE;
+ 524              		.loc 1 118 5 is_stmt 1 view .LVU111
+ 525              		.loc 1 118 38 is_stmt 0 view .LVU112
+ 526 0034 0BEB040A 		add	r10, fp, r4
+ 527              		.loc 1 118 52 view .LVU113
+ 528 0038 0AF1FF3A 		add	r10, r10, #-1
+ 529              		.loc 1 118 14 view .LVU114
+ 530 003c 4FEA1A3A 		lsr	r10, r10, #12
+ 531              	.LVL44:
+ 119:Core/FatFs/Src/diskio.c ****     for (uint32_t i = start_sector; i <= end_sector; i++) {
+ 532              		.loc 1 119 5 is_stmt 1 view .LVU115
+ 533              	.LBB4:
+ 534              		.loc 1 119 10 view .LVU116
+ 535              		.loc 1 119 5 is_stmt 0 view .LVU117
+ 536 0040 12E0     		b	.L36
+ 537              	.LVL45:
+ 538              	.L33:
+ 539              		.loc 1 119 5 view .LVU118
+ 540              	.LBE4:
+ 106:Core/FatFs/Src/diskio.c ****         return RES_PARERR;
+ 541              		.loc 1 106 9 is_stmt 1 view .LVU119
+ 542 0042 3448     		ldr	r0, .L54+8
+ 543              	.LVL46:
+ 106:Core/FatFs/Src/diskio.c ****         return RES_PARERR;
+ 544              		.loc 1 106 9 is_stmt 0 view .LVU120
+ 545 0044 FFF7FEFF 		bl	Diskio_Print
+ 546              	.LVL47:
+ 107:Core/FatFs/Src/diskio.c ****     }
+ 547              		.loc 1 107 9 is_stmt 1 view .LVU121
+ 107:Core/FatFs/Src/diskio.c ****     }
+ 548              		.loc 1 107 16 is_stmt 0 view .LVU122
+ 549 0048 0426     		movs	r6, #4
+ 550              	.L35:
+ 120:Core/FatFs/Src/diskio.c ****         W25Q64_EraseSector(i * W25Q64_SECTOR_SIZE);
+ 121:Core/FatFs/Src/diskio.c ****         while (W25Q64_ReadStatus() & 0x01);
+ 122:Core/FatFs/Src/diskio.c ****         // 擦除后验证扇区是否为0xFF（正常擦除后应为全1）
+ 123:Core/FatFs/Src/diskio.c ****         uint8_t verify_buf[16] = {0};
+ 124:Core/FatFs/Src/diskio.c ****         W25Q64_ReadData(i * W25Q64_SECTOR_SIZE, verify_buf, 16);
+ 125:Core/FatFs/Src/diskio.c ****         uint8_t erase_ok = 1;
+ 126:Core/FatFs/Src/diskio.c ****         for (int j=0; j<16; j++) {
+ 127:Core/FatFs/Src/diskio.c ****             if (verify_buf[j] != 0xFF) {
+ 128:Core/FatFs/Src/diskio.c ****                 erase_ok = 0;
+ 129:Core/FatFs/Src/diskio.c ****                 break;
+ 130:Core/FatFs/Src/diskio.c ****             }
+ 131:Core/FatFs/Src/diskio.c ****         }
+ 132:Core/FatFs/Src/diskio.c ****         if (!erase_ok) {
+ 133:Core/FatFs/Src/diskio.c ****             Diskio_Print("字节写入: 扇区%lu擦除失败！\n", i);
+ 134:Core/FatFs/Src/diskio.c ****             return RES_ERROR;
+ 135:Core/FatFs/Src/diskio.c ****         }
+ 136:Core/FatFs/Src/diskio.c ****     }
+ 137:Core/FatFs/Src/diskio.c **** 
+ 138:Core/FatFs/Src/diskio.c ****     // 分页写入（增加写后读回验证）
+ 139:Core/FatFs/Src/diskio.c ****     while (remain_size > 0) {
+ 140:Core/FatFs/Src/diskio.c ****         uint16_t page_offset = curr_addr % W25Q64_PAGE_SIZE;
+ 141:Core/FatFs/Src/diskio.c ****         uint16_t write_len = (W25Q64_PAGE_SIZE - page_offset) > remain_size ? remain_size : (W25Q64
+ 142:Core/FatFs/Src/diskio.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 15
+
+
+ 143:Core/FatFs/Src/diskio.c ****         W25Q64_WritePage(curr_addr, (uint8_t *)data_ptr, write_len);
+ 144:Core/FatFs/Src/diskio.c ****         while (W25Q64_ReadStatus() & 0x01);
+ 145:Core/FatFs/Src/diskio.c **** 
+ 146:Core/FatFs/Src/diskio.c ****         // 写后立即读回验证
+ 147:Core/FatFs/Src/diskio.c ****         uint8_t verify_buf[256] = {0};
+ 148:Core/FatFs/Src/diskio.c ****         W25Q64_ReadData(curr_addr, verify_buf, write_len);
+ 149:Core/FatFs/Src/diskio.c ****         if (memcmp(verify_buf, data_ptr, write_len) != 0) {
+ 150:Core/FatFs/Src/diskio.c ****             Diskio_Print("字节写入: 地址0x%08X写入失败（验证不通过）\n", curr_addr);
+ 151:Core/FatFs/Src/diskio.c ****             return RES_ERROR;
+ 152:Core/FatFs/Src/diskio.c ****         }
+ 153:Core/FatFs/Src/diskio.c **** 
+ 154:Core/FatFs/Src/diskio.c ****         curr_addr += write_len;
+ 155:Core/FatFs/Src/diskio.c ****         data_ptr += write_len;
+ 156:Core/FatFs/Src/diskio.c ****         remain_size -= write_len;
+ 157:Core/FatFs/Src/diskio.c ****     }
+ 158:Core/FatFs/Src/diskio.c **** 
+ 159:Core/FatFs/Src/diskio.c ****     Diskio_Print("字节写入: 地址0x%08X，成功写入%u字节\n", start_addr, size);
+ 160:Core/FatFs/Src/diskio.c ****     return RES_OK;
+ 161:Core/FatFs/Src/diskio.c **** }
+ 551              		.loc 1 161 1 view .LVU123
+ 552 004a 3046     		mov	r0, r6
+ 553 004c 43B0     		add	sp, sp, #268
+ 554              	.LCFI10:
+ 555              		.cfi_remember_state
+ 556              		.cfi_def_cfa_offset 36
+ 557              		@ sp needed
+ 558 004e BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 559              	.LVL48:
+ 560              	.L49:
+ 561              	.LCFI11:
+ 562              		.cfi_restore_state
+ 563              	.LBB9:
+ 564              	.LBB5:
+ 565              	.LBB6:
+ 126:Core/FatFs/Src/diskio.c ****             if (verify_buf[j] != 0xFF) {
+ 566              		.loc 1 126 29 is_stmt 1 discriminator 2 view .LVU124
+ 126:Core/FatFs/Src/diskio.c ****             if (verify_buf[j] != 0xFF) {
+ 567              		.loc 1 126 30 is_stmt 0 discriminator 2 view .LVU125
+ 568 0052 0134     		adds	r4, r4, #1
+ 569              	.LVL49:
+ 570              	.L38:
+ 126:Core/FatFs/Src/diskio.c ****             if (verify_buf[j] != 0xFF) {
+ 571              		.loc 1 126 23 is_stmt 1 discriminator 1 view .LVU126
+ 126:Core/FatFs/Src/diskio.c ****             if (verify_buf[j] != 0xFF) {
+ 572              		.loc 1 126 9 is_stmt 0 discriminator 1 view .LVU127
+ 573 0054 0F2C     		cmp	r4, #15
+ 574 0056 04DC     		bgt	.L48
+ 127:Core/FatFs/Src/diskio.c ****                 erase_ok = 0;
+ 575              		.loc 1 127 13 is_stmt 1 view .LVU128
+ 127:Core/FatFs/Src/diskio.c ****                 erase_ok = 0;
+ 576              		.loc 1 127 27 is_stmt 0 view .LVU129
+ 577 0058 02AB     		add	r3, sp, #8
+ 578 005a 1B5D     		ldrb	r3, [r3, r4]	@ zero_extendqisi2
+ 127:Core/FatFs/Src/diskio.c ****                 erase_ok = 0;
+ 579              		.loc 1 127 16 view .LVU130
+ 580 005c FF2B     		cmp	r3, #255
+ 581 005e F8D0     		beq	.L49
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 16
+
+
+ 582 0060 00E0     		b	.L39
+ 583              	.L48:
+ 584              	.LBE6:
+ 125:Core/FatFs/Src/diskio.c ****         for (int j=0; j<16; j++) {
+ 585              		.loc 1 125 17 view .LVU131
+ 586 0062 0125     		movs	r5, #1
+ 587              	.L39:
+ 588              	.LVL50:
+ 132:Core/FatFs/Src/diskio.c ****             Diskio_Print("字节写入: 扇区%lu擦除失败！\n", i);
+ 589              		.loc 1 132 9 is_stmt 1 view .LVU132
+ 132:Core/FatFs/Src/diskio.c ****             Diskio_Print("字节写入: 扇区%lu擦除失败！\n", i);
+ 590              		.loc 1 132 12 is_stmt 0 view .LVU133
+ 591 0064 BDB1     		cbz	r5, .L50
+ 592              	.LBE5:
+ 119:Core/FatFs/Src/diskio.c ****         W25Q64_EraseSector(i * W25Q64_SECTOR_SIZE);
+ 593              		.loc 1 119 54 is_stmt 1 view .LVU134
+ 119:Core/FatFs/Src/diskio.c ****         W25Q64_EraseSector(i * W25Q64_SECTOR_SIZE);
+ 594              		.loc 1 119 55 is_stmt 0 view .LVU135
+ 595 0066 0137     		adds	r7, r7, #1
+ 596              	.LVL51:
+ 597              	.L36:
+ 119:Core/FatFs/Src/diskio.c ****         W25Q64_EraseSector(i * W25Q64_SECTOR_SIZE);
+ 598              		.loc 1 119 37 is_stmt 1 discriminator 1 view .LVU136
+ 119:Core/FatFs/Src/diskio.c ****         W25Q64_EraseSector(i * W25Q64_SECTOR_SIZE);
+ 599              		.loc 1 119 5 is_stmt 0 discriminator 1 view .LVU137
+ 600 0068 5745     		cmp	r7, r10
+ 601 006a 1AD8     		bhi	.L51
+ 602              	.LBB8:
+ 120:Core/FatFs/Src/diskio.c ****         while (W25Q64_ReadStatus() & 0x01);
+ 603              		.loc 1 120 9 is_stmt 1 view .LVU138
+ 604 006c 4FEA0738 		lsl	r8, r7, #12
+ 605 0070 4046     		mov	r0, r8
+ 606 0072 FFF7FEFF 		bl	W25Q64_EraseSector
+ 607              	.LVL52:
+ 121:Core/FatFs/Src/diskio.c ****         // 擦除后验证扇区是否为0xFF（正常擦除后应为全1）
+ 608              		.loc 1 121 9 view .LVU139
+ 609              	.L37:
+ 121:Core/FatFs/Src/diskio.c ****         // 擦除后验证扇区是否为0xFF（正常擦除后应为全1）
+ 610              		.loc 1 121 43 discriminator 1 view .LVU140
+ 121:Core/FatFs/Src/diskio.c ****         // 擦除后验证扇区是否为0xFF（正常擦除后应为全1）
+ 611              		.loc 1 121 15 discriminator 1 view .LVU141
+ 121:Core/FatFs/Src/diskio.c ****         // 擦除后验证扇区是否为0xFF（正常擦除后应为全1）
+ 612              		.loc 1 121 16 is_stmt 0 discriminator 1 view .LVU142
+ 613 0076 FFF7FEFF 		bl	W25Q64_ReadStatus
+ 614              	.LVL53:
+ 121:Core/FatFs/Src/diskio.c ****         // 擦除后验证扇区是否为0xFF（正常擦除后应为全1）
+ 615              		.loc 1 121 15 discriminator 1 view .LVU143
+ 616 007a 10F00105 		ands	r5, r0, #1
+ 617 007e FAD1     		bne	.L37
+ 123:Core/FatFs/Src/diskio.c ****         W25Q64_ReadData(i * W25Q64_SECTOR_SIZE, verify_buf, 16);
+ 618              		.loc 1 123 9 is_stmt 1 view .LVU144
+ 123:Core/FatFs/Src/diskio.c ****         W25Q64_ReadData(i * W25Q64_SECTOR_SIZE, verify_buf, 16);
+ 619              		.loc 1 123 17 is_stmt 0 view .LVU145
+ 620 0080 0024     		movs	r4, #0
+ 621 0082 0294     		str	r4, [sp, #8]
+ 622 0084 0394     		str	r4, [sp, #12]
+ 623 0086 0494     		str	r4, [sp, #16]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 17
+
+
+ 624 0088 0594     		str	r4, [sp, #20]
+ 124:Core/FatFs/Src/diskio.c ****         uint8_t erase_ok = 1;
+ 625              		.loc 1 124 9 is_stmt 1 view .LVU146
+ 626 008a 1022     		movs	r2, #16
+ 627 008c 02A9     		add	r1, sp, #8
+ 628 008e 4046     		mov	r0, r8
+ 629 0090 FFF7FEFF 		bl	W25Q64_ReadData
+ 630              	.LVL54:
+ 125:Core/FatFs/Src/diskio.c ****         for (int j=0; j<16; j++) {
+ 631              		.loc 1 125 9 view .LVU147
+ 126:Core/FatFs/Src/diskio.c ****             if (verify_buf[j] != 0xFF) {
+ 632              		.loc 1 126 9 view .LVU148
+ 633              	.LBB7:
+ 126:Core/FatFs/Src/diskio.c ****             if (verify_buf[j] != 0xFF) {
+ 634              		.loc 1 126 14 view .LVU149
+ 126:Core/FatFs/Src/diskio.c ****             if (verify_buf[j] != 0xFF) {
+ 635              		.loc 1 126 9 is_stmt 0 view .LVU150
+ 636 0094 DEE7     		b	.L38
+ 637              	.LVL55:
+ 638              	.L50:
+ 126:Core/FatFs/Src/diskio.c ****             if (verify_buf[j] != 0xFF) {
+ 639              		.loc 1 126 9 view .LVU151
+ 640              	.LBE7:
+ 133:Core/FatFs/Src/diskio.c ****             return RES_ERROR;
+ 641              		.loc 1 133 13 is_stmt 1 view .LVU152
+ 642 0096 3946     		mov	r1, r7
+ 643 0098 1F48     		ldr	r0, .L54+12
+ 644 009a FFF7FEFF 		bl	Diskio_Print
+ 645              	.LVL56:
+ 134:Core/FatFs/Src/diskio.c ****         }
+ 646              		.loc 1 134 13 view .LVU153
+ 134:Core/FatFs/Src/diskio.c ****         }
+ 647              		.loc 1 134 20 is_stmt 0 view .LVU154
+ 648 009e 0126     		movs	r6, #1
+ 649 00a0 D3E7     		b	.L35
+ 650              	.LVL57:
+ 651              	.L51:
+ 134:Core/FatFs/Src/diskio.c ****         }
+ 652              		.loc 1 134 20 view .LVU155
+ 653              	.LBE8:
+ 654              	.LBE9:
+ 112:Core/FatFs/Src/diskio.c ****     const uint8_t *data_ptr = buff;
+ 655              		.loc 1 112 14 view .LVU156
+ 656 00a2 5F46     		mov	r7, fp
+ 657              	.LVL58:
+ 111:Core/FatFs/Src/diskio.c ****     uint32_t remain_size = size;
+ 658              		.loc 1 111 14 view .LVU157
+ 659 00a4 019D     		ldr	r5, [sp, #4]
+ 660              	.LVL59:
+ 661              	.L43:
+ 139:Core/FatFs/Src/diskio.c ****         uint16_t page_offset = curr_addr % W25Q64_PAGE_SIZE;
+ 662              		.loc 1 139 11 is_stmt 1 view .LVU158
+ 663 00a6 5FB3     		cbz	r7, .L52
+ 664              	.LBB10:
+ 140:Core/FatFs/Src/diskio.c ****         uint16_t write_len = (W25Q64_PAGE_SIZE - page_offset) > remain_size ? remain_size : (W25Q64
+ 665              		.loc 1 140 9 view .LVU159
+ 140:Core/FatFs/Src/diskio.c ****         uint16_t write_len = (W25Q64_PAGE_SIZE - page_offset) > remain_size ? remain_size : (W25Q64
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 18
+
+
+ 666              		.loc 1 140 18 is_stmt 0 view .LVU160
+ 667 00a8 ECB2     		uxtb	r4, r5
+ 668              	.LVL60:
+ 141:Core/FatFs/Src/diskio.c **** 
+ 669              		.loc 1 141 9 is_stmt 1 view .LVU161
+ 141:Core/FatFs/Src/diskio.c **** 
+ 670              		.loc 1 141 48 is_stmt 0 view .LVU162
+ 671 00aa C4F58074 		rsb	r4, r4, #256
+ 672              	.LVL61:
+ 141:Core/FatFs/Src/diskio.c **** 
+ 673              		.loc 1 141 91 view .LVU163
+ 674 00ae BC42     		cmp	r4, r7
+ 675 00b0 28BF     		it	cs
+ 676 00b2 3C46     		movcs	r4, r7
+ 677              	.LVL62:
+ 143:Core/FatFs/Src/diskio.c ****         while (W25Q64_ReadStatus() & 0x01);
+ 678              		.loc 1 143 9 is_stmt 1 view .LVU164
+ 679 00b4 A2B2     		uxth	r2, r4
+ 680 00b6 4946     		mov	r1, r9
+ 681 00b8 2846     		mov	r0, r5
+ 682 00ba FFF7FEFF 		bl	W25Q64_WritePage
+ 683              	.LVL63:
+ 144:Core/FatFs/Src/diskio.c **** 
+ 684              		.loc 1 144 9 view .LVU165
+ 685              	.L44:
+ 144:Core/FatFs/Src/diskio.c **** 
+ 686              		.loc 1 144 43 discriminator 1 view .LVU166
+ 144:Core/FatFs/Src/diskio.c **** 
+ 687              		.loc 1 144 15 discriminator 1 view .LVU167
+ 144:Core/FatFs/Src/diskio.c **** 
+ 688              		.loc 1 144 16 is_stmt 0 discriminator 1 view .LVU168
+ 689 00be FFF7FEFF 		bl	W25Q64_ReadStatus
+ 690              	.LVL64:
+ 144:Core/FatFs/Src/diskio.c **** 
+ 691              		.loc 1 144 15 discriminator 1 view .LVU169
+ 692 00c2 10F0010F 		tst	r0, #1
+ 693 00c6 FAD1     		bne	.L44
+ 147:Core/FatFs/Src/diskio.c ****         W25Q64_ReadData(curr_addr, verify_buf, write_len);
+ 694              		.loc 1 147 9 is_stmt 1 view .LVU170
+ 147:Core/FatFs/Src/diskio.c ****         W25Q64_ReadData(curr_addr, verify_buf, write_len);
+ 695              		.loc 1 147 17 is_stmt 0 view .LVU171
+ 696 00c8 0021     		movs	r1, #0
+ 697 00ca 0291     		str	r1, [sp, #8]
+ 698 00cc FC22     		movs	r2, #252
+ 699 00ce 03A8     		add	r0, sp, #12
+ 700 00d0 FFF7FEFF 		bl	memset
+ 701              	.LVL65:
+ 148:Core/FatFs/Src/diskio.c ****         if (memcmp(verify_buf, data_ptr, write_len) != 0) {
+ 702              		.loc 1 148 9 is_stmt 1 view .LVU172
+ 703 00d4 A4B2     		uxth	r4, r4
+ 148:Core/FatFs/Src/diskio.c ****         if (memcmp(verify_buf, data_ptr, write_len) != 0) {
+ 704              		.loc 1 148 9 is_stmt 0 view .LVU173
+ 705 00d6 2246     		mov	r2, r4
+ 706 00d8 02A9     		add	r1, sp, #8
+ 707 00da 2846     		mov	r0, r5
+ 708 00dc FFF7FEFF 		bl	W25Q64_ReadData
+ 709              	.LVL66:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 19
+
+
+ 149:Core/FatFs/Src/diskio.c ****             Diskio_Print("字节写入: 地址0x%08X写入失败（验证不通过）\n", curr_addr);
+ 710              		.loc 1 149 9 is_stmt 1 view .LVU174
+ 149:Core/FatFs/Src/diskio.c ****             Diskio_Print("字节写入: 地址0x%08X写入失败（验证不通过）\n", curr_addr);
+ 711              		.loc 1 149 13 is_stmt 0 view .LVU175
+ 712 00e0 2246     		mov	r2, r4
+ 713 00e2 4946     		mov	r1, r9
+ 714 00e4 02A8     		add	r0, sp, #8
+ 715 00e6 FFF7FEFF 		bl	memcmp
+ 716              	.LVL67:
+ 149:Core/FatFs/Src/diskio.c ****             Diskio_Print("字节写入: 地址0x%08X写入失败（验证不通过）\n", curr_addr);
+ 717              		.loc 1 149 12 view .LVU176
+ 718 00ea 18B9     		cbnz	r0, .L53
+ 154:Core/FatFs/Src/diskio.c ****         data_ptr += write_len;
+ 719              		.loc 1 154 9 is_stmt 1 view .LVU177
+ 154:Core/FatFs/Src/diskio.c ****         data_ptr += write_len;
+ 720              		.loc 1 154 19 is_stmt 0 view .LVU178
+ 721 00ec 2544     		add	r5, r5, r4
+ 722              	.LVL68:
+ 155:Core/FatFs/Src/diskio.c ****         remain_size -= write_len;
+ 723              		.loc 1 155 9 is_stmt 1 view .LVU179
+ 155:Core/FatFs/Src/diskio.c ****         remain_size -= write_len;
+ 724              		.loc 1 155 18 is_stmt 0 view .LVU180
+ 725 00ee A144     		add	r9, r9, r4
+ 726              	.LVL69:
+ 156:Core/FatFs/Src/diskio.c ****     }
+ 727              		.loc 1 156 9 is_stmt 1 view .LVU181
+ 156:Core/FatFs/Src/diskio.c ****     }
+ 728              		.loc 1 156 21 is_stmt 0 view .LVU182
+ 729 00f0 3F1B     		subs	r7, r7, r4
+ 730              	.LVL70:
+ 156:Core/FatFs/Src/diskio.c ****     }
+ 731              		.loc 1 156 21 view .LVU183
+ 732 00f2 D8E7     		b	.L43
+ 733              	.LVL71:
+ 734              	.L53:
+ 150:Core/FatFs/Src/diskio.c ****             return RES_ERROR;
+ 735              		.loc 1 150 13 is_stmt 1 view .LVU184
+ 736 00f4 2946     		mov	r1, r5
+ 737 00f6 0948     		ldr	r0, .L54+16
+ 738 00f8 FFF7FEFF 		bl	Diskio_Print
+ 739              	.LVL72:
+ 151:Core/FatFs/Src/diskio.c ****         }
+ 740              		.loc 1 151 13 view .LVU185
+ 151:Core/FatFs/Src/diskio.c ****         }
+ 741              		.loc 1 151 20 is_stmt 0 view .LVU186
+ 742 00fc 0126     		movs	r6, #1
+ 743 00fe A4E7     		b	.L35
+ 744              	.LVL73:
+ 745              	.L52:
+ 151:Core/FatFs/Src/diskio.c ****         }
+ 746              		.loc 1 151 20 view .LVU187
+ 747              	.LBE10:
+ 159:Core/FatFs/Src/diskio.c ****     return RES_OK;
+ 748              		.loc 1 159 5 is_stmt 1 view .LVU188
+ 749 0100 5A46     		mov	r2, fp
+ 750 0102 0199     		ldr	r1, [sp, #4]
+ 751 0104 0648     		ldr	r0, .L54+20
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 20
+
+
+ 752 0106 FFF7FEFF 		bl	Diskio_Print
+ 753              	.LVL74:
+ 160:Core/FatFs/Src/diskio.c **** }
+ 754              		.loc 1 160 5 view .LVU189
+ 160:Core/FatFs/Src/diskio.c **** }
+ 755              		.loc 1 160 12 is_stmt 0 view .LVU190
+ 756 010a 9EE7     		b	.L35
+ 757              	.L55:
+ 758              		.align	2
+ 759              	.L54:
+ 760 010c 00000000 		.word	.LANCHOR0
+ 761 0110 20000000 		.word	.LC8
+ 762 0114 00000000 		.word	.LC7
+ 763 0118 48000000 		.word	.LC9
+ 764 011c 68000000 		.word	.LC10
+ 765 0120 94000000 		.word	.LC11
+ 766              		.cfi_endproc
+ 767              	.LFE73:
+ 769              		.section	.rodata.disk_write.str1.4,"aMS",%progbits,1
+ 770              		.align	2
+ 771              	.LC12:
+ 772 0000 B4C5C5CC 		.ascii	"\264\305\305\314\320\264\310\353: \316\336\320\247\262"
+ 772      D0B4C8EB 
+ 772      3A20CEDE 
+ 772      D0A7B2
+ 773 000f CECAFDBB 		.ascii	"\316\312\375\273\362\311\350\261\270\316\264\263\365"
+ 773      F2C9E8B1 
+ 773      B8CEB4B3 
+ 773      F5
+ 774 001c CABCBBAF 		.ascii	"\312\274\273\257\012\000"
+ 774      0A00
+ 775              		.section	.text.disk_write,"ax",%progbits
+ 776              		.align	1
+ 777              		.global	disk_write
+ 778              		.syntax unified
+ 779              		.thumb
+ 780              		.thumb_func
+ 782              	disk_write:
+ 783              	.LVL75:
+ 784              	.LFB72:
+  93:Core/FatFs/Src/diskio.c ****     // 转发到自定义字节级写入函数，适配原有storage.c逻辑
+ 785              		.loc 1 93 75 is_stmt 1 view -0
+ 786              		.cfi_startproc
+ 787              		@ args = 0, pretend = 0, frame = 0
+ 788              		@ frame_needed = 0, uses_anonymous_args = 0
+  93:Core/FatFs/Src/diskio.c ****     // 转发到自定义字节级写入函数，适配原有storage.c逻辑
+ 789              		.loc 1 93 75 is_stmt 0 view .LVU192
+ 790 0000 08B5     		push	{r3, lr}
+ 791              	.LCFI12:
+ 792              		.cfi_def_cfa_offset 8
+ 793              		.cfi_offset 3, -8
+ 794              		.cfi_offset 14, -4
+  95:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘写入: 无效参数或设备未初始化\n");
+ 795              		.loc 1 95 5 is_stmt 1 view .LVU193
+  95:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘写入: 无效参数或设备未初始化\n");
+ 796              		.loc 1 95 8 is_stmt 0 view .LVU194
+ 797 0002 68B9     		cbnz	r0, .L57
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 21
+
+
+ 798 0004 8446     		mov	ip, r0
+  95:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘写入: 无效参数或设备未初始化\n");
+ 799              		.loc 1 95 27 discriminator 1 view .LVU195
+ 800 0006 59B1     		cbz	r1, .L57
+  95:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘写入: 无效参数或设备未初始化\n");
+ 801              		.loc 1 95 43 discriminator 2 view .LVU196
+ 802 0008 53B1     		cbz	r3, .L57
+  95:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘写入: 无效参数或设备未初始化\n");
+ 803              		.loc 1 95 66 discriminator 3 view .LVU197
+ 804 000a 0848     		ldr	r0, .L61
+ 805              	.LVL76:
+  95:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘写入: 无效参数或设备未初始化\n");
+ 806              		.loc 1 95 66 discriminator 3 view .LVU198
+ 807 000c 0078     		ldrb	r0, [r0]	@ zero_extendqisi2
+  95:Core/FatFs/Src/diskio.c ****         Diskio_Print("磁盘写入: 无效参数或设备未初始化\n");
+ 808              		.loc 1 95 57 discriminator 3 view .LVU199
+ 809 000e 10F0010F 		tst	r0, #1
+ 810 0012 05D1     		bne	.L57
+ 100:Core/FatFs/Src/diskio.c **** }
+ 811              		.loc 1 100 5 is_stmt 1 view .LVU200
+ 100:Core/FatFs/Src/diskio.c **** }
+ 812              		.loc 1 100 12 is_stmt 0 view .LVU201
+ 813 0014 5B02     		lsls	r3, r3, #9
+ 814              	.LVL77:
+ 100:Core/FatFs/Src/diskio.c **** }
+ 815              		.loc 1 100 12 view .LVU202
+ 816 0016 5202     		lsls	r2, r2, #9
+ 817              	.LVL78:
+ 100:Core/FatFs/Src/diskio.c **** }
+ 818              		.loc 1 100 12 view .LVU203
+ 819 0018 6046     		mov	r0, ip
+ 820 001a FFF7FEFF 		bl	disk_write_any
+ 821              	.LVL79:
+ 100:Core/FatFs/Src/diskio.c **** }
+ 822              		.loc 1 100 12 view .LVU204
+ 823 001e 03E0     		b	.L59
+ 824              	.LVL80:
+ 825              	.L57:
+  96:Core/FatFs/Src/diskio.c ****         return RES_PARERR;
+ 826              		.loc 1 96 9 is_stmt 1 view .LVU205
+ 827 0020 0348     		ldr	r0, .L61+4
+ 828 0022 FFF7FEFF 		bl	Diskio_Print
+ 829              	.LVL81:
+  97:Core/FatFs/Src/diskio.c ****     }
+ 830              		.loc 1 97 9 view .LVU206
+  97:Core/FatFs/Src/diskio.c ****     }
+ 831              		.loc 1 97 16 is_stmt 0 view .LVU207
+ 832 0026 0420     		movs	r0, #4
+ 833              	.L59:
+ 101:Core/FatFs/Src/diskio.c **** 
+ 834              		.loc 1 101 1 view .LVU208
+ 835 0028 08BD     		pop	{r3, pc}
+ 836              	.L62:
+ 837 002a 00BF     		.align	2
+ 838              	.L61:
+ 839 002c 00000000 		.word	.LANCHOR0
+ 840 0030 00000000 		.word	.LC12
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 22
+
+
+ 841              		.cfi_endproc
+ 842              	.LFE72:
+ 844              		.section	.rodata.disk_ioctl.str1.4,"aMS",%progbits,1
+ 845              		.align	2
+ 846              	.LC13:
+ 847 0000 494FBFD8 		.ascii	"IO\277\330\326\306: \316\336\320\247\311\350\261\270"
+ 847      D6C63A20 
+ 847      CEDED0A7 
+ 847      C9E8B1B8 
+ 848 0010 BBF2CEB4 		.ascii	"\273\362\316\264\263\365\312\274\273\257\012\000"
+ 848      B3F5CABC 
+ 848      BBAF0A00 
+ 849              		.align	2
+ 850              	.LC14:
+ 851 001c 494FBFD8 		.ascii	"IO\277\330\326\306: \326\264\320\320CTRL_SYNC\243\254"
+ 851      D6C63A20 
+ 851      D6B4D0D0 
+ 851      4354524C 
+ 851      5F53594E 
+ 852 0033 464C4153 		.ascii	"FLASH\322\321\276\315\320\367\012\000"
+ 852      48D2D1BE 
+ 852      CDD0F70A 
+ 852      00
+ 853              		.align	2
+ 854              	.LC15:
+ 855 0040 494FBFD8 		.ascii	"IO\277\330\326\306: \327\334\311\310\307\370\312\375"
+ 855      D6C63A20 
+ 855      D7DCC9C8 
+ 855      C7F8CAFD 
+ 856 0050 203D2025 		.ascii	" = %lu\012\000"
+ 856      6C750A00 
+ 857              		.align	2
+ 858              	.LC16:
+ 859 0058 494FBFD8 		.ascii	"IO\277\330\326\306: \311\310\307\370\264\363\320\241"
+ 859      D6C63A20 
+ 859      C9C8C7F8 
+ 859      B4F3D0A1 
+ 860 0068 203D2025 		.ascii	" = %u\327\326\275\332\012\000"
+ 860      75D7D6BD 
+ 860      DA0A00
+ 861 0073 00       		.align	2
+ 862              	.LC17:
+ 863 0074 494FBFD8 		.ascii	"IO\277\330\326\306: \262\301\263\375\277\351\264\363"
+ 863      D6C63A20 
+ 863      B2C1B3FD 
+ 863      BFE9B4F3 
+ 864 0084 D0A1203D 		.ascii	"\320\241 = %lu\327\326\275\332\012\000"
+ 864      20256C75 
+ 864      D7D6BDDA 
+ 864      0A00
+ 865 0092 0000     		.align	2
+ 866              	.LC18:
+ 867 0094 494FBFD8 		.ascii	"IO\277\330\326\306: \316\264\312\266\261\360\303\374"
+ 867      D6C63A20 
+ 867      CEB4CAB6 
+ 867      B1F0C3FC 
+ 868 00a4 C1EE2030 		.ascii	"\301\356 0x%02X\012\000"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 23
+
+
+ 868      78253032 
+ 868      580A00
+ 869              		.section	.text.disk_ioctl,"ax",%progbits
+ 870              		.align	1
+ 871              		.global	disk_ioctl
+ 872              		.syntax unified
+ 873              		.thumb
+ 874              		.thumb_func
+ 876              	disk_ioctl:
+ 877              	.LVL82:
+ 878              	.LFB74:
+ 162:Core/FatFs/Src/diskio.c **** 
+ 163:Core/FatFs/Src/diskio.c **** DRESULT disk_ioctl(BYTE pdrv, BYTE cmd, void *buff) {
+ 879              		.loc 1 163 53 is_stmt 1 view -0
+ 880              		.cfi_startproc
+ 881              		@ args = 0, pretend = 0, frame = 0
+ 882              		@ frame_needed = 0, uses_anonymous_args = 0
+ 883              		.loc 1 163 53 is_stmt 0 view .LVU210
+ 884 0000 10B5     		push	{r4, lr}
+ 885              	.LCFI13:
+ 886              		.cfi_def_cfa_offset 8
+ 887              		.cfi_offset 4, -8
+ 888              		.cfi_offset 14, -4
+ 164:Core/FatFs/Src/diskio.c ****     if (pdrv >= DEV_COUNT || (Stat & STA_NOINIT)) {
+ 889              		.loc 1 164 5 is_stmt 1 view .LVU211
+ 890              		.loc 1 164 8 is_stmt 0 view .LVU212
+ 891 0002 50B9     		cbnz	r0, .L64
+ 892              		.loc 1 164 36 discriminator 1 view .LVU213
+ 893 0004 1D4B     		ldr	r3, .L77
+ 894 0006 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 895              	.LVL83:
+ 896              		.loc 1 164 27 discriminator 1 view .LVU214
+ 897 0008 10F00104 		ands	r4, r0, #1
+ 898 000c 05D1     		bne	.L64
+ 165:Core/FatFs/Src/diskio.c ****         Diskio_Print("IO控制: 无效设备或未初始化\n");
+ 166:Core/FatFs/Src/diskio.c ****         return RES_PARERR;
+ 167:Core/FatFs/Src/diskio.c ****     }
+ 168:Core/FatFs/Src/diskio.c ****     DRESULT res = RES_PARERR;
+ 899              		.loc 1 168 5 is_stmt 1 view .LVU215
+ 900              	.LVL84:
+ 169:Core/FatFs/Src/diskio.c **** 
+ 170:Core/FatFs/Src/diskio.c ****     switch (cmd) {
+ 901              		.loc 1 170 5 view .LVU216
+ 902 000e 0329     		cmp	r1, #3
+ 903 0010 29D8     		bhi	.L67
+ 904 0012 DFE801F0 		tbb	[pc, r1]
+ 905              	.L69:
+ 906 0016 08       		.byte	(.L72-.L69)/2
+ 907 0017 11       		.byte	(.L71-.L69)/2
+ 908 0018 19       		.byte	(.L70-.L69)/2
+ 909 0019 21       		.byte	(.L68-.L69)/2
+ 910              	.LVL85:
+ 911              		.p2align 1
+ 912              	.L64:
+ 165:Core/FatFs/Src/diskio.c ****         Diskio_Print("IO控制: 无效设备或未初始化\n");
+ 913              		.loc 1 165 9 view .LVU217
+ 914 001a 1948     		ldr	r0, .L77+4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 24
+
+
+ 915 001c FFF7FEFF 		bl	Diskio_Print
+ 916              	.LVL86:
+ 166:Core/FatFs/Src/diskio.c ****     }
+ 917              		.loc 1 166 9 view .LVU218
+ 166:Core/FatFs/Src/diskio.c ****     }
+ 918              		.loc 1 166 16 is_stmt 0 view .LVU219
+ 919 0020 0424     		movs	r4, #4
+ 920              	.L66:
+ 171:Core/FatFs/Src/diskio.c ****         case CTRL_SYNC: // diskio.h定义：0 → 强制刷新
+ 172:Core/FatFs/Src/diskio.c ****             while (W25Q64_ReadStatus() & 0x01);
+ 173:Core/FatFs/Src/diskio.c ****             res = RES_OK;
+ 174:Core/FatFs/Src/diskio.c ****             Diskio_Print("IO控制: 执行CTRL_SYNC，FLASH已就绪\n");
+ 175:Core/FatFs/Src/diskio.c ****             break;
+ 176:Core/FatFs/Src/diskio.c ****         // 其他指令保留原有逻辑，增加参数校验
+ 177:Core/FatFs/Src/diskio.c ****         case GET_SECTOR_COUNT:
+ 178:Core/FatFs/Src/diskio.c ****             if (buff != NULL) {
+ 179:Core/FatFs/Src/diskio.c ****                 *(DWORD *)buff = W25Q64_TOTAL_LOGIC_SECTOR;
+ 180:Core/FatFs/Src/diskio.c ****                 res = RES_OK;
+ 181:Core/FatFs/Src/diskio.c ****                 Diskio_Print("IO控制: 总扇区数 = %lu\n", *(DWORD *)buff);
+ 182:Core/FatFs/Src/diskio.c ****             }
+ 183:Core/FatFs/Src/diskio.c ****             break;
+ 184:Core/FatFs/Src/diskio.c ****         case GET_SECTOR_SIZE:
+ 185:Core/FatFs/Src/diskio.c ****             if (buff != NULL) {
+ 186:Core/FatFs/Src/diskio.c ****                 *(WORD *)buff = W25Q64_PHYSICAL_SECTOR_SIZE;
+ 187:Core/FatFs/Src/diskio.c ****                 res = RES_OK;
+ 188:Core/FatFs/Src/diskio.c ****                 Diskio_Print("IO控制: 扇区大小 = %u字节\n", *(WORD *)buff);
+ 189:Core/FatFs/Src/diskio.c ****             }
+ 190:Core/FatFs/Src/diskio.c ****             break;
+ 191:Core/FatFs/Src/diskio.c ****         case GET_BLOCK_SIZE:
+ 192:Core/FatFs/Src/diskio.c ****             if (buff != NULL) {
+ 193:Core/FatFs/Src/diskio.c ****                 *(DWORD *)buff = 1;
+ 194:Core/FatFs/Src/diskio.c ****                 res = RES_OK;
+ 195:Core/FatFs/Src/diskio.c ****                 Diskio_Print("IO控制: 擦除块大小 = %lu字节\n", *(DWORD *)buff);
+ 196:Core/FatFs/Src/diskio.c ****             }
+ 197:Core/FatFs/Src/diskio.c ****             break;
+ 198:Core/FatFs/Src/diskio.c ****         default:
+ 199:Core/FatFs/Src/diskio.c ****             Diskio_Print("IO控制: 未识别命令 0x%02X\n", cmd);
+ 200:Core/FatFs/Src/diskio.c ****             res = RES_PARERR;
+ 201:Core/FatFs/Src/diskio.c ****             break;
+ 202:Core/FatFs/Src/diskio.c ****     }
+ 203:Core/FatFs/Src/diskio.c ****     return res;
+ 204:Core/FatFs/Src/diskio.c **** }
+ 921              		.loc 1 204 1 view .LVU220
+ 922 0022 2046     		mov	r0, r4
+ 923 0024 10BD     		pop	{r4, pc}
+ 924              	.LVL87:
+ 925              	.L72:
+ 172:Core/FatFs/Src/diskio.c ****             res = RES_OK;
+ 926              		.loc 1 172 47 is_stmt 1 discriminator 1 view .LVU221
+ 172:Core/FatFs/Src/diskio.c ****             res = RES_OK;
+ 927              		.loc 1 172 19 discriminator 1 view .LVU222
+ 172:Core/FatFs/Src/diskio.c ****             res = RES_OK;
+ 928              		.loc 1 172 20 is_stmt 0 discriminator 1 view .LVU223
+ 929 0026 FFF7FEFF 		bl	W25Q64_ReadStatus
+ 930              	.LVL88:
+ 172:Core/FatFs/Src/diskio.c ****             res = RES_OK;
+ 931              		.loc 1 172 19 discriminator 1 view .LVU224
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 25
+
+
+ 932 002a 10F00104 		ands	r4, r0, #1
+ 933 002e FAD1     		bne	.L72
+ 173:Core/FatFs/Src/diskio.c ****             Diskio_Print("IO控制: 执行CTRL_SYNC，FLASH已就绪\n");
+ 934              		.loc 1 173 13 is_stmt 1 view .LVU225
+ 935              	.LVL89:
+ 174:Core/FatFs/Src/diskio.c ****             break;
+ 936              		.loc 1 174 13 view .LVU226
+ 937 0030 1448     		ldr	r0, .L77+8
+ 938 0032 FFF7FEFF 		bl	Diskio_Print
+ 939              	.LVL90:
+ 175:Core/FatFs/Src/diskio.c ****         // 其他指令保留原有逻辑，增加参数校验
+ 940              		.loc 1 175 13 view .LVU227
+ 941 0036 F4E7     		b	.L66
+ 942              	.LVL91:
+ 943              	.L71:
+ 178:Core/FatFs/Src/diskio.c ****                 *(DWORD *)buff = W25Q64_TOTAL_LOGIC_SECTOR;
+ 944              		.loc 1 178 13 view .LVU228
+ 178:Core/FatFs/Src/diskio.c ****                 *(DWORD *)buff = W25Q64_TOTAL_LOGIC_SECTOR;
+ 945              		.loc 1 178 16 is_stmt 0 view .LVU229
+ 946 0038 D2B1     		cbz	r2, .L73
+ 179:Core/FatFs/Src/diskio.c ****                 res = RES_OK;
+ 947              		.loc 1 179 17 is_stmt 1 view .LVU230
+ 179:Core/FatFs/Src/diskio.c ****                 res = RES_OK;
+ 948              		.loc 1 179 32 is_stmt 0 view .LVU231
+ 949 003a 4FF40061 		mov	r1, #2048
+ 950              	.LVL92:
+ 179:Core/FatFs/Src/diskio.c ****                 res = RES_OK;
+ 951              		.loc 1 179 32 view .LVU232
+ 952 003e 1160     		str	r1, [r2]
+ 180:Core/FatFs/Src/diskio.c ****                 Diskio_Print("IO控制: 总扇区数 = %lu\n", *(DWORD *)buff);
+ 953              		.loc 1 180 17 is_stmt 1 view .LVU233
+ 954              	.LVL93:
+ 181:Core/FatFs/Src/diskio.c ****             }
+ 955              		.loc 1 181 17 view .LVU234
+ 956 0040 1148     		ldr	r0, .L77+12
+ 957 0042 FFF7FEFF 		bl	Diskio_Print
+ 958              	.LVL94:
+ 181:Core/FatFs/Src/diskio.c ****             }
+ 959              		.loc 1 181 17 is_stmt 0 view .LVU235
+ 960 0046 ECE7     		b	.L66
+ 961              	.LVL95:
+ 962              	.L70:
+ 185:Core/FatFs/Src/diskio.c ****                 *(WORD *)buff = W25Q64_PHYSICAL_SECTOR_SIZE;
+ 963              		.loc 1 185 13 is_stmt 1 view .LVU236
+ 185:Core/FatFs/Src/diskio.c ****                 *(WORD *)buff = W25Q64_PHYSICAL_SECTOR_SIZE;
+ 964              		.loc 1 185 16 is_stmt 0 view .LVU237
+ 965 0048 A2B1     		cbz	r2, .L74
+ 186:Core/FatFs/Src/diskio.c ****                 res = RES_OK;
+ 966              		.loc 1 186 17 is_stmt 1 view .LVU238
+ 186:Core/FatFs/Src/diskio.c ****                 res = RES_OK;
+ 967              		.loc 1 186 31 is_stmt 0 view .LVU239
+ 968 004a 4FF48051 		mov	r1, #4096
+ 969              	.LVL96:
+ 186:Core/FatFs/Src/diskio.c ****                 res = RES_OK;
+ 970              		.loc 1 186 31 view .LVU240
+ 971 004e 1180     		strh	r1, [r2]	@ movhi
+ 187:Core/FatFs/Src/diskio.c ****                 Diskio_Print("IO控制: 扇区大小 = %u字节\n", *(WORD *)buff);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 26
+
+
+ 972              		.loc 1 187 17 is_stmt 1 view .LVU241
+ 973              	.LVL97:
+ 188:Core/FatFs/Src/diskio.c ****             }
+ 974              		.loc 1 188 17 view .LVU242
+ 975 0050 0E48     		ldr	r0, .L77+16
+ 976 0052 FFF7FEFF 		bl	Diskio_Print
+ 977              	.LVL98:
+ 188:Core/FatFs/Src/diskio.c ****             }
+ 978              		.loc 1 188 17 is_stmt 0 view .LVU243
+ 979 0056 E4E7     		b	.L66
+ 980              	.LVL99:
+ 981              	.L68:
+ 192:Core/FatFs/Src/diskio.c ****                 *(DWORD *)buff = 1;
+ 982              		.loc 1 192 13 is_stmt 1 view .LVU244
+ 192:Core/FatFs/Src/diskio.c ****                 *(DWORD *)buff = 1;
+ 983              		.loc 1 192 16 is_stmt 0 view .LVU245
+ 984 0058 72B1     		cbz	r2, .L75
+ 193:Core/FatFs/Src/diskio.c ****                 res = RES_OK;
+ 985              		.loc 1 193 17 is_stmt 1 view .LVU246
+ 193:Core/FatFs/Src/diskio.c ****                 res = RES_OK;
+ 986              		.loc 1 193 32 is_stmt 0 view .LVU247
+ 987 005a 0121     		movs	r1, #1
+ 988              	.LVL100:
+ 193:Core/FatFs/Src/diskio.c ****                 res = RES_OK;
+ 989              		.loc 1 193 32 view .LVU248
+ 990 005c 1160     		str	r1, [r2]
+ 194:Core/FatFs/Src/diskio.c ****                 Diskio_Print("IO控制: 擦除块大小 = %lu字节\n", *(DWORD *)buff);
+ 991              		.loc 1 194 17 is_stmt 1 view .LVU249
+ 992              	.LVL101:
+ 195:Core/FatFs/Src/diskio.c ****             }
+ 993              		.loc 1 195 17 view .LVU250
+ 994 005e 0C48     		ldr	r0, .L77+20
+ 995 0060 FFF7FEFF 		bl	Diskio_Print
+ 996              	.LVL102:
+ 195:Core/FatFs/Src/diskio.c ****             }
+ 997              		.loc 1 195 17 is_stmt 0 view .LVU251
+ 998 0064 DDE7     		b	.L66
+ 999              	.LVL103:
+ 1000              	.L67:
+ 199:Core/FatFs/Src/diskio.c ****             res = RES_PARERR;
+ 1001              		.loc 1 199 13 is_stmt 1 view .LVU252
+ 1002 0066 0B48     		ldr	r0, .L77+24
+ 1003 0068 FFF7FEFF 		bl	Diskio_Print
+ 1004              	.LVL104:
+ 200:Core/FatFs/Src/diskio.c ****             break;
+ 1005              		.loc 1 200 13 view .LVU253
+ 201:Core/FatFs/Src/diskio.c ****     }
+ 1006              		.loc 1 201 13 view .LVU254
+ 200:Core/FatFs/Src/diskio.c ****             break;
+ 1007              		.loc 1 200 17 is_stmt 0 view .LVU255
+ 1008 006c 0424     		movs	r4, #4
+ 201:Core/FatFs/Src/diskio.c ****     }
+ 1009              		.loc 1 201 13 view .LVU256
+ 1010 006e D8E7     		b	.L66
+ 1011              	.LVL105:
+ 1012              	.L73:
+ 168:Core/FatFs/Src/diskio.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 27
+
+
+ 1013              		.loc 1 168 13 view .LVU257
+ 1014 0070 0424     		movs	r4, #4
+ 1015 0072 D6E7     		b	.L66
+ 1016              	.L74:
+ 1017 0074 0424     		movs	r4, #4
+ 1018 0076 D4E7     		b	.L66
+ 1019              	.L75:
+ 1020 0078 0424     		movs	r4, #4
+ 1021 007a D2E7     		b	.L66
+ 1022              	.L78:
+ 1023              		.align	2
+ 1024              	.L77:
+ 1025 007c 00000000 		.word	.LANCHOR0
+ 1026 0080 00000000 		.word	.LC13
+ 1027 0084 1C000000 		.word	.LC14
+ 1028 0088 40000000 		.word	.LC15
+ 1029 008c 58000000 		.word	.LC16
+ 1030 0090 74000000 		.word	.LC17
+ 1031 0094 94000000 		.word	.LC18
+ 1032              		.cfi_endproc
+ 1033              	.LFE74:
+ 1035              		.section	.data.Stat,"aw"
+ 1036              		.set	.LANCHOR0,. + 0
+ 1039              	Stat:
+ 1040 0000 01       		.byte	1
+ 1041              		.text
+ 1042              	.Letext0:
+ 1043              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1044              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1045              		.file 4 "Core/FatFs/Inc/ff.h"
+ 1046              		.file 5 "Core/FatFs/Inc/diskio.h"
+ 1047              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 1048              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 1049              		.file 8 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 1050              		.file 9 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h"
+ 1051              		.file 10 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\lib\\gc
+ 1052              		.file 11 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-non
+ 1053              		.file 12 "Core/Inc/usart.h"
+ 1054              		.file 13 "User/Inc/flash.h"
+ 1055              		.file 14 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-non
+ 1056              		.file 15 "<built-in>"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\cclTAPvD.s 			page 28
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 diskio.c
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:18     .text.Diskio_Print:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:24     .text.Diskio_Print:00000000 Diskio_Print
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:91     .text.Diskio_Print:00000034 $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:96     .rodata.disk_initialize.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:114    .text.disk_initialize:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:120    .text.disk_initialize:00000000 disk_initialize
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:214    .text.disk_initialize:0000005c $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:223    .text.disk_status:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:229    .text.disk_status:00000000 disk_status
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:257    .text.disk_status:0000000c $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:262    .rodata.disk_read.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:279    .text.disk_read:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:285    .text.disk_read:00000000 disk_read
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:419    .text.disk_read:00000074 $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:427    .rodata.disk_write_any.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:452    .text.disk_write_any:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:458    .text.disk_write_any:00000000 disk_write_any
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:760    .text.disk_write_any:0000010c $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:770    .rodata.disk_write.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:776    .text.disk_write:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:782    .text.disk_write:00000000 disk_write
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:839    .text.disk_write:0000002c $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:845    .rodata.disk_ioctl.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:870    .text.disk_ioctl:00000000 $t
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:876    .text.disk_ioctl:00000000 disk_ioctl
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:906    .text.disk_ioctl:00000016 $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:911    .text.disk_ioctl:0000001a $t
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:1025   .text.disk_ioctl:0000007c $d
+C:\Users\84759\AppData\Local\Temp\cclTAPvD.s:1039   .data.Stat:00000000 Stat
+
+UNDEFINED SYMBOLS
+vsnprintf
+strlen
+HAL_UART_Transmit
+huart1
+W25Q64_ReadStatus
+W25Q64_Init
+W25Q64_ReadID
+W25Q64_ReadData
+W25Q64_EraseSector
+W25Q64_WritePage
+memset
+memcmp

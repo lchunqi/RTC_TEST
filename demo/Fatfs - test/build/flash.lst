@@ -1,0 +1,2625 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"flash.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.W25Q64_ReadStatus,"ax",%progbits
+  18              		.align	1
+  19              		.global	W25Q64_ReadStatus
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	W25Q64_ReadStatus:
+  25              	.LFB68:
+  26              		.file 1 "User/Src/flash.c"
+   1:User/Src/flash.c **** #include "flash.h"
+   2:User/Src/flash.c **** #include "spi.h"
+   3:User/Src/flash.c **** #include "usart.h"
+   4:User/Src/flash.c **** 
+   5:User/Src/flash.c **** // 核心宏定义（必须）
+   6:User/Src/flash.c **** #define SPI_TIMEOUT_MS          1000        // 统一超时
+   7:User/Src/flash.c **** #define WAIT_BUSY_TIMEOUT_MS    50000       // 忙等待超时
+   8:User/Src/flash.c **** 
+   9:User/Src/flash.c **** // 日志打印宏
+  10:User/Src/flash.c **** #define FLASH_DEBUG_ENABLE      0
+  11:User/Src/flash.c **** #if FLASH_DEBUG_ENABLE
+  12:User/Src/flash.c **** #define FLASH_LOG(fmt, ...)  UsbPrintf(fmt, ##__VA_ARGS__)
+  13:User/Src/flash.c **** #else
+  14:User/Src/flash.c **** #define FLASH_LOG(fmt, ...)  do {} while(0)
+  15:User/Src/flash.c **** #endif
+  16:User/Src/flash.c **** 
+  17:User/Src/flash.c **** 
+  18:User/Src/flash.c **** /**
+  19:User/Src/flash.c ****  * @brief  读取状态寄存器
+  20:User/Src/flash.c ****  * @retval 状态值
+  21:User/Src/flash.c ****  */
+  22:User/Src/flash.c **** uint8_t W25Q64_ReadStatus(void)
+  23:User/Src/flash.c **** {
+  27              		.loc 1 23 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 8
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 00B5     		push	{lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 4
+  34              		.cfi_offset 14, -4
+  35 0002 83B0     		sub	sp, sp, #12
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 2
+
+
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_offset 16
+  24:User/Src/flash.c ****     uint8_t cmd = 0x05;
+  38              		.loc 1 24 5 view .LVU1
+  39              		.loc 1 24 13 is_stmt 0 view .LVU2
+  40 0004 0523     		movs	r3, #5
+  41 0006 8DF80730 		strb	r3, [sp, #7]
+  25:User/Src/flash.c ****     uint8_t status = 0;
+  42              		.loc 1 25 5 is_stmt 1 view .LVU3
+  43              		.loc 1 25 13 is_stmt 0 view .LVU4
+  44 000a 0022     		movs	r2, #0
+  45 000c 8DF80620 		strb	r2, [sp, #6]
+  26:User/Src/flash.c **** 
+  27:User/Src/flash.c ****     CS_LOW();
+  46              		.loc 1 27 5 is_stmt 1 view .LVU5
+  47 0010 1021     		movs	r1, #16
+  48 0012 1648     		ldr	r0, .L8
+  49 0014 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  50              	.LVL0:
+  28:User/Src/flash.c ****     if (HAL_SPI_Transmit(&hspi1, &cmd, 1, SPI_TIMEOUT_MS) != HAL_OK)
+  51              		.loc 1 28 5 view .LVU6
+  52              		.loc 1 28 9 is_stmt 0 view .LVU7
+  53 0018 4FF47A73 		mov	r3, #1000
+  54 001c 0122     		movs	r2, #1
+  55 001e 0DF10701 		add	r1, sp, #7
+  56 0022 1348     		ldr	r0, .L8+4
+  57 0024 FFF7FEFF 		bl	HAL_SPI_Transmit
+  58              	.LVL1:
+  59              		.loc 1 28 8 view .LVU8
+  60 0028 90B9     		cbnz	r0, .L6
+  29:User/Src/flash.c ****     {
+  30:User/Src/flash.c ****         CS_HIGH();
+  31:User/Src/flash.c ****         return 0xFF;
+  32:User/Src/flash.c ****     }
+  33:User/Src/flash.c ****     if (HAL_SPI_Receive(&hspi1, &status, 1, SPI_TIMEOUT_MS) != HAL_OK)
+  61              		.loc 1 33 5 is_stmt 1 view .LVU9
+  62              		.loc 1 33 9 is_stmt 0 view .LVU10
+  63 002a 4FF47A73 		mov	r3, #1000
+  64 002e 0122     		movs	r2, #1
+  65 0030 0DF10601 		add	r1, sp, #6
+  66 0034 0E48     		ldr	r0, .L8+4
+  67 0036 FFF7FEFF 		bl	HAL_SPI_Receive
+  68              	.LVL2:
+  69              		.loc 1 33 8 view .LVU11
+  70 003a 80B9     		cbnz	r0, .L7
+  34:User/Src/flash.c ****     {
+  35:User/Src/flash.c ****         CS_HIGH();
+  36:User/Src/flash.c ****         return 0xFF;
+  37:User/Src/flash.c ****     }
+  38:User/Src/flash.c ****     CS_HIGH();
+  71              		.loc 1 38 5 is_stmt 1 view .LVU12
+  72 003c 0122     		movs	r2, #1
+  73 003e 1021     		movs	r1, #16
+  74 0040 0A48     		ldr	r0, .L8
+  75 0042 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  76              	.LVL3:
+  39:User/Src/flash.c ****     return status;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 3
+
+
+  77              		.loc 1 39 5 view .LVU13
+  78              		.loc 1 39 12 is_stmt 0 view .LVU14
+  79 0046 9DF80600 		ldrb	r0, [sp, #6]	@ zero_extendqisi2
+  80              	.L3:
+  40:User/Src/flash.c **** }
+  81              		.loc 1 40 1 view .LVU15
+  82 004a 03B0     		add	sp, sp, #12
+  83              	.LCFI2:
+  84              		.cfi_remember_state
+  85              		.cfi_def_cfa_offset 4
+  86              		@ sp needed
+  87 004c 5DF804FB 		ldr	pc, [sp], #4
+  88              	.L6:
+  89              	.LCFI3:
+  90              		.cfi_restore_state
+  30:User/Src/flash.c ****         return 0xFF;
+  91              		.loc 1 30 9 is_stmt 1 view .LVU16
+  92 0050 0122     		movs	r2, #1
+  93 0052 1021     		movs	r1, #16
+  94 0054 0548     		ldr	r0, .L8
+  95 0056 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  96              	.LVL4:
+  31:User/Src/flash.c ****     }
+  97              		.loc 1 31 9 view .LVU17
+  31:User/Src/flash.c ****     }
+  98              		.loc 1 31 16 is_stmt 0 view .LVU18
+  99 005a FF20     		movs	r0, #255
+ 100 005c F5E7     		b	.L3
+ 101              	.L7:
+  35:User/Src/flash.c ****         return 0xFF;
+ 102              		.loc 1 35 9 is_stmt 1 view .LVU19
+ 103 005e 0122     		movs	r2, #1
+ 104 0060 1021     		movs	r1, #16
+ 105 0062 0248     		ldr	r0, .L8
+ 106 0064 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 107              	.LVL5:
+  36:User/Src/flash.c ****     }
+ 108              		.loc 1 36 9 view .LVU20
+  36:User/Src/flash.c ****     }
+ 109              		.loc 1 36 16 is_stmt 0 view .LVU21
+ 110 0068 FF20     		movs	r0, #255
+ 111 006a EEE7     		b	.L3
+ 112              	.L9:
+ 113              		.align	2
+ 114              	.L8:
+ 115 006c 00080140 		.word	1073809408
+ 116 0070 00000000 		.word	hspi1
+ 117              		.cfi_endproc
+ 118              	.LFE68:
+ 120              		.section	.text.W25Q64_WaitBusy,"ax",%progbits
+ 121              		.align	1
+ 122              		.global	W25Q64_WaitBusy
+ 123              		.syntax unified
+ 124              		.thumb
+ 125              		.thumb_func
+ 127              	W25Q64_WaitBusy:
+ 128              	.LFB69:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 4
+
+
+  41:User/Src/flash.c **** 
+  42:User/Src/flash.c **** /**
+  43:User/Src/flash.c ****  * @brief  等待 Flash 空闲（带超时，永不死机）
+  44:User/Src/flash.c ****  * @retval 0=成功 1=超时
+  45:User/Src/flash.c ****  */
+  46:User/Src/flash.c **** uint8_t W25Q64_WaitBusy(void)
+  47:User/Src/flash.c **** {
+ 129              		.loc 1 47 1 is_stmt 1 view -0
+ 130              		.cfi_startproc
+ 131              		@ args = 0, pretend = 0, frame = 0
+ 132              		@ frame_needed = 0, uses_anonymous_args = 0
+ 133 0000 38B5     		push	{r3, r4, r5, lr}
+ 134              	.LCFI4:
+ 135              		.cfi_def_cfa_offset 16
+ 136              		.cfi_offset 3, -16
+ 137              		.cfi_offset 4, -12
+ 138              		.cfi_offset 5, -8
+ 139              		.cfi_offset 14, -4
+  48:User/Src/flash.c ****     uint32_t timeout = WAIT_BUSY_TIMEOUT_MS;
+ 140              		.loc 1 48 5 view .LVU23
+ 141              	.LVL6:
+  49:User/Src/flash.c ****     while ((W25Q64_ReadStatus() & 0x01) && timeout--)
+ 142              		.loc 1 49 5 view .LVU24
+  48:User/Src/flash.c ****     uint32_t timeout = WAIT_BUSY_TIMEOUT_MS;
+ 143              		.loc 1 48 14 is_stmt 0 view .LVU25
+ 144 0002 4CF25034 		movw	r4, #50000
+ 145              	.LVL7:
+ 146              	.L11:
+ 147              		.loc 1 49 11 is_stmt 1 view .LVU26
+ 148              		.loc 1 49 13 is_stmt 0 view .LVU27
+ 149 0006 FFF7FEFF 		bl	W25Q64_ReadStatus
+ 150              	.LVL8:
+ 151              		.loc 1 49 11 view .LVU28
+ 152 000a 10F0010F 		tst	r0, #1
+ 153 000e 07D0     		beq	.L12
+ 154              		.loc 1 49 51 discriminator 1 view .LVU29
+ 155 0010 651E     		subs	r5, r4, #1
+ 156              	.LVL9:
+ 157              		.loc 1 49 41 discriminator 1 view .LVU30
+ 158 0012 24B1     		cbz	r4, .L15
+  50:User/Src/flash.c ****     {
+  51:User/Src/flash.c ****         HAL_Delay(1);
+ 159              		.loc 1 51 9 is_stmt 1 view .LVU31
+ 160 0014 0120     		movs	r0, #1
+ 161 0016 FFF7FEFF 		bl	HAL_Delay
+ 162              	.LVL10:
+  49:User/Src/flash.c ****     while ((W25Q64_ReadStatus() & 0x01) && timeout--)
+ 163              		.loc 1 49 51 is_stmt 0 view .LVU32
+ 164 001a 2C46     		mov	r4, r5
+ 165 001c F3E7     		b	.L11
+ 166              	.L15:
+  49:User/Src/flash.c ****     while ((W25Q64_ReadStatus() & 0x01) && timeout--)
+ 167              		.loc 1 49 51 view .LVU33
+ 168 001e 2C46     		mov	r4, r5
+ 169              	.LVL11:
+ 170              	.L12:
+  52:User/Src/flash.c ****     }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 5
+
+
+  53:User/Src/flash.c ****     return (timeout == 0) ? 1 : 0;
+ 171              		.loc 1 53 5 is_stmt 1 view .LVU34
+  54:User/Src/flash.c **** }
+ 172              		.loc 1 54 1 is_stmt 0 view .LVU35
+ 173 0020 B4FA84F0 		clz	r0, r4
+ 174 0024 4009     		lsrs	r0, r0, #5
+ 175 0026 38BD     		pop	{r3, r4, r5, pc}
+ 176              		.loc 1 54 1 view .LVU36
+ 177              		.cfi_endproc
+ 178              	.LFE69:
+ 180              		.section	.text.W25Q64_WriteEnable,"ax",%progbits
+ 181              		.align	1
+ 182              		.global	W25Q64_WriteEnable
+ 183              		.syntax unified
+ 184              		.thumb
+ 185              		.thumb_func
+ 187              	W25Q64_WriteEnable:
+ 188              	.LFB70:
+  55:User/Src/flash.c **** 
+  56:User/Src/flash.c **** /**
+  57:User/Src/flash.c ****  * @brief  写使能
+  58:User/Src/flash.c ****  * @retval 0=成功 1=失败
+  59:User/Src/flash.c ****  */
+  60:User/Src/flash.c **** uint8_t W25Q64_WriteEnable(void)
+  61:User/Src/flash.c **** {
+ 189              		.loc 1 61 1 is_stmt 1 view -0
+ 190              		.cfi_startproc
+ 191              		@ args = 0, pretend = 0, frame = 8
+ 192              		@ frame_needed = 0, uses_anonymous_args = 0
+ 193 0000 10B5     		push	{r4, lr}
+ 194              	.LCFI5:
+ 195              		.cfi_def_cfa_offset 8
+ 196              		.cfi_offset 4, -8
+ 197              		.cfi_offset 14, -4
+ 198 0002 82B0     		sub	sp, sp, #8
+ 199              	.LCFI6:
+ 200              		.cfi_def_cfa_offset 16
+  62:User/Src/flash.c ****     uint8_t cmd = 0x06;
+ 201              		.loc 1 62 5 view .LVU38
+ 202              		.loc 1 62 13 is_stmt 0 view .LVU39
+ 203 0004 0623     		movs	r3, #6
+ 204 0006 8DF80730 		strb	r3, [sp, #7]
+  63:User/Src/flash.c ****     CS_LOW();
+ 205              		.loc 1 63 5 is_stmt 1 view .LVU40
+ 206 000a 0022     		movs	r2, #0
+ 207 000c 1021     		movs	r1, #16
+ 208 000e 0E48     		ldr	r0, .L21
+ 209 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 210              	.LVL12:
+  64:User/Src/flash.c ****     if (HAL_SPI_Transmit(&hspi1, &cmd, 1, SPI_TIMEOUT_MS) != HAL_OK)
+ 211              		.loc 1 64 5 view .LVU41
+ 212              		.loc 1 64 9 is_stmt 0 view .LVU42
+ 213 0014 4FF47A73 		mov	r3, #1000
+ 214 0018 0122     		movs	r2, #1
+ 215 001a 0DF10701 		add	r1, sp, #7
+ 216 001e 0B48     		ldr	r0, .L21+4
+ 217 0020 FFF7FEFF 		bl	HAL_SPI_Transmit
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 6
+
+
+ 218              	.LVL13:
+ 219              		.loc 1 64 8 view .LVU43
+ 220 0024 40B9     		cbnz	r0, .L20
+ 221 0026 0446     		mov	r4, r0
+  65:User/Src/flash.c ****     {
+  66:User/Src/flash.c ****         CS_HIGH();
+  67:User/Src/flash.c ****         return 1;
+  68:User/Src/flash.c ****     }
+  69:User/Src/flash.c ****     CS_HIGH();
+ 222              		.loc 1 69 5 is_stmt 1 view .LVU44
+ 223 0028 0122     		movs	r2, #1
+ 224 002a 1021     		movs	r1, #16
+ 225 002c 0648     		ldr	r0, .L21
+ 226 002e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 227              	.LVL14:
+  70:User/Src/flash.c ****     return 0;
+ 228              		.loc 1 70 5 view .LVU45
+ 229              	.L18:
+  71:User/Src/flash.c **** }
+ 230              		.loc 1 71 1 is_stmt 0 view .LVU46
+ 231 0032 2046     		mov	r0, r4
+ 232 0034 02B0     		add	sp, sp, #8
+ 233              	.LCFI7:
+ 234              		.cfi_remember_state
+ 235              		.cfi_def_cfa_offset 8
+ 236              		@ sp needed
+ 237 0036 10BD     		pop	{r4, pc}
+ 238              	.L20:
+ 239              	.LCFI8:
+ 240              		.cfi_restore_state
+  66:User/Src/flash.c ****         return 1;
+ 241              		.loc 1 66 9 is_stmt 1 view .LVU47
+ 242 0038 0122     		movs	r2, #1
+ 243 003a 1021     		movs	r1, #16
+ 244 003c 0248     		ldr	r0, .L21
+ 245 003e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 246              	.LVL15:
+  67:User/Src/flash.c ****     }
+ 247              		.loc 1 67 9 view .LVU48
+  67:User/Src/flash.c ****     }
+ 248              		.loc 1 67 16 is_stmt 0 view .LVU49
+ 249 0042 0124     		movs	r4, #1
+ 250 0044 F5E7     		b	.L18
+ 251              	.L22:
+ 252 0046 00BF     		.align	2
+ 253              	.L21:
+ 254 0048 00080140 		.word	1073809408
+ 255 004c 00000000 		.word	hspi1
+ 256              		.cfi_endproc
+ 257              	.LFE70:
+ 259              		.section	.text.W25Q64_WriteDisable,"ax",%progbits
+ 260              		.align	1
+ 261              		.global	W25Q64_WriteDisable
+ 262              		.syntax unified
+ 263              		.thumb
+ 264              		.thumb_func
+ 266              	W25Q64_WriteDisable:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 7
+
+
+ 267              	.LFB71:
+  72:User/Src/flash.c **** 
+  73:User/Src/flash.c **** /**
+  74:User/Src/flash.c ****  * @brief  写失能
+  75:User/Src/flash.c ****  * @retval 0=成功 1=失败
+  76:User/Src/flash.c ****  */
+  77:User/Src/flash.c **** uint8_t W25Q64_WriteDisable(void)
+  78:User/Src/flash.c **** {
+ 268              		.loc 1 78 1 is_stmt 1 view -0
+ 269              		.cfi_startproc
+ 270              		@ args = 0, pretend = 0, frame = 8
+ 271              		@ frame_needed = 0, uses_anonymous_args = 0
+ 272 0000 10B5     		push	{r4, lr}
+ 273              	.LCFI9:
+ 274              		.cfi_def_cfa_offset 8
+ 275              		.cfi_offset 4, -8
+ 276              		.cfi_offset 14, -4
+ 277 0002 82B0     		sub	sp, sp, #8
+ 278              	.LCFI10:
+ 279              		.cfi_def_cfa_offset 16
+  79:User/Src/flash.c ****     uint8_t cmd = 0x04;
+ 280              		.loc 1 79 5 view .LVU51
+ 281              		.loc 1 79 13 is_stmt 0 view .LVU52
+ 282 0004 0423     		movs	r3, #4
+ 283 0006 8DF80730 		strb	r3, [sp, #7]
+  80:User/Src/flash.c ****     CS_LOW();
+ 284              		.loc 1 80 5 is_stmt 1 view .LVU53
+ 285 000a 0022     		movs	r2, #0
+ 286 000c 1021     		movs	r1, #16
+ 287 000e 0E48     		ldr	r0, .L28
+ 288 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 289              	.LVL16:
+  81:User/Src/flash.c ****     if (HAL_SPI_Transmit(&hspi1, &cmd, 1, SPI_TIMEOUT_MS) != HAL_OK)
+ 290              		.loc 1 81 5 view .LVU54
+ 291              		.loc 1 81 9 is_stmt 0 view .LVU55
+ 292 0014 4FF47A73 		mov	r3, #1000
+ 293 0018 0122     		movs	r2, #1
+ 294 001a 0DF10701 		add	r1, sp, #7
+ 295 001e 0B48     		ldr	r0, .L28+4
+ 296 0020 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 297              	.LVL17:
+ 298              		.loc 1 81 8 view .LVU56
+ 299 0024 40B9     		cbnz	r0, .L27
+ 300 0026 0446     		mov	r4, r0
+  82:User/Src/flash.c ****     {
+  83:User/Src/flash.c ****         CS_HIGH();
+  84:User/Src/flash.c ****         return 1;
+  85:User/Src/flash.c ****     }
+  86:User/Src/flash.c ****     CS_HIGH();
+ 301              		.loc 1 86 5 is_stmt 1 view .LVU57
+ 302 0028 0122     		movs	r2, #1
+ 303 002a 1021     		movs	r1, #16
+ 304 002c 0648     		ldr	r0, .L28
+ 305 002e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 306              	.LVL18:
+  87:User/Src/flash.c ****     return 0;
+ 307              		.loc 1 87 5 view .LVU58
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 8
+
+
+ 308              	.L25:
+  88:User/Src/flash.c **** }
+ 309              		.loc 1 88 1 is_stmt 0 view .LVU59
+ 310 0032 2046     		mov	r0, r4
+ 311 0034 02B0     		add	sp, sp, #8
+ 312              	.LCFI11:
+ 313              		.cfi_remember_state
+ 314              		.cfi_def_cfa_offset 8
+ 315              		@ sp needed
+ 316 0036 10BD     		pop	{r4, pc}
+ 317              	.L27:
+ 318              	.LCFI12:
+ 319              		.cfi_restore_state
+  83:User/Src/flash.c ****         return 1;
+ 320              		.loc 1 83 9 is_stmt 1 view .LVU60
+ 321 0038 0122     		movs	r2, #1
+ 322 003a 1021     		movs	r1, #16
+ 323 003c 0248     		ldr	r0, .L28
+ 324 003e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 325              	.LVL19:
+  84:User/Src/flash.c ****     }
+ 326              		.loc 1 84 9 view .LVU61
+  84:User/Src/flash.c ****     }
+ 327              		.loc 1 84 16 is_stmt 0 view .LVU62
+ 328 0042 0124     		movs	r4, #1
+ 329 0044 F5E7     		b	.L25
+ 330              	.L29:
+ 331 0046 00BF     		.align	2
+ 332              	.L28:
+ 333 0048 00080140 		.word	1073809408
+ 334 004c 00000000 		.word	hspi1
+ 335              		.cfi_endproc
+ 336              	.LFE71:
+ 338              		.section	.text.W25Q64_ReadDeviceID,"ax",%progbits
+ 339              		.align	1
+ 340              		.global	W25Q64_ReadDeviceID
+ 341              		.syntax unified
+ 342              		.thumb
+ 343              		.thumb_func
+ 345              	W25Q64_ReadDeviceID:
+ 346              	.LFB72:
+  89:User/Src/flash.c **** 
+  90:User/Src/flash.c **** /**
+  91:User/Src/flash.c ****  * @brief  读取设备 ID
+  92:User/Src/flash.c ****  * @retval ID(0xEF4017)
+  93:User/Src/flash.c ****  */
+  94:User/Src/flash.c **** uint32_t W25Q64_ReadDeviceID(void)
+  95:User/Src/flash.c **** {
+ 347              		.loc 1 95 1 is_stmt 1 view -0
+ 348              		.cfi_startproc
+ 349              		@ args = 0, pretend = 0, frame = 8
+ 350              		@ frame_needed = 0, uses_anonymous_args = 0
+ 351 0000 00B5     		push	{lr}
+ 352              	.LCFI13:
+ 353              		.cfi_def_cfa_offset 4
+ 354              		.cfi_offset 14, -4
+ 355 0002 83B0     		sub	sp, sp, #12
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 9
+
+
+ 356              	.LCFI14:
+ 357              		.cfi_def_cfa_offset 16
+  96:User/Src/flash.c ****     uint8_t cmd = 0x9F;
+ 358              		.loc 1 96 5 view .LVU64
+ 359              		.loc 1 96 13 is_stmt 0 view .LVU65
+ 360 0004 9F23     		movs	r3, #159
+ 361 0006 8DF80730 		strb	r3, [sp, #7]
+  97:User/Src/flash.c ****     uint8_t id_buf[3] = {0};
+ 362              		.loc 1 97 5 is_stmt 1 view .LVU66
+ 363              		.loc 1 97 13 is_stmt 0 view .LVU67
+ 364 000a 1F4B     		ldr	r3, .L37
+ 365 000c 1B88     		ldrh	r3, [r3]
+ 366 000e ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 367 0012 0022     		movs	r2, #0
+ 368 0014 8DF80620 		strb	r2, [sp, #6]
+  98:User/Src/flash.c ****     uint32_t id = 0;
+ 369              		.loc 1 98 5 is_stmt 1 view .LVU68
+ 370              	.LVL20:
+  99:User/Src/flash.c **** 
+ 100:User/Src/flash.c ****     CS_LOW();
+ 371              		.loc 1 100 5 view .LVU69
+ 372 0018 1021     		movs	r1, #16
+ 373 001a 1C48     		ldr	r0, .L37+4
+ 374 001c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 375              	.LVL21:
+ 101:User/Src/flash.c ****     if (HAL_SPI_Transmit(&hspi1, &cmd, 1, SPI_TIMEOUT_MS) != HAL_OK)
+ 376              		.loc 1 101 5 view .LVU70
+ 377              		.loc 1 101 9 is_stmt 0 view .LVU71
+ 378 0020 4FF47A73 		mov	r3, #1000
+ 379 0024 0122     		movs	r2, #1
+ 380 0026 0DF10701 		add	r1, sp, #7
+ 381 002a 1948     		ldr	r0, .L37+8
+ 382 002c FFF7FEFF 		bl	HAL_SPI_Transmit
+ 383              	.LVL22:
+ 384              		.loc 1 101 8 view .LVU72
+ 385 0030 C8B9     		cbnz	r0, .L35
+ 102:User/Src/flash.c ****     {
+ 103:User/Src/flash.c ****         CS_HIGH();
+ 104:User/Src/flash.c ****         return 0xFFFFFFFF;
+ 105:User/Src/flash.c ****     }
+ 106:User/Src/flash.c ****     if (HAL_SPI_Receive(&hspi1, id_buf, 3, SPI_TIMEOUT_MS) != HAL_OK)
+ 386              		.loc 1 106 5 is_stmt 1 view .LVU73
+ 387              		.loc 1 106 9 is_stmt 0 view .LVU74
+ 388 0032 4FF47A73 		mov	r3, #1000
+ 389 0036 0322     		movs	r2, #3
+ 390 0038 01A9     		add	r1, sp, #4
+ 391 003a 1548     		ldr	r0, .L37+8
+ 392 003c FFF7FEFF 		bl	HAL_SPI_Receive
+ 393              	.LVL23:
+ 394              		.loc 1 106 8 view .LVU75
+ 395 0040 C8B9     		cbnz	r0, .L36
+ 107:User/Src/flash.c ****     {
+ 108:User/Src/flash.c ****         CS_HIGH();
+ 109:User/Src/flash.c ****         return 0xFFFFFFFF;
+ 110:User/Src/flash.c ****     }
+ 111:User/Src/flash.c ****     CS_HIGH();
+ 396              		.loc 1 111 5 is_stmt 1 view .LVU76
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 10
+
+
+ 397 0042 0122     		movs	r2, #1
+ 398 0044 1021     		movs	r1, #16
+ 399 0046 1148     		ldr	r0, .L37+4
+ 400 0048 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 401              	.LVL24:
+ 112:User/Src/flash.c **** 
+ 113:User/Src/flash.c ****     id = ((uint32_t)id_buf[0] << 16) | ((uint32_t)id_buf[1] << 8) | id_buf[2];
+ 402              		.loc 1 113 5 view .LVU77
+ 403              		.loc 1 113 27 is_stmt 0 view .LVU78
+ 404 004c 9DF80430 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 405              		.loc 1 113 57 view .LVU79
+ 406 0050 9DF80500 		ldrb	r0, [sp, #5]	@ zero_extendqisi2
+ 407              		.loc 1 113 61 view .LVU80
+ 408 0054 0002     		lsls	r0, r0, #8
+ 409              		.loc 1 113 38 view .LVU81
+ 410 0056 40EA0340 		orr	r0, r0, r3, lsl #16
+ 411              		.loc 1 113 75 view .LVU82
+ 412 005a 9DF80630 		ldrb	r3, [sp, #6]	@ zero_extendqisi2
+ 413              		.loc 1 113 8 view .LVU83
+ 414 005e 1843     		orrs	r0, r0, r3
+ 415              	.LVL25:
+ 114:User/Src/flash.c ****     return id;
+ 416              		.loc 1 114 5 is_stmt 1 view .LVU84
+ 417              	.L30:
+ 115:User/Src/flash.c **** }
+ 418              		.loc 1 115 1 is_stmt 0 view .LVU85
+ 419 0060 03B0     		add	sp, sp, #12
+ 420              	.LCFI15:
+ 421              		.cfi_remember_state
+ 422              		.cfi_def_cfa_offset 4
+ 423              		@ sp needed
+ 424 0062 5DF804FB 		ldr	pc, [sp], #4
+ 425              	.LVL26:
+ 426              	.L35:
+ 427              	.LCFI16:
+ 428              		.cfi_restore_state
+ 103:User/Src/flash.c ****         return 0xFFFFFFFF;
+ 429              		.loc 1 103 9 is_stmt 1 view .LVU86
+ 430 0066 0122     		movs	r2, #1
+ 431 0068 1021     		movs	r1, #16
+ 432 006a 0848     		ldr	r0, .L37+4
+ 433 006c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 434              	.LVL27:
+ 104:User/Src/flash.c ****     }
+ 435              		.loc 1 104 9 view .LVU87
+ 104:User/Src/flash.c ****     }
+ 436              		.loc 1 104 16 is_stmt 0 view .LVU88
+ 437 0070 4FF0FF30 		mov	r0, #-1
+ 438 0074 F4E7     		b	.L30
+ 439              	.L36:
+ 108:User/Src/flash.c ****         return 0xFFFFFFFF;
+ 440              		.loc 1 108 9 is_stmt 1 view .LVU89
+ 441 0076 0122     		movs	r2, #1
+ 442 0078 1021     		movs	r1, #16
+ 443 007a 0448     		ldr	r0, .L37+4
+ 444 007c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 445              	.LVL28:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 11
+
+
+ 109:User/Src/flash.c ****     }
+ 446              		.loc 1 109 9 view .LVU90
+ 109:User/Src/flash.c ****     }
+ 447              		.loc 1 109 16 is_stmt 0 view .LVU91
+ 448 0080 4FF0FF30 		mov	r0, #-1
+ 449 0084 ECE7     		b	.L30
+ 450              	.L38:
+ 451 0086 00BF     		.align	2
+ 452              	.L37:
+ 453 0088 00000000 		.word	.LANCHOR0
+ 454 008c 00080140 		.word	1073809408
+ 455 0090 00000000 		.word	hspi1
+ 456              		.cfi_endproc
+ 457              	.LFE72:
+ 459              		.section	.text.W25Q64_PageWrite,"ax",%progbits
+ 460              		.align	1
+ 461              		.global	W25Q64_PageWrite
+ 462              		.syntax unified
+ 463              		.thumb
+ 464              		.thumb_func
+ 466              	W25Q64_PageWrite:
+ 467              	.LVL29:
+ 468              	.LFB74:
+ 116:User/Src/flash.c **** 
+ 117:User/Src/flash.c **** /**
+ 118:User/Src/flash.c ****  * @brief  扇区擦除 4KB
+ 119:User/Src/flash.c ****  * @param  addr 24位地址
+ 120:User/Src/flash.c ****  * @retval 0=成功 1=失败
+ 121:User/Src/flash.c ****  */
+ 122:User/Src/flash.c **** uint8_t W25Q64_EraseSector(uint32_t addr)
+ 123:User/Src/flash.c **** {
+ 124:User/Src/flash.c ****     uint8_t cmd[4] = {0x20, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+ 125:User/Src/flash.c ****     uint8_t check_data;
+ 126:User/Src/flash.c **** 
+ 127:User/Src/flash.c ****     // 地址越界保护
+ 128:User/Src/flash.c ****     if (addr > W25Q64_MAX_ADDR)
+ 129:User/Src/flash.c ****     {
+ 130:User/Src/flash.c ****         FLASH_LOG("[flash] 地址越界\r\n");
+ 131:User/Src/flash.c ****         return 1;
+ 132:User/Src/flash.c ****     }
+ 133:User/Src/flash.c **** 
+ 134:User/Src/flash.c ****     if (W25Q64_WriteEnable() != 0) return 1;
+ 135:User/Src/flash.c **** 
+ 136:User/Src/flash.c ****     CS_LOW();
+ 137:User/Src/flash.c ****     if (HAL_SPI_Transmit(&hspi1, cmd, 4, SPI_TIMEOUT_MS) != HAL_OK)
+ 138:User/Src/flash.c ****     {
+ 139:User/Src/flash.c ****         CS_HIGH();
+ 140:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 141:User/Src/flash.c ****         return 1;
+ 142:User/Src/flash.c ****     }
+ 143:User/Src/flash.c ****     CS_HIGH();
+ 144:User/Src/flash.c **** 
+ 145:User/Src/flash.c ****     // 等待完成
+ 146:User/Src/flash.c ****     if (W25Q64_WaitBusy() != 0)
+ 147:User/Src/flash.c ****     {
+ 148:User/Src/flash.c ****         FLASH_LOG("[flash] 擦除超时\r\n");
+ 149:User/Src/flash.c ****         W25Q64_WriteDisable();
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 12
+
+
+ 150:User/Src/flash.c ****         return 1;
+ 151:User/Src/flash.c ****     }
+ 152:User/Src/flash.c **** 
+ 153:User/Src/flash.c ****     // 擦除校验
+ 154:User/Src/flash.c ****     W25Q64_ReadData(addr, &check_data, 1);
+ 155:User/Src/flash.c ****     if (check_data != 0xFF)
+ 156:User/Src/flash.c ****     {
+ 157:User/Src/flash.c ****         FLASH_LOG("[flash] 擦除校验失败\r\n");
+ 158:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 159:User/Src/flash.c ****         return 1;
+ 160:User/Src/flash.c ****     }
+ 161:User/Src/flash.c **** 
+ 162:User/Src/flash.c ****     W25Q64_WriteDisable();
+ 163:User/Src/flash.c ****     FLASH_LOG("[flash] 扇区擦除成功\r\n");
+ 164:User/Src/flash.c ****     return 0;
+ 165:User/Src/flash.c **** }
+ 166:User/Src/flash.c **** 
+ 167:User/Src/flash.c **** /**
+ 168:User/Src/flash.c ****  * @brief  页写入（≤256字节）
+ 169:User/Src/flash.c ****  * @param  addr 页对齐地址
+ 170:User/Src/flash.c ****  * @param  data 数据指针
+ 171:User/Src/flash.c ****  * @param  len  长度
+ 172:User/Src/flash.c ****  * @retval 0=成功 1=失败
+ 173:User/Src/flash.c ****  */
+ 174:User/Src/flash.c **** uint8_t W25Q64_PageWrite(uint32_t addr, const uint8_t *data, uint16_t len)
+ 175:User/Src/flash.c **** {
+ 469              		.loc 1 175 1 is_stmt 1 view -0
+ 470              		.cfi_startproc
+ 471              		@ args = 0, pretend = 0, frame = 8
+ 472              		@ frame_needed = 0, uses_anonymous_args = 0
+ 473              		.loc 1 175 1 is_stmt 0 view .LVU93
+ 474 0000 30B5     		push	{r4, r5, lr}
+ 475              	.LCFI17:
+ 476              		.cfi_def_cfa_offset 12
+ 477              		.cfi_offset 4, -12
+ 478              		.cfi_offset 5, -8
+ 479              		.cfi_offset 14, -4
+ 480 0002 83B0     		sub	sp, sp, #12
+ 481              	.LCFI18:
+ 482              		.cfi_def_cfa_offset 24
+ 176:User/Src/flash.c ****     uint8_t cmd[4] = {0x02, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+ 483              		.loc 1 176 5 is_stmt 1 view .LVU94
+ 484              		.loc 1 176 13 is_stmt 0 view .LVU95
+ 485 0004 0223     		movs	r3, #2
+ 486 0006 8DF80430 		strb	r3, [sp, #4]
+ 487              		.loc 1 176 35 view .LVU96
+ 488 000a 030C     		lsrs	r3, r0, #16
+ 489              		.loc 1 176 13 view .LVU97
+ 490 000c 8DF80530 		strb	r3, [sp, #5]
+ 491              		.loc 1 176 56 view .LVU98
+ 492 0010 030A     		lsrs	r3, r0, #8
+ 493              		.loc 1 176 13 view .LVU99
+ 494 0012 8DF80630 		strb	r3, [sp, #6]
+ 495 0016 8DF80700 		strb	r0, [sp, #7]
+ 177:User/Src/flash.c **** 
+ 178:User/Src/flash.c ****     // 严格参数校验
+ 179:User/Src/flash.c ****     if (data == NULL || len == 0 || len > W25Q64_PAGE_SIZE || addr > W25Q64_MAX_ADDR)
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 13
+
+
+ 496              		.loc 1 179 5 is_stmt 1 view .LVU100
+ 497              		.loc 1 179 8 is_stmt 0 view .LVU101
+ 498 001a 0029     		cmp	r1, #0
+ 499 001c 4BD0     		beq	.L44
+ 500 001e 1446     		mov	r4, r2
+ 501 0020 0D46     		mov	r5, r1
+ 502              		.loc 1 179 22 discriminator 1 view .LVU102
+ 503 0022 002A     		cmp	r2, #0
+ 504 0024 49D0     		beq	.L45
+ 505              		.loc 1 179 34 discriminator 2 view .LVU103
+ 506 0026 B2F5807F 		cmp	r2, #256
+ 507 002a 4AD8     		bhi	.L46
+ 508              		.loc 1 179 60 discriminator 3 view .LVU104
+ 509 002c B0F5000F 		cmp	r0, #8388608
+ 510 0030 01D3     		bcc	.L50
+ 180:User/Src/flash.c ****     {
+ 181:User/Src/flash.c ****         FLASH_LOG("[flash] 页写入参数错误\r\n");
+ 182:User/Src/flash.c ****         return 1;
+ 511              		.loc 1 182 16 view .LVU105
+ 512 0032 0124     		movs	r4, #1
+ 513 0034 42E0     		b	.L40
+ 514              	.L50:
+ 183:User/Src/flash.c ****     }
+ 184:User/Src/flash.c **** 
+ 185:User/Src/flash.c ****     if (W25Q64_WriteEnable() != 0) return 1;
+ 515              		.loc 1 185 5 is_stmt 1 view .LVU106
+ 516              		.loc 1 185 9 is_stmt 0 view .LVU107
+ 517 0036 FFF7FEFF 		bl	W25Q64_WriteEnable
+ 518              	.LVL30:
+ 519              		.loc 1 185 8 view .LVU108
+ 520 003a 08B1     		cbz	r0, .L51
+ 521              		.loc 1 185 43 view .LVU109
+ 522 003c 0124     		movs	r4, #1
+ 523 003e 3DE0     		b	.L40
+ 524              	.L51:
+ 186:User/Src/flash.c **** 
+ 187:User/Src/flash.c ****     CS_LOW();
+ 525              		.loc 1 187 5 is_stmt 1 view .LVU110
+ 526 0040 0022     		movs	r2, #0
+ 527 0042 1021     		movs	r1, #16
+ 528 0044 00F18040 		add	r0, r0, #1073741824
+ 529 0048 00F58430 		add	r0, r0, #67584
+ 530 004c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 531              	.LVL31:
+ 188:User/Src/flash.c ****     if (HAL_SPI_Transmit(&hspi1, cmd, 4, SPI_TIMEOUT_MS) != HAL_OK)
+ 532              		.loc 1 188 5 view .LVU111
+ 533              		.loc 1 188 9 is_stmt 0 view .LVU112
+ 534 0050 4FF47A73 		mov	r3, #1000
+ 535 0054 0422     		movs	r2, #4
+ 536 0056 0DEB0201 		add	r1, sp, r2
+ 537 005a 1B48     		ldr	r0, .L55
+ 538 005c FFF7FEFF 		bl	HAL_SPI_Transmit
+ 539              	.LVL32:
+ 540              		.loc 1 188 8 view .LVU113
+ 541 0060 98B9     		cbnz	r0, .L52
+ 189:User/Src/flash.c ****     {
+ 190:User/Src/flash.c ****         CS_HIGH();
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 14
+
+
+ 191:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 192:User/Src/flash.c ****         return 1;
+ 193:User/Src/flash.c ****     }
+ 194:User/Src/flash.c ****     if (HAL_SPI_Transmit(&hspi1, (uint8_t *)data, len, SPI_TIMEOUT_MS) != HAL_OK)
+ 542              		.loc 1 194 5 is_stmt 1 view .LVU114
+ 543              		.loc 1 194 9 is_stmt 0 view .LVU115
+ 544 0062 4FF47A73 		mov	r3, #1000
+ 545 0066 2246     		mov	r2, r4
+ 546 0068 2946     		mov	r1, r5
+ 547 006a 1748     		ldr	r0, .L55
+ 548 006c FFF7FEFF 		bl	HAL_SPI_Transmit
+ 549              	.LVL33:
+ 550              		.loc 1 194 8 view .LVU116
+ 551 0070 A0B9     		cbnz	r0, .L53
+ 195:User/Src/flash.c ****     {
+ 196:User/Src/flash.c ****         CS_HIGH();
+ 197:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 198:User/Src/flash.c ****         return 1;
+ 199:User/Src/flash.c ****     }
+ 200:User/Src/flash.c ****     CS_HIGH();
+ 552              		.loc 1 200 5 is_stmt 1 view .LVU117
+ 553 0072 0122     		movs	r2, #1
+ 554 0074 1021     		movs	r1, #16
+ 555 0076 1548     		ldr	r0, .L55+4
+ 556 0078 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 557              	.LVL34:
+ 201:User/Src/flash.c **** 
+ 202:User/Src/flash.c ****     if (W25Q64_WaitBusy() != 0)
+ 558              		.loc 1 202 5 view .LVU118
+ 559              		.loc 1 202 9 is_stmt 0 view .LVU119
+ 560 007c FFF7FEFF 		bl	W25Q64_WaitBusy
+ 561              	.LVL35:
+ 562              		.loc 1 202 8 view .LVU120
+ 563 0080 0446     		mov	r4, r0
+ 564 0082 A0B9     		cbnz	r0, .L54
+ 203:User/Src/flash.c ****     {
+ 204:User/Src/flash.c ****         FLASH_LOG("[flash] 写入超时\r\n");
+ 205:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 206:User/Src/flash.c ****         return 1;
+ 207:User/Src/flash.c ****     }
+ 208:User/Src/flash.c **** 
+ 209:User/Src/flash.c ****     W25Q64_WriteDisable();
+ 565              		.loc 1 209 5 is_stmt 1 view .LVU121
+ 566 0084 FFF7FEFF 		bl	W25Q64_WriteDisable
+ 567              	.LVL36:
+ 210:User/Src/flash.c ****     FLASH_LOG("[flash] 页写入成功\r\n");
+ 568              		.loc 1 210 5 view .LVU122
+ 569              		.loc 1 210 5 view .LVU123
+ 570              		.loc 1 210 5 view .LVU124
+ 211:User/Src/flash.c ****     return 0;
+ 571              		.loc 1 211 5 view .LVU125
+ 572              		.loc 1 211 12 is_stmt 0 view .LVU126
+ 573 0088 18E0     		b	.L40
+ 574              	.L52:
+ 190:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 575              		.loc 1 190 9 is_stmt 1 view .LVU127
+ 576 008a 0122     		movs	r2, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 15
+
+
+ 577 008c 1021     		movs	r1, #16
+ 578 008e 0F48     		ldr	r0, .L55+4
+ 579 0090 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 580              	.LVL37:
+ 191:User/Src/flash.c ****         return 1;
+ 581              		.loc 1 191 9 view .LVU128
+ 582 0094 FFF7FEFF 		bl	W25Q64_WriteDisable
+ 583              	.LVL38:
+ 192:User/Src/flash.c ****     }
+ 584              		.loc 1 192 9 view .LVU129
+ 192:User/Src/flash.c ****     }
+ 585              		.loc 1 192 16 is_stmt 0 view .LVU130
+ 586 0098 0124     		movs	r4, #1
+ 587 009a 0FE0     		b	.L40
+ 588              	.L53:
+ 196:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 589              		.loc 1 196 9 is_stmt 1 view .LVU131
+ 590 009c 0122     		movs	r2, #1
+ 591 009e 1021     		movs	r1, #16
+ 592 00a0 0A48     		ldr	r0, .L55+4
+ 593 00a2 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 594              	.LVL39:
+ 197:User/Src/flash.c ****         return 1;
+ 595              		.loc 1 197 9 view .LVU132
+ 596 00a6 FFF7FEFF 		bl	W25Q64_WriteDisable
+ 597              	.LVL40:
+ 198:User/Src/flash.c ****     }
+ 598              		.loc 1 198 9 view .LVU133
+ 198:User/Src/flash.c ****     }
+ 599              		.loc 1 198 16 is_stmt 0 view .LVU134
+ 600 00aa 0124     		movs	r4, #1
+ 601 00ac 06E0     		b	.L40
+ 602              	.L54:
+ 204:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 603              		.loc 1 204 9 is_stmt 1 view .LVU135
+ 204:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 604              		.loc 1 204 9 view .LVU136
+ 204:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 605              		.loc 1 204 9 view .LVU137
+ 205:User/Src/flash.c ****         return 1;
+ 606              		.loc 1 205 9 view .LVU138
+ 607 00ae FFF7FEFF 		bl	W25Q64_WriteDisable
+ 608              	.LVL41:
+ 206:User/Src/flash.c ****     }
+ 609              		.loc 1 206 9 view .LVU139
+ 206:User/Src/flash.c ****     }
+ 610              		.loc 1 206 16 is_stmt 0 view .LVU140
+ 611 00b2 0124     		movs	r4, #1
+ 612 00b4 02E0     		b	.L40
+ 613              	.LVL42:
+ 614              	.L44:
+ 182:User/Src/flash.c ****     }
+ 615              		.loc 1 182 16 view .LVU141
+ 616 00b6 0124     		movs	r4, #1
+ 617 00b8 00E0     		b	.L40
+ 618              	.L45:
+ 182:User/Src/flash.c ****     }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 16
+
+
+ 619              		.loc 1 182 16 view .LVU142
+ 620 00ba 0124     		movs	r4, #1
+ 621              	.LVL43:
+ 622              	.L40:
+ 212:User/Src/flash.c **** }
+ 623              		.loc 1 212 1 view .LVU143
+ 624 00bc 2046     		mov	r0, r4
+ 625 00be 03B0     		add	sp, sp, #12
+ 626              	.LCFI19:
+ 627              		.cfi_remember_state
+ 628              		.cfi_def_cfa_offset 12
+ 629              		@ sp needed
+ 630 00c0 30BD     		pop	{r4, r5, pc}
+ 631              	.LVL44:
+ 632              	.L46:
+ 633              	.LCFI20:
+ 634              		.cfi_restore_state
+ 182:User/Src/flash.c ****     }
+ 635              		.loc 1 182 16 view .LVU144
+ 636 00c2 0124     		movs	r4, #1
+ 637 00c4 FAE7     		b	.L40
+ 638              	.L56:
+ 639 00c6 00BF     		.align	2
+ 640              	.L55:
+ 641 00c8 00000000 		.word	hspi1
+ 642 00cc 00080140 		.word	1073809408
+ 643              		.cfi_endproc
+ 644              	.LFE74:
+ 646              		.section	.text.W25Q64_ReadData,"ax",%progbits
+ 647              		.align	1
+ 648              		.global	W25Q64_ReadData
+ 649              		.syntax unified
+ 650              		.thumb
+ 651              		.thumb_func
+ 653              	W25Q64_ReadData:
+ 654              	.LVL45:
+ 655              	.LFB75:
+ 213:User/Src/flash.c **** 
+ 214:User/Src/flash.c **** /**
+ 215:User/Src/flash.c ****  * @brief  任意长度读取
+ 216:User/Src/flash.c ****  * @param  addr 起始地址
+ 217:User/Src/flash.c ****  * @param  data 接收缓冲区
+ 218:User/Src/flash.c ****  * @param  len  长度
+ 219:User/Src/flash.c ****  * @retval 0=成功 1=失败
+ 220:User/Src/flash.c ****  */
+ 221:User/Src/flash.c **** uint8_t W25Q64_ReadData(uint32_t addr, uint8_t *data, uint32_t len)
+ 222:User/Src/flash.c **** {
+ 656              		.loc 1 222 1 is_stmt 1 view -0
+ 657              		.cfi_startproc
+ 658              		@ args = 0, pretend = 0, frame = 8
+ 659              		@ frame_needed = 0, uses_anonymous_args = 0
+ 660              		.loc 1 222 1 is_stmt 0 view .LVU146
+ 661 0000 30B5     		push	{r4, r5, lr}
+ 662              	.LCFI21:
+ 663              		.cfi_def_cfa_offset 12
+ 664              		.cfi_offset 4, -12
+ 665              		.cfi_offset 5, -8
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 17
+
+
+ 666              		.cfi_offset 14, -4
+ 667 0002 83B0     		sub	sp, sp, #12
+ 668              	.LCFI22:
+ 669              		.cfi_def_cfa_offset 24
+ 223:User/Src/flash.c ****     uint8_t cmd[4] = {0x03, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+ 670              		.loc 1 223 5 is_stmt 1 view .LVU147
+ 671              		.loc 1 223 13 is_stmt 0 view .LVU148
+ 672 0004 0323     		movs	r3, #3
+ 673 0006 8DF80430 		strb	r3, [sp, #4]
+ 674              		.loc 1 223 35 view .LVU149
+ 675 000a 030C     		lsrs	r3, r0, #16
+ 676              		.loc 1 223 13 view .LVU150
+ 677 000c 8DF80530 		strb	r3, [sp, #5]
+ 678              		.loc 1 223 56 view .LVU151
+ 679 0010 030A     		lsrs	r3, r0, #8
+ 680              		.loc 1 223 13 view .LVU152
+ 681 0012 8DF80630 		strb	r3, [sp, #6]
+ 682 0016 8DF80700 		strb	r0, [sp, #7]
+ 224:User/Src/flash.c **** 
+ 225:User/Src/flash.c ****     // 空指针 + 越界保护
+ 226:User/Src/flash.c ****     if (data == NULL || len == 0 || (addr + len - 1) > W25Q64_MAX_ADDR)
+ 683              		.loc 1 226 5 is_stmt 1 view .LVU153
+ 684              		.loc 1 226 8 is_stmt 0 view .LVU154
+ 685 001a A1B3     		cbz	r1, .L61
+ 686 001c 1446     		mov	r4, r2
+ 687 001e 0D46     		mov	r5, r1
+ 688              		.loc 1 226 22 discriminator 1 view .LVU155
+ 689 0020 9AB3     		cbz	r2, .L62
+ 690              		.loc 1 226 43 discriminator 2 view .LVU156
+ 691 0022 1044     		add	r0, r0, r2
+ 692              	.LVL46:
+ 693              		.loc 1 226 49 discriminator 2 view .LVU157
+ 694 0024 0138     		subs	r0, r0, #1
+ 695              		.loc 1 226 34 discriminator 2 view .LVU158
+ 696 0026 B0F5000F 		cmp	r0, #8388608
+ 697 002a 01D3     		bcc	.L65
+ 227:User/Src/flash.c ****     {
+ 228:User/Src/flash.c ****         FLASH_LOG("[flash] 读取参数错误\r\n");
+ 229:User/Src/flash.c ****         return 1;
+ 698              		.loc 1 229 16 view .LVU159
+ 699 002c 0124     		movs	r4, #1
+ 700 002e 2DE0     		b	.L58
+ 701              	.L65:
+ 230:User/Src/flash.c ****     }
+ 231:User/Src/flash.c **** 
+ 232:User/Src/flash.c ****     CS_LOW();
+ 702              		.loc 1 232 5 is_stmt 1 view .LVU160
+ 703 0030 0022     		movs	r2, #0
+ 704              	.LVL47:
+ 705              		.loc 1 232 5 is_stmt 0 view .LVU161
+ 706 0032 1021     		movs	r1, #16
+ 707              	.LVL48:
+ 708              		.loc 1 232 5 view .LVU162
+ 709 0034 1748     		ldr	r0, .L68
+ 710 0036 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 711              	.LVL49:
+ 233:User/Src/flash.c ****     if (HAL_SPI_Transmit(&hspi1, cmd, 4, SPI_TIMEOUT_MS) != HAL_OK)
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 18
+
+
+ 712              		.loc 1 233 5 is_stmt 1 view .LVU163
+ 713              		.loc 1 233 9 is_stmt 0 view .LVU164
+ 714 003a 4FF47A73 		mov	r3, #1000
+ 715 003e 0422     		movs	r2, #4
+ 716 0040 0DEB0201 		add	r1, sp, r2
+ 717 0044 1448     		ldr	r0, .L68+4
+ 718 0046 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 719              	.LVL50:
+ 720              		.loc 1 233 8 view .LVU165
+ 721 004a 70B9     		cbnz	r0, .L66
+ 234:User/Src/flash.c ****     {
+ 235:User/Src/flash.c ****         CS_HIGH();
+ 236:User/Src/flash.c ****         return 1;
+ 237:User/Src/flash.c ****     }
+ 238:User/Src/flash.c ****     if (HAL_SPI_Receive(&hspi1, data, len, SPI_TIMEOUT_MS) != HAL_OK)
+ 722              		.loc 1 238 5 is_stmt 1 view .LVU166
+ 723              		.loc 1 238 9 is_stmt 0 view .LVU167
+ 724 004c 4FF47A73 		mov	r3, #1000
+ 725 0050 A2B2     		uxth	r2, r4
+ 726 0052 2946     		mov	r1, r5
+ 727 0054 1048     		ldr	r0, .L68+4
+ 728 0056 FFF7FEFF 		bl	HAL_SPI_Receive
+ 729              	.LVL51:
+ 730              		.loc 1 238 8 view .LVU168
+ 731 005a 0446     		mov	r4, r0
+ 732              	.LVL52:
+ 733              		.loc 1 238 8 view .LVU169
+ 734 005c 60B9     		cbnz	r0, .L67
+ 239:User/Src/flash.c ****     {
+ 240:User/Src/flash.c ****         CS_HIGH();
+ 241:User/Src/flash.c ****         return 1;
+ 242:User/Src/flash.c ****     }
+ 243:User/Src/flash.c ****     CS_HIGH();
+ 735              		.loc 1 243 5 is_stmt 1 view .LVU170
+ 736 005e 0122     		movs	r2, #1
+ 737 0060 1021     		movs	r1, #16
+ 738 0062 0C48     		ldr	r0, .L68
+ 739 0064 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 740              	.LVL53:
+ 244:User/Src/flash.c **** 
+ 245:User/Src/flash.c ****     FLASH_LOG("[flash] 读取成功\r\n");
+ 741              		.loc 1 245 5 view .LVU171
+ 742              		.loc 1 245 5 view .LVU172
+ 743              		.loc 1 245 5 view .LVU173
+ 246:User/Src/flash.c ****     return 0;
+ 744              		.loc 1 246 5 view .LVU174
+ 745              		.loc 1 246 12 is_stmt 0 view .LVU175
+ 746 0068 10E0     		b	.L58
+ 747              	.LVL54:
+ 748              	.L66:
+ 235:User/Src/flash.c ****         return 1;
+ 749              		.loc 1 235 9 is_stmt 1 view .LVU176
+ 750 006a 0122     		movs	r2, #1
+ 751 006c 1021     		movs	r1, #16
+ 752 006e 0948     		ldr	r0, .L68
+ 753 0070 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 754              	.LVL55:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 19
+
+
+ 236:User/Src/flash.c ****     }
+ 755              		.loc 1 236 9 view .LVU177
+ 236:User/Src/flash.c ****     }
+ 756              		.loc 1 236 16 is_stmt 0 view .LVU178
+ 757 0074 0124     		movs	r4, #1
+ 758              	.LVL56:
+ 236:User/Src/flash.c ****     }
+ 759              		.loc 1 236 16 view .LVU179
+ 760 0076 09E0     		b	.L58
+ 761              	.L67:
+ 240:User/Src/flash.c ****         return 1;
+ 762              		.loc 1 240 9 is_stmt 1 view .LVU180
+ 763 0078 0122     		movs	r2, #1
+ 764 007a 1021     		movs	r1, #16
+ 765 007c 0548     		ldr	r0, .L68
+ 766 007e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 767              	.LVL57:
+ 241:User/Src/flash.c ****     }
+ 768              		.loc 1 241 9 view .LVU181
+ 241:User/Src/flash.c ****     }
+ 769              		.loc 1 241 16 is_stmt 0 view .LVU182
+ 770 0082 0124     		movs	r4, #1
+ 771 0084 02E0     		b	.L58
+ 772              	.LVL58:
+ 773              	.L61:
+ 229:User/Src/flash.c ****     }
+ 774              		.loc 1 229 16 view .LVU183
+ 775 0086 0124     		movs	r4, #1
+ 776 0088 00E0     		b	.L58
+ 777              	.L62:
+ 229:User/Src/flash.c ****     }
+ 778              		.loc 1 229 16 view .LVU184
+ 779 008a 0124     		movs	r4, #1
+ 780              	.LVL59:
+ 781              	.L58:
+ 247:User/Src/flash.c **** }
+ 782              		.loc 1 247 1 view .LVU185
+ 783 008c 2046     		mov	r0, r4
+ 784 008e 03B0     		add	sp, sp, #12
+ 785              	.LCFI23:
+ 786              		.cfi_def_cfa_offset 12
+ 787              		@ sp needed
+ 788 0090 30BD     		pop	{r4, r5, pc}
+ 789              	.L69:
+ 790 0092 00BF     		.align	2
+ 791              	.L68:
+ 792 0094 00080140 		.word	1073809408
+ 793 0098 00000000 		.word	hspi1
+ 794              		.cfi_endproc
+ 795              	.LFE75:
+ 797              		.section	.text.W25Q64_EraseSector,"ax",%progbits
+ 798              		.align	1
+ 799              		.global	W25Q64_EraseSector
+ 800              		.syntax unified
+ 801              		.thumb
+ 802              		.thumb_func
+ 804              	W25Q64_EraseSector:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 20
+
+
+ 805              	.LVL60:
+ 806              	.LFB73:
+ 123:User/Src/flash.c ****     uint8_t cmd[4] = {0x20, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+ 807              		.loc 1 123 1 is_stmt 1 view -0
+ 808              		.cfi_startproc
+ 809              		@ args = 0, pretend = 0, frame = 8
+ 810              		@ frame_needed = 0, uses_anonymous_args = 0
+ 123:User/Src/flash.c ****     uint8_t cmd[4] = {0x20, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+ 811              		.loc 1 123 1 is_stmt 0 view .LVU187
+ 812 0000 30B5     		push	{r4, r5, lr}
+ 813              	.LCFI24:
+ 814              		.cfi_def_cfa_offset 12
+ 815              		.cfi_offset 4, -12
+ 816              		.cfi_offset 5, -8
+ 817              		.cfi_offset 14, -4
+ 818 0002 83B0     		sub	sp, sp, #12
+ 819              	.LCFI25:
+ 820              		.cfi_def_cfa_offset 24
+ 124:User/Src/flash.c ****     uint8_t check_data;
+ 821              		.loc 1 124 5 is_stmt 1 view .LVU188
+ 124:User/Src/flash.c ****     uint8_t check_data;
+ 822              		.loc 1 124 13 is_stmt 0 view .LVU189
+ 823 0004 2023     		movs	r3, #32
+ 824 0006 8DF80430 		strb	r3, [sp, #4]
+ 124:User/Src/flash.c ****     uint8_t check_data;
+ 825              		.loc 1 124 35 view .LVU190
+ 826 000a 030C     		lsrs	r3, r0, #16
+ 124:User/Src/flash.c ****     uint8_t check_data;
+ 827              		.loc 1 124 13 view .LVU191
+ 828 000c 8DF80530 		strb	r3, [sp, #5]
+ 124:User/Src/flash.c ****     uint8_t check_data;
+ 829              		.loc 1 124 56 view .LVU192
+ 830 0010 030A     		lsrs	r3, r0, #8
+ 124:User/Src/flash.c ****     uint8_t check_data;
+ 831              		.loc 1 124 13 view .LVU193
+ 832 0012 8DF80630 		strb	r3, [sp, #6]
+ 833 0016 8DF80700 		strb	r0, [sp, #7]
+ 125:User/Src/flash.c **** 
+ 834              		.loc 1 125 5 is_stmt 1 view .LVU194
+ 128:User/Src/flash.c ****     {
+ 835              		.loc 1 128 5 view .LVU195
+ 128:User/Src/flash.c ****     {
+ 836              		.loc 1 128 8 is_stmt 0 view .LVU196
+ 837 001a B0F5000F 		cmp	r0, #8388608
+ 838 001e 03D3     		bcc	.L78
+ 131:User/Src/flash.c ****     }
+ 839              		.loc 1 131 16 view .LVU197
+ 840 0020 0125     		movs	r5, #1
+ 841              	.LVL61:
+ 842              	.L71:
+ 165:User/Src/flash.c **** 
+ 843              		.loc 1 165 1 view .LVU198
+ 844 0022 2846     		mov	r0, r5
+ 845 0024 03B0     		add	sp, sp, #12
+ 846              	.LCFI26:
+ 847              		.cfi_remember_state
+ 848              		.cfi_def_cfa_offset 12
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 21
+
+
+ 849              		@ sp needed
+ 850 0026 30BD     		pop	{r4, r5, pc}
+ 851              	.LVL62:
+ 852              	.L78:
+ 853              	.LCFI27:
+ 854              		.cfi_restore_state
+ 165:User/Src/flash.c **** 
+ 855              		.loc 1 165 1 view .LVU199
+ 856 0028 0446     		mov	r4, r0
+ 134:User/Src/flash.c **** 
+ 857              		.loc 1 134 5 is_stmt 1 view .LVU200
+ 134:User/Src/flash.c **** 
+ 858              		.loc 1 134 9 is_stmt 0 view .LVU201
+ 859 002a FFF7FEFF 		bl	W25Q64_WriteEnable
+ 860              	.LVL63:
+ 134:User/Src/flash.c **** 
+ 861              		.loc 1 134 8 view .LVU202
+ 862 002e 08B1     		cbz	r0, .L79
+ 134:User/Src/flash.c **** 
+ 863              		.loc 1 134 43 view .LVU203
+ 864 0030 0125     		movs	r5, #1
+ 865 0032 F6E7     		b	.L71
+ 866              	.L79:
+ 136:User/Src/flash.c ****     if (HAL_SPI_Transmit(&hspi1, cmd, 4, SPI_TIMEOUT_MS) != HAL_OK)
+ 867              		.loc 1 136 5 is_stmt 1 view .LVU204
+ 868 0034 0022     		movs	r2, #0
+ 869 0036 1021     		movs	r1, #16
+ 870 0038 00F18040 		add	r0, r0, #1073741824
+ 871 003c 00F58430 		add	r0, r0, #67584
+ 872 0040 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 873              	.LVL64:
+ 137:User/Src/flash.c ****     {
+ 874              		.loc 1 137 5 view .LVU205
+ 137:User/Src/flash.c ****     {
+ 875              		.loc 1 137 9 is_stmt 0 view .LVU206
+ 876 0044 4FF47A73 		mov	r3, #1000
+ 877 0048 0422     		movs	r2, #4
+ 878 004a 0DEB0201 		add	r1, sp, r2
+ 879 004e 1548     		ldr	r0, .L82
+ 880 0050 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 881              	.LVL65:
+ 137:User/Src/flash.c ****     {
+ 882              		.loc 1 137 8 view .LVU207
+ 883 0054 B0B9     		cbnz	r0, .L80
+ 143:User/Src/flash.c **** 
+ 884              		.loc 1 143 5 is_stmt 1 view .LVU208
+ 885 0056 0122     		movs	r2, #1
+ 886 0058 1021     		movs	r1, #16
+ 887 005a 1348     		ldr	r0, .L82+4
+ 888 005c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 889              	.LVL66:
+ 146:User/Src/flash.c ****     {
+ 890              		.loc 1 146 5 view .LVU209
+ 146:User/Src/flash.c ****     {
+ 891              		.loc 1 146 9 is_stmt 0 view .LVU210
+ 892 0060 FFF7FEFF 		bl	W25Q64_WaitBusy
+ 893              	.LVL67:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 22
+
+
+ 146:User/Src/flash.c ****     {
+ 894              		.loc 1 146 8 view .LVU211
+ 895 0064 0546     		mov	r5, r0
+ 896 0066 B0B9     		cbnz	r0, .L81
+ 154:User/Src/flash.c ****     if (check_data != 0xFF)
+ 897              		.loc 1 154 5 is_stmt 1 view .LVU212
+ 898 0068 0122     		movs	r2, #1
+ 899 006a 0DF10301 		add	r1, sp, #3
+ 900 006e 2046     		mov	r0, r4
+ 901 0070 FFF7FEFF 		bl	W25Q64_ReadData
+ 902              	.LVL68:
+ 155:User/Src/flash.c ****     {
+ 903              		.loc 1 155 5 view .LVU213
+ 155:User/Src/flash.c ****     {
+ 904              		.loc 1 155 20 is_stmt 0 view .LVU214
+ 905 0074 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 155:User/Src/flash.c ****     {
+ 906              		.loc 1 155 8 view .LVU215
+ 907 0078 FF2B     		cmp	r3, #255
+ 908 007a 10D0     		beq	.L74
+ 157:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 909              		.loc 1 157 9 is_stmt 1 view .LVU216
+ 157:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 910              		.loc 1 157 9 view .LVU217
+ 157:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 911              		.loc 1 157 9 view .LVU218
+ 158:User/Src/flash.c ****         return 1;
+ 912              		.loc 1 158 9 view .LVU219
+ 913 007c FFF7FEFF 		bl	W25Q64_WriteDisable
+ 914              	.LVL69:
+ 159:User/Src/flash.c ****     }
+ 915              		.loc 1 159 9 view .LVU220
+ 159:User/Src/flash.c ****     }
+ 916              		.loc 1 159 16 is_stmt 0 view .LVU221
+ 917 0080 0125     		movs	r5, #1
+ 918 0082 CEE7     		b	.L71
+ 919              	.L80:
+ 139:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 920              		.loc 1 139 9 is_stmt 1 view .LVU222
+ 921 0084 0122     		movs	r2, #1
+ 922 0086 1021     		movs	r1, #16
+ 923 0088 0748     		ldr	r0, .L82+4
+ 924 008a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 925              	.LVL70:
+ 140:User/Src/flash.c ****         return 1;
+ 926              		.loc 1 140 9 view .LVU223
+ 927 008e FFF7FEFF 		bl	W25Q64_WriteDisable
+ 928              	.LVL71:
+ 141:User/Src/flash.c ****     }
+ 929              		.loc 1 141 9 view .LVU224
+ 141:User/Src/flash.c ****     }
+ 930              		.loc 1 141 16 is_stmt 0 view .LVU225
+ 931 0092 0125     		movs	r5, #1
+ 932 0094 C5E7     		b	.L71
+ 933              	.L81:
+ 148:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 934              		.loc 1 148 9 is_stmt 1 view .LVU226
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 23
+
+
+ 148:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 935              		.loc 1 148 9 view .LVU227
+ 148:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 936              		.loc 1 148 9 view .LVU228
+ 149:User/Src/flash.c ****         return 1;
+ 937              		.loc 1 149 9 view .LVU229
+ 938 0096 FFF7FEFF 		bl	W25Q64_WriteDisable
+ 939              	.LVL72:
+ 150:User/Src/flash.c ****     }
+ 940              		.loc 1 150 9 view .LVU230
+ 150:User/Src/flash.c ****     }
+ 941              		.loc 1 150 16 is_stmt 0 view .LVU231
+ 942 009a 0125     		movs	r5, #1
+ 943 009c C1E7     		b	.L71
+ 944              	.L74:
+ 162:User/Src/flash.c ****     FLASH_LOG("[flash] 扇区擦除成功\r\n");
+ 945              		.loc 1 162 5 is_stmt 1 view .LVU232
+ 946 009e FFF7FEFF 		bl	W25Q64_WriteDisable
+ 947              	.LVL73:
+ 163:User/Src/flash.c ****     return 0;
+ 948              		.loc 1 163 5 view .LVU233
+ 163:User/Src/flash.c ****     return 0;
+ 949              		.loc 1 163 5 view .LVU234
+ 163:User/Src/flash.c ****     return 0;
+ 950              		.loc 1 163 5 view .LVU235
+ 164:User/Src/flash.c **** }
+ 951              		.loc 1 164 5 view .LVU236
+ 164:User/Src/flash.c **** }
+ 952              		.loc 1 164 12 is_stmt 0 view .LVU237
+ 953 00a2 BEE7     		b	.L71
+ 954              	.L83:
+ 955              		.align	2
+ 956              	.L82:
+ 957 00a4 00000000 		.word	hspi1
+ 958 00a8 00080140 		.word	1073809408
+ 959              		.cfi_endproc
+ 960              	.LFE73:
+ 962              		.section	.text.W25Q64_ChipErase,"ax",%progbits
+ 963              		.align	1
+ 964              		.global	W25Q64_ChipErase
+ 965              		.syntax unified
+ 966              		.thumb
+ 967              		.thumb_func
+ 969              	W25Q64_ChipErase:
+ 970              	.LFB76:
+ 248:User/Src/flash.c **** 
+ 249:User/Src/flash.c **** /**
+ 250:User/Src/flash.c ****  * @brief  整片擦除
+ 251:User/Src/flash.c ****  * @retval 0=成功 1=失败
+ 252:User/Src/flash.c ****  */
+ 253:User/Src/flash.c **** uint8_t W25Q64_ChipErase(void)
+ 254:User/Src/flash.c **** {
+ 971              		.loc 1 254 1 is_stmt 1 view -0
+ 972              		.cfi_startproc
+ 973              		@ args = 0, pretend = 0, frame = 8
+ 974              		@ frame_needed = 0, uses_anonymous_args = 0
+ 975 0000 10B5     		push	{r4, lr}
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 24
+
+
+ 976              	.LCFI28:
+ 977              		.cfi_def_cfa_offset 8
+ 978              		.cfi_offset 4, -8
+ 979              		.cfi_offset 14, -4
+ 980 0002 82B0     		sub	sp, sp, #8
+ 981              	.LCFI29:
+ 982              		.cfi_def_cfa_offset 16
+ 255:User/Src/flash.c ****     uint8_t cmd = 0xC7;
+ 983              		.loc 1 255 5 view .LVU239
+ 984              		.loc 1 255 13 is_stmt 0 view .LVU240
+ 985 0004 C723     		movs	r3, #199
+ 986 0006 8DF80730 		strb	r3, [sp, #7]
+ 256:User/Src/flash.c ****     uint8_t check;
+ 987              		.loc 1 256 5 is_stmt 1 view .LVU241
+ 257:User/Src/flash.c **** 
+ 258:User/Src/flash.c ****     FLASH_LOG("[flash] 开始整片擦除\r\n");
+ 988              		.loc 1 258 5 view .LVU242
+ 989              		.loc 1 258 5 view .LVU243
+ 990              		.loc 1 258 5 view .LVU244
+ 259:User/Src/flash.c **** 
+ 260:User/Src/flash.c ****     if (W25Q64_WriteEnable() != 0) return 1;
+ 991              		.loc 1 260 5 view .LVU245
+ 992              		.loc 1 260 9 is_stmt 0 view .LVU246
+ 993 000a FFF7FEFF 		bl	W25Q64_WriteEnable
+ 994              	.LVL74:
+ 995              		.loc 1 260 8 view .LVU247
+ 996 000e 18B1     		cbz	r0, .L91
+ 997              		.loc 1 260 43 view .LVU248
+ 998 0010 0124     		movs	r4, #1
+ 999              	.L85:
+ 261:User/Src/flash.c **** 
+ 262:User/Src/flash.c ****     CS_LOW();
+ 263:User/Src/flash.c ****     if (HAL_SPI_Transmit(&hspi1, &cmd, 1, SPI_TIMEOUT_MS) != HAL_OK)
+ 264:User/Src/flash.c ****     {
+ 265:User/Src/flash.c ****         CS_HIGH();
+ 266:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 267:User/Src/flash.c ****         return 1;
+ 268:User/Src/flash.c ****     }
+ 269:User/Src/flash.c ****     CS_HIGH();
+ 270:User/Src/flash.c **** 
+ 271:User/Src/flash.c ****     if (W25Q64_WaitBusy() != 0)
+ 272:User/Src/flash.c ****     {
+ 273:User/Src/flash.c ****         FLASH_LOG("[flash] 整片擦除超时\r\n");
+ 274:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 275:User/Src/flash.c ****         return 1;
+ 276:User/Src/flash.c ****     }
+ 277:User/Src/flash.c **** 
+ 278:User/Src/flash.c ****     // 校验
+ 279:User/Src/flash.c ****     W25Q64_ReadData(0x000000, &check, 1);
+ 280:User/Src/flash.c ****     if (check != 0xFF)
+ 281:User/Src/flash.c ****     {
+ 282:User/Src/flash.c ****         FLASH_LOG("[flash] 整片擦除校验失败\r\n");
+ 283:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 284:User/Src/flash.c ****         return 1;
+ 285:User/Src/flash.c ****     }
+ 286:User/Src/flash.c **** 
+ 287:User/Src/flash.c ****     W25Q64_WriteDisable();
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 25
+
+
+ 288:User/Src/flash.c ****     FLASH_LOG("[flash] 整片擦除成功\r\n");
+ 289:User/Src/flash.c ****     return 0;
+ 290:User/Src/flash.c **** }
+ 1000              		.loc 1 290 1 view .LVU249
+ 1001 0012 2046     		mov	r0, r4
+ 1002 0014 02B0     		add	sp, sp, #8
+ 1003              	.LCFI30:
+ 1004              		.cfi_remember_state
+ 1005              		.cfi_def_cfa_offset 8
+ 1006              		@ sp needed
+ 1007 0016 10BD     		pop	{r4, pc}
+ 1008              	.L91:
+ 1009              	.LCFI31:
+ 1010              		.cfi_restore_state
+ 262:User/Src/flash.c ****     if (HAL_SPI_Transmit(&hspi1, &cmd, 1, SPI_TIMEOUT_MS) != HAL_OK)
+ 1011              		.loc 1 262 5 is_stmt 1 view .LVU250
+ 1012 0018 0022     		movs	r2, #0
+ 1013 001a 1021     		movs	r1, #16
+ 1014 001c 00F18040 		add	r0, r0, #1073741824
+ 1015 0020 00F58430 		add	r0, r0, #67584
+ 1016 0024 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1017              	.LVL75:
+ 263:User/Src/flash.c ****     {
+ 1018              		.loc 1 263 5 view .LVU251
+ 263:User/Src/flash.c ****     {
+ 1019              		.loc 1 263 9 is_stmt 0 view .LVU252
+ 1020 0028 4FF47A73 		mov	r3, #1000
+ 1021 002c 0122     		movs	r2, #1
+ 1022 002e 0DF10701 		add	r1, sp, #7
+ 1023 0032 1548     		ldr	r0, .L94
+ 1024 0034 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 1025              	.LVL76:
+ 263:User/Src/flash.c ****     {
+ 1026              		.loc 1 263 8 view .LVU253
+ 1027 0038 B0B9     		cbnz	r0, .L92
+ 269:User/Src/flash.c **** 
+ 1028              		.loc 1 269 5 is_stmt 1 view .LVU254
+ 1029 003a 0122     		movs	r2, #1
+ 1030 003c 1021     		movs	r1, #16
+ 1031 003e 1348     		ldr	r0, .L94+4
+ 1032 0040 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1033              	.LVL77:
+ 271:User/Src/flash.c ****     {
+ 1034              		.loc 1 271 5 view .LVU255
+ 271:User/Src/flash.c ****     {
+ 1035              		.loc 1 271 9 is_stmt 0 view .LVU256
+ 1036 0044 FFF7FEFF 		bl	W25Q64_WaitBusy
+ 1037              	.LVL78:
+ 271:User/Src/flash.c ****     {
+ 1038              		.loc 1 271 8 view .LVU257
+ 1039 0048 0446     		mov	r4, r0
+ 1040 004a B0B9     		cbnz	r0, .L93
+ 279:User/Src/flash.c ****     if (check != 0xFF)
+ 1041              		.loc 1 279 5 is_stmt 1 view .LVU258
+ 1042 004c 0122     		movs	r2, #1
+ 1043 004e 0DF10601 		add	r1, sp, #6
+ 1044 0052 0020     		movs	r0, #0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 26
+
+
+ 1045 0054 FFF7FEFF 		bl	W25Q64_ReadData
+ 1046              	.LVL79:
+ 280:User/Src/flash.c ****     {
+ 1047              		.loc 1 280 5 view .LVU259
+ 280:User/Src/flash.c ****     {
+ 1048              		.loc 1 280 15 is_stmt 0 view .LVU260
+ 1049 0058 9DF80630 		ldrb	r3, [sp, #6]	@ zero_extendqisi2
+ 280:User/Src/flash.c ****     {
+ 1050              		.loc 1 280 8 view .LVU261
+ 1051 005c FF2B     		cmp	r3, #255
+ 1052 005e 10D0     		beq	.L88
+ 282:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 1053              		.loc 1 282 9 is_stmt 1 view .LVU262
+ 282:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 1054              		.loc 1 282 9 view .LVU263
+ 282:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 1055              		.loc 1 282 9 view .LVU264
+ 283:User/Src/flash.c ****         return 1;
+ 1056              		.loc 1 283 9 view .LVU265
+ 1057 0060 FFF7FEFF 		bl	W25Q64_WriteDisable
+ 1058              	.LVL80:
+ 284:User/Src/flash.c ****     }
+ 1059              		.loc 1 284 9 view .LVU266
+ 284:User/Src/flash.c ****     }
+ 1060              		.loc 1 284 16 is_stmt 0 view .LVU267
+ 1061 0064 0124     		movs	r4, #1
+ 1062 0066 D4E7     		b	.L85
+ 1063              	.L92:
+ 265:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 1064              		.loc 1 265 9 is_stmt 1 view .LVU268
+ 1065 0068 0122     		movs	r2, #1
+ 1066 006a 1021     		movs	r1, #16
+ 1067 006c 0748     		ldr	r0, .L94+4
+ 1068 006e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1069              	.LVL81:
+ 266:User/Src/flash.c ****         return 1;
+ 1070              		.loc 1 266 9 view .LVU269
+ 1071 0072 FFF7FEFF 		bl	W25Q64_WriteDisable
+ 1072              	.LVL82:
+ 267:User/Src/flash.c ****     }
+ 1073              		.loc 1 267 9 view .LVU270
+ 267:User/Src/flash.c ****     }
+ 1074              		.loc 1 267 16 is_stmt 0 view .LVU271
+ 1075 0076 0124     		movs	r4, #1
+ 1076 0078 CBE7     		b	.L85
+ 1077              	.L93:
+ 273:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 1078              		.loc 1 273 9 is_stmt 1 view .LVU272
+ 273:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 1079              		.loc 1 273 9 view .LVU273
+ 273:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 1080              		.loc 1 273 9 view .LVU274
+ 274:User/Src/flash.c ****         return 1;
+ 1081              		.loc 1 274 9 view .LVU275
+ 1082 007a FFF7FEFF 		bl	W25Q64_WriteDisable
+ 1083              	.LVL83:
+ 275:User/Src/flash.c ****     }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 27
+
+
+ 1084              		.loc 1 275 9 view .LVU276
+ 275:User/Src/flash.c ****     }
+ 1085              		.loc 1 275 16 is_stmt 0 view .LVU277
+ 1086 007e 0124     		movs	r4, #1
+ 1087 0080 C7E7     		b	.L85
+ 1088              	.L88:
+ 287:User/Src/flash.c ****     FLASH_LOG("[flash] 整片擦除成功\r\n");
+ 1089              		.loc 1 287 5 is_stmt 1 view .LVU278
+ 1090 0082 FFF7FEFF 		bl	W25Q64_WriteDisable
+ 1091              	.LVL84:
+ 288:User/Src/flash.c ****     return 0;
+ 1092              		.loc 1 288 5 view .LVU279
+ 288:User/Src/flash.c ****     return 0;
+ 1093              		.loc 1 288 5 view .LVU280
+ 288:User/Src/flash.c ****     return 0;
+ 1094              		.loc 1 288 5 view .LVU281
+ 289:User/Src/flash.c **** }
+ 1095              		.loc 1 289 5 view .LVU282
+ 289:User/Src/flash.c **** }
+ 1096              		.loc 1 289 12 is_stmt 0 view .LVU283
+ 1097 0086 C4E7     		b	.L85
+ 1098              	.L95:
+ 1099              		.align	2
+ 1100              	.L94:
+ 1101 0088 00000000 		.word	hspi1
+ 1102 008c 00080140 		.word	1073809408
+ 1103              		.cfi_endproc
+ 1104              	.LFE76:
+ 1106              		.section	.text.W25Q64_SelfTest,"ax",%progbits
+ 1107              		.align	1
+ 1108              		.global	W25Q64_SelfTest
+ 1109              		.syntax unified
+ 1110              		.thumb
+ 1111              		.thumb_func
+ 1113              	W25Q64_SelfTest:
+ 1114              	.LFB77:
+ 291:User/Src/flash.c **** 
+ 292:User/Src/flash.c **** /**
+ 293:User/Src/flash.c ****  * @brief  基础自检
+ 294:User/Src/flash.c ****  */
+ 295:User/Src/flash.c **** uint8_t W25Q64_SelfTest(void)
+ 296:User/Src/flash.c **** {
+ 1115              		.loc 1 296 1 is_stmt 1 view -0
+ 1116              		.cfi_startproc
+ 1117              		@ args = 0, pretend = 0, frame = 8
+ 1118              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1119 0000 30B5     		push	{r4, r5, lr}
+ 1120              	.LCFI32:
+ 1121              		.cfi_def_cfa_offset 12
+ 1122              		.cfi_offset 4, -12
+ 1123              		.cfi_offset 5, -8
+ 1124              		.cfi_offset 14, -4
+ 1125 0002 83B0     		sub	sp, sp, #12
+ 1126              	.LCFI33:
+ 1127              		.cfi_def_cfa_offset 24
+ 297:User/Src/flash.c ****     uint32_t dev_id = W25Q64_ReadDeviceID();
+ 1128              		.loc 1 297 5 view .LVU285
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 28
+
+
+ 1129              		.loc 1 297 23 is_stmt 0 view .LVU286
+ 1130 0004 FFF7FEFF 		bl	W25Q64_ReadDeviceID
+ 1131              	.LVL85:
+ 298:User/Src/flash.c ****     uint8_t status;
+ 1132              		.loc 1 298 5 is_stmt 1 view .LVU287
+ 299:User/Src/flash.c **** 
+ 300:User/Src/flash.c ****     FLASH_LOG("\r\n===== W25Q64 自检 =====\r\n");
+ 1133              		.loc 1 300 5 view .LVU288
+ 1134              		.loc 1 300 5 view .LVU289
+ 1135              		.loc 1 300 5 view .LVU290
+ 301:User/Src/flash.c ****     FLASH_LOG("设备ID: 0x%06X\r\n", dev_id);
+ 1136              		.loc 1 301 5 view .LVU291
+ 1137              		.loc 1 301 5 view .LVU292
+ 1138              		.loc 1 301 5 view .LVU293
+ 302:User/Src/flash.c **** 
+ 303:User/Src/flash.c ****     if (dev_id != W25Q64_DEVICE_ID && dev_id != 0xEF16)
+ 1139              		.loc 1 303 5 view .LVU294
+ 1140              		.loc 1 303 8 is_stmt 0 view .LVU295
+ 1141 0008 164B     		ldr	r3, .L102
+ 1142 000a 9842     		cmp	r0, r3
+ 1143 000c 03D0     		beq	.L97
+ 1144              		.loc 1 303 36 discriminator 1 view .LVU296
+ 1145 000e 4EF61673 		movw	r3, #61206
+ 1146 0012 9842     		cmp	r0, r3
+ 1147 0014 23D1     		bne	.L99
+ 1148              	.L97:
+ 304:User/Src/flash.c ****     {
+ 305:User/Src/flash.c ****         FLASH_LOG("[flash] ID 不匹配\r\n");
+ 306:User/Src/flash.c ****         return 1;
+ 307:User/Src/flash.c ****     }
+ 308:User/Src/flash.c **** 
+ 309:User/Src/flash.c ****     status = W25Q64_ReadStatus();
+ 1149              		.loc 1 309 5 is_stmt 1 view .LVU297
+ 1150              		.loc 1 309 14 is_stmt 0 view .LVU298
+ 1151 0016 FFF7FEFF 		bl	W25Q64_ReadStatus
+ 1152              	.LVL86:
+ 310:User/Src/flash.c ****     if (status & 0x02)
+ 1153              		.loc 1 310 5 is_stmt 1 view .LVU299
+ 1154              		.loc 1 310 8 is_stmt 0 view .LVU300
+ 1155 001a 10F00200 		ands	r0, r0, #2
+ 1156              	.LVL87:
+ 1157              		.loc 1 310 8 view .LVU301
+ 1158 001e 01D1     		bne	.L101
+ 1159              	.L98:
+ 311:User/Src/flash.c ****     {
+ 312:User/Src/flash.c ****         FLASH_LOG("[flash] 解除写保护...\r\n");
+ 313:User/Src/flash.c ****         W25Q64_WriteEnable();
+ 314:User/Src/flash.c ****         CS_LOW();
+ 315:User/Src/flash.c ****         uint8_t wr_cmd[2] = {0x01, 0x00};
+ 316:User/Src/flash.c ****         HAL_SPI_Transmit(&hspi1, wr_cmd, 2, SPI_TIMEOUT_MS);
+ 317:User/Src/flash.c ****         CS_HIGH();
+ 318:User/Src/flash.c ****         W25Q64_WaitBusy();
+ 319:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 320:User/Src/flash.c ****     }
+ 321:User/Src/flash.c **** 
+ 322:User/Src/flash.c ****     FLASH_LOG("[flash] 自检通过\r\n");
+ 323:User/Src/flash.c ****     return 0;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 29
+
+
+ 324:User/Src/flash.c **** }
+ 1160              		.loc 1 324 1 view .LVU302
+ 1161 0020 03B0     		add	sp, sp, #12
+ 1162              	.LCFI34:
+ 1163              		.cfi_remember_state
+ 1164              		.cfi_def_cfa_offset 12
+ 1165              		@ sp needed
+ 1166 0022 30BD     		pop	{r4, r5, pc}
+ 1167              	.L101:
+ 1168              	.LCFI35:
+ 1169              		.cfi_restore_state
+ 1170              	.LBB2:
+ 312:User/Src/flash.c ****         W25Q64_WriteEnable();
+ 1171              		.loc 1 312 9 is_stmt 1 view .LVU303
+ 312:User/Src/flash.c ****         W25Q64_WriteEnable();
+ 1172              		.loc 1 312 9 view .LVU304
+ 312:User/Src/flash.c ****         W25Q64_WriteEnable();
+ 1173              		.loc 1 312 9 view .LVU305
+ 313:User/Src/flash.c ****         CS_LOW();
+ 1174              		.loc 1 313 9 view .LVU306
+ 1175 0024 FFF7FEFF 		bl	W25Q64_WriteEnable
+ 1176              	.LVL88:
+ 314:User/Src/flash.c ****         uint8_t wr_cmd[2] = {0x01, 0x00};
+ 1177              		.loc 1 314 9 view .LVU307
+ 1178 0028 0F4C     		ldr	r4, .L102+4
+ 1179 002a 0022     		movs	r2, #0
+ 1180 002c 1021     		movs	r1, #16
+ 1181 002e 2046     		mov	r0, r4
+ 1182 0030 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1183              	.LVL89:
+ 315:User/Src/flash.c ****         HAL_SPI_Transmit(&hspi1, wr_cmd, 2, SPI_TIMEOUT_MS);
+ 1184              		.loc 1 315 9 view .LVU308
+ 315:User/Src/flash.c ****         HAL_SPI_Transmit(&hspi1, wr_cmd, 2, SPI_TIMEOUT_MS);
+ 1185              		.loc 1 315 17 is_stmt 0 view .LVU309
+ 1186 0034 0125     		movs	r5, #1
+ 1187 0036 ADF80450 		strh	r5, [sp, #4]	@ movhi
+ 316:User/Src/flash.c ****         CS_HIGH();
+ 1188              		.loc 1 316 9 is_stmt 1 view .LVU310
+ 1189 003a 4FF47A73 		mov	r3, #1000
+ 1190 003e 0222     		movs	r2, #2
+ 1191 0040 01A9     		add	r1, sp, #4
+ 1192 0042 0A48     		ldr	r0, .L102+8
+ 1193 0044 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 1194              	.LVL90:
+ 317:User/Src/flash.c ****         W25Q64_WaitBusy();
+ 1195              		.loc 1 317 9 view .LVU311
+ 1196 0048 2A46     		mov	r2, r5
+ 1197 004a 1021     		movs	r1, #16
+ 1198 004c 2046     		mov	r0, r4
+ 1199 004e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1200              	.LVL91:
+ 318:User/Src/flash.c ****         W25Q64_WriteDisable();
+ 1201              		.loc 1 318 9 view .LVU312
+ 1202 0052 FFF7FEFF 		bl	W25Q64_WaitBusy
+ 1203              	.LVL92:
+ 319:User/Src/flash.c ****     }
+ 1204              		.loc 1 319 9 view .LVU313
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 30
+
+
+ 1205 0056 FFF7FEFF 		bl	W25Q64_WriteDisable
+ 1206              	.LVL93:
+ 1207              	.LBE2:
+ 323:User/Src/flash.c **** }
+ 1208              		.loc 1 323 12 is_stmt 0 view .LVU314
+ 1209 005a 0020     		movs	r0, #0
+ 1210 005c E0E7     		b	.L98
+ 1211              	.LVL94:
+ 1212              	.L99:
+ 306:User/Src/flash.c ****     }
+ 1213              		.loc 1 306 16 view .LVU315
+ 1214 005e 0120     		movs	r0, #1
+ 1215              	.LVL95:
+ 306:User/Src/flash.c ****     }
+ 1216              		.loc 1 306 16 view .LVU316
+ 1217 0060 DEE7     		b	.L98
+ 1218              	.L103:
+ 1219 0062 00BF     		.align	2
+ 1220              	.L102:
+ 1221 0064 1740EF00 		.word	15679511
+ 1222 0068 00080140 		.word	1073809408
+ 1223 006c 00000000 		.word	hspi1
+ 1224              		.cfi_endproc
+ 1225              	.LFE77:
+ 1227              		.section	.text.W25Q64_SingleByteTest,"ax",%progbits
+ 1228              		.align	1
+ 1229              		.global	W25Q64_SingleByteTest
+ 1230              		.syntax unified
+ 1231              		.thumb
+ 1232              		.thumb_func
+ 1234              	W25Q64_SingleByteTest:
+ 1235              	.LVL96:
+ 1236              	.LFB78:
+ 325:User/Src/flash.c **** 
+ 326:User/Src/flash.c **** /**
+ 327:User/Src/flash.c ****  * @brief  单字节测试
+ 328:User/Src/flash.c ****  */
+ 329:User/Src/flash.c **** uint8_t W25Q64_SingleByteTest(uint32_t test_addr)
+ 330:User/Src/flash.c **** {
+ 1237              		.loc 1 330 1 is_stmt 1 view -0
+ 1238              		.cfi_startproc
+ 1239              		@ args = 0, pretend = 0, frame = 8
+ 1240              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1241              		.loc 1 330 1 is_stmt 0 view .LVU318
+ 1242 0000 30B5     		push	{r4, r5, lr}
+ 1243              	.LCFI36:
+ 1244              		.cfi_def_cfa_offset 12
+ 1245              		.cfi_offset 4, -12
+ 1246              		.cfi_offset 5, -8
+ 1247              		.cfi_offset 14, -4
+ 1248 0002 83B0     		sub	sp, sp, #12
+ 1249              	.LCFI37:
+ 1250              		.cfi_def_cfa_offset 24
+ 1251 0004 0446     		mov	r4, r0
+ 331:User/Src/flash.c ****     uint8_t w_data = 0x55;
+ 1252              		.loc 1 331 5 is_stmt 1 view .LVU319
+ 1253              		.loc 1 331 13 is_stmt 0 view .LVU320
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 31
+
+
+ 1254 0006 5523     		movs	r3, #85
+ 1255 0008 8DF80730 		strb	r3, [sp, #7]
+ 332:User/Src/flash.c ****     uint8_t r_data;
+ 1256              		.loc 1 332 5 is_stmt 1 view .LVU321
+ 333:User/Src/flash.c **** 
+ 334:User/Src/flash.c ****     FLASH_LOG("\r\n===== 单字节测试 =====\r\n");
+ 1257              		.loc 1 334 5 view .LVU322
+ 1258              		.loc 1 334 5 view .LVU323
+ 1259              		.loc 1 334 5 view .LVU324
+ 335:User/Src/flash.c **** 
+ 336:User/Src/flash.c ****     if (W25Q64_EraseSector(test_addr) != 0) return 1;
+ 1260              		.loc 1 336 5 view .LVU325
+ 1261              		.loc 1 336 9 is_stmt 0 view .LVU326
+ 1262 000c FFF7FEFF 		bl	W25Q64_EraseSector
+ 1263              	.LVL97:
+ 1264              		.loc 1 336 8 view .LVU327
+ 1265 0010 18B1     		cbz	r0, .L110
+ 1266              		.loc 1 336 52 view .LVU328
+ 1267 0012 0125     		movs	r5, #1
+ 1268              	.L105:
+ 337:User/Src/flash.c ****     if (W25Q64_PageWrite(test_addr, &w_data, 1) != 0) return 1;
+ 338:User/Src/flash.c ****     W25Q64_ReadData(test_addr, &r_data, 1);
+ 339:User/Src/flash.c **** 
+ 340:User/Src/flash.c ****     if (r_data != w_data)
+ 341:User/Src/flash.c ****     {
+ 342:User/Src/flash.c ****         FLASH_LOG("[flash] 单字节校验失败\r\n");
+ 343:User/Src/flash.c ****         return 1;
+ 344:User/Src/flash.c ****     }
+ 345:User/Src/flash.c **** 
+ 346:User/Src/flash.c ****     FLASH_LOG("[flash] 单字节测试通过\r\n");
+ 347:User/Src/flash.c ****     return 0;
+ 348:User/Src/flash.c **** }
+ 1269              		.loc 1 348 1 view .LVU329
+ 1270 0014 2846     		mov	r0, r5
+ 1271 0016 03B0     		add	sp, sp, #12
+ 1272              	.LCFI38:
+ 1273              		.cfi_remember_state
+ 1274              		.cfi_def_cfa_offset 12
+ 1275              		@ sp needed
+ 1276 0018 30BD     		pop	{r4, r5, pc}
+ 1277              	.LVL98:
+ 1278              	.L110:
+ 1279              	.LCFI39:
+ 1280              		.cfi_restore_state
+ 337:User/Src/flash.c ****     if (W25Q64_PageWrite(test_addr, &w_data, 1) != 0) return 1;
+ 1281              		.loc 1 337 5 is_stmt 1 view .LVU330
+ 337:User/Src/flash.c ****     if (W25Q64_PageWrite(test_addr, &w_data, 1) != 0) return 1;
+ 1282              		.loc 1 337 9 is_stmt 0 view .LVU331
+ 1283 001a 0122     		movs	r2, #1
+ 1284 001c 0DF10701 		add	r1, sp, #7
+ 1285 0020 2046     		mov	r0, r4
+ 1286 0022 FFF7FEFF 		bl	W25Q64_PageWrite
+ 1287              	.LVL99:
+ 337:User/Src/flash.c ****     if (W25Q64_PageWrite(test_addr, &w_data, 1) != 0) return 1;
+ 1288              		.loc 1 337 8 view .LVU332
+ 1289 0026 0546     		mov	r5, r0
+ 1290 0028 08B1     		cbz	r0, .L111
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 32
+
+
+ 337:User/Src/flash.c ****     if (W25Q64_PageWrite(test_addr, &w_data, 1) != 0) return 1;
+ 1291              		.loc 1 337 62 view .LVU333
+ 1292 002a 0125     		movs	r5, #1
+ 1293 002c F2E7     		b	.L105
+ 1294              	.L111:
+ 338:User/Src/flash.c **** 
+ 1295              		.loc 1 338 5 is_stmt 1 view .LVU334
+ 1296 002e 0122     		movs	r2, #1
+ 1297 0030 0DF10601 		add	r1, sp, #6
+ 1298 0034 2046     		mov	r0, r4
+ 1299 0036 FFF7FEFF 		bl	W25Q64_ReadData
+ 1300              	.LVL100:
+ 340:User/Src/flash.c ****     {
+ 1301              		.loc 1 340 5 view .LVU335
+ 340:User/Src/flash.c ****     {
+ 1302              		.loc 1 340 16 is_stmt 0 view .LVU336
+ 1303 003a 9DF80620 		ldrb	r2, [sp, #6]	@ zero_extendqisi2
+ 1304 003e 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 340:User/Src/flash.c ****     {
+ 1305              		.loc 1 340 8 view .LVU337
+ 1306 0042 9A42     		cmp	r2, r3
+ 1307 0044 E6D0     		beq	.L105
+ 343:User/Src/flash.c ****     }
+ 1308              		.loc 1 343 16 view .LVU338
+ 1309 0046 0125     		movs	r5, #1
+ 1310 0048 E4E7     		b	.L105
+ 1311              		.cfi_endproc
+ 1312              	.LFE78:
+ 1314              		.section	.text.W25Q64_PageWriteTest,"ax",%progbits
+ 1315              		.align	1
+ 1316              		.global	W25Q64_PageWriteTest
+ 1317              		.syntax unified
+ 1318              		.thumb
+ 1319              		.thumb_func
+ 1321              	W25Q64_PageWriteTest:
+ 1322              	.LVL101:
+ 1323              	.LFB79:
+ 349:User/Src/flash.c **** 
+ 350:User/Src/flash.c **** /**
+ 351:User/Src/flash.c ****  * @brief  页写入测试
+ 352:User/Src/flash.c ****  */
+ 353:User/Src/flash.c **** uint8_t W25Q64_PageWriteTest(uint32_t test_addr)
+ 354:User/Src/flash.c **** {
+ 1324              		.loc 1 354 1 is_stmt 1 view -0
+ 1325              		.cfi_startproc
+ 1326              		@ args = 0, pretend = 0, frame = 512
+ 1327              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1328              		.loc 1 354 1 is_stmt 0 view .LVU340
+ 1329 0000 30B5     		push	{r4, r5, lr}
+ 1330              	.LCFI40:
+ 1331              		.cfi_def_cfa_offset 12
+ 1332              		.cfi_offset 4, -12
+ 1333              		.cfi_offset 5, -8
+ 1334              		.cfi_offset 14, -4
+ 1335 0002 ADF5017D 		sub	sp, sp, #516
+ 1336              	.LCFI41:
+ 1337              		.cfi_def_cfa_offset 528
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 33
+
+
+ 1338 0006 0446     		mov	r4, r0
+ 355:User/Src/flash.c ****     uint8_t w_buf[W25Q64_PAGE_SIZE];
+ 1339              		.loc 1 355 5 is_stmt 1 view .LVU341
+ 356:User/Src/flash.c ****     uint8_t r_buf[W25Q64_PAGE_SIZE];
+ 1340              		.loc 1 356 5 view .LVU342
+ 357:User/Src/flash.c **** 
+ 358:User/Src/flash.c ****     FLASH_LOG("\r\n===== 页测试 =====\r\n");
+ 1341              		.loc 1 358 5 view .LVU343
+ 1342              		.loc 1 358 5 view .LVU344
+ 1343              		.loc 1 358 5 view .LVU345
+ 359:User/Src/flash.c **** 
+ 360:User/Src/flash.c ****     if (W25Q64_EraseSector(test_addr) != 0) return 1;
+ 1344              		.loc 1 360 5 view .LVU346
+ 1345              		.loc 1 360 9 is_stmt 0 view .LVU347
+ 1346 0008 FFF7FEFF 		bl	W25Q64_EraseSector
+ 1347              	.LVL102:
+ 1348              		.loc 1 360 8 view .LVU348
+ 1349 000c 38BB     		cbnz	r0, .L118
+ 1350              	.LBB3:
+ 361:User/Src/flash.c **** 
+ 362:User/Src/flash.c ****     for (int i = 0; i < W25Q64_PAGE_SIZE; i++)
+ 1351              		.loc 1 362 14 view .LVU349
+ 1352 000e 0023     		movs	r3, #0
+ 1353 0010 07E0     		b	.L114
+ 1354              	.LVL103:
+ 1355              	.L115:
+ 363:User/Src/flash.c ****         w_buf[i] = i % 256;
+ 1356              		.loc 1 363 9 is_stmt 1 discriminator 3 view .LVU350
+ 1357              		.loc 1 363 22 is_stmt 0 discriminator 3 view .LVU351
+ 1358 0012 5942     		rsbs	r1, r3, #0
+ 1359 0014 DAB2     		uxtb	r2, r3
+ 1360 0016 C9B2     		uxtb	r1, r1
+ 1361 0018 58BF     		it	pl
+ 1362 001a 4A42     		rsbpl	r2, r1, #0
+ 1363              		.loc 1 363 18 discriminator 3 view .LVU352
+ 1364 001c 40A9     		add	r1, sp, #256
+ 1365 001e CA54     		strb	r2, [r1, r3]
+ 362:User/Src/flash.c ****         w_buf[i] = i % 256;
+ 1366              		.loc 1 362 43 is_stmt 1 discriminator 3 view .LVU353
+ 362:User/Src/flash.c ****         w_buf[i] = i % 256;
+ 1367              		.loc 1 362 44 is_stmt 0 discriminator 3 view .LVU354
+ 1368 0020 0133     		adds	r3, r3, #1
+ 1369              	.LVL104:
+ 1370              	.L114:
+ 362:User/Src/flash.c ****         w_buf[i] = i % 256;
+ 1371              		.loc 1 362 21 is_stmt 1 discriminator 1 view .LVU355
+ 362:User/Src/flash.c ****         w_buf[i] = i % 256;
+ 1372              		.loc 1 362 5 is_stmt 0 discriminator 1 view .LVU356
+ 1373 0022 FF2B     		cmp	r3, #255
+ 1374 0024 F5D9     		bls	.L115
+ 1375              	.LBE3:
+ 364:User/Src/flash.c **** 
+ 365:User/Src/flash.c ****     if (W25Q64_PageWrite(test_addr, w_buf, W25Q64_PAGE_SIZE) != 0) return 1;
+ 1376              		.loc 1 365 5 is_stmt 1 view .LVU357
+ 1377              		.loc 1 365 9 is_stmt 0 view .LVU358
+ 1378 0026 4FF48072 		mov	r2, #256
+ 1379 002a 0DEB0201 		add	r1, sp, r2
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 34
+
+
+ 1380 002e 2046     		mov	r0, r4
+ 1381 0030 FFF7FEFF 		bl	W25Q64_PageWrite
+ 1382              	.LVL105:
+ 1383              		.loc 1 365 8 view .LVU359
+ 1384 0034 0546     		mov	r5, r0
+ 1385 0036 08B1     		cbz	r0, .L122
+ 1386              		.loc 1 365 75 view .LVU360
+ 1387 0038 0125     		movs	r5, #1
+ 1388 003a 11E0     		b	.L113
+ 1389              	.L122:
+ 366:User/Src/flash.c ****     W25Q64_ReadData(test_addr, r_buf, W25Q64_PAGE_SIZE);
+ 1390              		.loc 1 366 5 is_stmt 1 view .LVU361
+ 1391 003c 4FF48072 		mov	r2, #256
+ 1392 0040 6946     		mov	r1, sp
+ 1393 0042 2046     		mov	r0, r4
+ 1394 0044 FFF7FEFF 		bl	W25Q64_ReadData
+ 1395              	.LVL106:
+ 367:User/Src/flash.c **** 
+ 368:User/Src/flash.c ****     for (int i = 0; i < W25Q64_PAGE_SIZE; i++)
+ 1396              		.loc 1 368 5 view .LVU362
+ 1397              	.LBB4:
+ 1398              		.loc 1 368 10 view .LVU363
+ 1399              		.loc 1 368 14 is_stmt 0 view .LVU364
+ 1400 0048 0023     		movs	r3, #0
+ 1401              	.LVL107:
+ 1402              	.L116:
+ 1403              		.loc 1 368 21 is_stmt 1 discriminator 1 view .LVU365
+ 1404              		.loc 1 368 5 is_stmt 0 discriminator 1 view .LVU366
+ 1405 004a FF2B     		cmp	r3, #255
+ 1406 004c 08D8     		bhi	.L113
+ 369:User/Src/flash.c ****     {
+ 370:User/Src/flash.c ****         if (r_buf[i] != w_buf[i])
+ 1407              		.loc 1 370 9 is_stmt 1 view .LVU367
+ 1408              		.loc 1 370 18 is_stmt 0 view .LVU368
+ 1409 004e 1DF80310 		ldrb	r1, [sp, r3]	@ zero_extendqisi2
+ 1410              		.loc 1 370 30 view .LVU369
+ 1411 0052 40AA     		add	r2, sp, #256
+ 1412 0054 D25C     		ldrb	r2, [r2, r3]	@ zero_extendqisi2
+ 1413              		.loc 1 370 12 view .LVU370
+ 1414 0056 9142     		cmp	r1, r2
+ 1415 0058 06D1     		bne	.L120
+ 368:User/Src/flash.c ****     {
+ 1416              		.loc 1 368 43 is_stmt 1 discriminator 2 view .LVU371
+ 368:User/Src/flash.c ****     {
+ 1417              		.loc 1 368 44 is_stmt 0 discriminator 2 view .LVU372
+ 1418 005a 0133     		adds	r3, r3, #1
+ 1419              	.LVL108:
+ 368:User/Src/flash.c ****     {
+ 1420              		.loc 1 368 44 discriminator 2 view .LVU373
+ 1421 005c F5E7     		b	.L116
+ 1422              	.LVL109:
+ 1423              	.L118:
+ 368:User/Src/flash.c ****     {
+ 1424              		.loc 1 368 44 discriminator 2 view .LVU374
+ 1425              	.LBE4:
+ 360:User/Src/flash.c **** 
+ 1426              		.loc 1 360 52 view .LVU375
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 35
+
+
+ 1427 005e 0125     		movs	r5, #1
+ 1428              	.L113:
+ 371:User/Src/flash.c ****         {
+ 372:User/Src/flash.c ****             FLASH_LOG("[flash] 页校验失败\r\n");
+ 373:User/Src/flash.c ****             return 1;
+ 374:User/Src/flash.c ****         }
+ 375:User/Src/flash.c ****     }
+ 376:User/Src/flash.c **** 
+ 377:User/Src/flash.c ****     FLASH_LOG("[flash] 页测试通过\r\n");
+ 378:User/Src/flash.c ****     return 0;
+ 379:User/Src/flash.c **** }
+ 1429              		.loc 1 379 1 view .LVU376
+ 1430 0060 2846     		mov	r0, r5
+ 1431 0062 0DF5017D 		add	sp, sp, #516
+ 1432              	.LCFI42:
+ 1433              		.cfi_remember_state
+ 1434              		.cfi_def_cfa_offset 12
+ 1435              		@ sp needed
+ 1436 0066 30BD     		pop	{r4, r5, pc}
+ 1437              	.LVL110:
+ 1438              	.L120:
+ 1439              	.LCFI43:
+ 1440              		.cfi_restore_state
+ 1441              	.LBB5:
+ 373:User/Src/flash.c ****         }
+ 1442              		.loc 1 373 20 view .LVU377
+ 1443 0068 0125     		movs	r5, #1
+ 1444 006a F9E7     		b	.L113
+ 1445              	.LBE5:
+ 1446              		.cfi_endproc
+ 1447              	.LFE79:
+ 1449              		.section	.text.W25Q64_SectorWriteTest,"ax",%progbits
+ 1450              		.align	1
+ 1451              		.global	W25Q64_SectorWriteTest
+ 1452              		.syntax unified
+ 1453              		.thumb
+ 1454              		.thumb_func
+ 1456              	W25Q64_SectorWriteTest:
+ 1457              	.LVL111:
+ 1458              	.LFB80:
+ 380:User/Src/flash.c **** 
+ 381:User/Src/flash.c **** /**
+ 382:User/Src/flash.c ****  * @brief  扇区测试
+ 383:User/Src/flash.c ****  */
+ 384:User/Src/flash.c **** uint8_t W25Q64_SectorWriteTest(uint32_t test_addr)
+ 385:User/Src/flash.c **** {
+ 1459              		.loc 1 385 1 is_stmt 1 view -0
+ 1460              		.cfi_startproc
+ 1461              		@ args = 0, pretend = 0, frame = 4104
+ 1462              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1463              		.loc 1 385 1 is_stmt 0 view .LVU379
+ 1464 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 1465              	.LCFI44:
+ 1466              		.cfi_def_cfa_offset 24
+ 1467              		.cfi_offset 4, -24
+ 1468              		.cfi_offset 5, -20
+ 1469              		.cfi_offset 6, -16
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 36
+
+
+ 1470              		.cfi_offset 7, -12
+ 1471              		.cfi_offset 8, -8
+ 1472              		.cfi_offset 14, -4
+ 1473 0004 ADF5805D 		sub	sp, sp, #4096
+ 1474              	.LCFI45:
+ 1475              		.cfi_def_cfa_offset 4120
+ 1476 0008 82B0     		sub	sp, sp, #8
+ 1477              	.LCFI46:
+ 1478              		.cfi_def_cfa_offset 4128
+ 1479 000a 0746     		mov	r7, r0
+ 386:User/Src/flash.c ****     uint8_t w_buf[W25Q64_SECTOR_SIZE];
+ 1480              		.loc 1 386 5 is_stmt 1 view .LVU380
+ 387:User/Src/flash.c ****     uint8_t r_buf[4];
+ 1481              		.loc 1 387 5 view .LVU381
+ 388:User/Src/flash.c **** 
+ 389:User/Src/flash.c ****     FLASH_LOG("\r\n===== 扇区测试 =====\r\n");
+ 1482              		.loc 1 389 5 view .LVU382
+ 1483              		.loc 1 389 5 view .LVU383
+ 1484              		.loc 1 389 5 view .LVU384
+ 390:User/Src/flash.c **** 
+ 391:User/Src/flash.c ****     if (W25Q64_EraseSector(test_addr) != 0) return 1;
+ 1485              		.loc 1 391 5 view .LVU385
+ 1486              		.loc 1 391 9 is_stmt 0 view .LVU386
+ 1487 000c FFF7FEFF 		bl	W25Q64_EraseSector
+ 1488              	.LVL112:
+ 1489              		.loc 1 391 8 view .LVU387
+ 1490 0010 38B1     		cbz	r0, .L134
+ 1491              		.loc 1 391 52 view .LVU388
+ 1492 0012 4FF00108 		mov	r8, #1
+ 1493              	.L124:
+ 392:User/Src/flash.c ****     memset(w_buf, 0xAA, W25Q64_SECTOR_SIZE);
+ 393:User/Src/flash.c ****     w_buf[1024] = 0x55;
+ 394:User/Src/flash.c ****     w_buf[2048] = 0x66;
+ 395:User/Src/flash.c ****     w_buf[3072] = 0x77;
+ 396:User/Src/flash.c **** 
+ 397:User/Src/flash.c ****     uint32_t addr = test_addr;
+ 398:User/Src/flash.c ****     uint16_t remain = W25Q64_SECTOR_SIZE;
+ 399:User/Src/flash.c ****     while (remain > 0)
+ 400:User/Src/flash.c ****     {
+ 401:User/Src/flash.c ****         uint16_t l = (remain > W25Q64_PAGE_SIZE) ? W25Q64_PAGE_SIZE : remain;
+ 402:User/Src/flash.c ****         if (W25Q64_PageWrite(addr, w_buf + (addr - test_addr), l) != 0)
+ 403:User/Src/flash.c ****             return 1;
+ 404:User/Src/flash.c ****         addr += l;
+ 405:User/Src/flash.c ****         remain -= l;
+ 406:User/Src/flash.c ****     }
+ 407:User/Src/flash.c **** 
+ 408:User/Src/flash.c ****     W25Q64_ReadData(test_addr + 1024, &r_buf[0], 1);
+ 409:User/Src/flash.c ****     W25Q64_ReadData(test_addr + 2048, &r_buf[1], 1);
+ 410:User/Src/flash.c ****     W25Q64_ReadData(test_addr + 3072, &r_buf[2], 1);
+ 411:User/Src/flash.c ****     W25Q64_ReadData(test_addr + 4095, &r_buf[3], 1);
+ 412:User/Src/flash.c **** 
+ 413:User/Src/flash.c ****     if (r_buf[0] != 0x55 || r_buf[1] != 0x66 || r_buf[2] != 0x77 || r_buf[3] != 0xAA)
+ 414:User/Src/flash.c ****     {
+ 415:User/Src/flash.c ****         FLASH_LOG("[flash] 扇区校验失败\r\n");
+ 416:User/Src/flash.c ****         return 1;
+ 417:User/Src/flash.c ****     }
+ 418:User/Src/flash.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 37
+
+
+ 419:User/Src/flash.c ****     FLASH_LOG("[flash] 扇区测试通过\r\n");
+ 420:User/Src/flash.c ****     return 0;
+ 421:User/Src/flash.c **** }
+ 1494              		.loc 1 421 1 view .LVU389
+ 1495 0016 4046     		mov	r0, r8
+ 1496 0018 0DF5805D 		add	sp, sp, #4096
+ 1497 001c 02B0     		add	sp, sp, #8
+ 1498              	.LCFI47:
+ 1499              		.cfi_remember_state
+ 1500              		.cfi_def_cfa_offset 24
+ 1501              		@ sp needed
+ 1502 001e BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 1503              	.LVL113:
+ 1504              	.L134:
+ 1505              	.LCFI48:
+ 1506              		.cfi_restore_state
+ 1507              		.loc 1 421 1 view .LVU390
+ 1508 0022 8046     		mov	r8, r0
+ 392:User/Src/flash.c ****     memset(w_buf, 0xAA, W25Q64_SECTOR_SIZE);
+ 1509              		.loc 1 392 5 is_stmt 1 view .LVU391
+ 1510 0024 4FF48052 		mov	r2, #4096
+ 1511 0028 AA21     		movs	r1, #170
+ 1512 002a 02A8     		add	r0, sp, #8
+ 1513 002c FFF7FEFF 		bl	memset
+ 1514              	.LVL114:
+ 393:User/Src/flash.c ****     w_buf[2048] = 0x66;
+ 1515              		.loc 1 393 5 view .LVU392
+ 393:User/Src/flash.c ****     w_buf[2048] = 0x66;
+ 1516              		.loc 1 393 17 is_stmt 0 view .LVU393
+ 1517 0030 5523     		movs	r3, #85
+ 1518 0032 8DF80834 		strb	r3, [sp, #1032]
+ 394:User/Src/flash.c ****     w_buf[3072] = 0x77;
+ 1519              		.loc 1 394 5 is_stmt 1 view .LVU394
+ 394:User/Src/flash.c ****     w_buf[3072] = 0x77;
+ 1520              		.loc 1 394 17 is_stmt 0 view .LVU395
+ 1521 0036 6623     		movs	r3, #102
+ 1522 0038 8DF80838 		strb	r3, [sp, #2056]
+ 395:User/Src/flash.c **** 
+ 1523              		.loc 1 395 5 is_stmt 1 view .LVU396
+ 395:User/Src/flash.c **** 
+ 1524              		.loc 1 395 17 is_stmt 0 view .LVU397
+ 1525 003c 7723     		movs	r3, #119
+ 1526 003e 8DF8083C 		strb	r3, [sp, #3080]
+ 397:User/Src/flash.c ****     uint16_t remain = W25Q64_SECTOR_SIZE;
+ 1527              		.loc 1 397 5 is_stmt 1 view .LVU398
+ 1528              	.LVL115:
+ 398:User/Src/flash.c ****     while (remain > 0)
+ 1529              		.loc 1 398 5 view .LVU399
+ 399:User/Src/flash.c ****     {
+ 1530              		.loc 1 399 5 view .LVU400
+ 397:User/Src/flash.c ****     uint16_t remain = W25Q64_SECTOR_SIZE;
+ 1531              		.loc 1 397 14 is_stmt 0 view .LVU401
+ 1532 0042 3D46     		mov	r5, r7
+ 398:User/Src/flash.c ****     while (remain > 0)
+ 1533              		.loc 1 398 14 view .LVU402
+ 1534 0044 4FF48054 		mov	r4, #4096
+ 1535              	.LVL116:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 38
+
+
+ 1536              	.L125:
+ 399:User/Src/flash.c ****     {
+ 1537              		.loc 1 399 11 is_stmt 1 view .LVU403
+ 1538 0048 8CB1     		cbz	r4, .L135
+ 1539              	.LBB6:
+ 401:User/Src/flash.c ****         if (W25Q64_PageWrite(addr, w_buf + (addr - test_addr), l) != 0)
+ 1540              		.loc 1 401 9 view .LVU404
+ 401:User/Src/flash.c ****         if (W25Q64_PageWrite(addr, w_buf + (addr - test_addr), l) != 0)
+ 1541              		.loc 1 401 18 is_stmt 0 view .LVU405
+ 1542 004a 2646     		mov	r6, r4
+ 1543 004c B4F5807F 		cmp	r4, #256
+ 1544 0050 28BF     		it	cs
+ 1545 0052 4FF48076 		movcs	r6, #256
+ 1546              	.LVL117:
+ 402:User/Src/flash.c ****             return 1;
+ 1547              		.loc 1 402 9 is_stmt 1 view .LVU406
+ 402:User/Src/flash.c ****             return 1;
+ 1548              		.loc 1 402 50 is_stmt 0 view .LVU407
+ 1549 0056 E91B     		subs	r1, r5, r7
+ 402:User/Src/flash.c ****             return 1;
+ 1550              		.loc 1 402 13 view .LVU408
+ 1551 0058 3246     		mov	r2, r6
+ 1552 005a 02AB     		add	r3, sp, #8
+ 1553 005c 1944     		add	r1, r1, r3
+ 1554 005e 2846     		mov	r0, r5
+ 1555 0060 FFF7FEFF 		bl	W25Q64_PageWrite
+ 1556              	.LVL118:
+ 402:User/Src/flash.c ****             return 1;
+ 1557              		.loc 1 402 12 view .LVU409
+ 1558 0064 88BB     		cbnz	r0, .L128
+ 404:User/Src/flash.c ****         remain -= l;
+ 1559              		.loc 1 404 9 is_stmt 1 view .LVU410
+ 404:User/Src/flash.c ****         remain -= l;
+ 1560              		.loc 1 404 14 is_stmt 0 view .LVU411
+ 1561 0066 3544     		add	r5, r5, r6
+ 1562              	.LVL119:
+ 405:User/Src/flash.c ****     }
+ 1563              		.loc 1 405 9 is_stmt 1 view .LVU412
+ 405:User/Src/flash.c ****     }
+ 1564              		.loc 1 405 16 is_stmt 0 view .LVU413
+ 1565 0068 A41B     		subs	r4, r4, r6
+ 1566              	.LVL120:
+ 405:User/Src/flash.c ****     }
+ 1567              		.loc 1 405 16 view .LVU414
+ 1568 006a A4B2     		uxth	r4, r4
+ 1569              	.LVL121:
+ 405:User/Src/flash.c ****     }
+ 1570              		.loc 1 405 16 view .LVU415
+ 1571 006c ECE7     		b	.L125
+ 1572              	.LVL122:
+ 1573              	.L135:
+ 405:User/Src/flash.c ****     }
+ 1574              		.loc 1 405 16 view .LVU416
+ 1575              	.LBE6:
+ 408:User/Src/flash.c ****     W25Q64_ReadData(test_addr + 2048, &r_buf[1], 1);
+ 1576              		.loc 1 408 5 is_stmt 1 view .LVU417
+ 1577 006e 0122     		movs	r2, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 39
+
+
+ 1578 0070 01A9     		add	r1, sp, #4
+ 1579 0072 07F58060 		add	r0, r7, #1024
+ 1580 0076 FFF7FEFF 		bl	W25Q64_ReadData
+ 1581              	.LVL123:
+ 409:User/Src/flash.c ****     W25Q64_ReadData(test_addr + 3072, &r_buf[2], 1);
+ 1582              		.loc 1 409 5 view .LVU418
+ 1583 007a 0122     		movs	r2, #1
+ 1584 007c 0DF10501 		add	r1, sp, #5
+ 1585 0080 07F50060 		add	r0, r7, #2048
+ 1586 0084 FFF7FEFF 		bl	W25Q64_ReadData
+ 1587              	.LVL124:
+ 410:User/Src/flash.c ****     W25Q64_ReadData(test_addr + 4095, &r_buf[3], 1);
+ 1588              		.loc 1 410 5 view .LVU419
+ 1589 0088 0122     		movs	r2, #1
+ 1590 008a 0DF10601 		add	r1, sp, #6
+ 1591 008e 07F54060 		add	r0, r7, #3072
+ 1592 0092 FFF7FEFF 		bl	W25Q64_ReadData
+ 1593              	.LVL125:
+ 411:User/Src/flash.c **** 
+ 1594              		.loc 1 411 5 view .LVU420
+ 1595 0096 0122     		movs	r2, #1
+ 1596 0098 0DF10701 		add	r1, sp, #7
+ 1597 009c 07F6FF70 		addw	r0, r7, #4095
+ 1598 00a0 FFF7FEFF 		bl	W25Q64_ReadData
+ 1599              	.LVL126:
+ 413:User/Src/flash.c ****     {
+ 1600              		.loc 1 413 5 view .LVU421
+ 413:User/Src/flash.c ****     {
+ 1601              		.loc 1 413 14 is_stmt 0 view .LVU422
+ 1602 00a4 9DF80430 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 413:User/Src/flash.c ****     {
+ 1603              		.loc 1 413 8 view .LVU423
+ 1604 00a8 552B     		cmp	r3, #85
+ 1605 00aa 11D1     		bne	.L129
+ 413:User/Src/flash.c ****     {
+ 1606              		.loc 1 413 34 discriminator 1 view .LVU424
+ 1607 00ac 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 413:User/Src/flash.c ****     {
+ 1608              		.loc 1 413 26 discriminator 1 view .LVU425
+ 1609 00b0 662B     		cmp	r3, #102
+ 1610 00b2 10D1     		bne	.L130
+ 413:User/Src/flash.c ****     {
+ 1611              		.loc 1 413 54 discriminator 2 view .LVU426
+ 1612 00b4 9DF80630 		ldrb	r3, [sp, #6]	@ zero_extendqisi2
+ 413:User/Src/flash.c ****     {
+ 1613              		.loc 1 413 46 discriminator 2 view .LVU427
+ 1614 00b8 772B     		cmp	r3, #119
+ 1615 00ba 0FD1     		bne	.L131
+ 413:User/Src/flash.c ****     {
+ 1616              		.loc 1 413 74 discriminator 3 view .LVU428
+ 1617 00bc 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 413:User/Src/flash.c ****     {
+ 1618              		.loc 1 413 66 discriminator 3 view .LVU429
+ 1619 00c0 AA2B     		cmp	r3, #170
+ 1620 00c2 A8D0     		beq	.L124
+ 416:User/Src/flash.c ****     }
+ 1621              		.loc 1 416 16 view .LVU430
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 40
+
+
+ 1622 00c4 4FF00108 		mov	r8, #1
+ 1623 00c8 A5E7     		b	.L124
+ 1624              	.LVL127:
+ 1625              	.L128:
+ 1626              	.LBB7:
+ 403:User/Src/flash.c ****         addr += l;
+ 1627              		.loc 1 403 20 view .LVU431
+ 1628 00ca 4FF00108 		mov	r8, #1
+ 1629 00ce A2E7     		b	.L124
+ 1630              	.LVL128:
+ 1631              	.L129:
+ 403:User/Src/flash.c ****         addr += l;
+ 1632              		.loc 1 403 20 view .LVU432
+ 1633              	.LBE7:
+ 416:User/Src/flash.c ****     }
+ 1634              		.loc 1 416 16 view .LVU433
+ 1635 00d0 4FF00108 		mov	r8, #1
+ 1636 00d4 9FE7     		b	.L124
+ 1637              	.L130:
+ 1638 00d6 4FF00108 		mov	r8, #1
+ 1639 00da 9CE7     		b	.L124
+ 1640              	.L131:
+ 1641 00dc 4FF00108 		mov	r8, #1
+ 1642 00e0 99E7     		b	.L124
+ 1643              		.cfi_endproc
+ 1644              	.LFE80:
+ 1646              		.section	.rodata.W25Q64_FullTest.str1.4,"aMS",%progbits,1
+ 1647              		.align	2
+ 1648              	.LC1:
+ 1649 0000 0D0A3D3D 		.ascii	"\015\012====================================\015\012"
+ 1649      3D3D3D3D 
+ 1649      3D3D3D3D 
+ 1649      3D3D3D3D 
+ 1649      3D3D3D3D 
+ 1650 0028 00       		.ascii	"\000"
+ 1651 0029 000000   		.align	2
+ 1652              	.LC2:
+ 1653 002c 20202020 		.ascii	"        W25Q64 \310\253\271\246\304\334\262\342\312"
+ 1653      20202020 
+ 1653      57323551 
+ 1653      363420C8 
+ 1653      ABB9A6C4 
+ 1654 0044 D4202020 		.ascii	"\324        \015\012\000"
+ 1654      20202020 
+ 1654      200D0A00 
+ 1655              		.align	2
+ 1656              	.LC3:
+ 1657 0050 3D3D3D3D 		.ascii	"====================================\015\012\000"
+ 1657      3D3D3D3D 
+ 1657      3D3D3D3D 
+ 1657      3D3D3D3D 
+ 1657      3D3D3D3D 
+ 1658 0077 00       		.align	2
+ 1659              	.LC4:
+ 1660 0078 20202020 		.ascii	"        \313\371\323\320\262\342\312\324\310\253\262"
+ 1660      20202020 
+ 1660      CBF9D3D0 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 41
+
+
+ 1660      B2E2CAD4 
+ 1660      C8ABB2
+ 1661 008b BFCDA8B9 		.ascii	"\277\315\250\271\375\243\241        \015\012\000"
+ 1661      FDA3A120 
+ 1661      20202020 
+ 1661      2020200D 
+ 1661      0A00
+ 1662              		.section	.text.W25Q64_FullTest,"ax",%progbits
+ 1663              		.align	1
+ 1664              		.global	W25Q64_FullTest
+ 1665              		.syntax unified
+ 1666              		.thumb
+ 1667              		.thumb_func
+ 1669              	W25Q64_FullTest:
+ 1670              	.LFB81:
+ 422:User/Src/flash.c **** 
+ 423:User/Src/flash.c **** /**
+ 424:User/Src/flash.c ****  * @brief  全功能测试入口
+ 425:User/Src/flash.c ****  */
+ 426:User/Src/flash.c **** uint8_t W25Q64_FullTest(void)
+ 427:User/Src/flash.c **** {
+ 1671              		.loc 1 427 1 is_stmt 1 view -0
+ 1672              		.cfi_startproc
+ 1673              		@ args = 0, pretend = 0, frame = 0
+ 1674              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1675 0000 10B5     		push	{r4, lr}
+ 1676              	.LCFI49:
+ 1677              		.cfi_def_cfa_offset 8
+ 1678              		.cfi_offset 4, -8
+ 1679              		.cfi_offset 14, -4
+ 428:User/Src/flash.c ****     UsbPrintf("\r\n====================================\r\n");
+ 1680              		.loc 1 428 5 view .LVU435
+ 1681 0002 1648     		ldr	r0, .L147
+ 1682 0004 FFF7FEFF 		bl	UsbPrintf
+ 1683              	.LVL129:
+ 429:User/Src/flash.c ****     UsbPrintf("        W25Q64 全功能测试        \r\n");
+ 1684              		.loc 1 429 5 view .LVU436
+ 1685 0008 1548     		ldr	r0, .L147+4
+ 1686 000a FFF7FEFF 		bl	UsbPrintf
+ 1687              	.LVL130:
+ 430:User/Src/flash.c ****     UsbPrintf("====================================\r\n");
+ 1688              		.loc 1 430 5 view .LVU437
+ 1689 000e 1548     		ldr	r0, .L147+8
+ 1690 0010 FFF7FEFF 		bl	UsbPrintf
+ 1691              	.LVL131:
+ 431:User/Src/flash.c **** 
+ 432:User/Src/flash.c ****     if (W25Q64_SelfTest() != 0) return 1;
+ 1692              		.loc 1 432 5 view .LVU438
+ 1693              		.loc 1 432 9 is_stmt 0 view .LVU439
+ 1694 0014 FFF7FEFF 		bl	W25Q64_SelfTest
+ 1695              	.LVL132:
+ 1696              		.loc 1 432 8 view .LVU440
+ 1697 0018 10B1     		cbz	r0, .L143
+ 1698              		.loc 1 432 40 view .LVU441
+ 1699 001a 0124     		movs	r4, #1
+ 1700              	.L137:
+ 433:User/Src/flash.c ****     if (W25Q64_SingleByteTest(0x000000) != 0) return 1;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 42
+
+
+ 434:User/Src/flash.c ****     if (W25Q64_PageWriteTest(0x000100) != 0) return 1;
+ 435:User/Src/flash.c ****     if (W25Q64_SectorWriteTest(0x001000) != 0) return 1;
+ 436:User/Src/flash.c **** 
+ 437:User/Src/flash.c ****     UsbPrintf("\r\n====================================\r\n");
+ 438:User/Src/flash.c ****     UsbPrintf("        所有测试全部通过！        \r\n");
+ 439:User/Src/flash.c ****     UsbPrintf("====================================\r\n");
+ 440:User/Src/flash.c ****     return 0;
+ 441:User/Src/flash.c **** }...
+ 1701              		.loc 1 441 1 view .LVU442
+ 1702 001c 2046     		mov	r0, r4
+ 1703 001e 10BD     		pop	{r4, pc}
+ 1704              	.L143:
+ 433:User/Src/flash.c ****     if (W25Q64_SingleByteTest(0x000000) != 0) return 1;
+ 1705              		.loc 1 433 5 is_stmt 1 view .LVU443
+ 433:User/Src/flash.c ****     if (W25Q64_SingleByteTest(0x000000) != 0) return 1;
+ 1706              		.loc 1 433 9 is_stmt 0 view .LVU444
+ 1707 0020 FFF7FEFF 		bl	W25Q64_SingleByteTest
+ 1708              	.LVL133:
+ 433:User/Src/flash.c ****     if (W25Q64_SingleByteTest(0x000000) != 0) return 1;
+ 1709              		.loc 1 433 8 view .LVU445
+ 1710 0024 08B1     		cbz	r0, .L144
+ 433:User/Src/flash.c ****     if (W25Q64_SingleByteTest(0x000000) != 0) return 1;
+ 1711              		.loc 1 433 54 view .LVU446
+ 1712 0026 0124     		movs	r4, #1
+ 1713 0028 F8E7     		b	.L137
+ 1714              	.L144:
+ 434:User/Src/flash.c ****     if (W25Q64_PageWriteTest(0x000100) != 0) return 1;
+ 1715              		.loc 1 434 5 is_stmt 1 view .LVU447
+ 434:User/Src/flash.c ****     if (W25Q64_PageWriteTest(0x000100) != 0) return 1;
+ 1716              		.loc 1 434 9 is_stmt 0 view .LVU448
+ 1717 002a 4FF48070 		mov	r0, #256
+ 1718 002e FFF7FEFF 		bl	W25Q64_PageWriteTest
+ 1719              	.LVL134:
+ 434:User/Src/flash.c ****     if (W25Q64_PageWriteTest(0x000100) != 0) return 1;
+ 1720              		.loc 1 434 8 view .LVU449
+ 1721 0032 08B1     		cbz	r0, .L145
+ 434:User/Src/flash.c ****     if (W25Q64_PageWriteTest(0x000100) != 0) return 1;
+ 1722              		.loc 1 434 53 view .LVU450
+ 1723 0034 0124     		movs	r4, #1
+ 1724 0036 F1E7     		b	.L137
+ 1725              	.L145:
+ 435:User/Src/flash.c ****     if (W25Q64_SectorWriteTest(0x001000) != 0) return 1;
+ 1726              		.loc 1 435 5 is_stmt 1 view .LVU451
+ 435:User/Src/flash.c ****     if (W25Q64_SectorWriteTest(0x001000) != 0) return 1;
+ 1727              		.loc 1 435 9 is_stmt 0 view .LVU452
+ 1728 0038 4FF48050 		mov	r0, #4096
+ 1729 003c FFF7FEFF 		bl	W25Q64_SectorWriteTest
+ 1730              	.LVL135:
+ 435:User/Src/flash.c ****     if (W25Q64_SectorWriteTest(0x001000) != 0) return 1;
+ 1731              		.loc 1 435 8 view .LVU453
+ 1732 0040 0446     		mov	r4, r0
+ 1733 0042 08B1     		cbz	r0, .L146
+ 435:User/Src/flash.c ****     if (W25Q64_SectorWriteTest(0x001000) != 0) return 1;
+ 1734              		.loc 1 435 55 view .LVU454
+ 1735 0044 0124     		movs	r4, #1
+ 1736 0046 E9E7     		b	.L137
+ 1737              	.L146:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 43
+
+
+ 437:User/Src/flash.c ****     UsbPrintf("\r\n====================================\r\n");
+ 1738              		.loc 1 437 5 is_stmt 1 view .LVU455
+ 1739 0048 0448     		ldr	r0, .L147
+ 1740 004a FFF7FEFF 		bl	UsbPrintf
+ 1741              	.LVL136:
+ 438:User/Src/flash.c ****     UsbPrintf("        所有测试全部通过！        \r\n");
+ 1742              		.loc 1 438 5 view .LVU456
+ 1743 004e 0648     		ldr	r0, .L147+12
+ 1744 0050 FFF7FEFF 		bl	UsbPrintf
+ 1745              	.LVL137:
+ 439:User/Src/flash.c ****     UsbPrintf("====================================\r\n");
+ 1746              		.loc 1 439 5 view .LVU457
+ 1747 0054 0348     		ldr	r0, .L147+8
+ 1748 0056 FFF7FEFF 		bl	UsbPrintf
+ 1749              	.LVL138:
+ 440:User/Src/flash.c ****     return 0;
+ 1750              		.loc 1 440 5 view .LVU458
+ 440:User/Src/flash.c ****     return 0;
+ 1751              		.loc 1 440 12 is_stmt 0 view .LVU459
+ 1752 005a DFE7     		b	.L137
+ 1753              	.L148:
+ 1754              		.align	2
+ 1755              	.L147:
+ 1756 005c 00000000 		.word	.LC1
+ 1757 0060 2C000000 		.word	.LC2
+ 1758 0064 50000000 		.word	.LC3
+ 1759 0068 78000000 		.word	.LC4
+ 1760              		.cfi_endproc
+ 1761              	.LFE81:
+ 1763              		.section	.rodata
+ 1764              		.align	2
+ 1765              		.set	.LANCHOR0,. + 0
+ 1766              	.LC0:
+ 1767 0000 0000     		.ascii	"\000\000"
+ 1768 0002 00       		.space	1
+ 1769              		.text
+ 1770              	.Letext0:
+ 1771              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1772              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1773              		.file 4 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 1774              		.file 5 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 1775              		.file 6 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h"
+ 1776              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 1777              		.file 8 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h"
+ 1778              		.file 9 "Core/Inc/spi.h"
+ 1779              		.file 10 "Core/Inc/main.h"
+ 1780              		.file 11 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-non
+ 1781              		.file 12 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s 			page 44
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 flash.c
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:18     .text.W25Q64_ReadStatus:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:24     .text.W25Q64_ReadStatus:00000000 W25Q64_ReadStatus
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:115    .text.W25Q64_ReadStatus:0000006c $d
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:121    .text.W25Q64_WaitBusy:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:127    .text.W25Q64_WaitBusy:00000000 W25Q64_WaitBusy
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:181    .text.W25Q64_WriteEnable:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:187    .text.W25Q64_WriteEnable:00000000 W25Q64_WriteEnable
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:254    .text.W25Q64_WriteEnable:00000048 $d
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:260    .text.W25Q64_WriteDisable:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:266    .text.W25Q64_WriteDisable:00000000 W25Q64_WriteDisable
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:333    .text.W25Q64_WriteDisable:00000048 $d
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:339    .text.W25Q64_ReadDeviceID:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:345    .text.W25Q64_ReadDeviceID:00000000 W25Q64_ReadDeviceID
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:453    .text.W25Q64_ReadDeviceID:00000088 $d
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:460    .text.W25Q64_PageWrite:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:466    .text.W25Q64_PageWrite:00000000 W25Q64_PageWrite
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:641    .text.W25Q64_PageWrite:000000c8 $d
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:647    .text.W25Q64_ReadData:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:653    .text.W25Q64_ReadData:00000000 W25Q64_ReadData
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:792    .text.W25Q64_ReadData:00000094 $d
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:798    .text.W25Q64_EraseSector:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:804    .text.W25Q64_EraseSector:00000000 W25Q64_EraseSector
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:957    .text.W25Q64_EraseSector:000000a4 $d
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:963    .text.W25Q64_ChipErase:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:969    .text.W25Q64_ChipErase:00000000 W25Q64_ChipErase
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1101   .text.W25Q64_ChipErase:00000088 $d
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1107   .text.W25Q64_SelfTest:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1113   .text.W25Q64_SelfTest:00000000 W25Q64_SelfTest
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1221   .text.W25Q64_SelfTest:00000064 $d
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1228   .text.W25Q64_SingleByteTest:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1234   .text.W25Q64_SingleByteTest:00000000 W25Q64_SingleByteTest
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1315   .text.W25Q64_PageWriteTest:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1321   .text.W25Q64_PageWriteTest:00000000 W25Q64_PageWriteTest
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1450   .text.W25Q64_SectorWriteTest:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1456   .text.W25Q64_SectorWriteTest:00000000 W25Q64_SectorWriteTest
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1647   .rodata.W25Q64_FullTest.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1663   .text.W25Q64_FullTest:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1669   .text.W25Q64_FullTest:00000000 W25Q64_FullTest
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1756   .text.W25Q64_FullTest:0000005c $d
+C:\Users\84759\AppData\Local\Temp\ccQrhIoQ.s:1764   .rodata:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+HAL_SPI_Transmit
+HAL_SPI_Receive
+hspi1
+HAL_Delay
+memset
+UsbPrintf
