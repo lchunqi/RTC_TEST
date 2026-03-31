@@ -1,0 +1,966 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"tool.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.delay_us,"ax",%progbits
+  18              		.align	1
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  23              	delay_us:
+  24              	.LVL0:
+  25              	.LFB68:
+  26              		.file 1 "User/Src/tool.c"
+   1:User/Src/tool.c **** #include "tool.h"
+   2:User/Src/tool.c **** 
+   3:User/Src/tool.c **** // //精准延时（72MHz）//循环转圈
+   4:User/Src/tool.c **** static void delay_us(uint32_t us)
+   5:User/Src/tool.c **** {
+  27              		.loc 1 5 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+   6:User/Src/tool.c ****     uint32_t count = us * 8;
+  32              		.loc 1 6 5 view .LVU1
+  33              		.loc 1 6 14 is_stmt 0 view .LVU2
+  34 0000 C000     		lsls	r0, r0, #3
+  35              	.LVL1:
+   7:User/Src/tool.c ****     while(count--) {__NOP();}
+  36              		.loc 1 7 5 is_stmt 1 view .LVU3
+  37              		.loc 1 7 10 is_stmt 0 view .LVU4
+  38 0002 01E0     		b	.L2
+  39              	.LVL2:
+  40              	.L3:
+  41              		.loc 1 7 21 is_stmt 1 discriminator 2 view .LVU5
+  42              		.syntax unified
+  43              	@ 7 "User/Src/tool.c" 1
+  44 0004 00BF     		nop
+  45              	@ 0 "" 2
+  46              		.loc 1 7 16 is_stmt 0 discriminator 2 view .LVU6
+  47              		.thumb
+  48              		.syntax unified
+  49 0006 1846     		mov	r0, r3
+  50              	.LVL3:
+  51              	.L2:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 2
+
+
+  52              		.loc 1 7 10 is_stmt 1 discriminator 1 view .LVU7
+  53              		.loc 1 7 16 is_stmt 0 discriminator 1 view .LVU8
+  54 0008 431E     		subs	r3, r0, #1
+  55              	.LVL4:
+  56              		.loc 1 7 10 discriminator 1 view .LVU9
+  57 000a 0028     		cmp	r0, #0
+  58 000c FAD1     		bne	.L3
+   8:User/Src/tool.c **** }
+  59              		.loc 1 8 1 view .LVU10
+  60 000e 7047     		bx	lr
+  61              		.cfi_endproc
+  62              	.LFE68:
+  64              		.section	.text.Soft_UART_Init,"ax",%progbits
+  65              		.align	1
+  66              		.global	Soft_UART_Init
+  67              		.syntax unified
+  68              		.thumb
+  69              		.thumb_func
+  71              	Soft_UART_Init:
+  72              	.LFB69:
+   9:User/Src/tool.c **** 
+  10:User/Src/tool.c **** 
+  11:User/Src/tool.c **** void Soft_UART_Init(void)
+  12:User/Src/tool.c **** {
+  73              		.loc 1 12 1 is_stmt 1 view -0
+  74              		.cfi_startproc
+  75              		@ args = 0, pretend = 0, frame = 24
+  76              		@ frame_needed = 0, uses_anonymous_args = 0
+  77 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  78              	.LCFI0:
+  79              		.cfi_def_cfa_offset 20
+  80              		.cfi_offset 4, -20
+  81              		.cfi_offset 5, -16
+  82              		.cfi_offset 6, -12
+  83              		.cfi_offset 7, -8
+  84              		.cfi_offset 14, -4
+  85 0002 87B0     		sub	sp, sp, #28
+  86              	.LCFI1:
+  87              		.cfi_def_cfa_offset 48
+  13:User/Src/tool.c ****     GPIO_InitTypeDef GPIO_InitStruct = {0};
+  88              		.loc 1 13 5 view .LVU12
+  89              		.loc 1 13 22 is_stmt 0 view .LVU13
+  90 0004 0024     		movs	r4, #0
+  91 0006 0294     		str	r4, [sp, #8]
+  92 0008 0394     		str	r4, [sp, #12]
+  93 000a 0494     		str	r4, [sp, #16]
+  94 000c 0594     		str	r4, [sp, #20]
+  14:User/Src/tool.c ****     __HAL_RCC_GPIOB_CLK_ENABLE();
+  95              		.loc 1 14 5 is_stmt 1 view .LVU14
+  96              	.LBB7:
+  97              		.loc 1 14 5 view .LVU15
+  98              		.loc 1 14 5 view .LVU16
+  99 000e 134B     		ldr	r3, .L6
+ 100 0010 9A69     		ldr	r2, [r3, #24]
+ 101 0012 42F00802 		orr	r2, r2, #8
+ 102 0016 9A61     		str	r2, [r3, #24]
+ 103              		.loc 1 14 5 view .LVU17
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 3
+
+
+ 104 0018 9B69     		ldr	r3, [r3, #24]
+ 105 001a 03F00803 		and	r3, r3, #8
+ 106 001e 0193     		str	r3, [sp, #4]
+ 107              		.loc 1 14 5 view .LVU18
+ 108 0020 019B     		ldr	r3, [sp, #4]
+ 109              	.LBE7:
+ 110              		.loc 1 14 5 view .LVU19
+  15:User/Src/tool.c ****     
+  16:User/Src/tool.c ****     // TX初始化
+  17:User/Src/tool.c ****     GPIO_InitStruct.Pin = SOFT_UART_TX_Pin;
+ 111              		.loc 1 17 5 view .LVU20
+ 112              		.loc 1 17 25 is_stmt 0 view .LVU21
+ 113 0022 4FF40057 		mov	r7, #8192
+ 114 0026 0297     		str	r7, [sp, #8]
+  18:User/Src/tool.c ****     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 115              		.loc 1 18 5 is_stmt 1 view .LVU22
+ 116              		.loc 1 18 26 is_stmt 0 view .LVU23
+ 117 0028 0125     		movs	r5, #1
+ 118 002a 0395     		str	r5, [sp, #12]
+  19:User/Src/tool.c ****     GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 119              		.loc 1 19 5 is_stmt 1 view .LVU24
+ 120              		.loc 1 19 26 is_stmt 0 view .LVU25
+ 121 002c 0495     		str	r5, [sp, #16]
+  20:User/Src/tool.c ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+ 122              		.loc 1 20 5 is_stmt 1 view .LVU26
+ 123              		.loc 1 20 27 is_stmt 0 view .LVU27
+ 124 002e 0323     		movs	r3, #3
+ 125 0030 0593     		str	r3, [sp, #20]
+  21:User/Src/tool.c ****     HAL_GPIO_Init(SOFT_UART_TX_GPIO_Port, &GPIO_InitStruct);
+ 126              		.loc 1 21 5 is_stmt 1 view .LVU28
+ 127 0032 0B4E     		ldr	r6, .L6+4
+ 128 0034 02A9     		add	r1, sp, #8
+ 129 0036 3046     		mov	r0, r6
+ 130 0038 FFF7FEFF 		bl	HAL_GPIO_Init
+ 131              	.LVL5:
+  22:User/Src/tool.c ****     
+  23:User/Src/tool.c ****     // RX初始化
+  24:User/Src/tool.c ****     GPIO_InitStruct.Pin = SOFT_UART_RX_Pin;
+ 132              		.loc 1 24 5 view .LVU29
+ 133              		.loc 1 24 25 is_stmt 0 view .LVU30
+ 134 003c 4FF48043 		mov	r3, #16384
+ 135 0040 0293     		str	r3, [sp, #8]
+  25:User/Src/tool.c ****     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 136              		.loc 1 25 5 is_stmt 1 view .LVU31
+ 137              		.loc 1 25 26 is_stmt 0 view .LVU32
+ 138 0042 0394     		str	r4, [sp, #12]
+  26:User/Src/tool.c ****     GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 139              		.loc 1 26 5 is_stmt 1 view .LVU33
+ 140              		.loc 1 26 26 is_stmt 0 view .LVU34
+ 141 0044 0495     		str	r5, [sp, #16]
+  27:User/Src/tool.c ****     HAL_GPIO_Init(SOFT_UART_RX_GPIO_Port, &GPIO_InitStruct);
+ 142              		.loc 1 27 5 is_stmt 1 view .LVU35
+ 143 0046 02A9     		add	r1, sp, #8
+ 144 0048 3046     		mov	r0, r6
+ 145 004a FFF7FEFF 		bl	HAL_GPIO_Init
+ 146              	.LVL6:
+  28:User/Src/tool.c ****     
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 4
+
+
+  29:User/Src/tool.c ****     // TX默认高电平
+  30:User/Src/tool.c ****     HAL_GPIO_WritePin(SOFT_UART_TX_GPIO_Port, SOFT_UART_TX_Pin, GPIO_PIN_SET);
+ 147              		.loc 1 30 5 view .LVU36
+ 148 004e 2A46     		mov	r2, r5
+ 149 0050 3946     		mov	r1, r7
+ 150 0052 3046     		mov	r0, r6
+ 151 0054 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 152              	.LVL7:
+  31:User/Src/tool.c **** }
+ 153              		.loc 1 31 1 is_stmt 0 view .LVU37
+ 154 0058 07B0     		add	sp, sp, #28
+ 155              	.LCFI2:
+ 156              		.cfi_def_cfa_offset 20
+ 157              		@ sp needed
+ 158 005a F0BD     		pop	{r4, r5, r6, r7, pc}
+ 159              	.L7:
+ 160              		.align	2
+ 161              	.L6:
+ 162 005c 00100240 		.word	1073876992
+ 163 0060 000C0140 		.word	1073810432
+ 164              		.cfi_endproc
+ 165              	.LFE69:
+ 167              		.section	.text.Soft_UART_SendByte,"ax",%progbits
+ 168              		.align	1
+ 169              		.global	Soft_UART_SendByte
+ 170              		.syntax unified
+ 171              		.thumb
+ 172              		.thumb_func
+ 174              	Soft_UART_SendByte:
+ 175              	.LVL8:
+ 176              	.LFB70:
+  32:User/Src/tool.c **** 
+  33:User/Src/tool.c **** void Soft_UART_SendByte(uint8_t data)
+  34:User/Src/tool.c **** {
+ 177              		.loc 1 34 1 is_stmt 1 view -0
+ 178              		.cfi_startproc
+ 179              		@ args = 0, pretend = 0, frame = 0
+ 180              		@ frame_needed = 0, uses_anonymous_args = 0
+ 181              		.loc 1 34 1 is_stmt 0 view .LVU39
+ 182 0000 38B5     		push	{r3, r4, r5, lr}
+ 183              	.LCFI3:
+ 184              		.cfi_def_cfa_offset 16
+ 185              		.cfi_offset 3, -16
+ 186              		.cfi_offset 4, -12
+ 187              		.cfi_offset 5, -8
+ 188              		.cfi_offset 14, -4
+ 189 0002 0546     		mov	r5, r0
+  35:User/Src/tool.c ****     uint8_t i;
+ 190              		.loc 1 35 5 is_stmt 1 view .LVU40
+  36:User/Src/tool.c ****     // 起始位
+  37:User/Src/tool.c ****     HAL_GPIO_WritePin(SOFT_UART_TX_GPIO_Port, SOFT_UART_TX_Pin, GPIO_PIN_RESET);
+ 191              		.loc 1 37 5 view .LVU41
+ 192 0004 0022     		movs	r2, #0
+ 193 0006 4FF40051 		mov	r1, #8192
+ 194 000a 1048     		ldr	r0, .L12
+ 195              	.LVL9:
+ 196              		.loc 1 37 5 is_stmt 0 view .LVU42
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 5
+
+
+ 197 000c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 198              	.LVL10:
+  38:User/Src/tool.c ****     delay_us(BAUD_DELAY_US);
+ 199              		.loc 1 38 5 is_stmt 1 view .LVU43
+ 200 0010 6820     		movs	r0, #104
+ 201 0012 FFF7FEFF 		bl	delay_us
+ 202              	.LVL11:
+  39:User/Src/tool.c ****     
+  40:User/Src/tool.c ****     // 数据位(低位先行)
+  41:User/Src/tool.c ****     for(i=0; i<8; i++)
+ 203              		.loc 1 41 5 view .LVU44
+ 204              		.loc 1 41 10 is_stmt 0 view .LVU45
+ 205 0016 0024     		movs	r4, #0
+ 206              		.loc 1 41 5 view .LVU46
+ 207 0018 0CE0     		b	.L9
+ 208              	.LVL12:
+ 209              	.L10:
+  42:User/Src/tool.c ****     {
+  43:User/Src/tool.c ****         HAL_GPIO_WritePin(SOFT_UART_TX_GPIO_Port, SOFT_UART_TX_Pin,
+ 210              		.loc 1 43 9 is_stmt 1 discriminator 3 view .LVU47
+ 211 001a 05F00102 		and	r2, r5, #1
+ 212 001e 4FF40051 		mov	r1, #8192
+ 213 0022 0A48     		ldr	r0, .L12
+ 214 0024 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 215              	.LVL13:
+  44:User/Src/tool.c ****             (data&1) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+  45:User/Src/tool.c ****         data >>= 1;
+ 216              		.loc 1 45 9 discriminator 3 view .LVU48
+ 217              		.loc 1 45 14 is_stmt 0 discriminator 3 view .LVU49
+ 218 0028 6D08     		lsrs	r5, r5, #1
+ 219              	.LVL14:
+  46:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 220              		.loc 1 46 9 is_stmt 1 discriminator 3 view .LVU50
+ 221 002a 6820     		movs	r0, #104
+ 222 002c FFF7FEFF 		bl	delay_us
+ 223              	.LVL15:
+  41:User/Src/tool.c ****     {
+ 224              		.loc 1 41 19 discriminator 3 view .LVU51
+  41:User/Src/tool.c ****     {
+ 225              		.loc 1 41 20 is_stmt 0 discriminator 3 view .LVU52
+ 226 0030 0134     		adds	r4, r4, #1
+ 227              	.LVL16:
+  41:User/Src/tool.c ****     {
+ 228              		.loc 1 41 20 discriminator 3 view .LVU53
+ 229 0032 E4B2     		uxtb	r4, r4
+ 230              	.LVL17:
+ 231              	.L9:
+  41:User/Src/tool.c ****     {
+ 232              		.loc 1 41 14 is_stmt 1 discriminator 1 view .LVU54
+  41:User/Src/tool.c ****     {
+ 233              		.loc 1 41 5 is_stmt 0 discriminator 1 view .LVU55
+ 234 0034 072C     		cmp	r4, #7
+ 235 0036 F0D9     		bls	.L10
+  47:User/Src/tool.c ****     }
+  48:User/Src/tool.c ****     
+  49:User/Src/tool.c ****     // 停止位
+  50:User/Src/tool.c ****     HAL_GPIO_WritePin(SOFT_UART_TX_GPIO_Port, SOFT_UART_TX_Pin, GPIO_PIN_SET);
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 6
+
+
+ 236              		.loc 1 50 5 is_stmt 1 view .LVU56
+ 237 0038 0122     		movs	r2, #1
+ 238 003a 4FF40051 		mov	r1, #8192
+ 239 003e 0348     		ldr	r0, .L12
+ 240 0040 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 241              	.LVL18:
+  51:User/Src/tool.c ****     delay_us(BAUD_DELAY_US);
+ 242              		.loc 1 51 5 view .LVU57
+ 243 0044 6820     		movs	r0, #104
+ 244 0046 FFF7FEFF 		bl	delay_us
+ 245              	.LVL19:
+  52:User/Src/tool.c **** }
+ 246              		.loc 1 52 1 is_stmt 0 view .LVU58
+ 247 004a 38BD     		pop	{r3, r4, r5, pc}
+ 248              	.LVL20:
+ 249              	.L13:
+ 250              		.loc 1 52 1 view .LVU59
+ 251              		.align	2
+ 252              	.L12:
+ 253 004c 000C0140 		.word	1073810432
+ 254              		.cfi_endproc
+ 255              	.LFE70:
+ 257              		.section	.text.Soft_UART_SendStr,"ax",%progbits
+ 258              		.align	1
+ 259              		.global	Soft_UART_SendStr
+ 260              		.syntax unified
+ 261              		.thumb
+ 262              		.thumb_func
+ 264              	Soft_UART_SendStr:
+ 265              	.LVL21:
+ 266              	.LFB71:
+  53:User/Src/tool.c **** 
+  54:User/Src/tool.c **** void Soft_UART_SendStr(uint8_t *str)
+  55:User/Src/tool.c **** {
+ 267              		.loc 1 55 1 is_stmt 1 view -0
+ 268              		.cfi_startproc
+ 269              		@ args = 0, pretend = 0, frame = 0
+ 270              		@ frame_needed = 0, uses_anonymous_args = 0
+ 271              		.loc 1 55 1 is_stmt 0 view .LVU61
+ 272 0000 10B5     		push	{r4, lr}
+ 273              	.LCFI4:
+ 274              		.cfi_def_cfa_offset 8
+ 275              		.cfi_offset 4, -8
+ 276              		.cfi_offset 14, -4
+ 277 0002 0446     		mov	r4, r0
+  56:User/Src/tool.c ****     while(*str) 
+ 278              		.loc 1 56 5 is_stmt 1 view .LVU62
+ 279              		.loc 1 56 10 is_stmt 0 view .LVU63
+ 280 0004 02E0     		b	.L15
+ 281              	.LVL22:
+ 282              	.L16:
+  57:User/Src/tool.c ****     {
+  58:User/Src/tool.c ****         Soft_UART_SendByte(*str++);
+ 283              		.loc 1 58 9 is_stmt 1 view .LVU64
+ 284              		.loc 1 58 32 is_stmt 0 view .LVU65
+ 285 0006 0134     		adds	r4, r4, #1
+ 286              	.LVL23:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 7
+
+
+ 287              		.loc 1 58 9 view .LVU66
+ 288 0008 FFF7FEFF 		bl	Soft_UART_SendByte
+ 289              	.LVL24:
+ 290              	.L15:
+  56:User/Src/tool.c ****     while(*str) 
+ 291              		.loc 1 56 10 is_stmt 1 view .LVU67
+  56:User/Src/tool.c ****     while(*str) 
+ 292              		.loc 1 56 11 is_stmt 0 view .LVU68
+ 293 000c 2078     		ldrb	r0, [r4]	@ zero_extendqisi2
+  56:User/Src/tool.c ****     while(*str) 
+ 294              		.loc 1 56 10 view .LVU69
+ 295 000e 0028     		cmp	r0, #0
+ 296 0010 F9D1     		bne	.L16
+  59:User/Src/tool.c ****     }
+  60:User/Src/tool.c **** }
+ 297              		.loc 1 60 1 view .LVU70
+ 298 0012 10BD     		pop	{r4, pc}
+ 299              		.loc 1 60 1 view .LVU71
+ 300              		.cfi_endproc
+ 301              	.LFE71:
+ 303              		.section	.text.Soft_UART_ReceiveByte,"ax",%progbits
+ 304              		.align	1
+ 305              		.global	Soft_UART_ReceiveByte
+ 306              		.syntax unified
+ 307              		.thumb
+ 308              		.thumb_func
+ 310              	Soft_UART_ReceiveByte:
+ 311              	.LVL25:
+ 312              	.LFB72:
+  61:User/Src/tool.c **** 
+  62:User/Src/tool.c **** uint8_t Soft_UART_ReceiveByte(uint8_t *data)
+  63:User/Src/tool.c **** {
+ 313              		.loc 1 63 1 is_stmt 1 view -0
+ 314              		.cfi_startproc
+ 315              		@ args = 0, pretend = 0, frame = 0
+ 316              		@ frame_needed = 0, uses_anonymous_args = 0
+  64:User/Src/tool.c ****      // 入参空指针校验
+  65:User/Src/tool.c ****     if(data == NULL) 
+ 317              		.loc 1 65 5 view .LVU73
+ 318              		.loc 1 65 7 is_stmt 0 view .LVU74
+ 319 0000 0028     		cmp	r0, #0
+ 320 0002 42D0     		beq	.L27
+  63:User/Src/tool.c ****      // 入参空指针校验
+ 321              		.loc 1 63 1 view .LVU75
+ 322 0004 70B5     		push	{r4, r5, r6, lr}
+ 323              	.LCFI5:
+ 324              		.cfi_def_cfa_offset 16
+ 325              		.cfi_offset 4, -16
+ 326              		.cfi_offset 5, -12
+ 327              		.cfi_offset 6, -8
+ 328              		.cfi_offset 14, -4
+ 329 0006 0646     		mov	r6, r0
+  66:User/Src/tool.c ****         return 0xFF;
+  67:User/Src/tool.c **** 
+  68:User/Src/tool.c ****     uint32_t timeout = 5000;
+  69:User/Src/tool.c ****     uint32_t tick = 0;
+ 330              		.loc 1 69 14 view .LVU76
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 8
+
+
+ 331 0008 0024     		movs	r4, #0
+ 332              	.LVL26:
+ 333              	.L20:
+  70:User/Src/tool.c **** 
+  71:User/Src/tool.c ****     // 1. 等待起始位（下降沿）
+  72:User/Src/tool.c ****     while (HAL_GPIO_ReadPin(SOFT_UART_RX_GPIO_Port, SOFT_UART_RX_Pin) != GPIO_PIN_RESET)
+ 334              		.loc 1 72 11 is_stmt 1 view .LVU77
+ 335              		.loc 1 72 12 is_stmt 0 view .LVU78
+ 336 000a 4FF48041 		mov	r1, #16384
+ 337 000e 2248     		ldr	r0, .L36
+ 338 0010 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 339              	.LVL27:
+ 340              		.loc 1 72 11 view .LVU79
+ 341 0014 0546     		mov	r5, r0
+ 342 0016 40B1     		cbz	r0, .L34
+  73:User/Src/tool.c ****     {
+  74:User/Src/tool.c ****         if (++tick > timeout) return 0xFF;
+ 343              		.loc 1 74 9 is_stmt 1 view .LVU80
+ 344              		.loc 1 74 12 is_stmt 0 view .LVU81
+ 345 0018 0134     		adds	r4, r4, #1
+ 346              	.LVL28:
+ 347              		.loc 1 74 12 view .LVU82
+ 348 001a 41F28833 		movw	r3, #5000
+ 349 001e 9C42     		cmp	r4, r3
+ 350 0020 35D8     		bhi	.L28
+  75:User/Src/tool.c ****         delay_us(1);
+ 351              		.loc 1 75 9 is_stmt 1 view .LVU83
+ 352 0022 0120     		movs	r0, #1
+ 353 0024 FFF7FEFF 		bl	delay_us
+ 354              	.LVL29:
+ 355 0028 EFE7     		b	.L20
+ 356              	.L34:
+  76:User/Src/tool.c ****     }
+  77:User/Src/tool.c **** 
+  78:User/Src/tool.c ****     // 2. 关中断，保证时序不被打断
+  79:User/Src/tool.c ****     __disable_irq();
+ 357              		.loc 1 79 5 view .LVU84
+ 358              	.LBB8:
+ 359              	.LBI8:
+ 360              		.file 2 "Drivers/CMSIS/Include/cmsis_gcc.h"
+   1:Drivers/CMSIS/Include/cmsis_gcc.h **** /**************************************************************************//**
+   2:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @file     cmsis_gcc.h
+   3:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @brief    CMSIS compiler GCC header file
+   4:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @version  V5.0.4
+   5:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @date     09. April 2018
+   6:Drivers/CMSIS/Include/cmsis_gcc.h ****  ******************************************************************************/
+   7:Drivers/CMSIS/Include/cmsis_gcc.h **** /*
+   8:Drivers/CMSIS/Include/cmsis_gcc.h ****  * Copyright (c) 2009-2018 Arm Limited. All rights reserved.
+   9:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  10:Drivers/CMSIS/Include/cmsis_gcc.h ****  * SPDX-License-Identifier: Apache-2.0
+  11:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  12:Drivers/CMSIS/Include/cmsis_gcc.h ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+  13:Drivers/CMSIS/Include/cmsis_gcc.h ****  * not use this file except in compliance with the License.
+  14:Drivers/CMSIS/Include/cmsis_gcc.h ****  * You may obtain a copy of the License at
+  15:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  16:Drivers/CMSIS/Include/cmsis_gcc.h ****  * www.apache.org/licenses/LICENSE-2.0
+  17:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 9
+
+
+  18:Drivers/CMSIS/Include/cmsis_gcc.h ****  * Unless required by applicable law or agreed to in writing, software
+  19:Drivers/CMSIS/Include/cmsis_gcc.h ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  20:Drivers/CMSIS/Include/cmsis_gcc.h ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  21:Drivers/CMSIS/Include/cmsis_gcc.h ****  * See the License for the specific language governing permissions and
+  22:Drivers/CMSIS/Include/cmsis_gcc.h ****  * limitations under the License.
+  23:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+  24:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  25:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __CMSIS_GCC_H
+  26:Drivers/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_H
+  27:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  28:Drivers/CMSIS/Include/cmsis_gcc.h **** /* ignore some GCC warnings */
+  29:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic push
+  30:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wsign-conversion"
+  31:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wconversion"
+  32:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wunused-parameter"
+  33:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  34:Drivers/CMSIS/Include/cmsis_gcc.h **** /* Fallback for __has_builtin */
+  35:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __has_builtin
+  36:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __has_builtin(x) (0)
+  37:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  38:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  39:Drivers/CMSIS/Include/cmsis_gcc.h **** /* CMSIS compiler specific defines */
+  40:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ASM
+  41:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ASM                                  __asm
+  42:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  43:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __INLINE
+  44:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __INLINE                               inline
+  45:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  46:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_INLINE
+  47:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_INLINE                        static inline
+  48:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  49:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_FORCEINLINE                 
+  50:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_FORCEINLINE                   __attribute__((always_inline)) static inline
+  51:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif                                           
+  52:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __NO_RETURN
+  53:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __NO_RETURN                            __attribute__((__noreturn__))
+  54:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  55:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __USED
+  56:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __USED                                 __attribute__((used))
+  57:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  58:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __WEAK
+  59:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __WEAK                                 __attribute__((weak))
+  60:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  61:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED
+  62:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED                               __attribute__((packed, aligned(1)))
+  63:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  64:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_STRUCT
+  65:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_STRUCT                        struct __attribute__((packed, aligned(1)))
+  66:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  67:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_UNION
+  68:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_UNION                         union __attribute__((packed, aligned(1)))
+  69:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  70:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32        /* deprecated */
+  71:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  72:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  73:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  74:Drivers/CMSIS/Include/cmsis_gcc.h ****   struct __attribute__((packed)) T_UINT32 { uint32_t v; };
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 10
+
+
+  75:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  76:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
+  77:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  78:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_WRITE
+  79:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  80:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  81:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  82:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_WRITE { uint16_t v; };
+  83:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  84:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_WRITE(addr, val)    (void)((((struct T_UINT16_WRITE *)(void *)(addr))-
+  85:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  86:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_READ
+  87:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  88:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  89:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  90:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_READ { uint16_t v; };
+  91:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  92:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_READ(addr)          (((const struct T_UINT16_READ *)(const void *)(add
+  93:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  94:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_WRITE
+  95:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  96:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  97:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  98:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_WRITE { uint32_t v; };
+  99:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 100:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_WRITE(addr, val)    (void)((((struct T_UINT32_WRITE *)(void *)(addr))-
+ 101:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 102:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_READ
+ 103:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+ 104:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+ 105:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+ 106:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_READ { uint32_t v; };
+ 107:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 108:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_READ(addr)          (((const struct T_UINT32_READ *)(const void *)(add
+ 109:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 110:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ALIGNED
+ 111:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ALIGNED(x)                           __attribute__((aligned(x)))
+ 112:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 113:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __RESTRICT
+ 114:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __RESTRICT                             __restrict
+ 115:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 116:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 117:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 118:Drivers/CMSIS/Include/cmsis_gcc.h **** /* ###########################  Core Function Access  ########################### */
+ 119:Drivers/CMSIS/Include/cmsis_gcc.h **** /** \ingroup  CMSIS_Core_FunctionInterface
+ 120:Drivers/CMSIS/Include/cmsis_gcc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+ 121:Drivers/CMSIS/Include/cmsis_gcc.h ****   @{
+ 122:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 123:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 124:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 125:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Enable IRQ Interrupts
+ 126:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 127:Drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 128:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 129:Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __enable_irq(void)
+ 130:Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 131:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsie i" : : : "memory");
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 11
+
+
+ 132:Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 133:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 134:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 135:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 136:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Disable IRQ Interrupts
+ 137:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Disables IRQ interrupts by setting the I-bit in the CPSR.
+ 138:Drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 139:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 140:Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __disable_irq(void)
+ 361              		.loc 2 140 27 view .LVU85
+ 362              	.LBB9:
+ 141:Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 142:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsid i" : : : "memory");
+ 363              		.loc 2 142 3 view .LVU86
+ 364              		.syntax unified
+ 365              	@ 142 "Drivers/CMSIS/Include/cmsis_gcc.h" 1
+ 366 002a 72B6     		cpsid i
+ 367              	@ 0 "" 2
+ 368              		.thumb
+ 369              		.syntax unified
+ 370              	.LBE9:
+ 371              	.LBE8:
+  80:User/Src/tool.c **** 
+  81:User/Src/tool.c ****     // 3. 【关键修复】延时 1.5 位周期，对准数据位中心
+  82:User/Src/tool.c ****     delay_us(BAUD_DELAY_US);
+ 372              		.loc 1 82 5 view .LVU87
+ 373 002c 6820     		movs	r0, #104
+ 374 002e FFF7FEFF 		bl	delay_us
+ 375              	.LVL30:
+  83:User/Src/tool.c ****     delay_us(BAUD_DELAY_US / 2);
+ 376              		.loc 1 83 5 view .LVU88
+ 377 0032 3420     		movs	r0, #52
+ 378 0034 FFF7FEFF 		bl	delay_us
+ 379              	.LVL31:
+  84:User/Src/tool.c **** 
+  85:User/Src/tool.c ****     *data = 0;
+ 380              		.loc 1 85 5 view .LVU89
+ 381              		.loc 1 85 11 is_stmt 0 view .LVU90
+ 382 0038 0023     		movs	r3, #0
+ 383 003a 3370     		strb	r3, [r6]
+  86:User/Src/tool.c ****     // 4. 采样8位数据（低位先行）
+  87:User/Src/tool.c ****     for (uint8_t i = 0; i < 8; i++)
+ 384              		.loc 1 87 5 is_stmt 1 view .LVU91
+ 385              	.LBB10:
+ 386              		.loc 1 87 10 view .LVU92
+ 387              	.LVL32:
+ 388              		.loc 1 87 5 is_stmt 0 view .LVU93
+ 389 003c 04E0     		b	.L22
+ 390              	.LVL33:
+ 391              	.L23:
+  88:User/Src/tool.c ****     {
+  89:User/Src/tool.c ****         if (HAL_GPIO_ReadPin(SOFT_UART_RX_GPIO_Port, SOFT_UART_RX_Pin) == GPIO_PIN_SET)
+  90:User/Src/tool.c ****             *data |= (1 << i);
+  91:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 392              		.loc 1 91 9 is_stmt 1 discriminator 2 view .LVU94
+ 393 003e 6820     		movs	r0, #104
+ 394 0040 FFF7FEFF 		bl	delay_us
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 12
+
+
+ 395              	.LVL34:
+  87:User/Src/tool.c ****     {
+ 396              		.loc 1 87 32 discriminator 2 view .LVU95
+  87:User/Src/tool.c ****     {
+ 397              		.loc 1 87 33 is_stmt 0 discriminator 2 view .LVU96
+ 398 0044 0135     		adds	r5, r5, #1
+ 399              	.LVL35:
+  87:User/Src/tool.c ****     {
+ 400              		.loc 1 87 33 discriminator 2 view .LVU97
+ 401 0046 EDB2     		uxtb	r5, r5
+ 402              	.LVL36:
+ 403              	.L22:
+  87:User/Src/tool.c ****     {
+ 404              		.loc 1 87 25 is_stmt 1 discriminator 1 view .LVU98
+  87:User/Src/tool.c ****     {
+ 405              		.loc 1 87 5 is_stmt 0 discriminator 1 view .LVU99
+ 406 0048 072D     		cmp	r5, #7
+ 407 004a 0DD8     		bhi	.L35
+  89:User/Src/tool.c ****             *data |= (1 << i);
+ 408              		.loc 1 89 9 is_stmt 1 view .LVU100
+  89:User/Src/tool.c ****             *data |= (1 << i);
+ 409              		.loc 1 89 13 is_stmt 0 view .LVU101
+ 410 004c 4FF48041 		mov	r1, #16384
+ 411 0050 1148     		ldr	r0, .L36
+ 412 0052 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 413              	.LVL37:
+  89:User/Src/tool.c ****             *data |= (1 << i);
+ 414              		.loc 1 89 12 view .LVU102
+ 415 0056 0128     		cmp	r0, #1
+ 416 0058 F1D1     		bne	.L23
+  90:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 417              		.loc 1 90 13 is_stmt 1 view .LVU103
+  90:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 418              		.loc 1 90 25 is_stmt 0 view .LVU104
+ 419 005a 0123     		movs	r3, #1
+ 420 005c 03FA05F2 		lsl	r2, r3, r5
+  90:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 421              		.loc 1 90 19 view .LVU105
+ 422 0060 3378     		ldrb	r3, [r6]	@ zero_extendqisi2
+ 423 0062 1343     		orrs	r3, r3, r2
+ 424 0064 3370     		strb	r3, [r6]
+ 425 0066 EAE7     		b	.L23
+ 426              	.L35:
+  90:User/Src/tool.c ****         delay_us(BAUD_DELAY_US);
+ 427              		.loc 1 90 19 view .LVU106
+ 428              	.LBE10:
+  92:User/Src/tool.c ****     }
+  93:User/Src/tool.c **** 
+  94:User/Src/tool.c ****     // 5. 开中断
+  95:User/Src/tool.c ****     __enable_irq();
+ 429              		.loc 1 95 5 is_stmt 1 view .LVU107
+ 430              	.LBB11:
+ 431              	.LBI11:
+ 129:Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 432              		.loc 2 129 27 view .LVU108
+ 433              	.LBB12:
+ 131:Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 13
+
+
+ 434              		.loc 2 131 3 view .LVU109
+ 435              		.syntax unified
+ 436              	@ 131 "Drivers/CMSIS/Include/cmsis_gcc.h" 1
+ 437 0068 62B6     		cpsie i
+ 438              	@ 0 "" 2
+ 439              		.thumb
+ 440              		.syntax unified
+ 441              	.L25:
+ 131:Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 442              		.loc 2 131 3 is_stmt 0 view .LVU110
+ 443              	.LBE12:
+ 444              	.LBE11:
+  96:User/Src/tool.c **** 
+  97:User/Src/tool.c ****     // 6. 等待停止位
+  98:User/Src/tool.c ****     while (HAL_GPIO_ReadPin(SOFT_UART_RX_GPIO_Port, SOFT_UART_RX_Pin) != GPIO_PIN_SET)
+ 445              		.loc 1 98 11 is_stmt 1 view .LVU111
+ 446              		.loc 1 98 12 is_stmt 0 view .LVU112
+ 447 006a 4FF48041 		mov	r1, #16384
+ 448 006e 0A48     		ldr	r0, .L36
+ 449 0070 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 450              	.LVL38:
+ 451              		.loc 1 98 11 view .LVU113
+ 452 0074 0128     		cmp	r0, #1
+ 453 0076 0DD0     		beq	.L19
+  99:User/Src/tool.c ****     {
+ 100:User/Src/tool.c ****         if (++tick > timeout) return 0xFF;
+ 454              		.loc 1 100 9 is_stmt 1 view .LVU114
+ 455              		.loc 1 100 12 is_stmt 0 view .LVU115
+ 456 0078 0134     		adds	r4, r4, #1
+ 457              	.LVL39:
+ 458              		.loc 1 100 12 view .LVU116
+ 459 007a 41F28833 		movw	r3, #5000
+ 460 007e 9C42     		cmp	r4, r3
+ 461 0080 07D8     		bhi	.L29
+ 101:User/Src/tool.c ****         delay_us(1);
+ 462              		.loc 1 101 9 is_stmt 1 view .LVU117
+ 463 0082 0120     		movs	r0, #1
+ 464 0084 FFF7FEFF 		bl	delay_us
+ 465              	.LVL40:
+ 466 0088 EFE7     		b	.L25
+ 467              	.LVL41:
+ 468              	.L27:
+ 469              	.LCFI6:
+ 470              		.cfi_def_cfa_offset 0
+ 471              		.cfi_restore 4
+ 472              		.cfi_restore 5
+ 473              		.cfi_restore 6
+ 474              		.cfi_restore 14
+  66:User/Src/tool.c **** 
+ 475              		.loc 1 66 16 is_stmt 0 view .LVU118
+ 476 008a FF20     		movs	r0, #255
+ 477              	.LVL42:
+ 102:User/Src/tool.c ****     }
+ 103:User/Src/tool.c **** 
+ 104:User/Src/tool.c ****     return 1;
+ 105:User/Src/tool.c **** }
+ 478              		.loc 1 105 1 view .LVU119
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 14
+
+
+ 479 008c 7047     		bx	lr
+ 480              	.LVL43:
+ 481              	.L28:
+ 482              	.LCFI7:
+ 483              		.cfi_def_cfa_offset 16
+ 484              		.cfi_offset 4, -16
+ 485              		.cfi_offset 5, -12
+ 486              		.cfi_offset 6, -8
+ 487              		.cfi_offset 14, -4
+  74:User/Src/tool.c ****         delay_us(1);
+ 488              		.loc 1 74 38 view .LVU120
+ 489 008e FF20     		movs	r0, #255
+ 490 0090 00E0     		b	.L19
+ 491              	.LVL44:
+ 492              	.L29:
+ 100:User/Src/tool.c ****         delay_us(1);
+ 493              		.loc 1 100 38 view .LVU121
+ 494 0092 FF20     		movs	r0, #255
+ 495              	.LVL45:
+ 496              	.L19:
+ 497              		.loc 1 105 1 view .LVU122
+ 498 0094 70BD     		pop	{r4, r5, r6, pc}
+ 499              	.LVL46:
+ 500              	.L37:
+ 501              		.loc 1 105 1 view .LVU123
+ 502 0096 00BF     		.align	2
+ 503              	.L36:
+ 504 0098 000C0140 		.word	1073810432
+ 505              		.cfi_endproc
+ 506              	.LFE72:
+ 508              		.section	.text.Soft_UART_ReceiveString,"ax",%progbits
+ 509              		.align	1
+ 510              		.global	Soft_UART_ReceiveString
+ 511              		.syntax unified
+ 512              		.thumb
+ 513              		.thumb_func
+ 515              	Soft_UART_ReceiveString:
+ 516              	.LVL47:
+ 517              	.LFB73:
+ 106:User/Src/tool.c **** 
+ 107:User/Src/tool.c **** 
+ 108:User/Src/tool.c **** uint8_t Soft_UART_ReceiveString(uint8_t *data)
+ 109:User/Src/tool.c **** {
+ 518              		.loc 1 109 1 is_stmt 1 view -0
+ 519              		.cfi_startproc
+ 520              		@ args = 0, pretend = 0, frame = 0
+ 521              		@ frame_needed = 0, uses_anonymous_args = 0
+ 522              		.loc 1 109 1 is_stmt 0 view .LVU125
+ 523 0000 70B5     		push	{r4, r5, r6, lr}
+ 524              	.LCFI8:
+ 525              		.cfi_def_cfa_offset 16
+ 526              		.cfi_offset 4, -16
+ 527              		.cfi_offset 5, -12
+ 528              		.cfi_offset 6, -8
+ 529              		.cfi_offset 14, -4
+ 110:User/Src/tool.c ****     if (data == NULL) return 0xFF;
+ 530              		.loc 1 110 5 is_stmt 1 view .LVU126
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 15
+
+
+ 531              		.loc 1 110 8 is_stmt 0 view .LVU127
+ 532 0002 A8B1     		cbz	r0, .L44
+ 533 0004 0646     		mov	r6, r0
+ 111:User/Src/tool.c ****     uint8_t i = 0;
+ 534              		.loc 1 111 13 view .LVU128
+ 535 0006 0024     		movs	r4, #0
+ 536              	.LVL48:
+ 537              	.L40:
+ 112:User/Src/tool.c ****     while (data[i])
+ 538              		.loc 1 112 11 is_stmt 1 view .LVU129
+ 539              		.loc 1 112 16 is_stmt 0 view .LVU130
+ 540 0008 3519     		adds	r5, r6, r4
+ 541 000a 335D     		ldrb	r3, [r6, r4]	@ zero_extendqisi2
+ 542              		.loc 1 112 11 view .LVU131
+ 543 000c 73B1     		cbz	r3, .L39
+ 113:User/Src/tool.c ****     {
+ 114:User/Src/tool.c ****        
+ 115:User/Src/tool.c ****         if(Soft_UART_ReceiveByte(&data[i]) != 1) 
+ 544              		.loc 1 115 9 is_stmt 1 view .LVU132
+ 545              		.loc 1 115 12 is_stmt 0 view .LVU133
+ 546 000e 2846     		mov	r0, r5
+ 547 0010 FFF7FEFF 		bl	Soft_UART_ReceiveByte
+ 548              	.LVL49:
+ 549              		.loc 1 115 11 view .LVU134
+ 550 0014 0128     		cmp	r0, #1
+ 551 0016 0DD1     		bne	.L45
+ 116:User/Src/tool.c ****         {
+ 117:User/Src/tool.c ****             return 0xFF;
+ 118:User/Src/tool.c ****         }
+ 119:User/Src/tool.c ****         if (data[i] == '\r' || data[i] == '\n') 
+ 552              		.loc 1 119 9 is_stmt 1 view .LVU135
+ 553              		.loc 1 119 17 is_stmt 0 view .LVU136
+ 554 0018 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 555              		.loc 1 119 12 view .LVU137
+ 556 001a 0D2B     		cmp	r3, #13
+ 557 001c 04D0     		beq	.L41
+ 558              		.loc 1 119 29 discriminator 1 view .LVU138
+ 559 001e 0A2B     		cmp	r3, #10
+ 560 0020 02D0     		beq	.L41
+ 120:User/Src/tool.c ****         {
+ 121:User/Src/tool.c ****             data[i] = '\0';
+ 122:User/Src/tool.c ****             return i;
+ 123:User/Src/tool.c ****         }
+ 124:User/Src/tool.c ****         i++;
+ 561              		.loc 1 124 9 is_stmt 1 view .LVU139
+ 562              		.loc 1 124 10 is_stmt 0 view .LVU140
+ 563 0022 0134     		adds	r4, r4, #1
+ 564              	.LVL50:
+ 565              		.loc 1 124 10 view .LVU141
+ 566 0024 E4B2     		uxtb	r4, r4
+ 567              	.LVL51:
+ 568              		.loc 1 124 10 view .LVU142
+ 569 0026 EFE7     		b	.L40
+ 570              	.L41:
+ 121:User/Src/tool.c ****             return i;
+ 571              		.loc 1 121 13 is_stmt 1 view .LVU143
+ 121:User/Src/tool.c ****             return i;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 16
+
+
+ 572              		.loc 1 121 21 is_stmt 0 view .LVU144
+ 573 0028 0023     		movs	r3, #0
+ 574 002a 2B70     		strb	r3, [r5]
+ 122:User/Src/tool.c ****         }
+ 575              		.loc 1 122 13 is_stmt 1 view .LVU145
+ 576              	.LVL52:
+ 577              	.L39:
+ 125:User/Src/tool.c ****         
+ 126:User/Src/tool.c ****     }
+ 127:User/Src/tool.c ****     return i;
+ 128:User/Src/tool.c ****     //HAL_GPIO_TogglePin(LED_PORT, LED_PIN);
+ 129:User/Src/tool.c **** }
+ 578              		.loc 1 129 1 is_stmt 0 view .LVU146
+ 579 002c 2046     		mov	r0, r4
+ 580 002e 70BD     		pop	{r4, r5, r6, pc}
+ 581              	.LVL53:
+ 582              	.L44:
+ 110:User/Src/tool.c ****     uint8_t i = 0;
+ 583              		.loc 1 110 30 view .LVU147
+ 584 0030 FF24     		movs	r4, #255
+ 585 0032 FBE7     		b	.L39
+ 586              	.LVL54:
+ 587              	.L45:
+ 117:User/Src/tool.c ****         }
+ 588              		.loc 1 117 20 view .LVU148
+ 589 0034 FF24     		movs	r4, #255
+ 590              	.LVL55:
+ 117:User/Src/tool.c ****         }
+ 591              		.loc 1 117 20 view .LVU149
+ 592 0036 F9E7     		b	.L39
+ 593              		.cfi_endproc
+ 594              	.LFE73:
+ 596              		.text
+ 597              	.Letext0:
+ 598              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 599              		.file 4 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 600              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 601              		.file 6 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s 			page 17
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 tool.c
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:18     .text.delay_us:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:23     .text.delay_us:00000000 delay_us
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:65     .text.Soft_UART_Init:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:71     .text.Soft_UART_Init:00000000 Soft_UART_Init
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:162    .text.Soft_UART_Init:0000005c $d
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:168    .text.Soft_UART_SendByte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:174    .text.Soft_UART_SendByte:00000000 Soft_UART_SendByte
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:253    .text.Soft_UART_SendByte:0000004c $d
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:258    .text.Soft_UART_SendStr:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:264    .text.Soft_UART_SendStr:00000000 Soft_UART_SendStr
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:304    .text.Soft_UART_ReceiveByte:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:310    .text.Soft_UART_ReceiveByte:00000000 Soft_UART_ReceiveByte
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:504    .text.Soft_UART_ReceiveByte:00000098 $d
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:509    .text.Soft_UART_ReceiveString:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccDcy8Wh.s:515    .text.Soft_UART_ReceiveString:00000000 Soft_UART_ReceiveString
+
+UNDEFINED SYMBOLS
+HAL_GPIO_Init
+HAL_GPIO_WritePin
+HAL_GPIO_ReadPin

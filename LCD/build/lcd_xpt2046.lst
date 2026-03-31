@@ -1,0 +1,4048 @@
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"lcd_xpt2046.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.XPT2046_DelayUS,"ax",%progbits
+  18              		.align	1
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  23              	XPT2046_DelayUS:
+  24              	.LVL0:
+  25              	.LFB69:
+  26              		.file 1 "Core/Src/lcd_xpt2046.c"
+   1:Core/Src/lcd_xpt2046.c **** /**
+   2:Core/Src/lcd_xpt2046.c ****   ******************************************************************************
+   3:Core/Src/lcd_xpt2046.c ****   * @file    bsp_ili9341_lcd.c
+   4:Core/Src/lcd_xpt2046.c ****   * @version V1.0
+   5:Core/Src/lcd_xpt2046.c ****   * @date    2013-xx-xx
+   6:Core/Src/lcd_xpt2046.c ****   * @brief   ´¥ÃþÆÁÇý¶¯
+   7:Core/Src/lcd_xpt2046.c ****   ******************************************************************************
+   8:Core/Src/lcd_xpt2046.c ****   * @attention
+   9:Core/Src/lcd_xpt2046.c ****   *
+  10:Core/Src/lcd_xpt2046.c ****   * ÊµÑéÆ½Ì¨:Ò°»ð F103-°ÔµÀ STM32 ¿ª·¢°å 
+  11:Core/Src/lcd_xpt2046.c ****   * ÂÛÌ³    :http://www.firebbs.cn
+  12:Core/Src/lcd_xpt2046.c ****   * ÌÔ±¦    :https://fire-stm32.taobao.com
+  13:Core/Src/lcd_xpt2046.c ****   *
+  14:Core/Src/lcd_xpt2046.c ****   ******************************************************************************
+  15:Core/Src/lcd_xpt2046.c ****   */ 
+  16:Core/Src/lcd_xpt2046.c **** 
+  17:Core/Src/lcd_xpt2046.c **** #include "lcd_xpt2046.h"
+  18:Core/Src/lcd_xpt2046.c **** #include "lcd.h"
+  19:Core/Src/lcd_xpt2046.c **** #include "fonts.h"
+  20:Core/Src/lcd_xpt2046.c **** #include "palette.h"
+  21:Core/Src/lcd_xpt2046.c **** #include "led.h"
+  22:Core/Src/lcd_xpt2046.c **** #include <stdio.h> 
+  23:Core/Src/lcd_xpt2046.c **** #include <string.h>
+  24:Core/Src/lcd_xpt2046.c **** #include <bsp_spi_flash.h>
+  25:Core/Src/lcd_xpt2046.c **** 
+  26:Core/Src/lcd_xpt2046.c **** /******************************* ÉùÃ÷ XPT2046 Ïà¹ØµÄ¾²Ì¬º¯Êý ***************************/
+  27:Core/Src/lcd_xpt2046.c **** static void                   XPT2046_DelayUS                       ( __IO uint32_t ulCount );
+  28:Core/Src/lcd_xpt2046.c **** static void                   XPT2046_WriteCMD                      ( uint8_t ucCmd );
+  29:Core/Src/lcd_xpt2046.c **** static uint16_t               XPT2046_ReadCMD                       ( void );
+  30:Core/Src/lcd_xpt2046.c **** static uint16_t               XPT2046_ReadAdc                       ( uint8_t ucChannel );
+  31:Core/Src/lcd_xpt2046.c **** static void                   XPT2046_ReadAdc_XY                    ( int16_t * sX_Ad, int16_t * sY
+  32:Core/Src/lcd_xpt2046.c **** static uint8_t                XPT2046_ReadAdc_Smooth_XY             ( strType_XPT2046_Coordinate * 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 2
+
+
+  33:Core/Src/lcd_xpt2046.c **** static uint8_t                XPT2046_Calculate_CalibrationFactor   ( strType_XPT2046_Coordinate * 
+  34:Core/Src/lcd_xpt2046.c **** static void                   ILI9341_DrawCross                     ( uint16_t usX, uint16_t usY );
+  35:Core/Src/lcd_xpt2046.c **** 
+  36:Core/Src/lcd_xpt2046.c **** 
+  37:Core/Src/lcd_xpt2046.c **** 
+  38:Core/Src/lcd_xpt2046.c **** /******************************* ¶¨Òå XPT2046 È«¾Ö±äÁ¿ ***************************/
+  39:Core/Src/lcd_xpt2046.c **** //Ä¬ÈÏ´¥Ãþ²ÎÊý£¬²»Í¬µÄÆÁÄ»ÉÔÓÐ²îÒì£¬¿ÉÖØÐÂµ÷ÓÃ´¥ÃþÐ£×¼º¯Êý»ñÈ¡
+  40:Core/Src/lcd_xpt2046.c **** strType_XPT2046_TouchPara strXPT2046_TouchPara[] = 
+  41:Core/Src/lcd_xpt2046.c **** { 	
+  42:Core/Src/lcd_xpt2046.c ****  {-0.006464,   -0.073259,  280.358032,    0.074878,    0.002052,   -6.545977},//É¨Ãè·½Ê½0
+  43:Core/Src/lcd_xpt2046.c **** 	{0.086314,    0.001891,  -12.836658,   -0.003722,   -0.065799,  254.715714},//É¨Ãè·½Ê½1
+  44:Core/Src/lcd_xpt2046.c **** 	{0.002782,    0.061522,  -11.595689,    0.083393,    0.005159,  -15.650089},//É¨Ãè·½Ê½2
+  45:Core/Src/lcd_xpt2046.c **** 	{0.089743,   -0.000289,  -20.612209,   -0.001374,    0.064451,  -16.054003},//É¨Ãè·½Ê½3
+  46:Core/Src/lcd_xpt2046.c **** 	{0.000767,   -0.068258,  250.891769,   -0.085559,   -0.000195,  334.747650},//É¨Ãè·½Ê½4
+  47:Core/Src/lcd_xpt2046.c ****  {-0.084744,    0.000047,  323.163147,   -0.002109,   -0.066371,  260.985809},//É¨Ãè·½Ê½5
+  48:Core/Src/lcd_xpt2046.c ****  {-0.001848,    0.066984,  -12.807136,   -0.084858,   -0.000805,  333.395386},//É¨Ãè·½Ê½6
+  49:Core/Src/lcd_xpt2046.c ****  {-0.085470,   -0.000876,  334.023163,   -0.003390,    0.064725,   -6.211169},//É¨Ãè·½Ê½7
+  50:Core/Src/lcd_xpt2046.c **** };
+  51:Core/Src/lcd_xpt2046.c **** 
+  52:Core/Src/lcd_xpt2046.c **** volatile uint8_t ucXPT2046_TouchFlag = 0;
+  53:Core/Src/lcd_xpt2046.c **** 
+  54:Core/Src/lcd_xpt2046.c **** 
+  55:Core/Src/lcd_xpt2046.c **** 
+  56:Core/Src/lcd_xpt2046.c **** /**
+  57:Core/Src/lcd_xpt2046.c ****   * @brief  XPT2046 ³õÊ¼»¯º¯Êý
+  58:Core/Src/lcd_xpt2046.c ****   * @param  ÎÞ
+  59:Core/Src/lcd_xpt2046.c ****   * @retval ÎÞ
+  60:Core/Src/lcd_xpt2046.c ****   */	
+  61:Core/Src/lcd_xpt2046.c **** void XPT2046_Init ( void )
+  62:Core/Src/lcd_xpt2046.c **** {
+  63:Core/Src/lcd_xpt2046.c ****   GPIO_InitTypeDef  GPIO_InitStructure;
+  64:Core/Src/lcd_xpt2046.c **** 	 /* ¿ªÆôGPIOÊ±ÖÓ */
+  65:Core/Src/lcd_xpt2046.c **** 	__HAL_RCC_GPIOF_CLK_ENABLE();
+  66:Core/Src/lcd_xpt2046.c **** 	__HAL_RCC_GPIOG_CLK_ENABLE();
+  67:Core/Src/lcd_xpt2046.c ****  
+  68:Core/Src/lcd_xpt2046.c ****   /* Ä£ÄâSPI GPIO³õÊ¼»¯ */          
+  69:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Pin=XPT2046_SPI_CLK_PIN;
+  70:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Speed=GPIO_SPEED_FREQ_HIGH ;	  
+  71:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Mode=GPIO_MODE_OUTPUT_PP;
+  72:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_SPI_CLK_PORT, &GPIO_InitStructure);
+  73:Core/Src/lcd_xpt2046.c **** 
+  74:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Pin = XPT2046_SPI_MOSI_PIN;
+  75:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_SPI_MOSI_PORT, &GPIO_InitStructure);
+  76:Core/Src/lcd_xpt2046.c **** 	
+  77:Core/Src/lcd_xpt2046.c **** 
+  78:Core/Src/lcd_xpt2046.c **** 	GPIO_InitStructure.Pin = XPT2046_SPI_CS_PIN; 
+  79:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH ;
+  80:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;      
+  81:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_SPI_CS_PORT, &GPIO_InitStructure); 
+  82:Core/Src/lcd_xpt2046.c **** 	
+  83:Core/Src/lcd_xpt2046.c **** 
+  84:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Pin = XPT2046_SPI_MISO_PIN; 
+  85:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH ;
+  86:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Mode = GPIO_MODE_INPUT;  //ÉÏÀ­ÊäÈë
+  87:Core/Src/lcd_xpt2046.c **** 	GPIO_InitStructure.Pull = GPIO_PULLUP;
+  88:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_SPI_MISO_PORT, &GPIO_InitStructure);
+  89:Core/Src/lcd_xpt2046.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 3
+
+
+  90:Core/Src/lcd_xpt2046.c ****   /* À­µÍÆ¬Ñ¡£¬Ñ¡ÔñXPT2046 */
+  91:Core/Src/lcd_xpt2046.c ****   XPT2046_CS_DISABLE();		
+  92:Core/Src/lcd_xpt2046.c **** 								
+  93:Core/Src/lcd_xpt2046.c **** 	//´¥ÃþÆÁ´¥ÃþÐÅºÅÖ¸Ê¾Òý½Å£¬²»Ê¹ÓÃÖÐ¶Ï
+  94:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Pin = XPT2046_PENIRQ_GPIO_PIN;       
+  95:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Mode = GPIO_MODE_INPUT;  //ÉÏÀ­ÊäÈë
+  96:Core/Src/lcd_xpt2046.c **** 	GPIO_InitStructure.Pull = GPIO_PULLUP;
+  97:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_PENIRQ_GPIO_PORT, &GPIO_InitStructure);
+  98:Core/Src/lcd_xpt2046.c **** }
+  99:Core/Src/lcd_xpt2046.c **** 
+ 100:Core/Src/lcd_xpt2046.c **** 
+ 101:Core/Src/lcd_xpt2046.c **** 
+ 102:Core/Src/lcd_xpt2046.c **** /**
+ 103:Core/Src/lcd_xpt2046.c ****   * @brief  ÓÃÓÚ XPT2046 µÄ¼òµ¥Î¢Ãë¼¶ÑÓÊ±º¯Êý
+ 104:Core/Src/lcd_xpt2046.c ****   * @param  nCount £ºÑÓÊ±¼ÆÊýÖµ£¬µ¥Î»ÎªÎ¢Ãî
+ 105:Core/Src/lcd_xpt2046.c ****   * @retval ÎÞ
+ 106:Core/Src/lcd_xpt2046.c ****   */	
+ 107:Core/Src/lcd_xpt2046.c **** static void XPT2046_DelayUS ( __IO uint32_t ulCount )
+ 108:Core/Src/lcd_xpt2046.c **** {
+  27              		.loc 1 108 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 8
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32              		.loc 1 108 1 is_stmt 0 view .LVU1
+  33 0000 82B0     		sub	sp, sp, #8
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36 0002 0190     		str	r0, [sp, #4]
+ 109:Core/Src/lcd_xpt2046.c **** 	uint32_t i;
+  37              		.loc 1 109 2 is_stmt 1 view .LVU2
+ 110:Core/Src/lcd_xpt2046.c **** 	for ( i = 0; i < ulCount; i ++ )
+  38              		.loc 1 110 2 view .LVU3
+  39              	.LVL1:
+  40              		.loc 1 110 10 is_stmt 0 view .LVU4
+  41 0004 0021     		movs	r1, #0
+  42              		.loc 1 110 2 view .LVU5
+  43 0006 06E0     		b	.L2
+  44              	.LVL2:
+  45              	.L4:
+  46              	.LBB2:
+ 111:Core/Src/lcd_xpt2046.c **** 	{
+ 112:Core/Src/lcd_xpt2046.c **** 		uint8_t uc = 12;     //ÉèÖÃÖµÎª12£¬´óÔ¼ÑÓ1Î¢Ãë      
+  47              		.loc 1 112 11 view .LVU6
+  48 0008 0C23     		movs	r3, #12
+  49              	.L3:
+  50              	.LVL3:
+ 113:Core/Src/lcd_xpt2046.c **** 		while ( uc -- );     //ÑÓ1Î¢Ãë	
+  51              		.loc 1 113 18 is_stmt 1 discriminator 1 view .LVU7
+  52              		.loc 1 113 9 discriminator 1 view .LVU8
+  53 000a 1A46     		mov	r2, r3
+  54              		.loc 1 113 14 is_stmt 0 discriminator 1 view .LVU9
+  55 000c 013B     		subs	r3, r3, #1
+  56              	.LVL4:
+  57              		.loc 1 113 14 discriminator 1 view .LVU10
+  58 000e DBB2     		uxtb	r3, r3
+  59              	.LVL5:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 4
+
+
+  60              		.loc 1 113 9 discriminator 1 view .LVU11
+  61 0010 002A     		cmp	r2, #0
+  62 0012 FAD1     		bne	.L3
+  63              	.LBE2:
+ 110:Core/Src/lcd_xpt2046.c **** 	for ( i = 0; i < ulCount; i ++ )
+  64              		.loc 1 110 28 is_stmt 1 discriminator 2 view .LVU12
+ 110:Core/Src/lcd_xpt2046.c **** 	for ( i = 0; i < ulCount; i ++ )
+  65              		.loc 1 110 30 is_stmt 0 discriminator 2 view .LVU13
+  66 0014 0131     		adds	r1, r1, #1
+  67              	.LVL6:
+  68              	.L2:
+ 110:Core/Src/lcd_xpt2046.c **** 	for ( i = 0; i < ulCount; i ++ )
+  69              		.loc 1 110 15 is_stmt 1 discriminator 1 view .LVU14
+ 110:Core/Src/lcd_xpt2046.c **** 	for ( i = 0; i < ulCount; i ++ )
+  70              		.loc 1 110 17 is_stmt 0 discriminator 1 view .LVU15
+  71 0016 019B     		ldr	r3, [sp, #4]
+ 110:Core/Src/lcd_xpt2046.c **** 	for ( i = 0; i < ulCount; i ++ )
+  72              		.loc 1 110 2 discriminator 1 view .LVU16
+  73 0018 8B42     		cmp	r3, r1
+  74 001a F5D8     		bhi	.L4
+ 114:Core/Src/lcd_xpt2046.c **** 	}
+ 115:Core/Src/lcd_xpt2046.c **** }
+  75              		.loc 1 115 1 view .LVU17
+  76 001c 02B0     		add	sp, sp, #8
+  77              	.LCFI1:
+  78              		.cfi_def_cfa_offset 0
+  79              		@ sp needed
+  80 001e 7047     		bx	lr
+  81              		.cfi_endproc
+  82              	.LFE69:
+  84              		.section	.text.XPT2046_WriteCMD,"ax",%progbits
+  85              		.align	1
+  86              		.syntax unified
+  87              		.thumb
+  88              		.thumb_func
+  90              	XPT2046_WriteCMD:
+  91              	.LVL7:
+  92              	.LFB70:
+ 116:Core/Src/lcd_xpt2046.c **** 
+ 117:Core/Src/lcd_xpt2046.c **** /**
+ 118:Core/Src/lcd_xpt2046.c ****   * @brief  XPT2046 µÄÐ´ÈëÃüÁî
+ 119:Core/Src/lcd_xpt2046.c ****   * @param  ucCmd £ºÃüÁî
+ 120:Core/Src/lcd_xpt2046.c ****   *   ¸Ã²ÎÊýÎªÒÔÏÂÖµÖ®Ò»£º
+ 121:Core/Src/lcd_xpt2046.c ****   *     @arg 0x90 :Í¨µÀY+µÄÑ¡Ôñ¿ØÖÆ×Ö
+ 122:Core/Src/lcd_xpt2046.c ****   *     @arg 0xd0 :Í¨µÀX+µÄÑ¡Ôñ¿ØÖÆ×Ö
+ 123:Core/Src/lcd_xpt2046.c ****   * @retval ÎÞ
+ 124:Core/Src/lcd_xpt2046.c ****   */
+ 125:Core/Src/lcd_xpt2046.c **** static void XPT2046_WriteCMD ( uint8_t ucCmd ) 
+ 126:Core/Src/lcd_xpt2046.c **** {
+  93              		.loc 1 126 1 is_stmt 1 view -0
+  94              		.cfi_startproc
+  95              		@ args = 0, pretend = 0, frame = 0
+  96              		@ frame_needed = 0, uses_anonymous_args = 0
+  97              		.loc 1 126 1 is_stmt 0 view .LVU19
+  98 0000 70B5     		push	{r4, r5, r6, lr}
+  99              	.LCFI2:
+ 100              		.cfi_def_cfa_offset 16
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 5
+
+
+ 101              		.cfi_offset 4, -16
+ 102              		.cfi_offset 5, -12
+ 103              		.cfi_offset 6, -8
+ 104              		.cfi_offset 14, -4
+ 105 0002 0646     		mov	r6, r0
+ 127:Core/Src/lcd_xpt2046.c **** 	uint8_t i;
+ 106              		.loc 1 127 2 is_stmt 1 view .LVU20
+ 128:Core/Src/lcd_xpt2046.c **** 	XPT2046_MOSI_0();	
+ 107              		.loc 1 128 2 view .LVU21
+ 108 0004 154B     		ldr	r3, .L13
+ 109 0006 4FF00062 		mov	r2, #134217728
+ 110 000a 1A61     		str	r2, [r3, #16]
+ 111              		.loc 1 128 18 view .LVU22
+ 129:Core/Src/lcd_xpt2046.c **** 	XPT2046_CLK_LOW();
+ 112              		.loc 1 129 2 view .LVU23
+ 113 000c 03F58063 		add	r3, r3, #1024
+ 114 0010 4FF40002 		mov	r2, #8388608
+ 115 0014 1A61     		str	r2, [r3, #16]
+ 116              		.loc 1 129 19 view .LVU24
+ 130:Core/Src/lcd_xpt2046.c **** 	for ( i = 0; i < 8; i ++ ) 
+ 117              		.loc 1 130 2 view .LVU25
+ 118              	.LVL8:
+ 119              		.loc 1 130 10 is_stmt 0 view .LVU26
+ 120 0016 0024     		movs	r4, #0
+ 121              		.loc 1 130 2 view .LVU27
+ 122 0018 11E0     		b	.L7
+ 123              	.LVL9:
+ 124              	.L8:
+ 131:Core/Src/lcd_xpt2046.c **** 	{
+ 132:Core/Src/lcd_xpt2046.c **** 		if( ( ucCmd >> ( 7 - i ) ) & 0x01 )
+ 133:Core/Src/lcd_xpt2046.c **** 		{
+ 134:Core/Src/lcd_xpt2046.c **** 			XPT2046_MOSI_1()
+ 135:Core/Src/lcd_xpt2046.c **** 		}else
+ 136:Core/Src/lcd_xpt2046.c **** 		{
+ 137:Core/Src/lcd_xpt2046.c **** 			XPT2046_MOSI_0();
+ 125              		.loc 1 137 4 is_stmt 1 view .LVU28
+ 126 001a 104B     		ldr	r3, .L13
+ 127 001c 4FF00062 		mov	r2, #134217728
+ 128 0020 1A61     		str	r2, [r3, #16]
+ 129              	.L9:
+ 130              		.loc 1 137 20 discriminator 1 view .LVU29
+ 138:Core/Src/lcd_xpt2046.c **** 		}
+ 139:Core/Src/lcd_xpt2046.c **** 	  XPT2046_DelayUS ( 5 );
+ 131              		.loc 1 139 4 discriminator 1 view .LVU30
+ 132 0022 0520     		movs	r0, #5
+ 133 0024 FFF7FEFF 		bl	XPT2046_DelayUS
+ 134              	.LVL10:
+ 140:Core/Src/lcd_xpt2046.c **** 		XPT2046_CLK_HIGH();
+ 135              		.loc 1 140 3 discriminator 1 view .LVU31
+ 136 0028 0D4D     		ldr	r5, .L13+4
+ 137 002a 8023     		movs	r3, #128
+ 138 002c 2B61     		str	r3, [r5, #16]
+ 139              		.loc 1 140 21 discriminator 1 view .LVU32
+ 141:Core/Src/lcd_xpt2046.c **** 	  XPT2046_DelayUS ( 5 );
+ 140              		.loc 1 141 4 discriminator 1 view .LVU33
+ 141 002e 0520     		movs	r0, #5
+ 142 0030 FFF7FEFF 		bl	XPT2046_DelayUS
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 6
+
+
+ 143              	.LVL11:
+ 142:Core/Src/lcd_xpt2046.c **** 		XPT2046_CLK_LOW();
+ 144              		.loc 1 142 3 discriminator 1 view .LVU34
+ 145 0034 4FF40003 		mov	r3, #8388608
+ 146 0038 2B61     		str	r3, [r5, #16]
+ 147              		.loc 1 142 20 discriminator 1 view .LVU35
+ 130:Core/Src/lcd_xpt2046.c **** 	{
+ 148              		.loc 1 130 22 discriminator 1 view .LVU36
+ 130:Core/Src/lcd_xpt2046.c **** 	{
+ 149              		.loc 1 130 24 is_stmt 0 discriminator 1 view .LVU37
+ 150 003a 0134     		adds	r4, r4, #1
+ 151              	.LVL12:
+ 130:Core/Src/lcd_xpt2046.c **** 	{
+ 152              		.loc 1 130 24 discriminator 1 view .LVU38
+ 153 003c E4B2     		uxtb	r4, r4
+ 154              	.LVL13:
+ 155              	.L7:
+ 130:Core/Src/lcd_xpt2046.c **** 	{
+ 156              		.loc 1 130 15 is_stmt 1 discriminator 2 view .LVU39
+ 130:Core/Src/lcd_xpt2046.c **** 	{
+ 157              		.loc 1 130 2 is_stmt 0 discriminator 2 view .LVU40
+ 158 003e 072C     		cmp	r4, #7
+ 159 0040 0BD8     		bhi	.L12
+ 132:Core/Src/lcd_xpt2046.c **** 		{
+ 160              		.loc 1 132 3 is_stmt 1 view .LVU41
+ 132:Core/Src/lcd_xpt2046.c **** 		{
+ 161              		.loc 1 132 22 is_stmt 0 view .LVU42
+ 162 0042 C4F10703 		rsb	r3, r4, #7
+ 132:Core/Src/lcd_xpt2046.c **** 		{
+ 163              		.loc 1 132 15 view .LVU43
+ 164 0046 46FA03F3 		asr	r3, r6, r3
+ 132:Core/Src/lcd_xpt2046.c **** 		{
+ 165              		.loc 1 132 5 view .LVU44
+ 166 004a 13F0010F 		tst	r3, #1
+ 167 004e E4D0     		beq	.L8
+ 134:Core/Src/lcd_xpt2046.c **** 		}else
+ 168              		.loc 1 134 4 is_stmt 1 view .LVU45
+ 169 0050 024B     		ldr	r3, .L13
+ 170 0052 4FF40062 		mov	r2, #2048
+ 171 0056 1A61     		str	r2, [r3, #16]
+ 172 0058 E3E7     		b	.L9
+ 173              	.L12:
+ 143:Core/Src/lcd_xpt2046.c **** 	}
+ 144:Core/Src/lcd_xpt2046.c **** 	
+ 145:Core/Src/lcd_xpt2046.c **** }
+ 174              		.loc 1 145 1 is_stmt 0 view .LVU46
+ 175 005a 70BD     		pop	{r4, r5, r6, pc}
+ 176              	.LVL14:
+ 177              	.L14:
+ 178              		.loc 1 145 1 view .LVU47
+ 179              		.align	2
+ 180              	.L13:
+ 181 005c 001C0140 		.word	1073814528
+ 182 0060 00200140 		.word	1073815552
+ 183              		.cfi_endproc
+ 184              	.LFE70:
+ 186              		.global	__aeabi_i2f
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 7
+
+
+ 187              		.global	__aeabi_fcmpeq
+ 188              		.section	.text.XPT2046_Calculate_CalibrationFactor,"ax",%progbits
+ 189              		.align	1
+ 190              		.syntax unified
+ 191              		.thumb
+ 192              		.thumb_func
+ 194              	XPT2046_Calculate_CalibrationFactor:
+ 195              	.LVL15:
+ 196              	.LFB75:
+ 146:Core/Src/lcd_xpt2046.c **** /**
+ 147:Core/Src/lcd_xpt2046.c ****   * @brief  XPT2046 µÄ¶ÁÈ¡ÃüÁî
+ 148:Core/Src/lcd_xpt2046.c ****   * @param  ÎÞ
+ 149:Core/Src/lcd_xpt2046.c ****   * @retval ¶ÁÈ¡µ½µÄÊý¾Ý
+ 150:Core/Src/lcd_xpt2046.c ****   */
+ 151:Core/Src/lcd_xpt2046.c **** static uint16_t XPT2046_ReadCMD ( void ) 
+ 152:Core/Src/lcd_xpt2046.c **** {
+ 153:Core/Src/lcd_xpt2046.c **** 	uint8_t i;
+ 154:Core/Src/lcd_xpt2046.c **** 	uint16_t usBuf=0, usTemp;
+ 155:Core/Src/lcd_xpt2046.c **** 	XPT2046_MOSI_0();
+ 156:Core/Src/lcd_xpt2046.c **** 	XPT2046_CLK_HIGH();
+ 157:Core/Src/lcd_xpt2046.c **** 	for ( i=0;i<12;i++ ) 
+ 158:Core/Src/lcd_xpt2046.c **** 	{
+ 159:Core/Src/lcd_xpt2046.c **** 		XPT2046_CLK_LOW();    
+ 160:Core/Src/lcd_xpt2046.c **** 		usTemp = XPT2046_MISO();
+ 161:Core/Src/lcd_xpt2046.c **** 		usBuf |= usTemp << ( 11 - i );
+ 162:Core/Src/lcd_xpt2046.c **** 		XPT2046_CLK_HIGH();
+ 163:Core/Src/lcd_xpt2046.c **** 	}
+ 164:Core/Src/lcd_xpt2046.c **** 	return usBuf;
+ 165:Core/Src/lcd_xpt2046.c **** }
+ 166:Core/Src/lcd_xpt2046.c **** 
+ 167:Core/Src/lcd_xpt2046.c **** 
+ 168:Core/Src/lcd_xpt2046.c **** /**
+ 169:Core/Src/lcd_xpt2046.c ****   * @brief  ¶Ô XPT2046 Ñ¡ÔñÒ»¸öÄ£ÄâÍ¨µÀºó£¬Æô¶¯ADC£¬²¢·µ»ØADC²ÉÑù½á¹û
+ 170:Core/Src/lcd_xpt2046.c ****   * @param  ucChannel
+ 171:Core/Src/lcd_xpt2046.c ****   *   ¸Ã²ÎÊýÎªÒÔÏÂÖµÖ®Ò»£º
+ 172:Core/Src/lcd_xpt2046.c ****   *     @arg 0x90 :Í¨µÀY+µÄÑ¡Ôñ¿ØÖÆ×Ö
+ 173:Core/Src/lcd_xpt2046.c ****   *     @arg 0xd0 :Í¨µÀX+µÄÑ¡Ôñ¿ØÖÆ×Ö
+ 174:Core/Src/lcd_xpt2046.c ****   * @retval ¸ÃÍ¨µÀµÄADC²ÉÑù½á¹û
+ 175:Core/Src/lcd_xpt2046.c ****   */
+ 176:Core/Src/lcd_xpt2046.c **** static uint16_t XPT2046_ReadAdc ( uint8_t ucChannel )
+ 177:Core/Src/lcd_xpt2046.c **** {
+ 178:Core/Src/lcd_xpt2046.c **** 	XPT2046_WriteCMD ( ucChannel );
+ 179:Core/Src/lcd_xpt2046.c **** 
+ 180:Core/Src/lcd_xpt2046.c ****   return 	XPT2046_ReadCMD ();
+ 181:Core/Src/lcd_xpt2046.c **** 	
+ 182:Core/Src/lcd_xpt2046.c **** }
+ 183:Core/Src/lcd_xpt2046.c **** /**
+ 184:Core/Src/lcd_xpt2046.c ****   * @brief  ¶ÁÈ¡ XPT2046 µÄXÍ¨µÀºÍYÍ¨µÀµÄADÖµ£¨12 bit£¬×î´óÊÇ4096£©
+ 185:Core/Src/lcd_xpt2046.c ****   * @param  sX_Ad £º´æ·ÅXÍ¨µÀADÖµµÄµØÖ·
+ 186:Core/Src/lcd_xpt2046.c ****   * @param  sY_Ad £º´æ·ÅYÍ¨µÀADÖµµÄµØÖ·
+ 187:Core/Src/lcd_xpt2046.c ****   * @retval ÎÞ
+ 188:Core/Src/lcd_xpt2046.c ****   */
+ 189:Core/Src/lcd_xpt2046.c **** static void XPT2046_ReadAdc_XY ( int16_t * sX_Ad, int16_t * sY_Ad )  
+ 190:Core/Src/lcd_xpt2046.c **** { 
+ 191:Core/Src/lcd_xpt2046.c **** 	int16_t sX_Ad_Temp, sY_Ad_Temp; 
+ 192:Core/Src/lcd_xpt2046.c **** 	
+ 193:Core/Src/lcd_xpt2046.c **** 	sX_Ad_Temp = XPT2046_ReadAdc ( XPT2046_CHANNEL_X );
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 8
+
+
+ 194:Core/Src/lcd_xpt2046.c **** 
+ 195:Core/Src/lcd_xpt2046.c **** 	XPT2046_DelayUS ( 1 ); 
+ 196:Core/Src/lcd_xpt2046.c **** 
+ 197:Core/Src/lcd_xpt2046.c **** 	sY_Ad_Temp = XPT2046_ReadAdc ( XPT2046_CHANNEL_Y ); 
+ 198:Core/Src/lcd_xpt2046.c **** 	
+ 199:Core/Src/lcd_xpt2046.c **** 	
+ 200:Core/Src/lcd_xpt2046.c **** 	* sX_Ad = sX_Ad_Temp; 
+ 201:Core/Src/lcd_xpt2046.c **** 	* sY_Ad = sY_Ad_Temp; 
+ 202:Core/Src/lcd_xpt2046.c **** }
+ 203:Core/Src/lcd_xpt2046.c **** 
+ 204:Core/Src/lcd_xpt2046.c ****  
+ 205:Core/Src/lcd_xpt2046.c **** /**
+ 206:Core/Src/lcd_xpt2046.c ****   * @brief  ÔÚ´¥Ãþ XPT2046 ÆÁÄ»Ê±»ñÈ¡Ò»×é×ø±êµÄADÖµ£¬²¢¶Ô¸Ã×ø±ê½øÐÐÂË²¨
+ 207:Core/Src/lcd_xpt2046.c ****   * @param  ÎÞ
+ 208:Core/Src/lcd_xpt2046.c ****   * @retval ÂË²¨Ö®ºóµÄ×ø±êADÖµ
+ 209:Core/Src/lcd_xpt2046.c ****   */
+ 210:Core/Src/lcd_xpt2046.c **** #if   0                 //×¢Òâ£ºÐ£Õý½Ï¾«×¼£¬µ«ÊÇÏà¶Ô¸´ÔÓ£¬ËÙ¶È½ÏÂý
+ 211:Core/Src/lcd_xpt2046.c **** static uint8_t XPT2046_ReadAdc_Smooth_XY ( strType_XPT2046_Coordinate * pScreenCoordinate )
+ 212:Core/Src/lcd_xpt2046.c **** {
+ 213:Core/Src/lcd_xpt2046.c **** 	uint8_t ucCount = 0;
+ 214:Core/Src/lcd_xpt2046.c **** 	
+ 215:Core/Src/lcd_xpt2046.c **** 	int16_t sAD_X, sAD_Y;
+ 216:Core/Src/lcd_xpt2046.c **** 	int16_t sBufferArray [ 2 ] [ 9 ] = { { 0 }, { 0 } };  //×ø±êXºÍY½øÐÐ9´Î²ÉÑù
+ 217:Core/Src/lcd_xpt2046.c **** 
+ 218:Core/Src/lcd_xpt2046.c **** 	int32_t lAverage  [ 3 ], lDifference [ 3 ];
+ 219:Core/Src/lcd_xpt2046.c **** 	
+ 220:Core/Src/lcd_xpt2046.c **** 
+ 221:Core/Src/lcd_xpt2046.c **** 	do
+ 222:Core/Src/lcd_xpt2046.c **** 	{		   
+ 223:Core/Src/lcd_xpt2046.c **** 		XPT2046_ReadAdc_XY ( & sAD_X, & sAD_Y );
+ 224:Core/Src/lcd_xpt2046.c **** 		
+ 225:Core/Src/lcd_xpt2046.c **** 		sBufferArray [ 0 ] [ ucCount ] = sAD_X;  
+ 226:Core/Src/lcd_xpt2046.c **** 		sBufferArray [ 1 ] [ ucCount ] = sAD_Y;
+ 227:Core/Src/lcd_xpt2046.c **** 		
+ 228:Core/Src/lcd_xpt2046.c **** 		ucCount ++; 
+ 229:Core/Src/lcd_xpt2046.c **** 			 
+ 230:Core/Src/lcd_xpt2046.c **** 	} while ( ( XPT2046_EXTI_Read() == XPT2046_EXTI_ActiveLevel ) && ( ucCount < 9 ) ); 	//ÓÃ»§µã»÷´¥Ã
+ 231:Core/Src/lcd_xpt2046.c **** 	 
+ 232:Core/Src/lcd_xpt2046.c **** 	
+ 233:Core/Src/lcd_xpt2046.c **** 	/*Èç¹û´¥±Êµ¯Æð*/
+ 234:Core/Src/lcd_xpt2046.c **** 	if ( XPT2046_EXTI_Read() != XPT2046_EXTI_ActiveLevel )
+ 235:Core/Src/lcd_xpt2046.c **** 		ucXPT2046_TouchFlag = 0;			//´¥ÃþÖÐ¶Ï±êÖ¾¸´Î»		
+ 236:Core/Src/lcd_xpt2046.c **** 
+ 237:Core/Src/lcd_xpt2046.c **** 	
+ 238:Core/Src/lcd_xpt2046.c **** 	/* Èç¹û³É¹¦²ÉÑù9´Î,½øÐÐÂË²¨ */ 
+ 239:Core/Src/lcd_xpt2046.c **** 	if ( ucCount == 9 )   								
+ 240:Core/Src/lcd_xpt2046.c **** 	{  
+ 241:Core/Src/lcd_xpt2046.c **** 		/* Îª¼õÉÙÔËËãÁ¿,·Ö±ð·Ö3×éÈ¡Æ½¾ùÖµ */
+ 242:Core/Src/lcd_xpt2046.c **** 		lAverage  [ 0 ] = ( sBufferArray [ 0 ] [ 0 ] + sBufferArray [ 0 ] [ 1 ] + sBufferArray [ 0 ] [ 2 
+ 243:Core/Src/lcd_xpt2046.c **** 		lAverage  [ 1 ] = ( sBufferArray [ 0 ] [ 3 ] + sBufferArray [ 0 ] [ 4 ] + sBufferArray [ 0 ] [ 5 
+ 244:Core/Src/lcd_xpt2046.c **** 		lAverage  [ 2 ] = ( sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0 ] [ 7 ] + sBufferArray [ 0 ] [ 8 
+ 245:Core/Src/lcd_xpt2046.c **** 		
+ 246:Core/Src/lcd_xpt2046.c **** 		/* ¼ÆËã3×éÊý¾ÝµÄ²îÖµ */
+ 247:Core/Src/lcd_xpt2046.c **** 		lDifference [ 0 ] = lAverage  [ 0 ]-lAverage  [ 1 ];
+ 248:Core/Src/lcd_xpt2046.c **** 		lDifference [ 1 ] = lAverage  [ 1 ]-lAverage  [ 2 ];
+ 249:Core/Src/lcd_xpt2046.c **** 		lDifference [ 2 ] = lAverage  [ 2 ]-lAverage  [ 0 ];
+ 250:Core/Src/lcd_xpt2046.c **** 		
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 9
+
+
+ 251:Core/Src/lcd_xpt2046.c **** 		/* ¶ÔÉÏÊö²îÖµÈ¡¾ø¶ÔÖµ */
+ 252:Core/Src/lcd_xpt2046.c **** 		lDifference [ 0 ] = lDifference [ 0 ]>0?lDifference [ 0 ]: ( -lDifference [ 0 ] );
+ 253:Core/Src/lcd_xpt2046.c **** 		lDifference [ 1 ] = lDifference [ 1 ]>0?lDifference [ 1 ]: ( -lDifference [ 1 ] );
+ 254:Core/Src/lcd_xpt2046.c **** 		lDifference [ 2 ] = lDifference [ 2 ]>0?lDifference [ 2 ]: ( -lDifference [ 2 ] );
+ 255:Core/Src/lcd_xpt2046.c **** 		
+ 256:Core/Src/lcd_xpt2046.c **** 		
+ 257:Core/Src/lcd_xpt2046.c **** 		/* ÅÐ¶Ï¾ø¶Ô²îÖµÊÇ·ñ¶¼³¬¹ý²îÖµÃÅÏÞ£¬Èç¹ûÕâ3¸ö¾ø¶Ô²îÖµ¶¼³¬¹ýÃÅÏÞÖµ£¬ÔòÅÐ¶¨Õâ´Î²ÉÑùµãÎªÒ°µã,Å×Æú²ÉÑù
+ 258:Core/Src/lcd_xpt2046.c **** 		if (  lDifference [ 0 ] > XPT2046_THRESHOLD_CalDiff  &&  lDifference [ 1 ] > XPT2046_THRESHOLD_Ca
+ 259:Core/Src/lcd_xpt2046.c **** 			return 0;
+ 260:Core/Src/lcd_xpt2046.c **** 		
+ 261:Core/Src/lcd_xpt2046.c **** 		
+ 262:Core/Src/lcd_xpt2046.c **** 		/* ¼ÆËãËüÃÇµÄÆ½¾ùÖµ£¬Í¬Ê±¸³Öµ¸østrScreenCoordinate */ 
+ 263:Core/Src/lcd_xpt2046.c **** 		if ( lDifference [ 0 ] < lDifference [ 1 ] )
+ 264:Core/Src/lcd_xpt2046.c **** 		{
+ 265:Core/Src/lcd_xpt2046.c **** 			if ( lDifference [ 2 ] < lDifference [ 0 ] ) 
+ 266:Core/Src/lcd_xpt2046.c **** 				pScreenCoordinate ->x = ( lAverage  [ 0 ] + lAverage  [ 2 ] ) / 2;
+ 267:Core/Src/lcd_xpt2046.c **** 			else 
+ 268:Core/Src/lcd_xpt2046.c **** 				pScreenCoordinate ->x = ( lAverage  [ 0 ] + lAverage  [ 1 ] ) / 2;	
+ 269:Core/Src/lcd_xpt2046.c **** 		}
+ 270:Core/Src/lcd_xpt2046.c **** 		
+ 271:Core/Src/lcd_xpt2046.c **** 		else if ( lDifference [ 2 ] < lDifference [ 1 ] ) 
+ 272:Core/Src/lcd_xpt2046.c **** 			pScreenCoordinate -> x = ( lAverage  [ 0 ] + lAverage  [ 2 ] ) / 2;
+ 273:Core/Src/lcd_xpt2046.c **** 		
+ 274:Core/Src/lcd_xpt2046.c **** 		else 
+ 275:Core/Src/lcd_xpt2046.c **** 			pScreenCoordinate ->x = ( lAverage  [ 1 ] + lAverage  [ 2 ] ) / 2;
+ 276:Core/Src/lcd_xpt2046.c **** 		
+ 277:Core/Src/lcd_xpt2046.c **** 		
+ 278:Core/Src/lcd_xpt2046.c **** 		/* Í¬ÉÏ£¬¼ÆËãYµÄÆ½¾ùÖµ */
+ 279:Core/Src/lcd_xpt2046.c **** 		lAverage  [ 0 ] = ( sBufferArray [ 1 ] [ 0 ] + sBufferArray [ 1 ] [ 1 ] + sBufferArray [ 1 ] [ 2 
+ 280:Core/Src/lcd_xpt2046.c **** 		lAverage  [ 1 ] = ( sBufferArray [ 1 ] [ 3 ] + sBufferArray [ 1 ] [ 4 ] + sBufferArray [ 1 ] [ 5 
+ 281:Core/Src/lcd_xpt2046.c **** 		lAverage  [ 2 ] = ( sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1 ] [ 7 ] + sBufferArray [ 1 ] [ 8 
+ 282:Core/Src/lcd_xpt2046.c **** 		
+ 283:Core/Src/lcd_xpt2046.c **** 		lDifference [ 0 ] = lAverage  [ 0 ] - lAverage  [ 1 ];
+ 284:Core/Src/lcd_xpt2046.c **** 		lDifference [ 1 ] = lAverage  [ 1 ] - lAverage  [ 2 ];
+ 285:Core/Src/lcd_xpt2046.c **** 		lDifference [ 2 ] = lAverage  [ 2 ] - lAverage  [ 0 ];
+ 286:Core/Src/lcd_xpt2046.c **** 		
+ 287:Core/Src/lcd_xpt2046.c **** 		/* È¡¾ø¶ÔÖµ */
+ 288:Core/Src/lcd_xpt2046.c **** 		lDifference [ 0 ] = lDifference [ 0 ] > 0 ? lDifference [ 0 ] : ( - lDifference [ 0 ] );
+ 289:Core/Src/lcd_xpt2046.c **** 		lDifference [ 1 ] = lDifference [ 1 ] > 0 ? lDifference [ 1 ] : ( - lDifference [ 1 ] );
+ 290:Core/Src/lcd_xpt2046.c **** 		lDifference [ 2 ] = lDifference [ 2 ] > 0 ? lDifference [ 2 ] : ( - lDifference [ 2 ] );
+ 291:Core/Src/lcd_xpt2046.c **** 		
+ 292:Core/Src/lcd_xpt2046.c **** 		
+ 293:Core/Src/lcd_xpt2046.c **** 		if ( lDifference [ 0 ] > XPT2046_THRESHOLD_CalDiff && lDifference [ 1 ] > XPT2046_THRESHOLD_CalDi
+ 294:Core/Src/lcd_xpt2046.c **** 			return 0;
+ 295:Core/Src/lcd_xpt2046.c **** 		
+ 296:Core/Src/lcd_xpt2046.c **** 		if ( lDifference [ 0 ] < lDifference [ 1 ] )
+ 297:Core/Src/lcd_xpt2046.c **** 		{
+ 298:Core/Src/lcd_xpt2046.c **** 			if ( lDifference [ 2 ] < lDifference [ 0 ] ) 
+ 299:Core/Src/lcd_xpt2046.c **** 				pScreenCoordinate ->y =  ( lAverage  [ 0 ] + lAverage  [ 2 ] ) / 2;
+ 300:Core/Src/lcd_xpt2046.c **** 			else 
+ 301:Core/Src/lcd_xpt2046.c **** 				pScreenCoordinate ->y =  ( lAverage  [ 0 ] + lAverage  [ 1 ] ) / 2;	
+ 302:Core/Src/lcd_xpt2046.c **** 		}
+ 303:Core/Src/lcd_xpt2046.c **** 		else if ( lDifference [ 2 ] < lDifference [ 1 ] ) 
+ 304:Core/Src/lcd_xpt2046.c **** 			pScreenCoordinate ->y =  ( lAverage  [ 0 ] + lAverage  [ 2 ] ) / 2;
+ 305:Core/Src/lcd_xpt2046.c **** 		else
+ 306:Core/Src/lcd_xpt2046.c **** 			pScreenCoordinate ->y =  ( lAverage  [ 1 ] + lAverage  [ 2 ] ) / 2;
+ 307:Core/Src/lcd_xpt2046.c **** 				
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 10
+
+
+ 308:Core/Src/lcd_xpt2046.c **** 		return 1;		
+ 309:Core/Src/lcd_xpt2046.c **** 	}
+ 310:Core/Src/lcd_xpt2046.c **** 	
+ 311:Core/Src/lcd_xpt2046.c **** 	else if ( ucCount > 1 )
+ 312:Core/Src/lcd_xpt2046.c **** 	{
+ 313:Core/Src/lcd_xpt2046.c **** 		pScreenCoordinate ->x = sBufferArray [ 0 ] [ 0 ];
+ 314:Core/Src/lcd_xpt2046.c **** 		pScreenCoordinate ->y = sBufferArray [ 1 ] [ 0 ];	
+ 315:Core/Src/lcd_xpt2046.c **** 		return 0;		
+ 316:Core/Src/lcd_xpt2046.c **** 	}  	
+ 317:Core/Src/lcd_xpt2046.c **** 	return 0; 	
+ 318:Core/Src/lcd_xpt2046.c **** }
+ 319:Core/Src/lcd_xpt2046.c **** 
+ 320:Core/Src/lcd_xpt2046.c **** 
+ 321:Core/Src/lcd_xpt2046.c **** #else     //×¢Òâ£º»­°åÓ¦ÓÃÊµÀý×¨ÓÃ,²»ÊÇºÜ¾«×¼£¬µ«ÊÇ¼òµ¥£¬ËÙ¶È±È½Ï¿ì   
+ 322:Core/Src/lcd_xpt2046.c **** static uint8_t XPT2046_ReadAdc_Smooth_XY ( strType_XPT2046_Coordinate * pScreenCoordinate )
+ 323:Core/Src/lcd_xpt2046.c **** {
+ 324:Core/Src/lcd_xpt2046.c **** 	uint8_t ucCount = 0, i;
+ 325:Core/Src/lcd_xpt2046.c **** 	
+ 326:Core/Src/lcd_xpt2046.c **** 	int16_t sAD_X, sAD_Y;
+ 327:Core/Src/lcd_xpt2046.c **** 	int16_t sBufferArray [ 2 ] [ 10 ] = { { 0 },{ 0 } };  //×ø±êXºÍY½øÐÐ¶à´Î²ÉÑù
+ 328:Core/Src/lcd_xpt2046.c **** 	
+ 329:Core/Src/lcd_xpt2046.c **** 	//´æ´¢²ÉÑùÖÐµÄ×îÐ¡Öµ¡¢×î´óÖµ
+ 330:Core/Src/lcd_xpt2046.c **** 	int32_t lX_Min, lX_Max, lY_Min, lY_Max;
+ 331:Core/Src/lcd_xpt2046.c **** 
+ 332:Core/Src/lcd_xpt2046.c **** 
+ 333:Core/Src/lcd_xpt2046.c **** 	/* Ñ­»·²ÉÑù10´Î */ 
+ 334:Core/Src/lcd_xpt2046.c **** 	do					       				
+ 335:Core/Src/lcd_xpt2046.c **** 	{		  
+ 336:Core/Src/lcd_xpt2046.c **** 		XPT2046_ReadAdc_XY ( & sAD_X, & sAD_Y );  
+ 337:Core/Src/lcd_xpt2046.c **** 		
+ 338:Core/Src/lcd_xpt2046.c **** 		sBufferArray [ 0 ] [ ucCount ] = sAD_X;  
+ 339:Core/Src/lcd_xpt2046.c **** 		sBufferArray [ 1 ] [ ucCount ] = sAD_Y;
+ 340:Core/Src/lcd_xpt2046.c **** 		
+ 341:Core/Src/lcd_xpt2046.c **** 		ucCount ++;  
+ 342:Core/Src/lcd_xpt2046.c **** 		
+ 343:Core/Src/lcd_xpt2046.c **** 	}	while ( ( XPT2046_PENIRQ_Read() == XPT2046_PENIRQ_ActiveLevel ) && ( ucCount < 10 ) );//ÓÃ»§µã»÷
+ 344:Core/Src/lcd_xpt2046.c **** 	
+ 345:Core/Src/lcd_xpt2046.c **** 	
+ 346:Core/Src/lcd_xpt2046.c **** 	/*Èç¹û´¥±Êµ¯Æð*/
+ 347:Core/Src/lcd_xpt2046.c **** 	if ( XPT2046_PENIRQ_Read() != XPT2046_PENIRQ_ActiveLevel )
+ 348:Core/Src/lcd_xpt2046.c **** 		ucXPT2046_TouchFlag = 0;			//ÖÐ¶Ï±êÖ¾¸´Î»
+ 349:Core/Src/lcd_xpt2046.c **** 
+ 350:Core/Src/lcd_xpt2046.c **** 	
+ 351:Core/Src/lcd_xpt2046.c **** 	/*Èç¹û³É¹¦²ÉÑù10¸öÑù±¾*/
+ 352:Core/Src/lcd_xpt2046.c **** 	if ( ucCount ==10 )		 					
+ 353:Core/Src/lcd_xpt2046.c **** 	{
+ 354:Core/Src/lcd_xpt2046.c **** 		lX_Max = lX_Min = sBufferArray [ 0 ] [ 0 ];
+ 355:Core/Src/lcd_xpt2046.c **** 		lY_Max = lY_Min = sBufferArray [ 1 ] [ 0 ];       
+ 356:Core/Src/lcd_xpt2046.c **** 		
+ 357:Core/Src/lcd_xpt2046.c **** 		for ( i = 1; i < 10; i ++ )
+ 358:Core/Src/lcd_xpt2046.c **** 		{
+ 359:Core/Src/lcd_xpt2046.c **** 			if ( sBufferArray[ 0 ] [ i ] < lX_Min )
+ 360:Core/Src/lcd_xpt2046.c **** 				lX_Min = sBufferArray [ 0 ] [ i ];
+ 361:Core/Src/lcd_xpt2046.c **** 			
+ 362:Core/Src/lcd_xpt2046.c **** 			else if ( sBufferArray [ 0 ] [ i ] > lX_Max )
+ 363:Core/Src/lcd_xpt2046.c **** 				lX_Max = sBufferArray [ 0 ] [ i ];
+ 364:Core/Src/lcd_xpt2046.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 11
+
+
+ 365:Core/Src/lcd_xpt2046.c **** 		}
+ 366:Core/Src/lcd_xpt2046.c **** 		
+ 367:Core/Src/lcd_xpt2046.c **** 		for ( i = 1; i < 10; i ++ )
+ 368:Core/Src/lcd_xpt2046.c **** 		{
+ 369:Core/Src/lcd_xpt2046.c **** 			if ( sBufferArray [ 1 ] [ i ] < lY_Min )
+ 370:Core/Src/lcd_xpt2046.c **** 				lY_Min = sBufferArray [ 1 ] [ i ];
+ 371:Core/Src/lcd_xpt2046.c **** 			
+ 372:Core/Src/lcd_xpt2046.c **** 			else if ( sBufferArray [ 1 ] [ i ] > lY_Max )
+ 373:Core/Src/lcd_xpt2046.c **** 				lY_Max = sBufferArray [ 1 ] [ i ];
+ 374:Core/Src/lcd_xpt2046.c **** 
+ 375:Core/Src/lcd_xpt2046.c **** 		}
+ 376:Core/Src/lcd_xpt2046.c **** 		
+ 377:Core/Src/lcd_xpt2046.c **** 		
+ 378:Core/Src/lcd_xpt2046.c **** 		/*È¥³ý×îÐ¡ÖµºÍ×î´óÖµÖ®ºóÇóÆ½¾ùÖµ*/
+ 379:Core/Src/lcd_xpt2046.c **** 		pScreenCoordinate ->x =  ( sBufferArray [ 0 ] [ 0 ] + sBufferArray [ 0 ] [ 1 ] + sBufferArray [ 0
+ 380:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 0 ] [ 5 ] + sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0
+ 381:Core/Src/lcd_xpt2046.c **** 		
+ 382:Core/Src/lcd_xpt2046.c **** 		pScreenCoordinate ->y =  ( sBufferArray [ 1 ] [ 0 ] + sBufferArray [ 1 ] [ 1 ] + sBufferArray [ 1
+ 383:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 1 ] [ 5 ] + sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1
+ 384:Core/Src/lcd_xpt2046.c **** 		
+ 385:Core/Src/lcd_xpt2046.c **** 		
+ 386:Core/Src/lcd_xpt2046.c **** 		return 1;		
+ 387:Core/Src/lcd_xpt2046.c **** 		
+ 388:Core/Src/lcd_xpt2046.c **** 	}   	
+ 389:Core/Src/lcd_xpt2046.c **** 	return 0;    	
+ 390:Core/Src/lcd_xpt2046.c **** }
+ 391:Core/Src/lcd_xpt2046.c **** 
+ 392:Core/Src/lcd_xpt2046.c **** 
+ 393:Core/Src/lcd_xpt2046.c **** #endif
+ 394:Core/Src/lcd_xpt2046.c **** 
+ 395:Core/Src/lcd_xpt2046.c **** 
+ 396:Core/Src/lcd_xpt2046.c **** /**
+ 397:Core/Src/lcd_xpt2046.c ****   * @brief  ¼ÆËã XPT2046 ´¥Ãþ×ø±êÐ£ÕýÏµÊý£¨×¢Òâ£ºÖ»ÓÐÔÚLCDºÍ´¥ÃþÆÁ¼äµÄÎó²î½Ç¶È·Ç³£Ð¡Ê±,²ÅÄÜÔËÓÃÏÂÃæ
+ 398:Core/Src/lcd_xpt2046.c ****   * @param  pDisplayCoordinate £ºÆÁÄ»ÈËÎªÏÔÊ¾µÄÒÑÖª×ø±ê
+ 399:Core/Src/lcd_xpt2046.c ****   * @param  pstrScreenSample £º¶ÔÒÑÖª×ø±êµã´¥ÃþÊ± XPT2046 ²úÉúµÄ×ø±ê
+ 400:Core/Src/lcd_xpt2046.c ****   * @param  pCalibrationFactor £º¸ù¾ÝÈËÎªÉè¶¨×ø±êºÍ²ÉÑù»ØÀ´µÄ×ø±ê¼ÆËã³öÀ´µÄÆÁÄ»´¥ÃþÐ£ÕýÏµÊý
+ 401:Core/Src/lcd_xpt2046.c ****   * @retval ¼ÆËã×´Ì¬
+ 402:Core/Src/lcd_xpt2046.c **** 	*   ¸Ã·µ»ØÖµÎªÒÔÏÂÖµÖ®Ò»£º
+ 403:Core/Src/lcd_xpt2046.c ****   *     @arg 1 :¼ÆËã³É¹¦
+ 404:Core/Src/lcd_xpt2046.c ****   *     @arg 0 :¼ÆËãÊ§°Ü
+ 405:Core/Src/lcd_xpt2046.c ****   */
+ 406:Core/Src/lcd_xpt2046.c **** static uint8_t XPT2046_Calculate_CalibrationFactor ( strType_XPT2046_Coordinate * pDisplayCoordinat
+ 407:Core/Src/lcd_xpt2046.c **** {
+ 197              		.loc 1 407 1 is_stmt 1 view -0
+ 198              		.cfi_startproc
+ 199              		@ args = 0, pretend = 0, frame = 0
+ 200              		@ frame_needed = 0, uses_anonymous_args = 0
+ 201              		.loc 1 407 1 is_stmt 0 view .LVU49
+ 202 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 203              	.LCFI3:
+ 204              		.cfi_def_cfa_offset 24
+ 205              		.cfi_offset 4, -24
+ 206              		.cfi_offset 5, -20
+ 207              		.cfi_offset 6, -16
+ 208              		.cfi_offset 7, -12
+ 209              		.cfi_offset 8, -8
+ 210              		.cfi_offset 14, -4
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 12
+
+
+ 211 0004 0546     		mov	r5, r0
+ 212 0006 0C46     		mov	r4, r1
+ 213 0008 1646     		mov	r6, r2
+ 408:Core/Src/lcd_xpt2046.c **** 	uint8_t ucRet = 1;
+ 214              		.loc 1 408 2 is_stmt 1 view .LVU50
+ 215              	.LVL16:
+ 409:Core/Src/lcd_xpt2046.c **** 
+ 410:Core/Src/lcd_xpt2046.c **** 	
+ 411:Core/Src/lcd_xpt2046.c **** 	/* K£½ ( X0£­X2 )  ( Y1£­Y2 )£­ ( X1£­X2 )  ( Y0£­Y2 ) */
+ 412:Core/Src/lcd_xpt2046.c **** 	pCalibrationFactor -> Divider =  ( ( pScreenSample [ 0 ] .x - pScreenSample [ 2 ] .x ) *  ( pScree
+ 216              		.loc 1 412 2 view .LVU51
+ 217              		.loc 1 412 59 is_stmt 0 view .LVU52
+ 218 000a B1F90030 		ldrsh	r3, [r1]
+ 219              		.loc 1 412 84 view .LVU53
+ 220 000e B1F91000 		ldrsh	r0, [r1, #16]
+ 221              	.LVL17:
+ 222              		.loc 1 412 62 view .LVU54
+ 223 0012 1B1A     		subs	r3, r3, r0
+ 224              		.loc 1 412 114 view .LVU55
+ 225 0014 B1F90A10 		ldrsh	r1, [r1, #10]
+ 226              	.LVL18:
+ 227              		.loc 1 412 139 view .LVU56
+ 228 0018 B4F912C0 		ldrsh	ip, [r4, #18]
+ 229              		.loc 1 412 117 view .LVU57
+ 230 001c A1EB0C01 		sub	r1, r1, ip
+ 231              		.loc 1 412 89 view .LVU58
+ 232 0020 01FB03F3 		mul	r3, r1, r3
+ 413:Core/Src/lcd_xpt2046.c **** 									                 ( ( pScreenSample [ 1 ] .x - pScreenSample [ 2 ] .x ) *  ( pScreenSample 
+ 233              		.loc 1 413 51 view .LVU59
+ 234 0024 B4F90820 		ldrsh	r2, [r4, #8]
+ 235              	.LVL19:
+ 236              		.loc 1 413 54 view .LVU60
+ 237 0028 121A     		subs	r2, r2, r0
+ 238              		.loc 1 413 106 view .LVU61
+ 239 002a B4F90200 		ldrsh	r0, [r4, #2]
+ 240              		.loc 1 413 109 view .LVU62
+ 241 002e A0EB0C00 		sub	r0, r0, ip
+ 412:Core/Src/lcd_xpt2046.c **** 									                 ( ( pScreenSample [ 1 ] .x - pScreenSample [ 2 ] .x ) *  ( pScreenSample 
+ 242              		.loc 1 412 32 view .LVU63
+ 243 0032 00FB1230 		mls	r0, r0, r2, r3
+ 244 0036 FFF7FEFF 		bl	__aeabi_i2f
+ 245              	.LVL20:
+ 246 003a B061     		str	r0, [r6, #24]	@ float
+ 414:Core/Src/lcd_xpt2046.c **** 	
+ 415:Core/Src/lcd_xpt2046.c **** 	
+ 416:Core/Src/lcd_xpt2046.c **** 	if (  pCalibrationFactor -> Divider == 0  )
+ 247              		.loc 1 416 2 is_stmt 1 view .LVU64
+ 248              		.loc 1 416 5 is_stmt 0 view .LVU65
+ 249 003c 0021     		movs	r1, #0
+ 250 003e FFF7FEFF 		bl	__aeabi_fcmpeq
+ 251              	.LVL21:
+ 252 0042 0028     		cmp	r0, #0
+ 253 0044 40F0B180 		bne	.L17
+ 417:Core/Src/lcd_xpt2046.c **** 		ucRet = 0;
+ 418:Core/Src/lcd_xpt2046.c **** 
+ 419:Core/Src/lcd_xpt2046.c **** 	else
+ 420:Core/Src/lcd_xpt2046.c **** 	{
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 13
+
+
+ 421:Core/Src/lcd_xpt2046.c **** 		/* A£½ (  ( XD0£­XD2 )  ( Y1£­Y2 )£­ ( XD1£­XD2 )  ( Y0£­Y2 ) )£¯K	*/
+ 422:Core/Src/lcd_xpt2046.c **** 		pCalibrationFactor -> An =  ( ( pDisplayCoordinate [ 0 ] .x - pDisplayCoordinate [ 2 ] .x ) *  ( 
+ 254              		.loc 1 422 3 is_stmt 1 view .LVU66
+ 255              		.loc 1 422 60 is_stmt 0 view .LVU67
+ 256 0048 B5F90030 		ldrsh	r3, [r5]
+ 257              		.loc 1 422 90 view .LVU68
+ 258 004c B5F91000 		ldrsh	r0, [r5, #16]
+ 259              		.loc 1 422 63 view .LVU69
+ 260 0050 1B1A     		subs	r3, r3, r0
+ 261              		.loc 1 422 120 view .LVU70
+ 262 0052 B4F90A10 		ldrsh	r1, [r4, #10]
+ 263              		.loc 1 422 145 view .LVU71
+ 264 0056 B4F91270 		ldrsh	r7, [r4, #18]
+ 265              		.loc 1 422 123 view .LVU72
+ 266 005a C91B     		subs	r1, r1, r7
+ 267              		.loc 1 422 95 view .LVU73
+ 268 005c 01FB03F3 		mul	r3, r1, r3
+ 423:Core/Src/lcd_xpt2046.c **** 								                ( ( pDisplayCoordinate [ 1 ] .x - pDisplayCoordinate [ 2 ] .x ) *  ( pScree
+ 269              		.loc 1 423 54 view .LVU74
+ 270 0060 B5F90820 		ldrsh	r2, [r5, #8]
+ 271              		.loc 1 423 57 view .LVU75
+ 272 0064 121A     		subs	r2, r2, r0
+ 273              		.loc 1 423 114 view .LVU76
+ 274 0066 B4F90200 		ldrsh	r0, [r4, #2]
+ 275              		.loc 1 423 117 view .LVU77
+ 276 006a C01B     		subs	r0, r0, r7
+ 422:Core/Src/lcd_xpt2046.c **** 								                ( ( pDisplayCoordinate [ 1 ] .x - pDisplayCoordinate [ 2 ] .x ) *  ( pScree
+ 277              		.loc 1 422 28 view .LVU78
+ 278 006c 00FB1230 		mls	r0, r0, r2, r3
+ 279 0070 FFF7FEFF 		bl	__aeabi_i2f
+ 280              	.LVL22:
+ 281 0074 3060     		str	r0, [r6]	@ float
+ 424:Core/Src/lcd_xpt2046.c **** 		
+ 425:Core/Src/lcd_xpt2046.c **** 		/* B£½ (  ( X0£­X2 )  ( XD1£­XD2 )£­ ( XD0£­XD2 )  ( X1£­X2 ) )£¯K	*/
+ 426:Core/Src/lcd_xpt2046.c **** 		pCalibrationFactor -> Bn =  ( ( pScreenSample [ 0 ] .x - pScreenSample [ 2 ] .x ) *  ( pDisplayCo
+ 282              		.loc 1 426 3 is_stmt 1 view .LVU79
+ 283              		.loc 1 426 55 is_stmt 0 view .LVU80
+ 284 0076 B4F90030 		ldrsh	r3, [r4]
+ 285              		.loc 1 426 80 view .LVU81
+ 286 007a B4F91070 		ldrsh	r7, [r4, #16]
+ 287              		.loc 1 426 58 view .LVU82
+ 288 007e DB1B     		subs	r3, r3, r7
+ 289              		.loc 1 426 115 view .LVU83
+ 290 0080 B5F90810 		ldrsh	r1, [r5, #8]
+ 291              		.loc 1 426 145 view .LVU84
+ 292 0084 B5F91000 		ldrsh	r0, [r5, #16]
+ 293              		.loc 1 426 118 view .LVU85
+ 294 0088 091A     		subs	r1, r1, r0
+ 295              		.loc 1 426 85 view .LVU86
+ 296 008a 01FB03F3 		mul	r3, r1, r3
+ 427:Core/Src/lcd_xpt2046.c **** 								                ( ( pDisplayCoordinate [ 0 ] .x - pDisplayCoordinate [ 2 ] .x ) *  ( pScree
+ 297              		.loc 1 427 54 view .LVU87
+ 298 008e B5F90020 		ldrsh	r2, [r5]
+ 299              		.loc 1 427 57 view .LVU88
+ 300 0092 121A     		subs	r2, r2, r0
+ 301              		.loc 1 427 114 view .LVU89
+ 302 0094 B4F90800 		ldrsh	r0, [r4, #8]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 14
+
+
+ 303              		.loc 1 427 117 view .LVU90
+ 304 0098 C01B     		subs	r0, r0, r7
+ 426:Core/Src/lcd_xpt2046.c **** 								                ( ( pDisplayCoordinate [ 0 ] .x - pDisplayCoordinate [ 2 ] .x ) *  ( pScree
+ 305              		.loc 1 426 28 view .LVU91
+ 306 009a 00FB1230 		mls	r0, r0, r2, r3
+ 307 009e FFF7FEFF 		bl	__aeabi_i2f
+ 308              	.LVL23:
+ 309 00a2 7060     		str	r0, [r6, #4]	@ float
+ 428:Core/Src/lcd_xpt2046.c **** 		
+ 429:Core/Src/lcd_xpt2046.c **** 		/* C£½ ( Y0 ( X2XD1£­X1XD2 )+Y1 ( X0XD2£­X2XD0 )+Y2 ( X1XD0£­X0XD1 ) )£¯K */
+ 430:Core/Src/lcd_xpt2046.c **** 		pCalibrationFactor -> Cn =  ( pScreenSample [ 2 ] .x * pDisplayCoordinate [ 1 ] .x - pScreenSampl
+ 310              		.loc 1 430 3 is_stmt 1 view .LVU92
+ 311              		.loc 1 430 53 is_stmt 0 view .LVU93
+ 312 00a4 B4F91070 		ldrsh	r7, [r4, #16]
+ 313              		.loc 1 430 83 view .LVU94
+ 314 00a8 B5F90810 		ldrsh	r1, [r5, #8]
+ 315              		.loc 1 430 56 view .LVU95
+ 316 00ac 01FB07F0 		mul	r0, r1, r7
+ 317              		.loc 1 430 108 view .LVU96
+ 318 00b0 B4F90820 		ldrsh	r2, [r4, #8]
+ 319              		.loc 1 430 138 view .LVU97
+ 320 00b4 B5F91030 		ldrsh	r3, [r5, #16]
+ 321              		.loc 1 430 86 view .LVU98
+ 322 00b8 03FB1200 		mls	r0, r3, r2, r0
+ 323              		.loc 1 430 165 view .LVU99
+ 324 00bc B4F90280 		ldrsh	r8, [r4, #2]
+ 431:Core/Src/lcd_xpt2046.c **** 								                ( pScreenSample [ 0 ] .x * pDisplayCoordinate [ 2 ] .x - pScreenSample [ 2 
+ 325              		.loc 1 431 47 view .LVU100
+ 326 00c0 B4F900C0 		ldrsh	ip, [r4]
+ 327              		.loc 1 431 50 view .LVU101
+ 328 00c4 0CFB03F3 		mul	r3, ip, r3
+ 329              		.loc 1 431 132 view .LVU102
+ 330 00c8 B5F900E0 		ldrsh	lr, [r5]
+ 331              		.loc 1 431 80 view .LVU103
+ 332 00cc 0EFB1733 		mls	r3, lr, r7, r3
+ 333              		.loc 1 431 159 view .LVU104
+ 334 00d0 B4F90A70 		ldrsh	r7, [r4, #10]
+ 335              		.loc 1 431 137 view .LVU105
+ 336 00d4 07FB03F3 		mul	r3, r7, r3
+ 430:Core/Src/lcd_xpt2046.c **** 								                ( pScreenSample [ 0 ] .x * pDisplayCoordinate [ 2 ] .x - pScreenSample [ 2 
+ 337              		.loc 1 430 168 view .LVU106
+ 338 00d8 08FB0033 		mla	r3, r8, r0, r3
+ 432:Core/Src/lcd_xpt2046.c **** 								                ( pScreenSample [ 1 ] .x * pDisplayCoordinate [ 0 ] .x - pScreenSample [ 0 
+ 339              		.loc 1 432 50 view .LVU107
+ 340 00dc 0EFB02F2 		mul	r2, lr, r2
+ 341              		.loc 1 432 80 view .LVU108
+ 342 00e0 0CFB1122 		mls	r2, ip, r1, r2
+ 343              		.loc 1 432 159 view .LVU109
+ 344 00e4 B4F91200 		ldrsh	r0, [r4, #18]
+ 430:Core/Src/lcd_xpt2046.c **** 								                ( pScreenSample [ 0 ] .x * pDisplayCoordinate [ 2 ] .x - pScreenSample [ 2 
+ 345              		.loc 1 430 28 view .LVU110
+ 346 00e8 00FB0230 		mla	r0, r0, r2, r3
+ 347 00ec FFF7FEFF 		bl	__aeabi_i2f
+ 348              	.LVL24:
+ 349 00f0 B060     		str	r0, [r6, #8]	@ float
+ 433:Core/Src/lcd_xpt2046.c **** 		
+ 434:Core/Src/lcd_xpt2046.c **** 		/* D£½ (  ( YD0£­YD2 )  ( Y1£­Y2 )£­ ( YD1£­YD2 )  ( Y0£­Y2 ) )£¯K	*/
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 15
+
+
+ 435:Core/Src/lcd_xpt2046.c **** 		pCalibrationFactor -> Dn =  ( ( pDisplayCoordinate [ 0 ] .y - pDisplayCoordinate [ 2 ] .y ) *  ( 
+ 350              		.loc 1 435 3 is_stmt 1 view .LVU111
+ 351              		.loc 1 435 60 is_stmt 0 view .LVU112
+ 352 00f2 B5F90230 		ldrsh	r3, [r5, #2]
+ 353              		.loc 1 435 90 view .LVU113
+ 354 00f6 B5F91200 		ldrsh	r0, [r5, #18]
+ 355              		.loc 1 435 63 view .LVU114
+ 356 00fa 1B1A     		subs	r3, r3, r0
+ 357              		.loc 1 435 120 view .LVU115
+ 358 00fc B4F90A10 		ldrsh	r1, [r4, #10]
+ 359              		.loc 1 435 145 view .LVU116
+ 360 0100 B4F912C0 		ldrsh	ip, [r4, #18]
+ 361              		.loc 1 435 123 view .LVU117
+ 362 0104 A1EB0C01 		sub	r1, r1, ip
+ 363              		.loc 1 435 95 view .LVU118
+ 364 0108 01FB03F3 		mul	r3, r1, r3
+ 436:Core/Src/lcd_xpt2046.c **** 								                ( ( pDisplayCoordinate [ 1 ] .y - pDisplayCoordinate [ 2 ] .y ) *  ( pScree
+ 365              		.loc 1 436 54 view .LVU119
+ 366 010c B5F90A20 		ldrsh	r2, [r5, #10]
+ 367              		.loc 1 436 57 view .LVU120
+ 368 0110 121A     		subs	r2, r2, r0
+ 369              		.loc 1 436 114 view .LVU121
+ 370 0112 B4F90200 		ldrsh	r0, [r4, #2]
+ 371              		.loc 1 436 117 view .LVU122
+ 372 0116 A0EB0C00 		sub	r0, r0, ip
+ 435:Core/Src/lcd_xpt2046.c **** 								                ( ( pDisplayCoordinate [ 1 ] .y - pDisplayCoordinate [ 2 ] .y ) *  ( pScree
+ 373              		.loc 1 435 28 view .LVU123
+ 374 011a 00FB1230 		mls	r0, r0, r2, r3
+ 375 011e FFF7FEFF 		bl	__aeabi_i2f
+ 376              	.LVL25:
+ 377 0122 F060     		str	r0, [r6, #12]	@ float
+ 437:Core/Src/lcd_xpt2046.c **** 		
+ 438:Core/Src/lcd_xpt2046.c **** 		/* E£½ (  ( X0£­X2 )  ( YD1£­YD2 )£­ ( YD0£­YD2 )  ( X1£­X2 ) )£¯K	*/
+ 439:Core/Src/lcd_xpt2046.c **** 		pCalibrationFactor -> En =  ( ( pScreenSample [ 0 ] .x - pScreenSample [ 2 ] .x ) *  ( pDisplayCo
+ 378              		.loc 1 439 3 is_stmt 1 view .LVU124
+ 379              		.loc 1 439 55 is_stmt 0 view .LVU125
+ 380 0124 B4F90030 		ldrsh	r3, [r4]
+ 381              		.loc 1 439 80 view .LVU126
+ 382 0128 B4F910C0 		ldrsh	ip, [r4, #16]
+ 383              		.loc 1 439 58 view .LVU127
+ 384 012c A3EB0C03 		sub	r3, r3, ip
+ 385              		.loc 1 439 115 view .LVU128
+ 386 0130 B5F90A10 		ldrsh	r1, [r5, #10]
+ 387              		.loc 1 439 145 view .LVU129
+ 388 0134 B5F91200 		ldrsh	r0, [r5, #18]
+ 389              		.loc 1 439 118 view .LVU130
+ 390 0138 091A     		subs	r1, r1, r0
+ 391              		.loc 1 439 85 view .LVU131
+ 392 013a 01FB03F3 		mul	r3, r1, r3
+ 440:Core/Src/lcd_xpt2046.c **** 								                ( ( pDisplayCoordinate [ 0 ] .y - pDisplayCoordinate [ 2 ] .y ) *  ( pScree
+ 393              		.loc 1 440 54 view .LVU132
+ 394 013e B5F90220 		ldrsh	r2, [r5, #2]
+ 395              		.loc 1 440 57 view .LVU133
+ 396 0142 121A     		subs	r2, r2, r0
+ 397              		.loc 1 440 114 view .LVU134
+ 398 0144 B4F90800 		ldrsh	r0, [r4, #8]
+ 399              		.loc 1 440 117 view .LVU135
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 16
+
+
+ 400 0148 A0EB0C00 		sub	r0, r0, ip
+ 439:Core/Src/lcd_xpt2046.c **** 								                ( ( pDisplayCoordinate [ 0 ] .y - pDisplayCoordinate [ 2 ] .y ) *  ( pScree
+ 401              		.loc 1 439 28 view .LVU136
+ 402 014c 00FB1230 		mls	r0, r0, r2, r3
+ 403 0150 FFF7FEFF 		bl	__aeabi_i2f
+ 404              	.LVL26:
+ 405 0154 3061     		str	r0, [r6, #16]	@ float
+ 441:Core/Src/lcd_xpt2046.c **** 		
+ 442:Core/Src/lcd_xpt2046.c **** 		
+ 443:Core/Src/lcd_xpt2046.c **** 		/* F£½ ( Y0 ( X2YD1£­X1YD2 )+Y1 ( X0YD2£­X2YD0 )+Y2 ( X1YD0£­X0YD1 ) )£¯K */
+ 444:Core/Src/lcd_xpt2046.c **** 		pCalibrationFactor -> Fn =  ( pScreenSample [ 2 ] .x * pDisplayCoordinate [ 1 ] .y - pScreenSampl
+ 406              		.loc 1 444 3 is_stmt 1 view .LVU137
+ 407              		.loc 1 444 53 is_stmt 0 view .LVU138
+ 408 0156 B4F910E0 		ldrsh	lr, [r4, #16]
+ 409              		.loc 1 444 83 view .LVU139
+ 410 015a B5F90A10 		ldrsh	r1, [r5, #10]
+ 411              		.loc 1 444 56 view .LVU140
+ 412 015e 01FB0EF0 		mul	r0, r1, lr
+ 413              		.loc 1 444 108 view .LVU141
+ 414 0162 B4F90820 		ldrsh	r2, [r4, #8]
+ 415              		.loc 1 444 138 view .LVU142
+ 416 0166 B5F91230 		ldrsh	r3, [r5, #18]
+ 417              		.loc 1 444 86 view .LVU143
+ 418 016a 03FB1200 		mls	r0, r3, r2, r0
+ 419              		.loc 1 444 165 view .LVU144
+ 420 016e B4F90270 		ldrsh	r7, [r4, #2]
+ 445:Core/Src/lcd_xpt2046.c **** 								                ( pScreenSample [ 0 ] .x * pDisplayCoordinate [ 2 ] .y - pScreenSample [ 2 
+ 421              		.loc 1 445 47 view .LVU145
+ 422 0172 B4F900C0 		ldrsh	ip, [r4]
+ 423              		.loc 1 445 50 view .LVU146
+ 424 0176 0CFB03F3 		mul	r3, ip, r3
+ 425              		.loc 1 445 132 view .LVU147
+ 426 017a B5F90250 		ldrsh	r5, [r5, #2]
+ 427              	.LVL27:
+ 428              		.loc 1 445 80 view .LVU148
+ 429 017e 05FB1E33 		mls	r3, r5, lr, r3
+ 430              		.loc 1 445 159 view .LVU149
+ 431 0182 B4F90AE0 		ldrsh	lr, [r4, #10]
+ 432              		.loc 1 445 137 view .LVU150
+ 433 0186 0EFB03F3 		mul	r3, lr, r3
+ 444:Core/Src/lcd_xpt2046.c **** 								                ( pScreenSample [ 0 ] .x * pDisplayCoordinate [ 2 ] .y - pScreenSample [ 2 
+ 434              		.loc 1 444 168 view .LVU151
+ 435 018a 07FB0033 		mla	r3, r7, r0, r3
+ 446:Core/Src/lcd_xpt2046.c **** 								                ( pScreenSample [ 1 ] .x * pDisplayCoordinate [ 0 ] .y - pScreenSample [ 0 
+ 436              		.loc 1 446 50 view .LVU152
+ 437 018e 05FB02F2 		mul	r2, r5, r2
+ 438              		.loc 1 446 80 view .LVU153
+ 439 0192 0CFB1122 		mls	r2, ip, r1, r2
+ 440              		.loc 1 446 159 view .LVU154
+ 441 0196 B4F91200 		ldrsh	r0, [r4, #18]
+ 444:Core/Src/lcd_xpt2046.c **** 								                ( pScreenSample [ 0 ] .x * pDisplayCoordinate [ 2 ] .y - pScreenSample [ 2 
+ 442              		.loc 1 444 28 view .LVU155
+ 443 019a 00FB0230 		mla	r0, r0, r2, r3
+ 444 019e FFF7FEFF 		bl	__aeabi_i2f
+ 445              	.LVL28:
+ 446 01a2 7061     		str	r0, [r6, #20]	@ float
+ 408:Core/Src/lcd_xpt2046.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 17
+
+
+ 447              		.loc 1 408 10 view .LVU156
+ 448 01a4 0120     		movs	r0, #1
+ 449              	.L16:
+ 450              	.LVL29:
+ 447:Core/Src/lcd_xpt2046.c **** 			
+ 448:Core/Src/lcd_xpt2046.c **** 	}
+ 449:Core/Src/lcd_xpt2046.c **** 	
+ 450:Core/Src/lcd_xpt2046.c **** 	
+ 451:Core/Src/lcd_xpt2046.c **** 	return ucRet;
+ 451              		.loc 1 451 2 is_stmt 1 view .LVU157
+ 452:Core/Src/lcd_xpt2046.c **** 	
+ 453:Core/Src/lcd_xpt2046.c **** 	
+ 454:Core/Src/lcd_xpt2046.c **** }
+ 452              		.loc 1 454 1 is_stmt 0 view .LVU158
+ 453 01a6 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 454              	.LVL30:
+ 455              	.L17:
+ 417:Core/Src/lcd_xpt2046.c **** 
+ 456              		.loc 1 417 9 view .LVU159
+ 457 01aa 0020     		movs	r0, #0
+ 458 01ac FBE7     		b	.L16
+ 459              		.cfi_endproc
+ 460              	.LFE75:
+ 462              		.section	.text.ILI9341_DrawCross,"ax",%progbits
+ 463              		.align	1
+ 464              		.syntax unified
+ 465              		.thumb
+ 466              		.thumb_func
+ 468              	ILI9341_DrawCross:
+ 469              	.LVL31:
+ 470              	.LFB76:
+ 455:Core/Src/lcd_xpt2046.c **** 
+ 456:Core/Src/lcd_xpt2046.c **** 
+ 457:Core/Src/lcd_xpt2046.c **** /**
+ 458:Core/Src/lcd_xpt2046.c ****   * @brief  ÔÚ ILI9341 ÉÏÏÔÊ¾Ð£Õý´¥ÃþÊ±ÐèÒªµÄÊ®×Ö
+ 459:Core/Src/lcd_xpt2046.c ****   * @param  usX £ºÔÚÌØ¶¨É¨Ãè·½ÏòÏÂÊ®×Ö½»²æµãµÄX×ø±ê
+ 460:Core/Src/lcd_xpt2046.c ****   * @param  usY £ºÔÚÌØ¶¨É¨Ãè·½ÏòÏÂÊ®×Ö½»²æµãµÄY×ø±ê
+ 461:Core/Src/lcd_xpt2046.c ****   * @retval ÎÞ
+ 462:Core/Src/lcd_xpt2046.c ****   */
+ 463:Core/Src/lcd_xpt2046.c **** static void ILI9341_DrawCross ( uint16_t usX, uint16_t usY )
+ 464:Core/Src/lcd_xpt2046.c **** {
+ 471              		.loc 1 464 1 is_stmt 1 view -0
+ 472              		.cfi_startproc
+ 473              		@ args = 0, pretend = 0, frame = 0
+ 474              		@ frame_needed = 0, uses_anonymous_args = 0
+ 475              		.loc 1 464 1 is_stmt 0 view .LVU161
+ 476 0000 38B5     		push	{r3, r4, r5, lr}
+ 477              	.LCFI4:
+ 478              		.cfi_def_cfa_offset 16
+ 479              		.cfi_offset 3, -16
+ 480              		.cfi_offset 4, -12
+ 481              		.cfi_offset 5, -8
+ 482              		.cfi_offset 14, -4
+ 483 0002 0546     		mov	r5, r0
+ 484 0004 0C46     		mov	r4, r1
+ 465:Core/Src/lcd_xpt2046.c **** 	ILI9341_DrawLine(usX-10,usY,usX+10,usY);
+ 485              		.loc 1 465 2 is_stmt 1 view .LVU162
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 18
+
+
+ 486 0006 00F10A02 		add	r2, r0, #10
+ 487 000a 0A38     		subs	r0, r0, #10
+ 488              	.LVL32:
+ 489              		.loc 1 465 2 is_stmt 0 view .LVU163
+ 490 000c 0B46     		mov	r3, r1
+ 491 000e 92B2     		uxth	r2, r2
+ 492 0010 80B2     		uxth	r0, r0
+ 493 0012 FFF7FEFF 		bl	ILI9341_DrawLine
+ 494              	.LVL33:
+ 466:Core/Src/lcd_xpt2046.c **** 	ILI9341_DrawLine(usX, usY - 10, usX, usY+10);	
+ 495              		.loc 1 466 2 is_stmt 1 view .LVU164
+ 496 0016 04F10A03 		add	r3, r4, #10
+ 497 001a A4F10A01 		sub	r1, r4, #10
+ 498 001e 9BB2     		uxth	r3, r3
+ 499 0020 2A46     		mov	r2, r5
+ 500 0022 89B2     		uxth	r1, r1
+ 501 0024 2846     		mov	r0, r5
+ 502 0026 FFF7FEFF 		bl	ILI9341_DrawLine
+ 503              	.LVL34:
+ 467:Core/Src/lcd_xpt2046.c **** }
+ 504              		.loc 1 467 1 is_stmt 0 view .LVU165
+ 505 002a 38BD     		pop	{r3, r4, r5, pc}
+ 506              		.cfi_endproc
+ 507              	.LFE76:
+ 509              		.section	.text.XPT2046_ReadCMD,"ax",%progbits
+ 510              		.align	1
+ 511              		.syntax unified
+ 512              		.thumb
+ 513              		.thumb_func
+ 515              	XPT2046_ReadCMD:
+ 516              	.LFB71:
+ 152:Core/Src/lcd_xpt2046.c **** 	uint8_t i;
+ 517              		.loc 1 152 1 is_stmt 1 view -0
+ 518              		.cfi_startproc
+ 519              		@ args = 0, pretend = 0, frame = 0
+ 520              		@ frame_needed = 0, uses_anonymous_args = 0
+ 521 0000 70B5     		push	{r4, r5, r6, lr}
+ 522              	.LCFI5:
+ 523              		.cfi_def_cfa_offset 16
+ 524              		.cfi_offset 4, -16
+ 525              		.cfi_offset 5, -12
+ 526              		.cfi_offset 6, -8
+ 527              		.cfi_offset 14, -4
+ 153:Core/Src/lcd_xpt2046.c **** 	uint16_t usBuf=0, usTemp;
+ 528              		.loc 1 153 2 view .LVU167
+ 154:Core/Src/lcd_xpt2046.c **** 	XPT2046_MOSI_0();
+ 529              		.loc 1 154 2 view .LVU168
+ 530              	.LVL35:
+ 155:Core/Src/lcd_xpt2046.c **** 	XPT2046_CLK_HIGH();
+ 531              		.loc 1 155 2 view .LVU169
+ 532 0002 104B     		ldr	r3, .L25
+ 533 0004 4FF00062 		mov	r2, #134217728
+ 534 0008 1A61     		str	r2, [r3, #16]
+ 155:Core/Src/lcd_xpt2046.c **** 	XPT2046_CLK_HIGH();
+ 535              		.loc 1 155 18 view .LVU170
+ 156:Core/Src/lcd_xpt2046.c **** 	for ( i=0;i<12;i++ ) 
+ 536              		.loc 1 156 2 view .LVU171
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 19
+
+
+ 537 000a 03F58063 		add	r3, r3, #1024
+ 538 000e 8022     		movs	r2, #128
+ 539 0010 1A61     		str	r2, [r3, #16]
+ 156:Core/Src/lcd_xpt2046.c **** 	for ( i=0;i<12;i++ ) 
+ 540              		.loc 1 156 20 view .LVU172
+ 157:Core/Src/lcd_xpt2046.c **** 	{
+ 541              		.loc 1 157 2 view .LVU173
+ 542              	.LVL36:
+ 154:Core/Src/lcd_xpt2046.c **** 	XPT2046_MOSI_0();
+ 543              		.loc 1 154 11 is_stmt 0 view .LVU174
+ 544 0012 0025     		movs	r5, #0
+ 157:Core/Src/lcd_xpt2046.c **** 	{
+ 545              		.loc 1 157 9 view .LVU175
+ 546 0014 2C46     		mov	r4, r5
+ 157:Core/Src/lcd_xpt2046.c **** 	{
+ 547              		.loc 1 157 2 view .LVU176
+ 548 0016 10E0     		b	.L22
+ 549              	.LVL37:
+ 550              	.L23:
+ 159:Core/Src/lcd_xpt2046.c **** 		usTemp = XPT2046_MISO();
+ 551              		.loc 1 159 3 is_stmt 1 discriminator 3 view .LVU177
+ 552 0018 0B4E     		ldr	r6, .L25+4
+ 553 001a 4FF40003 		mov	r3, #8388608
+ 554 001e 3361     		str	r3, [r6, #16]
+ 159:Core/Src/lcd_xpt2046.c **** 		usTemp = XPT2046_MISO();
+ 555              		.loc 1 159 20 discriminator 3 view .LVU178
+ 160:Core/Src/lcd_xpt2046.c **** 		usBuf |= usTemp << ( 11 - i );
+ 556              		.loc 1 160 3 discriminator 3 view .LVU179
+ 160:Core/Src/lcd_xpt2046.c **** 		usBuf |= usTemp << ( 11 - i );
+ 557              		.loc 1 160 12 is_stmt 0 discriminator 3 view .LVU180
+ 558 0020 4021     		movs	r1, #64
+ 559 0022 0848     		ldr	r0, .L25
+ 560 0024 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 561              	.LVL38:
+ 161:Core/Src/lcd_xpt2046.c **** 		XPT2046_CLK_HIGH();
+ 562              		.loc 1 161 3 is_stmt 1 discriminator 3 view .LVU181
+ 161:Core/Src/lcd_xpt2046.c **** 		XPT2046_CLK_HIGH();
+ 563              		.loc 1 161 27 is_stmt 0 discriminator 3 view .LVU182
+ 564 0028 C4F10B03 		rsb	r3, r4, #11
+ 161:Core/Src/lcd_xpt2046.c **** 		XPT2046_CLK_HIGH();
+ 565              		.loc 1 161 19 discriminator 3 view .LVU183
+ 566 002c 9840     		lsls	r0, r0, r3
+ 567              	.LVL39:
+ 161:Core/Src/lcd_xpt2046.c **** 		XPT2046_CLK_HIGH();
+ 568              		.loc 1 161 9 discriminator 3 view .LVU184
+ 569 002e 2843     		orrs	r0, r0, r5
+ 570 0030 85B2     		uxth	r5, r0
+ 571              	.LVL40:
+ 162:Core/Src/lcd_xpt2046.c **** 	}
+ 572              		.loc 1 162 3 is_stmt 1 discriminator 3 view .LVU185
+ 573 0032 8023     		movs	r3, #128
+ 574 0034 3361     		str	r3, [r6, #16]
+ 162:Core/Src/lcd_xpt2046.c **** 	}
+ 575              		.loc 1 162 21 discriminator 3 view .LVU186
+ 157:Core/Src/lcd_xpt2046.c **** 	{
+ 576              		.loc 1 157 17 discriminator 3 view .LVU187
+ 157:Core/Src/lcd_xpt2046.c **** 	{
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 20
+
+
+ 577              		.loc 1 157 18 is_stmt 0 discriminator 3 view .LVU188
+ 578 0036 0134     		adds	r4, r4, #1
+ 579              	.LVL41:
+ 157:Core/Src/lcd_xpt2046.c **** 	{
+ 580              		.loc 1 157 18 discriminator 3 view .LVU189
+ 581 0038 E4B2     		uxtb	r4, r4
+ 582              	.LVL42:
+ 583              	.L22:
+ 157:Core/Src/lcd_xpt2046.c **** 	{
+ 584              		.loc 1 157 12 is_stmt 1 discriminator 1 view .LVU190
+ 157:Core/Src/lcd_xpt2046.c **** 	{
+ 585              		.loc 1 157 2 is_stmt 0 discriminator 1 view .LVU191
+ 586 003a 0B2C     		cmp	r4, #11
+ 587 003c ECD9     		bls	.L23
+ 164:Core/Src/lcd_xpt2046.c **** }
+ 588              		.loc 1 164 2 is_stmt 1 view .LVU192
+ 165:Core/Src/lcd_xpt2046.c **** 
+ 589              		.loc 1 165 1 is_stmt 0 view .LVU193
+ 590 003e 2846     		mov	r0, r5
+ 591 0040 70BD     		pop	{r4, r5, r6, pc}
+ 592              	.LVL43:
+ 593              	.L26:
+ 165:Core/Src/lcd_xpt2046.c **** 
+ 594              		.loc 1 165 1 view .LVU194
+ 595 0042 00BF     		.align	2
+ 596              	.L25:
+ 597 0044 001C0140 		.word	1073814528
+ 598 0048 00200140 		.word	1073815552
+ 599              		.cfi_endproc
+ 600              	.LFE71:
+ 602              		.section	.text.XPT2046_ReadAdc,"ax",%progbits
+ 603              		.align	1
+ 604              		.syntax unified
+ 605              		.thumb
+ 606              		.thumb_func
+ 608              	XPT2046_ReadAdc:
+ 609              	.LVL44:
+ 610              	.LFB72:
+ 177:Core/Src/lcd_xpt2046.c **** 	XPT2046_WriteCMD ( ucChannel );
+ 611              		.loc 1 177 1 is_stmt 1 view -0
+ 612              		.cfi_startproc
+ 613              		@ args = 0, pretend = 0, frame = 0
+ 614              		@ frame_needed = 0, uses_anonymous_args = 0
+ 177:Core/Src/lcd_xpt2046.c **** 	XPT2046_WriteCMD ( ucChannel );
+ 615              		.loc 1 177 1 is_stmt 0 view .LVU196
+ 616 0000 08B5     		push	{r3, lr}
+ 617              	.LCFI6:
+ 618              		.cfi_def_cfa_offset 8
+ 619              		.cfi_offset 3, -8
+ 620              		.cfi_offset 14, -4
+ 178:Core/Src/lcd_xpt2046.c **** 
+ 621              		.loc 1 178 2 is_stmt 1 view .LVU197
+ 622 0002 FFF7FEFF 		bl	XPT2046_WriteCMD
+ 623              	.LVL45:
+ 180:Core/Src/lcd_xpt2046.c **** 	
+ 624              		.loc 1 180 3 view .LVU198
+ 180:Core/Src/lcd_xpt2046.c **** 	
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 21
+
+
+ 625              		.loc 1 180 11 is_stmt 0 view .LVU199
+ 626 0006 FFF7FEFF 		bl	XPT2046_ReadCMD
+ 627              	.LVL46:
+ 182:Core/Src/lcd_xpt2046.c **** /**
+ 628              		.loc 1 182 1 view .LVU200
+ 629 000a 08BD     		pop	{r3, pc}
+ 630              		.cfi_endproc
+ 631              	.LFE72:
+ 633              		.section	.text.XPT2046_ReadAdc_XY,"ax",%progbits
+ 634              		.align	1
+ 635              		.syntax unified
+ 636              		.thumb
+ 637              		.thumb_func
+ 639              	XPT2046_ReadAdc_XY:
+ 640              	.LVL47:
+ 641              	.LFB73:
+ 190:Core/Src/lcd_xpt2046.c **** 	int16_t sX_Ad_Temp, sY_Ad_Temp; 
+ 642              		.loc 1 190 1 is_stmt 1 view -0
+ 643              		.cfi_startproc
+ 644              		@ args = 0, pretend = 0, frame = 0
+ 645              		@ frame_needed = 0, uses_anonymous_args = 0
+ 190:Core/Src/lcd_xpt2046.c **** 	int16_t sX_Ad_Temp, sY_Ad_Temp; 
+ 646              		.loc 1 190 1 is_stmt 0 view .LVU202
+ 647 0000 70B5     		push	{r4, r5, r6, lr}
+ 648              	.LCFI7:
+ 649              		.cfi_def_cfa_offset 16
+ 650              		.cfi_offset 4, -16
+ 651              		.cfi_offset 5, -12
+ 652              		.cfi_offset 6, -8
+ 653              		.cfi_offset 14, -4
+ 654 0002 0546     		mov	r5, r0
+ 655 0004 0C46     		mov	r4, r1
+ 191:Core/Src/lcd_xpt2046.c **** 	
+ 656              		.loc 1 191 2 is_stmt 1 view .LVU203
+ 193:Core/Src/lcd_xpt2046.c **** 
+ 657              		.loc 1 193 2 view .LVU204
+ 193:Core/Src/lcd_xpt2046.c **** 
+ 658              		.loc 1 193 15 is_stmt 0 view .LVU205
+ 659 0006 9020     		movs	r0, #144
+ 660              	.LVL48:
+ 193:Core/Src/lcd_xpt2046.c **** 
+ 661              		.loc 1 193 15 view .LVU206
+ 662 0008 FFF7FEFF 		bl	XPT2046_ReadAdc
+ 663              	.LVL49:
+ 193:Core/Src/lcd_xpt2046.c **** 
+ 664              		.loc 1 193 13 view .LVU207
+ 665 000c 06B2     		sxth	r6, r0
+ 666              	.LVL50:
+ 195:Core/Src/lcd_xpt2046.c **** 
+ 667              		.loc 1 195 2 is_stmt 1 view .LVU208
+ 668 000e 0120     		movs	r0, #1
+ 669 0010 FFF7FEFF 		bl	XPT2046_DelayUS
+ 670              	.LVL51:
+ 197:Core/Src/lcd_xpt2046.c **** 	
+ 671              		.loc 1 197 2 view .LVU209
+ 197:Core/Src/lcd_xpt2046.c **** 	
+ 672              		.loc 1 197 15 is_stmt 0 view .LVU210
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 22
+
+
+ 673 0014 D020     		movs	r0, #208
+ 674 0016 FFF7FEFF 		bl	XPT2046_ReadAdc
+ 675              	.LVL52:
+ 200:Core/Src/lcd_xpt2046.c **** 	* sY_Ad = sY_Ad_Temp; 
+ 676              		.loc 1 200 2 is_stmt 1 view .LVU211
+ 200:Core/Src/lcd_xpt2046.c **** 	* sY_Ad = sY_Ad_Temp; 
+ 677              		.loc 1 200 10 is_stmt 0 view .LVU212
+ 678 001a 2E80     		strh	r6, [r5]	@ movhi
+ 201:Core/Src/lcd_xpt2046.c **** }
+ 679              		.loc 1 201 2 is_stmt 1 view .LVU213
+ 201:Core/Src/lcd_xpt2046.c **** }
+ 680              		.loc 1 201 10 is_stmt 0 view .LVU214
+ 681 001c 2080     		strh	r0, [r4]	@ movhi
+ 202:Core/Src/lcd_xpt2046.c **** 
+ 682              		.loc 1 202 1 view .LVU215
+ 683 001e 70BD     		pop	{r4, r5, r6, pc}
+ 202:Core/Src/lcd_xpt2046.c **** 
+ 684              		.loc 1 202 1 view .LVU216
+ 685              		.cfi_endproc
+ 686              	.LFE73:
+ 688              		.section	.text.XPT2046_ReadAdc_Smooth_XY,"ax",%progbits
+ 689              		.align	1
+ 690              		.syntax unified
+ 691              		.thumb
+ 692              		.thumb_func
+ 694              	XPT2046_ReadAdc_Smooth_XY:
+ 695              	.LVL53:
+ 696              	.LFB74:
+ 323:Core/Src/lcd_xpt2046.c **** 	uint8_t ucCount = 0, i;
+ 697              		.loc 1 323 1 is_stmt 1 view -0
+ 698              		.cfi_startproc
+ 699              		@ args = 0, pretend = 0, frame = 48
+ 700              		@ frame_needed = 0, uses_anonymous_args = 0
+ 323:Core/Src/lcd_xpt2046.c **** 	uint8_t ucCount = 0, i;
+ 701              		.loc 1 323 1 is_stmt 0 view .LVU218
+ 702 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 703              	.LCFI8:
+ 704              		.cfi_def_cfa_offset 20
+ 705              		.cfi_offset 4, -20
+ 706              		.cfi_offset 5, -16
+ 707              		.cfi_offset 6, -12
+ 708              		.cfi_offset 7, -8
+ 709              		.cfi_offset 14, -4
+ 710 0002 8DB0     		sub	sp, sp, #52
+ 711              	.LCFI9:
+ 712              		.cfi_def_cfa_offset 72
+ 713 0004 0546     		mov	r5, r0
+ 324:Core/Src/lcd_xpt2046.c **** 	
+ 714              		.loc 1 324 2 is_stmt 1 view .LVU219
+ 715              	.LVL54:
+ 326:Core/Src/lcd_xpt2046.c **** 	int16_t sBufferArray [ 2 ] [ 10 ] = { { 0 },{ 0 } };  //×ø±êXºÍY½øÐÐ¶à´Î²ÉÑù
+ 716              		.loc 1 326 2 view .LVU220
+ 327:Core/Src/lcd_xpt2046.c **** 	
+ 717              		.loc 1 327 2 view .LVU221
+ 327:Core/Src/lcd_xpt2046.c **** 	
+ 718              		.loc 1 327 10 is_stmt 0 view .LVU222
+ 719 0006 2822     		movs	r2, #40
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 23
+
+
+ 720 0008 0021     		movs	r1, #0
+ 721 000a 01A8     		add	r0, sp, #4
+ 722              	.LVL55:
+ 327:Core/Src/lcd_xpt2046.c **** 	
+ 723              		.loc 1 327 10 view .LVU223
+ 724 000c FFF7FEFF 		bl	memset
+ 725              	.LVL56:
+ 324:Core/Src/lcd_xpt2046.c **** 	
+ 726              		.loc 1 324 10 view .LVU224
+ 727 0010 0024     		movs	r4, #0
+ 728              	.LVL57:
+ 729              	.L33:
+ 330:Core/Src/lcd_xpt2046.c **** 
+ 730              		.loc 1 330 2 is_stmt 1 discriminator 2 view .LVU225
+ 334:Core/Src/lcd_xpt2046.c **** 	{		  
+ 731              		.loc 1 334 2 discriminator 2 view .LVU226
+ 336:Core/Src/lcd_xpt2046.c **** 		
+ 732              		.loc 1 336 3 discriminator 2 view .LVU227
+ 733 0012 0BA9     		add	r1, sp, #44
+ 734 0014 0DF12E00 		add	r0, sp, #46
+ 735 0018 FFF7FEFF 		bl	XPT2046_ReadAdc_XY
+ 736              	.LVL58:
+ 338:Core/Src/lcd_xpt2046.c **** 		sBufferArray [ 1 ] [ ucCount ] = sAD_Y;
+ 737              		.loc 1 338 3 discriminator 2 view .LVU228
+ 338:Core/Src/lcd_xpt2046.c **** 		sBufferArray [ 1 ] [ ucCount ] = sAD_Y;
+ 738              		.loc 1 338 34 is_stmt 0 discriminator 2 view .LVU229
+ 739 001c 0CAB     		add	r3, sp, #48
+ 740 001e 03EB4403 		add	r3, r3, r4, lsl #1
+ 741 0022 BDF82E20 		ldrh	r2, [sp, #46]
+ 742 0026 23F82C2C 		strh	r2, [r3, #-44]	@ movhi
+ 339:Core/Src/lcd_xpt2046.c **** 		
+ 743              		.loc 1 339 3 is_stmt 1 discriminator 2 view .LVU230
+ 339:Core/Src/lcd_xpt2046.c **** 		
+ 744              		.loc 1 339 34 is_stmt 0 discriminator 2 view .LVU231
+ 745 002a 04F10A03 		add	r3, r4, #10
+ 746 002e 0CAA     		add	r2, sp, #48
+ 747 0030 02EB4303 		add	r3, r2, r3, lsl #1
+ 748 0034 BDF82C20 		ldrh	r2, [sp, #44]
+ 749 0038 23F82C2C 		strh	r2, [r3, #-44]	@ movhi
+ 341:Core/Src/lcd_xpt2046.c **** 		
+ 750              		.loc 1 341 3 is_stmt 1 discriminator 2 view .LVU232
+ 341:Core/Src/lcd_xpt2046.c **** 		
+ 751              		.loc 1 341 11 is_stmt 0 discriminator 2 view .LVU233
+ 752 003c 0134     		adds	r4, r4, #1
+ 753              	.LVL59:
+ 341:Core/Src/lcd_xpt2046.c **** 		
+ 754              		.loc 1 341 11 discriminator 2 view .LVU234
+ 755 003e E4B2     		uxtb	r4, r4
+ 756              	.LVL60:
+ 343:Core/Src/lcd_xpt2046.c **** 	
+ 757              		.loc 1 343 10 is_stmt 1 discriminator 2 view .LVU235
+ 343:Core/Src/lcd_xpt2046.c **** 	
+ 758              		.loc 1 343 14 is_stmt 0 discriminator 2 view .LVU236
+ 759 0040 4FF40071 		mov	r1, #512
+ 760 0044 4048     		ldr	r0, .L51
+ 761 0046 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 762              	.LVL61:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 24
+
+
+ 343:Core/Src/lcd_xpt2046.c **** 	
+ 763              		.loc 1 343 2 discriminator 2 view .LVU237
+ 764 004a 08B9     		cbnz	r0, .L32
+ 343:Core/Src/lcd_xpt2046.c **** 	
+ 765              		.loc 1 343 68 discriminator 1 view .LVU238
+ 766 004c 092C     		cmp	r4, #9
+ 767 004e E0D9     		bls	.L33
+ 768              	.L32:
+ 347:Core/Src/lcd_xpt2046.c **** 		ucXPT2046_TouchFlag = 0;			//ÖÐ¶Ï±êÖ¾¸´Î»
+ 769              		.loc 1 347 2 is_stmt 1 view .LVU239
+ 347:Core/Src/lcd_xpt2046.c **** 		ucXPT2046_TouchFlag = 0;			//ÖÐ¶Ï±êÖ¾¸´Î»
+ 770              		.loc 1 347 7 is_stmt 0 view .LVU240
+ 771 0050 4FF40071 		mov	r1, #512
+ 772 0054 3C48     		ldr	r0, .L51
+ 773 0056 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 774              	.LVL62:
+ 347:Core/Src/lcd_xpt2046.c **** 		ucXPT2046_TouchFlag = 0;			//ÖÐ¶Ï±êÖ¾¸´Î»
+ 775              		.loc 1 347 5 view .LVU241
+ 776 005a 10B1     		cbz	r0, .L34
+ 348:Core/Src/lcd_xpt2046.c **** 
+ 777              		.loc 1 348 3 is_stmt 1 view .LVU242
+ 348:Core/Src/lcd_xpt2046.c **** 
+ 778              		.loc 1 348 23 is_stmt 0 view .LVU243
+ 779 005c 3B4B     		ldr	r3, .L51+4
+ 780 005e 0022     		movs	r2, #0
+ 781 0060 1A70     		strb	r2, [r3]
+ 782              	.L34:
+ 352:Core/Src/lcd_xpt2046.c **** 	{
+ 783              		.loc 1 352 2 is_stmt 1 view .LVU244
+ 352:Core/Src/lcd_xpt2046.c **** 	{
+ 784              		.loc 1 352 5 is_stmt 0 view .LVU245
+ 785 0062 0A2C     		cmp	r4, #10
+ 786 0064 02D0     		beq	.L48
+ 389:Core/Src/lcd_xpt2046.c **** }
+ 787              		.loc 1 389 9 view .LVU246
+ 788 0066 0020     		movs	r0, #0
+ 789              	.LVL63:
+ 790              	.L35:
+ 390:Core/Src/lcd_xpt2046.c **** 
+ 791              		.loc 1 390 1 view .LVU247
+ 792 0068 0DB0     		add	sp, sp, #52
+ 793              	.LCFI10:
+ 794              		.cfi_remember_state
+ 795              		.cfi_def_cfa_offset 20
+ 796              		@ sp needed
+ 797 006a F0BD     		pop	{r4, r5, r6, r7, pc}
+ 798              	.LVL64:
+ 799              	.L48:
+ 800              	.LCFI11:
+ 801              		.cfi_restore_state
+ 354:Core/Src/lcd_xpt2046.c **** 		lY_Max = lY_Min = sBufferArray [ 1 ] [ 0 ];       
+ 802              		.loc 1 354 3 is_stmt 1 view .LVU248
+ 354:Core/Src/lcd_xpt2046.c **** 		lY_Max = lY_Min = sBufferArray [ 1 ] [ 0 ];       
+ 803              		.loc 1 354 40 is_stmt 0 view .LVU249
+ 804 006c BDF904E0 		ldrsh	lr, [sp, #4]
+ 805              	.LVL65:
+ 355:Core/Src/lcd_xpt2046.c **** 		
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 25
+
+
+ 806              		.loc 1 355 3 is_stmt 1 view .LVU250
+ 355:Core/Src/lcd_xpt2046.c **** 		
+ 807              		.loc 1 355 40 is_stmt 0 view .LVU251
+ 808 0070 BDF918C0 		ldrsh	ip, [sp, #24]
+ 809              	.LVL66:
+ 357:Core/Src/lcd_xpt2046.c **** 		{
+ 810              		.loc 1 357 3 is_stmt 1 view .LVU252
+ 354:Core/Src/lcd_xpt2046.c **** 		lY_Max = lY_Min = sBufferArray [ 1 ] [ 0 ];       
+ 811              		.loc 1 354 10 is_stmt 0 view .LVU253
+ 812 0074 7446     		mov	r4, lr
+ 813              	.LVL67:
+ 354:Core/Src/lcd_xpt2046.c **** 		lY_Max = lY_Min = sBufferArray [ 1 ] [ 0 ];       
+ 814              		.loc 1 354 19 view .LVU254
+ 815 0076 7146     		mov	r1, lr
+ 357:Core/Src/lcd_xpt2046.c **** 		{
+ 816              		.loc 1 357 11 view .LVU255
+ 817 0078 0123     		movs	r3, #1
+ 357:Core/Src/lcd_xpt2046.c **** 		{
+ 818              		.loc 1 357 3 view .LVU256
+ 819 007a 02E0     		b	.L36
+ 820              	.LVL68:
+ 821              	.L43:
+ 360:Core/Src/lcd_xpt2046.c **** 			
+ 822              		.loc 1 360 12 view .LVU257
+ 823 007c 1146     		mov	r1, r2
+ 824              	.LVL69:
+ 825              	.L37:
+ 357:Core/Src/lcd_xpt2046.c **** 		{
+ 826              		.loc 1 357 24 is_stmt 1 discriminator 2 view .LVU258
+ 357:Core/Src/lcd_xpt2046.c **** 		{
+ 827              		.loc 1 357 26 is_stmt 0 discriminator 2 view .LVU259
+ 828 007e 0133     		adds	r3, r3, #1
+ 829              	.LVL70:
+ 357:Core/Src/lcd_xpt2046.c **** 		{
+ 830              		.loc 1 357 26 discriminator 2 view .LVU260
+ 831 0080 DBB2     		uxtb	r3, r3
+ 832              	.LVL71:
+ 833              	.L36:
+ 357:Core/Src/lcd_xpt2046.c **** 		{
+ 834              		.loc 1 357 16 is_stmt 1 discriminator 1 view .LVU261
+ 357:Core/Src/lcd_xpt2046.c **** 		{
+ 835              		.loc 1 357 3 is_stmt 0 discriminator 1 view .LVU262
+ 836 0082 092B     		cmp	r3, #9
+ 837 0084 0AD8     		bhi	.L49
+ 359:Core/Src/lcd_xpt2046.c **** 				lX_Min = sBufferArray [ 0 ] [ i ];
+ 838              		.loc 1 359 4 is_stmt 1 view .LVU263
+ 359:Core/Src/lcd_xpt2046.c **** 				lX_Min = sBufferArray [ 0 ] [ i ];
+ 839              		.loc 1 359 27 is_stmt 0 view .LVU264
+ 840 0086 0CAA     		add	r2, sp, #48
+ 841 0088 02EB4302 		add	r2, r2, r3, lsl #1
+ 842 008c 32F92C2C 		ldrsh	r2, [r2, #-44]
+ 359:Core/Src/lcd_xpt2046.c **** 				lX_Min = sBufferArray [ 0 ] [ i ];
+ 843              		.loc 1 359 7 view .LVU265
+ 844 0090 8A42     		cmp	r2, r1
+ 845 0092 F3DB     		blt	.L43
+ 362:Core/Src/lcd_xpt2046.c **** 				lX_Max = sBufferArray [ 0 ] [ i ];
+ 846              		.loc 1 362 9 is_stmt 1 view .LVU266
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 26
+
+
+ 362:Core/Src/lcd_xpt2046.c **** 				lX_Max = sBufferArray [ 0 ] [ i ];
+ 847              		.loc 1 362 12 is_stmt 0 view .LVU267
+ 848 0094 A242     		cmp	r2, r4
+ 849 0096 F2DD     		ble	.L37
+ 363:Core/Src/lcd_xpt2046.c **** 
+ 850              		.loc 1 363 12 view .LVU268
+ 851 0098 1446     		mov	r4, r2
+ 852              	.LVL72:
+ 363:Core/Src/lcd_xpt2046.c **** 
+ 853              		.loc 1 363 12 view .LVU269
+ 854 009a F0E7     		b	.L37
+ 855              	.LVL73:
+ 856              	.L49:
+ 355:Core/Src/lcd_xpt2046.c **** 		
+ 857              		.loc 1 355 10 view .LVU270
+ 858 009c 6046     		mov	r0, ip
+ 355:Core/Src/lcd_xpt2046.c **** 		
+ 859              		.loc 1 355 19 view .LVU271
+ 860 009e 6646     		mov	r6, ip
+ 367:Core/Src/lcd_xpt2046.c **** 		{
+ 861              		.loc 1 367 11 view .LVU272
+ 862 00a0 0123     		movs	r3, #1
+ 863              	.LVL74:
+ 367:Core/Src/lcd_xpt2046.c **** 		{
+ 864              		.loc 1 367 11 view .LVU273
+ 865 00a2 02E0     		b	.L39
+ 866              	.LVL75:
+ 867              	.L45:
+ 370:Core/Src/lcd_xpt2046.c **** 			
+ 868              		.loc 1 370 12 view .LVU274
+ 869 00a4 1646     		mov	r6, r2
+ 870              	.LVL76:
+ 871              	.L40:
+ 367:Core/Src/lcd_xpt2046.c **** 		{
+ 872              		.loc 1 367 24 is_stmt 1 discriminator 2 view .LVU275
+ 367:Core/Src/lcd_xpt2046.c **** 		{
+ 873              		.loc 1 367 26 is_stmt 0 discriminator 2 view .LVU276
+ 874 00a6 0133     		adds	r3, r3, #1
+ 875              	.LVL77:
+ 367:Core/Src/lcd_xpt2046.c **** 		{
+ 876              		.loc 1 367 26 discriminator 2 view .LVU277
+ 877 00a8 DBB2     		uxtb	r3, r3
+ 878              	.LVL78:
+ 879              	.L39:
+ 367:Core/Src/lcd_xpt2046.c **** 		{
+ 880              		.loc 1 367 16 is_stmt 1 discriminator 1 view .LVU278
+ 367:Core/Src/lcd_xpt2046.c **** 		{
+ 881              		.loc 1 367 3 is_stmt 0 discriminator 1 view .LVU279
+ 882 00aa 092B     		cmp	r3, #9
+ 883 00ac 0CD8     		bhi	.L50
+ 369:Core/Src/lcd_xpt2046.c **** 				lY_Min = sBufferArray [ 1 ] [ i ];
+ 884              		.loc 1 369 4 is_stmt 1 view .LVU280
+ 369:Core/Src/lcd_xpt2046.c **** 				lY_Min = sBufferArray [ 1 ] [ i ];
+ 885              		.loc 1 369 28 is_stmt 0 view .LVU281
+ 886 00ae 03F10A02 		add	r2, r3, #10
+ 887 00b2 0CAF     		add	r7, sp, #48
+ 888 00b4 07EB4202 		add	r2, r7, r2, lsl #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 27
+
+
+ 889 00b8 32F92C2C 		ldrsh	r2, [r2, #-44]
+ 369:Core/Src/lcd_xpt2046.c **** 				lY_Min = sBufferArray [ 1 ] [ i ];
+ 890              		.loc 1 369 7 view .LVU282
+ 891 00bc B242     		cmp	r2, r6
+ 892 00be F1DB     		blt	.L45
+ 372:Core/Src/lcd_xpt2046.c **** 				lY_Max = sBufferArray [ 1 ] [ i ];
+ 893              		.loc 1 372 9 is_stmt 1 view .LVU283
+ 372:Core/Src/lcd_xpt2046.c **** 				lY_Max = sBufferArray [ 1 ] [ i ];
+ 894              		.loc 1 372 12 is_stmt 0 view .LVU284
+ 895 00c0 8242     		cmp	r2, r0
+ 896 00c2 F0DD     		ble	.L40
+ 373:Core/Src/lcd_xpt2046.c **** 
+ 897              		.loc 1 373 12 view .LVU285
+ 898 00c4 1046     		mov	r0, r2
+ 899              	.LVL79:
+ 373:Core/Src/lcd_xpt2046.c **** 
+ 900              		.loc 1 373 12 view .LVU286
+ 901 00c6 EEE7     		b	.L40
+ 902              	.LVL80:
+ 903              	.L50:
+ 379:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 0 ] [ 5 ] + sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0
+ 904              		.loc 1 379 3 is_stmt 1 view .LVU287
+ 379:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 0 ] [ 5 ] + sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0
+ 905              		.loc 1 379 76 is_stmt 0 view .LVU288
+ 906 00c8 BDF90630 		ldrsh	r3, [sp, #6]
+ 907              	.LVL81:
+ 379:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 0 ] [ 5 ] + sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0
+ 908              		.loc 1 379 55 view .LVU289
+ 909 00cc 7344     		add	r3, r3, lr
+ 379:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 0 ] [ 5 ] + sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0
+ 910              		.loc 1 379 103 view .LVU290
+ 911 00ce BDF908E0 		ldrsh	lr, [sp, #8]
+ 379:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 0 ] [ 5 ] + sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0
+ 912              		.loc 1 379 82 view .LVU291
+ 913 00d2 7344     		add	r3, r3, lr
+ 379:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 0 ] [ 5 ] + sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0
+ 914              		.loc 1 379 130 view .LVU292
+ 915 00d4 BDF90A20 		ldrsh	r2, [sp, #10]
+ 379:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 0 ] [ 5 ] + sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0
+ 916              		.loc 1 379 109 view .LVU293
+ 917 00d8 1344     		add	r3, r3, r2
+ 379:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 0 ] [ 5 ] + sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0
+ 918              		.loc 1 379 157 view .LVU294
+ 919 00da BDF90C20 		ldrsh	r2, [sp, #12]
+ 379:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 0 ] [ 5 ] + sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0
+ 920              		.loc 1 379 136 view .LVU295
+ 921 00de 1344     		add	r3, r3, r2
+ 380:Core/Src/lcd_xpt2046.c **** 		
+ 922              		.loc 1 380 49 view .LVU296
+ 923 00e0 BDF90E20 		ldrsh	r2, [sp, #14]
+ 379:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 0 ] [ 5 ] + sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0
+ 924              		.loc 1 379 163 view .LVU297
+ 925 00e4 1344     		add	r3, r3, r2
+ 380:Core/Src/lcd_xpt2046.c **** 		
+ 926              		.loc 1 380 76 view .LVU298
+ 927 00e6 BDF91020 		ldrsh	r2, [sp, #16]
+ 380:Core/Src/lcd_xpt2046.c **** 		
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 28
+
+
+ 928              		.loc 1 380 55 view .LVU299
+ 929 00ea 1344     		add	r3, r3, r2
+ 380:Core/Src/lcd_xpt2046.c **** 		
+ 930              		.loc 1 380 103 view .LVU300
+ 931 00ec BDF91220 		ldrsh	r2, [sp, #18]
+ 380:Core/Src/lcd_xpt2046.c **** 		
+ 932              		.loc 1 380 82 view .LVU301
+ 933 00f0 1344     		add	r3, r3, r2
+ 380:Core/Src/lcd_xpt2046.c **** 		
+ 934              		.loc 1 380 130 view .LVU302
+ 935 00f2 BDF91420 		ldrsh	r2, [sp, #20]
+ 380:Core/Src/lcd_xpt2046.c **** 		
+ 936              		.loc 1 380 109 view .LVU303
+ 937 00f6 1344     		add	r3, r3, r2
+ 380:Core/Src/lcd_xpt2046.c **** 		
+ 938              		.loc 1 380 157 view .LVU304
+ 939 00f8 BDF91620 		ldrsh	r2, [sp, #22]
+ 380:Core/Src/lcd_xpt2046.c **** 		
+ 940              		.loc 1 380 136 view .LVU305
+ 941 00fc 1344     		add	r3, r3, r2
+ 380:Core/Src/lcd_xpt2046.c **** 		
+ 942              		.loc 1 380 163 view .LVU306
+ 943 00fe 591A     		subs	r1, r3, r1
+ 944              	.LVL82:
+ 380:Core/Src/lcd_xpt2046.c **** 		
+ 945              		.loc 1 380 171 view .LVU307
+ 946 0100 0C1B     		subs	r4, r1, r4
+ 947              	.LVL83:
+ 380:Core/Src/lcd_xpt2046.c **** 		
+ 948              		.loc 1 380 181 view .LVU308
+ 949 0102 E410     		asrs	r4, r4, #3
+ 379:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 0 ] [ 5 ] + sBufferArray [ 0 ] [ 6 ] + sBufferArray [ 0
+ 950              		.loc 1 379 25 view .LVU309
+ 951 0104 2C80     		strh	r4, [r5]	@ movhi
+ 382:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 1 ] [ 5 ] + sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1
+ 952              		.loc 1 382 3 is_stmt 1 view .LVU310
+ 382:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 1 ] [ 5 ] + sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1
+ 953              		.loc 1 382 76 is_stmt 0 view .LVU311
+ 954 0106 BDF91A30 		ldrsh	r3, [sp, #26]
+ 382:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 1 ] [ 5 ] + sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1
+ 955              		.loc 1 382 55 view .LVU312
+ 956 010a 6344     		add	r3, r3, ip
+ 382:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 1 ] [ 5 ] + sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1
+ 957              		.loc 1 382 103 view .LVU313
+ 958 010c BDF91CC0 		ldrsh	ip, [sp, #28]
+ 382:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 1 ] [ 5 ] + sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1
+ 959              		.loc 1 382 82 view .LVU314
+ 960 0110 6344     		add	r3, r3, ip
+ 382:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 1 ] [ 5 ] + sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1
+ 961              		.loc 1 382 130 view .LVU315
+ 962 0112 BDF91E20 		ldrsh	r2, [sp, #30]
+ 382:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 1 ] [ 5 ] + sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1
+ 963              		.loc 1 382 109 view .LVU316
+ 964 0116 1344     		add	r3, r3, r2
+ 382:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 1 ] [ 5 ] + sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1
+ 965              		.loc 1 382 157 view .LVU317
+ 966 0118 BDF92020 		ldrsh	r2, [sp, #32]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 29
+
+
+ 382:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 1 ] [ 5 ] + sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1
+ 967              		.loc 1 382 136 view .LVU318
+ 968 011c 1344     		add	r3, r3, r2
+ 383:Core/Src/lcd_xpt2046.c **** 		
+ 969              		.loc 1 383 49 view .LVU319
+ 970 011e BDF92220 		ldrsh	r2, [sp, #34]
+ 382:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 1 ] [ 5 ] + sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1
+ 971              		.loc 1 382 163 view .LVU320
+ 972 0122 1344     		add	r3, r3, r2
+ 383:Core/Src/lcd_xpt2046.c **** 		
+ 973              		.loc 1 383 76 view .LVU321
+ 974 0124 BDF92420 		ldrsh	r2, [sp, #36]
+ 383:Core/Src/lcd_xpt2046.c **** 		
+ 975              		.loc 1 383 55 view .LVU322
+ 976 0128 1344     		add	r3, r3, r2
+ 383:Core/Src/lcd_xpt2046.c **** 		
+ 977              		.loc 1 383 103 view .LVU323
+ 978 012a BDF92620 		ldrsh	r2, [sp, #38]
+ 383:Core/Src/lcd_xpt2046.c **** 		
+ 979              		.loc 1 383 82 view .LVU324
+ 980 012e 1344     		add	r3, r3, r2
+ 383:Core/Src/lcd_xpt2046.c **** 		
+ 981              		.loc 1 383 130 view .LVU325
+ 982 0130 BDF92820 		ldrsh	r2, [sp, #40]
+ 383:Core/Src/lcd_xpt2046.c **** 		
+ 983              		.loc 1 383 109 view .LVU326
+ 984 0134 1344     		add	r3, r3, r2
+ 383:Core/Src/lcd_xpt2046.c **** 		
+ 985              		.loc 1 383 157 view .LVU327
+ 986 0136 BDF92A20 		ldrsh	r2, [sp, #42]
+ 383:Core/Src/lcd_xpt2046.c **** 		
+ 987              		.loc 1 383 136 view .LVU328
+ 988 013a 1344     		add	r3, r3, r2
+ 383:Core/Src/lcd_xpt2046.c **** 		
+ 989              		.loc 1 383 163 view .LVU329
+ 990 013c 9B1B     		subs	r3, r3, r6
+ 383:Core/Src/lcd_xpt2046.c **** 		
+ 991              		.loc 1 383 171 view .LVU330
+ 992 013e 1B1A     		subs	r3, r3, r0
+ 383:Core/Src/lcd_xpt2046.c **** 		
+ 993              		.loc 1 383 181 view .LVU331
+ 994 0140 DB10     		asrs	r3, r3, #3
+ 382:Core/Src/lcd_xpt2046.c **** 		                           sBufferArray [ 1 ] [ 5 ] + sBufferArray [ 1 ] [ 6 ] + sBufferArray [ 1
+ 995              		.loc 1 382 25 view .LVU332
+ 996 0142 6B80     		strh	r3, [r5, #2]	@ movhi
+ 386:Core/Src/lcd_xpt2046.c **** 		
+ 997              		.loc 1 386 3 is_stmt 1 view .LVU333
+ 386:Core/Src/lcd_xpt2046.c **** 		
+ 998              		.loc 1 386 10 is_stmt 0 view .LVU334
+ 999 0144 0120     		movs	r0, #1
+ 1000              	.LVL84:
+ 386:Core/Src/lcd_xpt2046.c **** 		
+ 1001              		.loc 1 386 10 view .LVU335
+ 1002 0146 8FE7     		b	.L35
+ 1003              	.L52:
+ 1004              		.align	2
+ 1005              	.L51:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 30
+
+
+ 1006 0148 001C0140 		.word	1073814528
+ 1007 014c 00000000 		.word	.LANCHOR0
+ 1008              		.cfi_endproc
+ 1009              	.LFE74:
+ 1011              		.section	.text.XPT2046_Init,"ax",%progbits
+ 1012              		.align	1
+ 1013              		.global	XPT2046_Init
+ 1014              		.syntax unified
+ 1015              		.thumb
+ 1016              		.thumb_func
+ 1018              	XPT2046_Init:
+ 1019              	.LFB68:
+  62:Core/Src/lcd_xpt2046.c ****   GPIO_InitTypeDef  GPIO_InitStructure;
+ 1020              		.loc 1 62 1 is_stmt 1 view -0
+ 1021              		.cfi_startproc
+ 1022              		@ args = 0, pretend = 0, frame = 24
+ 1023              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1024 0000 70B5     		push	{r4, r5, r6, lr}
+ 1025              	.LCFI12:
+ 1026              		.cfi_def_cfa_offset 16
+ 1027              		.cfi_offset 4, -16
+ 1028              		.cfi_offset 5, -12
+ 1029              		.cfi_offset 6, -8
+ 1030              		.cfi_offset 14, -4
+ 1031 0002 86B0     		sub	sp, sp, #24
+ 1032              	.LCFI13:
+ 1033              		.cfi_def_cfa_offset 40
+  63:Core/Src/lcd_xpt2046.c **** 	 /* ¿ªÆôGPIOÊ±ÖÓ */
+ 1034              		.loc 1 63 3 view .LVU337
+  65:Core/Src/lcd_xpt2046.c **** 	__HAL_RCC_GPIOG_CLK_ENABLE();
+ 1035              		.loc 1 65 2 view .LVU338
+ 1036              	.LBB3:
+  65:Core/Src/lcd_xpt2046.c **** 	__HAL_RCC_GPIOG_CLK_ENABLE();
+ 1037              		.loc 1 65 2 view .LVU339
+  65:Core/Src/lcd_xpt2046.c **** 	__HAL_RCC_GPIOG_CLK_ENABLE();
+ 1038              		.loc 1 65 2 view .LVU340
+ 1039 0004 224B     		ldr	r3, .L55
+ 1040 0006 9A69     		ldr	r2, [r3, #24]
+ 1041 0008 42F08002 		orr	r2, r2, #128
+ 1042 000c 9A61     		str	r2, [r3, #24]
+  65:Core/Src/lcd_xpt2046.c **** 	__HAL_RCC_GPIOG_CLK_ENABLE();
+ 1043              		.loc 1 65 2 view .LVU341
+ 1044 000e 9A69     		ldr	r2, [r3, #24]
+ 1045 0010 02F08002 		and	r2, r2, #128
+ 1046 0014 0092     		str	r2, [sp]
+  65:Core/Src/lcd_xpt2046.c **** 	__HAL_RCC_GPIOG_CLK_ENABLE();
+ 1047              		.loc 1 65 2 view .LVU342
+ 1048 0016 009A     		ldr	r2, [sp]
+ 1049              	.LBE3:
+  65:Core/Src/lcd_xpt2046.c **** 	__HAL_RCC_GPIOG_CLK_ENABLE();
+ 1050              		.loc 1 65 2 view .LVU343
+  66:Core/Src/lcd_xpt2046.c ****  
+ 1051              		.loc 1 66 2 view .LVU344
+ 1052              	.LBB4:
+  66:Core/Src/lcd_xpt2046.c ****  
+ 1053              		.loc 1 66 2 view .LVU345
+  66:Core/Src/lcd_xpt2046.c ****  
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 31
+
+
+ 1054              		.loc 1 66 2 view .LVU346
+ 1055 0018 9A69     		ldr	r2, [r3, #24]
+ 1056 001a 42F48072 		orr	r2, r2, #256
+ 1057 001e 9A61     		str	r2, [r3, #24]
+  66:Core/Src/lcd_xpt2046.c ****  
+ 1058              		.loc 1 66 2 view .LVU347
+ 1059 0020 9B69     		ldr	r3, [r3, #24]
+ 1060 0022 03F48073 		and	r3, r3, #256
+ 1061 0026 0193     		str	r3, [sp, #4]
+  66:Core/Src/lcd_xpt2046.c ****  
+ 1062              		.loc 1 66 2 view .LVU348
+ 1063 0028 019B     		ldr	r3, [sp, #4]
+ 1064              	.LBE4:
+  66:Core/Src/lcd_xpt2046.c ****  
+ 1065              		.loc 1 66 2 view .LVU349
+  69:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Speed=GPIO_SPEED_FREQ_HIGH ;	  
+ 1066              		.loc 1 69 3 view .LVU350
+  69:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Speed=GPIO_SPEED_FREQ_HIGH ;	  
+ 1067              		.loc 1 69 25 is_stmt 0 view .LVU351
+ 1068 002a 8023     		movs	r3, #128
+ 1069 002c 0293     		str	r3, [sp, #8]
+  70:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Mode=GPIO_MODE_OUTPUT_PP;
+ 1070              		.loc 1 70 3 is_stmt 1 view .LVU352
+  70:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Mode=GPIO_MODE_OUTPUT_PP;
+ 1071              		.loc 1 70 27 is_stmt 0 view .LVU353
+ 1072 002e 0326     		movs	r6, #3
+ 1073 0030 0596     		str	r6, [sp, #20]
+  71:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_SPI_CLK_PORT, &GPIO_InitStructure);
+ 1074              		.loc 1 71 3 is_stmt 1 view .LVU354
+  71:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_SPI_CLK_PORT, &GPIO_InitStructure);
+ 1075              		.loc 1 71 26 is_stmt 0 view .LVU355
+ 1076 0032 0125     		movs	r5, #1
+ 1077 0034 0395     		str	r5, [sp, #12]
+  72:Core/Src/lcd_xpt2046.c **** 
+ 1078              		.loc 1 72 3 is_stmt 1 view .LVU356
+ 1079 0036 02A9     		add	r1, sp, #8
+ 1080 0038 1648     		ldr	r0, .L55+4
+ 1081 003a FFF7FEFF 		bl	HAL_GPIO_Init
+ 1082              	.LVL85:
+  74:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_SPI_MOSI_PORT, &GPIO_InitStructure);
+ 1083              		.loc 1 74 3 view .LVU357
+  74:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_SPI_MOSI_PORT, &GPIO_InitStructure);
+ 1084              		.loc 1 74 26 is_stmt 0 view .LVU358
+ 1085 003e 4FF40063 		mov	r3, #2048
+ 1086 0042 0293     		str	r3, [sp, #8]
+  75:Core/Src/lcd_xpt2046.c **** 	
+ 1087              		.loc 1 75 3 is_stmt 1 view .LVU359
+ 1088 0044 144C     		ldr	r4, .L55+8
+ 1089 0046 02A9     		add	r1, sp, #8
+ 1090 0048 2046     		mov	r0, r4
+ 1091 004a FFF7FEFF 		bl	HAL_GPIO_Init
+ 1092              	.LVL86:
+  78:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH ;
+ 1093              		.loc 1 78 2 view .LVU360
+  78:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH ;
+ 1094              		.loc 1 78 25 is_stmt 0 view .LVU361
+ 1095 004e 4FF48063 		mov	r3, #1024
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 32
+
+
+ 1096 0052 0293     		str	r3, [sp, #8]
+  79:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;      
+ 1097              		.loc 1 79 3 is_stmt 1 view .LVU362
+  79:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;      
+ 1098              		.loc 1 79 28 is_stmt 0 view .LVU363
+ 1099 0054 0596     		str	r6, [sp, #20]
+  80:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_SPI_CS_PORT, &GPIO_InitStructure); 
+ 1100              		.loc 1 80 3 is_stmt 1 view .LVU364
+  80:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_SPI_CS_PORT, &GPIO_InitStructure); 
+ 1101              		.loc 1 80 27 is_stmt 0 view .LVU365
+ 1102 0056 0395     		str	r5, [sp, #12]
+  81:Core/Src/lcd_xpt2046.c **** 	
+ 1103              		.loc 1 81 3 is_stmt 1 view .LVU366
+ 1104 0058 02A9     		add	r1, sp, #8
+ 1105 005a 2046     		mov	r0, r4
+ 1106 005c FFF7FEFF 		bl	HAL_GPIO_Init
+ 1107              	.LVL87:
+  84:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH ;
+ 1108              		.loc 1 84 3 view .LVU367
+  84:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH ;
+ 1109              		.loc 1 84 26 is_stmt 0 view .LVU368
+ 1110 0060 4023     		movs	r3, #64
+ 1111 0062 0293     		str	r3, [sp, #8]
+  85:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Mode = GPIO_MODE_INPUT;  //ÉÏÀ­ÊäÈë
+ 1112              		.loc 1 85 3 is_stmt 1 view .LVU369
+  85:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Mode = GPIO_MODE_INPUT;  //ÉÏÀ­ÊäÈë
+ 1113              		.loc 1 85 28 is_stmt 0 view .LVU370
+ 1114 0064 0596     		str	r6, [sp, #20]
+  86:Core/Src/lcd_xpt2046.c **** 	GPIO_InitStructure.Pull = GPIO_PULLUP;
+ 1115              		.loc 1 86 3 is_stmt 1 view .LVU371
+  86:Core/Src/lcd_xpt2046.c **** 	GPIO_InitStructure.Pull = GPIO_PULLUP;
+ 1116              		.loc 1 86 27 is_stmt 0 view .LVU372
+ 1117 0066 0026     		movs	r6, #0
+ 1118 0068 0396     		str	r6, [sp, #12]
+  87:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_SPI_MISO_PORT, &GPIO_InitStructure);
+ 1119              		.loc 1 87 2 is_stmt 1 view .LVU373
+  87:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_SPI_MISO_PORT, &GPIO_InitStructure);
+ 1120              		.loc 1 87 26 is_stmt 0 view .LVU374
+ 1121 006a 0495     		str	r5, [sp, #16]
+  88:Core/Src/lcd_xpt2046.c **** 
+ 1122              		.loc 1 88 3 is_stmt 1 view .LVU375
+ 1123 006c 02A9     		add	r1, sp, #8
+ 1124 006e 2046     		mov	r0, r4
+ 1125 0070 FFF7FEFF 		bl	HAL_GPIO_Init
+ 1126              	.LVL88:
+  91:Core/Src/lcd_xpt2046.c **** 								
+ 1127              		.loc 1 91 3 view .LVU376
+ 1128 0074 4FF08063 		mov	r3, #67108864
+ 1129 0078 2361     		str	r3, [r4, #16]
+  91:Core/Src/lcd_xpt2046.c **** 								
+ 1130              		.loc 1 91 23 view .LVU377
+  94:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Mode = GPIO_MODE_INPUT;  //ÉÏÀ­ÊäÈë
+ 1131              		.loc 1 94 3 view .LVU378
+  94:Core/Src/lcd_xpt2046.c ****   GPIO_InitStructure.Mode = GPIO_MODE_INPUT;  //ÉÏÀ­ÊäÈë
+ 1132              		.loc 1 94 26 is_stmt 0 view .LVU379
+ 1133 007a 4FF40073 		mov	r3, #512
+ 1134 007e 0293     		str	r3, [sp, #8]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 33
+
+
+  95:Core/Src/lcd_xpt2046.c **** 	GPIO_InitStructure.Pull = GPIO_PULLUP;
+ 1135              		.loc 1 95 3 is_stmt 1 view .LVU380
+  95:Core/Src/lcd_xpt2046.c **** 	GPIO_InitStructure.Pull = GPIO_PULLUP;
+ 1136              		.loc 1 95 27 is_stmt 0 view .LVU381
+ 1137 0080 0396     		str	r6, [sp, #12]
+  96:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_PENIRQ_GPIO_PORT, &GPIO_InitStructure);
+ 1138              		.loc 1 96 2 is_stmt 1 view .LVU382
+  96:Core/Src/lcd_xpt2046.c ****   HAL_GPIO_Init(XPT2046_PENIRQ_GPIO_PORT, &GPIO_InitStructure);
+ 1139              		.loc 1 96 26 is_stmt 0 view .LVU383
+ 1140 0082 0495     		str	r5, [sp, #16]
+  97:Core/Src/lcd_xpt2046.c **** }
+ 1141              		.loc 1 97 3 is_stmt 1 view .LVU384
+ 1142 0084 02A9     		add	r1, sp, #8
+ 1143 0086 2046     		mov	r0, r4
+ 1144 0088 FFF7FEFF 		bl	HAL_GPIO_Init
+ 1145              	.LVL89:
+  98:Core/Src/lcd_xpt2046.c **** 
+ 1146              		.loc 1 98 1 is_stmt 0 view .LVU385
+ 1147 008c 06B0     		add	sp, sp, #24
+ 1148              	.LCFI14:
+ 1149              		.cfi_def_cfa_offset 16
+ 1150              		@ sp needed
+ 1151 008e 70BD     		pop	{r4, r5, r6, pc}
+ 1152              	.L56:
+ 1153              		.align	2
+ 1154              	.L55:
+ 1155 0090 00100240 		.word	1073876992
+ 1156 0094 00200140 		.word	1073815552
+ 1157 0098 001C0140 		.word	1073814528
+ 1158              		.cfi_endproc
+ 1159              	.LFE68:
+ 1161              		.section	.rodata.XPT2046_Touch_Calibrate.str1.4,"aMS",%progbits,1
+ 1162              		.align	2
+ 1163              	.LC0:
+ 1164 0000 252A6325 		.ascii	"%*c%s\000"
+ 1164      7300
+ 1165 0006 0000     		.align	2
+ 1166              	.LC1:
+ 1167 0008 546F7563 		.ascii	"Touch Calibrate ......\000"
+ 1167      68204361 
+ 1167      6C696272 
+ 1167      61746520 
+ 1167      2E2E2E2E 
+ 1168 001f 00       		.align	2
+ 1169              	.LC2:
+ 1170 0020 252A6325 		.ascii	"%*c%d\000"
+ 1170      6400
+ 1171              		.global	__aeabi_fmul
+ 1172              		.global	__aeabi_fadd
+ 1173              		.global	__aeabi_fdiv
+ 1174              		.global	__aeabi_f2uiz
+ 1175 0026 0000     		.align	2
+ 1176              	.LC3:
+ 1177 0028 43616C69 		.ascii	"Calibrate Succed\000"
+ 1177      62726174 
+ 1177      65205375 
+ 1177      63636564 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 34
+
+
+ 1177      00
+ 1178 0039 000000   		.align	2
+ 1179              	.LC4:
+ 1180 003c 43616C69 		.ascii	"Calibrate fail\000"
+ 1180      62726174 
+ 1180      65206661 
+ 1180      696C00
+ 1181 004b 00       		.align	2
+ 1182              	.LC5:
+ 1183 004c 74727920 		.ascii	"try again\000"
+ 1183      61676169 
+ 1183      6E00
+ 1184              		.section	.text.XPT2046_Touch_Calibrate,"ax",%progbits
+ 1185              		.align	1
+ 1186              		.global	XPT2046_Touch_Calibrate
+ 1187              		.syntax unified
+ 1188              		.thumb
+ 1189              		.thumb_func
+ 1191              	XPT2046_Touch_Calibrate:
+ 1192              	.LVL90:
+ 1193              	.LFB77:
+ 468:Core/Src/lcd_xpt2046.c **** 
+ 469:Core/Src/lcd_xpt2046.c **** 
+ 470:Core/Src/lcd_xpt2046.c **** /**
+ 471:Core/Src/lcd_xpt2046.c ****   * @brief  XPT2046 ´¥ÃþÆÁÐ£×¼
+ 472:Core/Src/lcd_xpt2046.c **** 	* @param	LCD_Mode£ºÖ¸¶¨ÒªÐ£ÕýÄÄÖÖÒº¾§É¨ÃèÄ£Ê½µÄ²ÎÊý
+ 473:Core/Src/lcd_xpt2046.c ****   * @note  ±¾º¯Êýµ÷ÓÃºó»á°ÑÒº¾§Ä£Ê½ÉèÖÃÎªLCD_Mode
+ 474:Core/Src/lcd_xpt2046.c ****   * @retval Ð£×¼½á¹û
+ 475:Core/Src/lcd_xpt2046.c **** 	*   ¸Ã·µ»ØÖµÎªÒÔÏÂÖµÖ®Ò»£º
+ 476:Core/Src/lcd_xpt2046.c ****   *     @arg 1 :Ð£×¼³É¹¦
+ 477:Core/Src/lcd_xpt2046.c ****   *     @arg 0 :Ð£×¼Ê§°Ü
+ 478:Core/Src/lcd_xpt2046.c ****   */
+ 479:Core/Src/lcd_xpt2046.c **** uint8_t XPT2046_Touch_Calibrate ( uint8_t LCD_Mode ) 
+ 480:Core/Src/lcd_xpt2046.c **** {
+ 1194              		.loc 1 480 1 is_stmt 1 view -0
+ 1195              		.cfi_startproc
+ 1196              		@ args = 0, pretend = 0, frame = 200
+ 1197              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1198              		.loc 1 480 1 is_stmt 0 view .LVU387
+ 1199 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1200              	.LCFI15:
+ 1201              		.cfi_def_cfa_offset 36
+ 1202              		.cfi_offset 4, -36
+ 1203              		.cfi_offset 5, -32
+ 1204              		.cfi_offset 6, -28
+ 1205              		.cfi_offset 7, -24
+ 1206              		.cfi_offset 8, -20
+ 1207              		.cfi_offset 9, -16
+ 1208              		.cfi_offset 10, -12
+ 1209              		.cfi_offset 11, -8
+ 1210              		.cfi_offset 14, -4
+ 1211 0004 B5B0     		sub	sp, sp, #212
+ 1212              	.LCFI16:
+ 1213              		.cfi_def_cfa_offset 248
+ 1214 0006 0446     		mov	r4, r0
+ 481:Core/Src/lcd_xpt2046.c **** 
+ 482:Core/Src/lcd_xpt2046.c **** 		uint8_t i;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 35
+
+
+ 1215              		.loc 1 482 3 is_stmt 1 view .LVU388
+ 483:Core/Src/lcd_xpt2046.c **** 		
+ 484:Core/Src/lcd_xpt2046.c **** 		char cStr [ 100 ];
+ 1216              		.loc 1 484 3 view .LVU389
+ 485:Core/Src/lcd_xpt2046.c **** 		
+ 486:Core/Src/lcd_xpt2046.c **** 		uint16_t usTest_x = 0, usTest_y = 0, usGap_x = 0, usGap_y = 0;
+ 1217              		.loc 1 486 3 view .LVU390
+ 1218              	.LVL91:
+ 487:Core/Src/lcd_xpt2046.c **** 		
+ 488:Core/Src/lcd_xpt2046.c **** 	  char * pStr = 0;
+ 1219              		.loc 1 488 4 view .LVU391
+ 489:Core/Src/lcd_xpt2046.c **** 	
+ 490:Core/Src/lcd_xpt2046.c ****     strType_XPT2046_Coordinate strCrossCoordinate[4], strScreenSample[4];
+ 1220              		.loc 1 490 5 view .LVU392
+ 491:Core/Src/lcd_xpt2046.c **** 	  
+ 492:Core/Src/lcd_xpt2046.c **** 	  strType_XPT2046_Calibration CalibrationFactor;
+ 1221              		.loc 1 492 4 view .LVU393
+ 493:Core/Src/lcd_xpt2046.c ****     		
+ 494:Core/Src/lcd_xpt2046.c **** 		LCD_SetFont(&Font8x16);
+ 1222              		.loc 1 494 3 view .LVU394
+ 1223 0008 9348     		ldr	r0, .L69
+ 1224              	.LVL92:
+ 1225              		.loc 1 494 3 is_stmt 0 view .LVU395
+ 1226 000a FFF7FEFF 		bl	LCD_SetFont
+ 1227              	.LVL93:
+ 495:Core/Src/lcd_xpt2046.c **** 		LCD_SetColors(BLUE,BLACK);
+ 1228              		.loc 1 495 3 is_stmt 1 view .LVU396
+ 1229 000e 0021     		movs	r1, #0
+ 1230 0010 1F20     		movs	r0, #31
+ 1231 0012 FFF7FEFF 		bl	LCD_SetColors
+ 1232              	.LVL94:
+ 496:Core/Src/lcd_xpt2046.c **** 	
+ 497:Core/Src/lcd_xpt2046.c **** 		//ÉèÖÃÉ¨Ãè·½Ïò£¬ºáÆÁ
+ 498:Core/Src/lcd_xpt2046.c **** 		ILI9341_GramScan ( LCD_Mode );
+ 1233              		.loc 1 498 3 view .LVU397
+ 1234 0016 2046     		mov	r0, r4
+ 1235 0018 FFF7FEFF 		bl	ILI9341_GramScan
+ 1236              	.LVL95:
+ 499:Core/Src/lcd_xpt2046.c **** 		
+ 500:Core/Src/lcd_xpt2046.c **** 		
+ 501:Core/Src/lcd_xpt2046.c **** 		/* Éè¶¨¡°Ê®¡±×Ö½»²æµãµÄ×ø±ê */ 
+ 502:Core/Src/lcd_xpt2046.c **** 		strCrossCoordinate [0].x = LCD_X_LENGTH >> 2;
+ 1237              		.loc 1 502 3 view .LVU398
+ 1238              		.loc 1 502 28 is_stmt 0 view .LVU399
+ 1239 001c 8F4B     		ldr	r3, .L69+4
+ 1240 001e 1B88     		ldrh	r3, [r3]
+ 1241 0020 9808     		lsrs	r0, r3, #2
+ 1242 0022 ADF84C00 		strh	r0, [sp, #76]	@ movhi
+ 503:Core/Src/lcd_xpt2046.c **** 		strCrossCoordinate[0].y = LCD_Y_LENGTH >> 2;
+ 1243              		.loc 1 503 3 is_stmt 1 view .LVU400
+ 1244              		.loc 1 503 27 is_stmt 0 view .LVU401
+ 1245 0026 8E4A     		ldr	r2, .L69+8
+ 1246 0028 1288     		ldrh	r2, [r2]
+ 1247 002a 9108     		lsrs	r1, r2, #2
+ 1248 002c ADF84E10 		strh	r1, [sp, #78]	@ movhi
+ 504:Core/Src/lcd_xpt2046.c **** 		
+ 505:Core/Src/lcd_xpt2046.c **** 		strCrossCoordinate[1].x = strCrossCoordinate[0].x;
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 36
+
+
+ 1249              		.loc 1 505 3 is_stmt 1 view .LVU402
+ 1250              		.loc 1 505 27 is_stmt 0 view .LVU403
+ 1251 0030 ADF85400 		strh	r0, [sp, #84]	@ movhi
+ 506:Core/Src/lcd_xpt2046.c **** 		strCrossCoordinate[1].y = ( LCD_Y_LENGTH * 3 ) >> 2;
+ 1252              		.loc 1 506 3 is_stmt 1 view .LVU404
+ 1253              		.loc 1 506 44 is_stmt 0 view .LVU405
+ 1254 0034 02EB4202 		add	r2, r2, r2, lsl #1
+ 1255              		.loc 1 506 27 view .LVU406
+ 1256 0038 42F38F02 		sbfx	r2, r2, #2, #16
+ 1257 003c ADF85620 		strh	r2, [sp, #86]	@ movhi
+ 507:Core/Src/lcd_xpt2046.c **** 		
+ 508:Core/Src/lcd_xpt2046.c **** 		strCrossCoordinate[2].x = ( LCD_X_LENGTH * 3 ) >> 2;
+ 1258              		.loc 1 508 3 is_stmt 1 view .LVU407
+ 1259              		.loc 1 508 44 is_stmt 0 view .LVU408
+ 1260 0040 03EB4303 		add	r3, r3, r3, lsl #1
+ 1261              		.loc 1 508 27 view .LVU409
+ 1262 0044 43F38F03 		sbfx	r3, r3, #2, #16
+ 1263 0048 ADF85C30 		strh	r3, [sp, #92]	@ movhi
+ 509:Core/Src/lcd_xpt2046.c **** 		strCrossCoordinate[2].y = strCrossCoordinate[1].y;
+ 1264              		.loc 1 509 3 is_stmt 1 view .LVU410
+ 1265              		.loc 1 509 27 is_stmt 0 view .LVU411
+ 1266 004c ADF85E20 		strh	r2, [sp, #94]	@ movhi
+ 510:Core/Src/lcd_xpt2046.c **** 		
+ 511:Core/Src/lcd_xpt2046.c **** 		strCrossCoordinate[3].x = strCrossCoordinate[2].x;
+ 1267              		.loc 1 511 3 is_stmt 1 view .LVU412
+ 1268              		.loc 1 511 27 is_stmt 0 view .LVU413
+ 1269 0050 ADF86430 		strh	r3, [sp, #100]	@ movhi
+ 512:Core/Src/lcd_xpt2046.c **** 		strCrossCoordinate[3].y = strCrossCoordinate[0].y;	
+ 1270              		.loc 1 512 3 is_stmt 1 view .LVU414
+ 1271              		.loc 1 512 27 is_stmt 0 view .LVU415
+ 1272 0054 ADF86610 		strh	r1, [sp, #102]	@ movhi
+ 513:Core/Src/lcd_xpt2046.c **** 		
+ 514:Core/Src/lcd_xpt2046.c **** 		
+ 515:Core/Src/lcd_xpt2046.c **** 		for ( i = 0; i < 4; i ++ )
+ 1273              		.loc 1 515 3 is_stmt 1 view .LVU416
+ 1274              	.LVL96:
+ 1275              		.loc 1 515 11 is_stmt 0 view .LVU417
+ 1276 0058 0026     		movs	r6, #0
+ 1277              		.loc 1 515 3 view .LVU418
+ 1278 005a 52E0     		b	.L58
+ 1279              	.LVL97:
+ 1280              	.L60:
+ 516:Core/Src/lcd_xpt2046.c **** 		{ 
+ 517:Core/Src/lcd_xpt2046.c **** 			ILI9341_Clear ( 0, 0, LCD_X_LENGTH, LCD_Y_LENGTH );       
+ 1281              		.loc 1 517 4 is_stmt 1 view .LVU419
+ 1282 005c 804F     		ldr	r7, .L69+8
+ 1283 005e DFF8FC81 		ldr	r8, .L69+4
+ 1284 0062 3B88     		ldrh	r3, [r7]
+ 1285 0064 B8F80020 		ldrh	r2, [r8]
+ 1286 0068 0021     		movs	r1, #0
+ 1287 006a 0846     		mov	r0, r1
+ 1288 006c FFF7FEFF 		bl	ILI9341_Clear
+ 1289              	.LVL98:
+ 518:Core/Src/lcd_xpt2046.c **** 			
+ 519:Core/Src/lcd_xpt2046.c **** 			pStr = "Touch Calibrate ......";		
+ 1290              		.loc 1 519 4 view .LVU420
+ 520:Core/Src/lcd_xpt2046.c **** 			//²åÈë¿Õ¸ñ£¬¾ÓÖÐÏÔÊ¾
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 37
+
+
+ 521:Core/Src/lcd_xpt2046.c **** 			sprintf(cStr,"%*c%s",((LCD_X_LENGTH/(((sFONT *)LCD_GetFont())->Width))-strlen(pStr))/2,' ',pStr)
+ 1291              		.loc 1 521 4 view .LVU421
+ 1292              		.loc 1 521 39 is_stmt 0 view .LVU422
+ 1293 0070 B8F80050 		ldrh	r5, [r8]
+ 1294              		.loc 1 521 42 view .LVU423
+ 1295 0074 FFF7FEFF 		bl	LCD_GetFont
+ 1296              	.LVL99:
+ 1297              		.loc 1 521 65 view .LVU424
+ 1298 0078 8288     		ldrh	r2, [r0, #4]
+ 1299              		.loc 1 521 39 view .LVU425
+ 1300 007a B5FBF2F2 		udiv	r2, r5, r2
+ 1301              		.loc 1 521 74 view .LVU426
+ 1302 007e 163A     		subs	r2, r2, #22
+ 1303              		.loc 1 521 4 view .LVU427
+ 1304 0080 784B     		ldr	r3, .L69+12
+ 1305 0082 0093     		str	r3, [sp]
+ 1306 0084 2023     		movs	r3, #32
+ 1307 0086 5208     		lsrs	r2, r2, #1
+ 1308 0088 7749     		ldr	r1, .L69+16
+ 1309 008a 1BA8     		add	r0, sp, #108
+ 1310 008c FFF7FEFF 		bl	sprintf
+ 1311              	.LVL100:
+ 522:Core/Src/lcd_xpt2046.c ****       ILI9341_DispStringLine_EN (LCD_Y_LENGTH >> 1, cStr );			
+ 1312              		.loc 1 522 7 is_stmt 1 view .LVU428
+ 1313 0090 3888     		ldrh	r0, [r7]
+ 1314 0092 1BA9     		add	r1, sp, #108
+ 1315 0094 4008     		lsrs	r0, r0, #1
+ 1316 0096 FFF7FEFF 		bl	ILI9341_DispStringLine_EN
+ 1317              	.LVL101:
+ 523:Core/Src/lcd_xpt2046.c **** 		
+ 524:Core/Src/lcd_xpt2046.c **** 			//²åÈë¿Õ¸ñ£¬¾ÓÖÐÏÔÊ¾
+ 525:Core/Src/lcd_xpt2046.c **** 			sprintf ( cStr, "%*c%d",((LCD_X_LENGTH/(((sFONT *)LCD_GetFont())->Width)) -1)/2,' ',i + 1 );
+ 1318              		.loc 1 525 4 view .LVU429
+ 1319              		.loc 1 525 42 is_stmt 0 view .LVU430
+ 1320 009a B8F80050 		ldrh	r5, [r8]
+ 1321              		.loc 1 525 45 view .LVU431
+ 1322 009e FFF7FEFF 		bl	LCD_GetFont
+ 1323              	.LVL102:
+ 1324              		.loc 1 525 68 view .LVU432
+ 1325 00a2 8288     		ldrh	r2, [r0, #4]
+ 1326              		.loc 1 525 42 view .LVU433
+ 1327 00a4 B5FBF2F2 		udiv	r2, r5, r2
+ 1328              		.loc 1 525 78 view .LVU434
+ 1329 00a8 013A     		subs	r2, r2, #1
+ 1330              		.loc 1 525 4 view .LVU435
+ 1331 00aa 3546     		mov	r5, r6
+ 1332 00ac 02EBD272 		add	r2, r2, r2, lsr #31
+ 1333 00b0 731C     		adds	r3, r6, #1
+ 1334 00b2 0093     		str	r3, [sp]
+ 1335 00b4 2023     		movs	r3, #32
+ 1336 00b6 5210     		asrs	r2, r2, #1
+ 1337 00b8 6C49     		ldr	r1, .L69+20
+ 1338 00ba 1BA8     		add	r0, sp, #108
+ 1339 00bc FFF7FEFF 		bl	sprintf
+ 1340              	.LVL103:
+ 526:Core/Src/lcd_xpt2046.c **** 			ILI9341_DispStringLine_EN (( LCD_Y_LENGTH >> 1 ) - (((sFONT *)LCD_GetFont())->Height), cStr ); 
+ 1341              		.loc 1 526 4 is_stmt 1 view .LVU436
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 38
+
+
+ 1342 00c0 3F88     		ldrh	r7, [r7]
+ 1343 00c2 7F08     		lsrs	r7, r7, #1
+ 1344              		.loc 1 526 57 is_stmt 0 view .LVU437
+ 1345 00c4 FFF7FEFF 		bl	LCD_GetFont
+ 1346              	.LVL104:
+ 1347              		.loc 1 526 80 view .LVU438
+ 1348 00c8 C088     		ldrh	r0, [r0, #6]
+ 1349              		.loc 1 526 4 view .LVU439
+ 1350 00ca 381A     		subs	r0, r7, r0
+ 1351 00cc 1BA9     		add	r1, sp, #108
+ 1352 00ce 80B2     		uxth	r0, r0
+ 1353 00d0 FFF7FEFF 		bl	ILI9341_DispStringLine_EN
+ 1354              	.LVL105:
+ 527:Core/Src/lcd_xpt2046.c **** 		
+ 528:Core/Src/lcd_xpt2046.c **** 			XPT2046_DelayUS ( 300000 );		                     //ÊÊµ±µÄÑÓÊ±ºÜÓÐ±ØÒª
+ 1355              		.loc 1 528 4 is_stmt 1 view .LVU440
+ 1356 00d4 6648     		ldr	r0, .L69+24
+ 1357 00d6 FFF7FEFF 		bl	XPT2046_DelayUS
+ 1358              	.LVL106:
+ 529:Core/Src/lcd_xpt2046.c **** 			
+ 530:Core/Src/lcd_xpt2046.c **** 			ILI9341_DrawCross ( strCrossCoordinate[i] .x, strCrossCoordinate[i].y );  //ÏÔÊ¾Ð£ÕýÓÃµÄ¡°Ê®¡±×Ö
+ 1359              		.loc 1 530 4 view .LVU441
+ 1360              		.loc 1 530 46 is_stmt 0 view .LVU442
+ 1361 00da 34AB     		add	r3, sp, #208
+ 1362 00dc 03EBC603 		add	r3, r3, r6, lsl #3
+ 1363 00e0 33F9840C 		ldrsh	r0, [r3, #-132]
+ 1364              		.loc 1 530 71 view .LVU443
+ 1365 00e4 33F9821C 		ldrsh	r1, [r3, #-130]
+ 1366              		.loc 1 530 4 view .LVU444
+ 1367 00e8 89B2     		uxth	r1, r1
+ 1368 00ea 80B2     		uxth	r0, r0
+ 1369 00ec FFF7FEFF 		bl	ILI9341_DrawCross
+ 1370              	.LVL107:
+ 531:Core/Src/lcd_xpt2046.c **** 
+ 532:Core/Src/lcd_xpt2046.c **** 			while ( ! XPT2046_ReadAdc_Smooth_XY ( & strScreenSample [i] ) );               //¶ÁÈ¡XPT2046Êý¾Ý
+ 1371              		.loc 1 532 4 is_stmt 1 view .LVU445
+ 1372              	.L59:
+ 1373              		.loc 1 532 67 discriminator 1 view .LVU446
+ 1374              		.loc 1 532 10 discriminator 1 view .LVU447
+ 1375              		.loc 1 532 14 is_stmt 0 discriminator 1 view .LVU448
+ 1376 00f0 0BAB     		add	r3, sp, #44
+ 1377 00f2 03EBC500 		add	r0, r3, r5, lsl #3
+ 1378 00f6 FFF7FEFF 		bl	XPT2046_ReadAdc_Smooth_XY
+ 1379              	.LVL108:
+ 1380              		.loc 1 532 10 discriminator 1 view .LVU449
+ 1381 00fa 0028     		cmp	r0, #0
+ 1382 00fc F8D0     		beq	.L59
+ 515:Core/Src/lcd_xpt2046.c **** 		{ 
+ 1383              		.loc 1 515 23 is_stmt 1 discriminator 2 view .LVU450
+ 515:Core/Src/lcd_xpt2046.c **** 		{ 
+ 1384              		.loc 1 515 25 is_stmt 0 discriminator 2 view .LVU451
+ 1385 00fe 0136     		adds	r6, r6, #1
+ 1386              	.LVL109:
+ 515:Core/Src/lcd_xpt2046.c **** 		{ 
+ 1387              		.loc 1 515 25 discriminator 2 view .LVU452
+ 1388 0100 F6B2     		uxtb	r6, r6
+ 1389              	.LVL110:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 39
+
+
+ 1390              	.L58:
+ 515:Core/Src/lcd_xpt2046.c **** 		{ 
+ 1391              		.loc 1 515 16 is_stmt 1 discriminator 1 view .LVU453
+ 515:Core/Src/lcd_xpt2046.c **** 		{ 
+ 1392              		.loc 1 515 3 is_stmt 0 discriminator 1 view .LVU454
+ 1393 0102 032E     		cmp	r6, #3
+ 1394 0104 AAD9     		bls	.L60
+ 533:Core/Src/lcd_xpt2046.c **** 
+ 534:Core/Src/lcd_xpt2046.c **** 		}
+ 535:Core/Src/lcd_xpt2046.c **** 		
+ 536:Core/Src/lcd_xpt2046.c **** 		
+ 537:Core/Src/lcd_xpt2046.c **** 		XPT2046_Calculate_CalibrationFactor ( strCrossCoordinate, strScreenSample, & CalibrationFactor ) 
+ 1395              		.loc 1 537 3 is_stmt 1 view .LVU455
+ 1396 0106 04AA     		add	r2, sp, #16
+ 1397 0108 0BA9     		add	r1, sp, #44
+ 1398 010a 13A8     		add	r0, sp, #76
+ 1399 010c FFF7FEFF 		bl	XPT2046_Calculate_CalibrationFactor
+ 1400              	.LVL111:
+ 538:Core/Src/lcd_xpt2046.c **** 		
+ 539:Core/Src/lcd_xpt2046.c **** 		if ( CalibrationFactor.Divider == 0 ) goto Failure;
+ 1401              		.loc 1 539 3 view .LVU456
+ 1402              		.loc 1 539 25 is_stmt 0 view .LVU457
+ 1403 0110 0A9D     		ldr	r5, [sp, #40]	@ float
+ 1404              		.loc 1 539 6 view .LVU458
+ 1405 0112 0021     		movs	r1, #0
+ 1406 0114 2846     		mov	r0, r5
+ 1407 0116 FFF7FEFF 		bl	__aeabi_fcmpeq
+ 1408              	.LVL112:
+ 1409 011a 0028     		cmp	r0, #0
+ 1410 011c 52D1     		bne	.L61
+ 540:Core/Src/lcd_xpt2046.c **** 		
+ 541:Core/Src/lcd_xpt2046.c **** 			
+ 542:Core/Src/lcd_xpt2046.c **** 		usTest_x = ( ( CalibrationFactor.An * strScreenSample[3].x ) + ( CalibrationFactor.Bn * strScreen
+ 1411              		.loc 1 542 3 is_stmt 1 view .LVU459
+ 1412              		.loc 1 542 35 is_stmt 0 view .LVU460
+ 1413 011e DDF810B0 		ldr	fp, [sp, #16]	@ float
+ 1414              		.loc 1 542 39 view .LVU461
+ 1415 0122 BDF94400 		ldrsh	r0, [sp, #68]
+ 1416 0126 FFF7FEFF 		bl	__aeabi_i2f
+ 1417              	.LVL113:
+ 1418 012a 0746     		mov	r7, r0
+ 1419 012c 0146     		mov	r1, r0
+ 1420 012e 5846     		mov	r0, fp
+ 1421 0130 FFF7FEFF 		bl	__aeabi_fmul
+ 1422              	.LVL114:
+ 1423 0134 0646     		mov	r6, r0
+ 1424              	.LVL115:
+ 1425              		.loc 1 542 85 view .LVU462
+ 1426 0136 DDF814A0 		ldr	r10, [sp, #20]	@ float
+ 1427              		.loc 1 542 89 view .LVU463
+ 1428 013a BDF94600 		ldrsh	r0, [sp, #70]
+ 1429 013e FFF7FEFF 		bl	__aeabi_i2f
+ 1430              	.LVL116:
+ 1431 0142 0290     		str	r0, [sp, #8]	@ float
+ 1432 0144 0146     		mov	r1, r0
+ 1433 0146 5046     		mov	r0, r10
+ 1434 0148 FFF7FEFF 		bl	__aeabi_fmul
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 40
+
+
+ 1435              	.LVL117:
+ 1436 014c 0146     		mov	r1, r0
+ 1437              		.loc 1 542 64 view .LVU464
+ 1438 014e 3046     		mov	r0, r6
+ 1439 0150 FFF7FEFF 		bl	__aeabi_fadd
+ 1440              	.LVL118:
+ 1441              		.loc 1 542 133 view .LVU465
+ 1442 0154 DDF81890 		ldr	r9, [sp, #24]	@ float
+ 1443              		.loc 1 542 114 view .LVU466
+ 1444 0158 4946     		mov	r1, r9
+ 1445 015a FFF7FEFF 		bl	__aeabi_fadd
+ 1446              	.LVL119:
+ 1447              		.loc 1 542 139 view .LVU467
+ 1448 015e 2946     		mov	r1, r5
+ 1449 0160 FFF7FEFF 		bl	__aeabi_fdiv
+ 1450              	.LVL120:
+ 1451              		.loc 1 542 12 view .LVU468
+ 1452 0164 FFF7FEFF 		bl	__aeabi_f2uiz
+ 1453              	.LVL121:
+ 1454 0168 86B2     		uxth	r6, r0
+ 1455              	.LVL122:
+ 543:Core/Src/lcd_xpt2046.c **** 		usTest_y = ( ( CalibrationFactor.Dn * strScreenSample[3].x ) + ( CalibrationFactor.En * strScreen
+ 1456              		.loc 1 543 3 is_stmt 1 view .LVU469
+ 1457              		.loc 1 543 35 is_stmt 0 view .LVU470
+ 1458 016a DDF81C80 		ldr	r8, [sp, #28]	@ float
+ 1459              		.loc 1 543 39 view .LVU471
+ 1460 016e 4146     		mov	r1, r8
+ 1461 0170 3846     		mov	r0, r7
+ 1462 0172 FFF7FEFF 		bl	__aeabi_fmul
+ 1463              	.LVL123:
+ 1464 0176 0390     		str	r0, [sp, #12]	@ float
+ 1465              		.loc 1 543 85 view .LVU472
+ 1466 0178 089F     		ldr	r7, [sp, #32]	@ float
+ 1467              		.loc 1 543 89 view .LVU473
+ 1468 017a 3946     		mov	r1, r7
+ 1469 017c 0298     		ldr	r0, [sp, #8]	@ float
+ 1470 017e FFF7FEFF 		bl	__aeabi_fmul
+ 1471              	.LVL124:
+ 1472 0182 0146     		mov	r1, r0
+ 1473              		.loc 1 543 64 view .LVU474
+ 1474 0184 0398     		ldr	r0, [sp, #12]	@ float
+ 1475 0186 FFF7FEFF 		bl	__aeabi_fadd
+ 1476              	.LVL125:
+ 1477              		.loc 1 543 133 view .LVU475
+ 1478 018a 099B     		ldr	r3, [sp, #36]	@ float
+ 1479 018c 0293     		str	r3, [sp, #8]	@ float
+ 1480              		.loc 1 543 114 view .LVU476
+ 1481 018e 1946     		mov	r1, r3
+ 1482 0190 FFF7FEFF 		bl	__aeabi_fadd
+ 1483              	.LVL126:
+ 1484              		.loc 1 543 139 view .LVU477
+ 1485 0194 2946     		mov	r1, r5
+ 1486 0196 FFF7FEFF 		bl	__aeabi_fdiv
+ 1487              	.LVL127:
+ 1488              		.loc 1 543 12 view .LVU478
+ 1489 019a FFF7FEFF 		bl	__aeabi_f2uiz
+ 1490              	.LVL128:
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 41
+
+
+ 1491 019e 80B2     		uxth	r0, r0
+ 1492              	.LVL129:
+ 544:Core/Src/lcd_xpt2046.c **** 		
+ 545:Core/Src/lcd_xpt2046.c **** 		usGap_x = ( usTest_x > strCrossCoordinate[3].x ) ? ( usTest_x - strCrossCoordinate[3].x ) : ( str
+ 1493              		.loc 1 545 3 is_stmt 1 view .LVU479
+ 1494              		.loc 1 545 47 is_stmt 0 view .LVU480
+ 1495 01a0 BDF96430 		ldrsh	r3, [sp, #100]
+ 1496              		.loc 1 545 11 view .LVU481
+ 1497 01a4 9E42     		cmp	r6, r3
+ 1498 01a6 4EDD     		ble	.L62
+ 1499              		.loc 1 545 88 discriminator 1 view .LVU482
+ 1500 01a8 9BB2     		uxth	r3, r3
+ 1501              		.loc 1 545 11 discriminator 1 view .LVU483
+ 1502 01aa F31A     		subs	r3, r6, r3
+ 1503 01ac 9BB2     		uxth	r3, r3
+ 1504              	.L63:
+ 1505              	.LVL130:
+ 546:Core/Src/lcd_xpt2046.c **** 		usGap_y = ( usTest_y > strCrossCoordinate[3].y ) ? ( usTest_y - strCrossCoordinate[3].y ) : ( str
+ 1506              		.loc 1 546 3 is_stmt 1 discriminator 4 view .LVU484
+ 1507              		.loc 1 546 47 is_stmt 0 discriminator 4 view .LVU485
+ 1508 01ae BDF96620 		ldrsh	r2, [sp, #102]
+ 1509              		.loc 1 546 11 discriminator 4 view .LVU486
+ 1510 01b2 9042     		cmp	r0, r2
+ 1511 01b4 4BDD     		ble	.L64
+ 1512              		.loc 1 546 88 discriminator 1 view .LVU487
+ 1513 01b6 92B2     		uxth	r2, r2
+ 1514              		.loc 1 546 11 discriminator 1 view .LVU488
+ 1515 01b8 821A     		subs	r2, r0, r2
+ 1516 01ba 92B2     		uxth	r2, r2
+ 1517              	.L65:
+ 1518              	.LVL131:
+ 547:Core/Src/lcd_xpt2046.c **** 		
+ 548:Core/Src/lcd_xpt2046.c ****     if ( ( usGap_x > 15 ) || ( usGap_y > 15 ) ) goto Failure;       //¿ÉÒÔÍ¨¹ýÐÞ¸ÄÕâÁ½¸öÖµµÄ´óÐ¡À´µ
+ 1519              		.loc 1 548 5 is_stmt 1 discriminator 4 view .LVU489
+ 1520              		.loc 1 548 8 is_stmt 0 discriminator 4 view .LVU490
+ 1521 01bc 0F2B     		cmp	r3, #15
+ 1522 01be 01D8     		bhi	.L61
+ 1523              		.loc 1 548 27 discriminator 2 view .LVU491
+ 1524 01c0 0F2A     		cmp	r2, #15
+ 1525 01c2 5DD9     		bls	.L68
+ 1526              	.LVL132:
+ 1527              	.L61:
+ 549:Core/Src/lcd_xpt2046.c **** 		
+ 550:Core/Src/lcd_xpt2046.c **** 
+ 551:Core/Src/lcd_xpt2046.c ****     /* Ð£×¼ÏµÊýÎªÈ«¾Ö±äÁ¿ */ 
+ 552:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dX_X = ( CalibrationFactor.An * 1.0 ) / CalibrationFactor.Divider;
+ 553:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dX_Y = ( CalibrationFactor.Bn * 1.0 ) / CalibrationFactor.Divider;
+ 554:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dX   = ( CalibrationFactor.Cn * 1.0 ) / CalibrationFactor.Divider;
+ 555:Core/Src/lcd_xpt2046.c **** 		
+ 556:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dY_X = ( CalibrationFactor.Dn * 1.0 ) / CalibrationFactor.Divider;
+ 557:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dY_Y = ( CalibrationFactor.En * 1.0 ) / CalibrationFactor.Divider;
+ 558:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dY   = ( CalibrationFactor.Fn * 1.0 ) / CalibrationFactor.Divider;
+ 559:Core/Src/lcd_xpt2046.c **** 		
+ 560:Core/Src/lcd_xpt2046.c **** 		#if 0	//Êä³öµ÷ÊÔÐÅÏ¢£¬×¢ÒâÒªÏÈ³õÊ¼»¯´®¿Ú
+ 561:Core/Src/lcd_xpt2046.c **** 			{
+ 562:Core/Src/lcd_xpt2046.c **** 					float * ulHeadAddres ;
+ 563:Core/Src/lcd_xpt2046.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 42
+
+
+ 564:Core/Src/lcd_xpt2046.c **** 					/* ´òÓ¡Ð£Ð£×¼ÏµÊý */ 
+ 565:Core/Src/lcd_xpt2046.c **** 					XPT2046_INFO ( "ÏÔÊ¾Ä£Ê½¡¾%d¡¿Ð£×¼ÏµÊýÈçÏÂ£º", LCD_Mode);
+ 566:Core/Src/lcd_xpt2046.c **** 					
+ 567:Core/Src/lcd_xpt2046.c **** 					ulHeadAddres = ( float* ) ( & strXPT2046_TouchPara[LCD_Mode] );
+ 568:Core/Src/lcd_xpt2046.c **** 					
+ 569:Core/Src/lcd_xpt2046.c **** 					for ( i = 0; i < 6; i ++ )
+ 570:Core/Src/lcd_xpt2046.c **** 					{					
+ 571:Core/Src/lcd_xpt2046.c **** 						printf ( "%12f,", *ulHeadAddres++  );			
+ 572:Core/Src/lcd_xpt2046.c **** 					}	
+ 573:Core/Src/lcd_xpt2046.c **** 					printf("\r\n");
+ 574:Core/Src/lcd_xpt2046.c **** 			}
+ 575:Core/Src/lcd_xpt2046.c **** 		#endif	
+ 576:Core/Src/lcd_xpt2046.c **** 	
+ 577:Core/Src/lcd_xpt2046.c **** 	ILI9341_Clear ( 0, 0, LCD_X_LENGTH, LCD_Y_LENGTH );
+ 578:Core/Src/lcd_xpt2046.c **** 	
+ 579:Core/Src/lcd_xpt2046.c **** 	LCD_SetTextColor(GREEN);
+ 580:Core/Src/lcd_xpt2046.c **** 	
+ 581:Core/Src/lcd_xpt2046.c **** 	pStr = "Calibrate Succed";
+ 582:Core/Src/lcd_xpt2046.c **** 	//²åÈë¿Õ¸ñ£¬¾ÓÖÐÏÔÊ¾	
+ 583:Core/Src/lcd_xpt2046.c **** 	sprintf(cStr,"%*c%s",((LCD_X_LENGTH/(((sFONT *)LCD_GetFont())->Width))-strlen(pStr))/2,' ',pStr)	;
+ 584:Core/Src/lcd_xpt2046.c ****   ILI9341_DispStringLine_EN (LCD_Y_LENGTH >> 1, cStr );	
+ 585:Core/Src/lcd_xpt2046.c **** 
+ 586:Core/Src/lcd_xpt2046.c ****   XPT2046_DelayUS ( 1000000 );
+ 587:Core/Src/lcd_xpt2046.c **** 
+ 588:Core/Src/lcd_xpt2046.c **** 	return 1;    
+ 589:Core/Src/lcd_xpt2046.c **** 	
+ 590:Core/Src/lcd_xpt2046.c **** 
+ 591:Core/Src/lcd_xpt2046.c **** Failure:
+ 592:Core/Src/lcd_xpt2046.c **** 	
+ 593:Core/Src/lcd_xpt2046.c **** 	ILI9341_Clear ( 0, 0, LCD_X_LENGTH, LCD_Y_LENGTH ); 
+ 1528              		.loc 1 593 2 is_stmt 1 view .LVU492
+ 1529 01c4 264D     		ldr	r5, .L69+8
+ 1530 01c6 254E     		ldr	r6, .L69+4
+ 1531 01c8 2B88     		ldrh	r3, [r5]
+ 1532 01ca 3288     		ldrh	r2, [r6]
+ 1533 01cc 0021     		movs	r1, #0
+ 1534 01ce 0846     		mov	r0, r1
+ 1535 01d0 FFF7FEFF 		bl	ILI9341_Clear
+ 1536              	.LVL133:
+ 594:Core/Src/lcd_xpt2046.c **** 	
+ 595:Core/Src/lcd_xpt2046.c **** 	LCD_SetTextColor(RED);
+ 1537              		.loc 1 595 2 view .LVU493
+ 1538 01d4 4FF47840 		mov	r0, #63488
+ 1539 01d8 FFF7FEFF 		bl	LCD_SetTextColor
+ 1540              	.LVL134:
+ 596:Core/Src/lcd_xpt2046.c **** 	
+ 597:Core/Src/lcd_xpt2046.c **** 	pStr = "Calibrate fail";	
+ 1541              		.loc 1 597 2 view .LVU494
+ 598:Core/Src/lcd_xpt2046.c **** 	//²åÈë¿Õ¸ñ£¬¾ÓÖÐÏÔÊ¾	
+ 599:Core/Src/lcd_xpt2046.c **** 	sprintf(cStr,"%*c%s",((LCD_X_LENGTH/(((sFONT *)LCD_GetFont())->Width))-strlen(pStr))/2,' ',pStr)	;
+ 1542              		.loc 1 599 2 view .LVU495
+ 1543              		.loc 1 599 37 is_stmt 0 view .LVU496
+ 1544 01dc 3488     		ldrh	r4, [r6]
+ 1545              		.loc 1 599 40 view .LVU497
+ 1546 01de FFF7FEFF 		bl	LCD_GetFont
+ 1547              	.LVL135:
+ 1548              		.loc 1 599 63 view .LVU498
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 43
+
+
+ 1549 01e2 8288     		ldrh	r2, [r0, #4]
+ 1550              		.loc 1 599 37 view .LVU499
+ 1551 01e4 B4FBF2F2 		udiv	r2, r4, r2
+ 1552              		.loc 1 599 72 view .LVU500
+ 1553 01e8 0E3A     		subs	r2, r2, #14
+ 1554              		.loc 1 599 2 view .LVU501
+ 1555 01ea 1F4F     		ldr	r7, .L69+16
+ 1556 01ec 214B     		ldr	r3, .L69+28
+ 1557 01ee 0093     		str	r3, [sp]
+ 1558 01f0 2023     		movs	r3, #32
+ 1559 01f2 5208     		lsrs	r2, r2, #1
+ 1560 01f4 3946     		mov	r1, r7
+ 1561 01f6 1BA8     		add	r0, sp, #108
+ 1562 01f8 FFF7FEFF 		bl	sprintf
+ 1563              	.LVL136:
+ 600:Core/Src/lcd_xpt2046.c ****   ILI9341_DispStringLine_EN (LCD_Y_LENGTH >> 1, cStr );	
+ 1564              		.loc 1 600 3 is_stmt 1 view .LVU502
+ 1565 01fc 2888     		ldrh	r0, [r5]
+ 1566 01fe 1BA9     		add	r1, sp, #108
+ 1567 0200 4008     		lsrs	r0, r0, #1
+ 1568 0202 FFF7FEFF 		bl	ILI9341_DispStringLine_EN
+ 1569              	.LVL137:
+ 601:Core/Src/lcd_xpt2046.c **** 
+ 602:Core/Src/lcd_xpt2046.c **** 	pStr = "try again";
+ 1570              		.loc 1 602 2 view .LVU503
+ 603:Core/Src/lcd_xpt2046.c **** 	//²åÈë¿Õ¸ñ£¬¾ÓÖÐÏÔÊ¾		
+ 604:Core/Src/lcd_xpt2046.c **** 	sprintf(cStr,"%*c%s",((LCD_X_LENGTH/(((sFONT *)LCD_GetFont())->Width))-strlen(pStr))/2,' ',pStr)	;
+ 1571              		.loc 1 604 2 view .LVU504
+ 1572              		.loc 1 604 37 is_stmt 0 view .LVU505
+ 1573 0206 3488     		ldrh	r4, [r6]
+ 1574              		.loc 1 604 40 view .LVU506
+ 1575 0208 FFF7FEFF 		bl	LCD_GetFont
+ 1576              	.LVL138:
+ 1577              		.loc 1 604 63 view .LVU507
+ 1578 020c 8288     		ldrh	r2, [r0, #4]
+ 1579              		.loc 1 604 37 view .LVU508
+ 1580 020e B4FBF2F2 		udiv	r2, r4, r2
+ 1581              		.loc 1 604 72 view .LVU509
+ 1582 0212 093A     		subs	r2, r2, #9
+ 1583              		.loc 1 604 2 view .LVU510
+ 1584 0214 184B     		ldr	r3, .L69+32
+ 1585 0216 0093     		str	r3, [sp]
+ 1586 0218 2023     		movs	r3, #32
+ 1587 021a 5208     		lsrs	r2, r2, #1
+ 1588 021c 3946     		mov	r1, r7
+ 1589 021e 1BA8     		add	r0, sp, #108
+ 1590 0220 FFF7FEFF 		bl	sprintf
+ 1591              	.LVL139:
+ 605:Core/Src/lcd_xpt2046.c **** 	ILI9341_DispStringLine_EN ( ( LCD_Y_LENGTH >> 1 ) + (((sFONT *)LCD_GetFont())->Height), cStr );			
+ 1592              		.loc 1 605 2 is_stmt 1 view .LVU511
+ 1593 0224 2C88     		ldrh	r4, [r5]
+ 1594 0226 6408     		lsrs	r4, r4, #1
+ 1595              		.loc 1 605 56 is_stmt 0 view .LVU512
+ 1596 0228 FFF7FEFF 		bl	LCD_GetFont
+ 1597              	.LVL140:
+ 1598              		.loc 1 605 79 view .LVU513
+ 1599 022c C088     		ldrh	r0, [r0, #6]
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 44
+
+
+ 1600              		.loc 1 605 2 view .LVU514
+ 1601 022e 2044     		add	r0, r0, r4
+ 1602 0230 1BA9     		add	r1, sp, #108
+ 1603 0232 80B2     		uxth	r0, r0
+ 1604 0234 FFF7FEFF 		bl	ILI9341_DispStringLine_EN
+ 1605              	.LVL141:
+ 606:Core/Src/lcd_xpt2046.c **** 
+ 607:Core/Src/lcd_xpt2046.c **** 	XPT2046_DelayUS ( 1000000 );		
+ 1606              		.loc 1 607 2 is_stmt 1 view .LVU515
+ 1607 0238 1048     		ldr	r0, .L69+36
+ 1608 023a FFF7FEFF 		bl	XPT2046_DelayUS
+ 1609              	.LVL142:
+ 608:Core/Src/lcd_xpt2046.c **** 	
+ 609:Core/Src/lcd_xpt2046.c **** 	return 0; 
+ 1610              		.loc 1 609 2 view .LVU516
+ 1611              		.loc 1 609 9 is_stmt 0 view .LVU517
+ 1612 023e 0020     		movs	r0, #0
+ 1613              	.LVL143:
+ 1614              	.L66:
+ 610:Core/Src/lcd_xpt2046.c **** 		
+ 611:Core/Src/lcd_xpt2046.c **** 		
+ 612:Core/Src/lcd_xpt2046.c **** }
+ 1615              		.loc 1 612 1 view .LVU518
+ 1616 0240 35B0     		add	sp, sp, #212
+ 1617              	.LCFI17:
+ 1618              		.cfi_remember_state
+ 1619              		.cfi_def_cfa_offset 36
+ 1620              		@ sp needed
+ 1621 0242 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1622              	.LVL144:
+ 1623              	.L62:
+ 1624              	.LCFI18:
+ 1625              		.cfi_restore_state
+ 545:Core/Src/lcd_xpt2046.c **** 		usGap_y = ( usTest_y > strCrossCoordinate[3].y ) ? ( usTest_y - strCrossCoordinate[3].y ) : ( str
+ 1626              		.loc 1 545 118 discriminator 2 view .LVU519
+ 1627 0246 9BB2     		uxth	r3, r3
+ 545:Core/Src/lcd_xpt2046.c **** 		usGap_y = ( usTest_y > strCrossCoordinate[3].y ) ? ( usTest_y - strCrossCoordinate[3].y ) : ( str
+ 1628              		.loc 1 545 11 discriminator 2 view .LVU520
+ 1629 0248 9B1B     		subs	r3, r3, r6
+ 1630 024a 9BB2     		uxth	r3, r3
+ 1631 024c AFE7     		b	.L63
+ 1632              	.LVL145:
+ 1633              	.L64:
+ 546:Core/Src/lcd_xpt2046.c **** 		
+ 1634              		.loc 1 546 118 discriminator 2 view .LVU521
+ 1635 024e 92B2     		uxth	r2, r2
+ 546:Core/Src/lcd_xpt2046.c **** 		
+ 1636              		.loc 1 546 11 discriminator 2 view .LVU522
+ 1637 0250 121A     		subs	r2, r2, r0
+ 1638 0252 92B2     		uxth	r2, r2
+ 1639 0254 B2E7     		b	.L65
+ 1640              	.L70:
+ 1641 0256 00BF     		.align	2
+ 1642              	.L69:
+ 1643 0258 00000000 		.word	Font8x16
+ 1644 025c 00000000 		.word	LCD_X_LENGTH
+ 1645 0260 00000000 		.word	LCD_Y_LENGTH
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 45
+
+
+ 1646 0264 08000000 		.word	.LC1
+ 1647 0268 00000000 		.word	.LC0
+ 1648 026c 20000000 		.word	.LC2
+ 1649 0270 E0930400 		.word	300000
+ 1650 0274 3C000000 		.word	.LC4
+ 1651 0278 4C000000 		.word	.LC5
+ 1652 027c 40420F00 		.word	1000000
+ 1653              	.LVL146:
+ 1654              	.L68:
+ 552:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dX_Y = ( CalibrationFactor.Bn * 1.0 ) / CalibrationFactor.Divider;
+ 1655              		.loc 1 552 3 is_stmt 1 view .LVU523
+ 552:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dX_Y = ( CalibrationFactor.Bn * 1.0 ) / CalibrationFactor.Divider;
+ 1656              		.loc 1 552 72 is_stmt 0 view .LVU524
+ 1657 0280 2946     		mov	r1, r5
+ 1658 0282 5846     		mov	r0, fp
+ 1659              	.LVL147:
+ 552:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dX_Y = ( CalibrationFactor.Bn * 1.0 ) / CalibrationFactor.Divider;
+ 1660              		.loc 1 552 72 view .LVU525
+ 1661 0284 FFF7FEFF 		bl	__aeabi_fdiv
+ 1662              	.LVL148:
+ 552:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dX_Y = ( CalibrationFactor.Bn * 1.0 ) / CalibrationFactor.Divider;
+ 1663              		.loc 1 552 39 view .LVU526
+ 1664 0288 DFF88CB0 		ldr	fp, .L71
+ 1665 028c 6300     		lsls	r3, r4, #1
+ 1666 028e 0393     		str	r3, [sp, #12]
+ 1667 0290 04EB4403 		add	r3, r4, r4, lsl #1
+ 1668 0294 0BEBC306 		add	r6, fp, r3, lsl #3
+ 1669              	.LVL149:
+ 552:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dX_Y = ( CalibrationFactor.Bn * 1.0 ) / CalibrationFactor.Divider;
+ 1670              		.loc 1 552 39 view .LVU527
+ 1671 0298 4BF83300 		str	r0, [fp, r3, lsl #3]	@ float
+ 553:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dX   = ( CalibrationFactor.Cn * 1.0 ) / CalibrationFactor.Divider;
+ 1672              		.loc 1 553 3 is_stmt 1 view .LVU528
+ 553:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dX   = ( CalibrationFactor.Cn * 1.0 ) / CalibrationFactor.Divider;
+ 1673              		.loc 1 553 72 is_stmt 0 view .LVU529
+ 1674 029c 2946     		mov	r1, r5
+ 1675 029e 5046     		mov	r0, r10
+ 1676 02a0 FFF7FEFF 		bl	__aeabi_fdiv
+ 1677              	.LVL150:
+ 553:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dX   = ( CalibrationFactor.Cn * 1.0 ) / CalibrationFactor.Divider;
+ 1678              		.loc 1 553 39 view .LVU530
+ 1679 02a4 7060     		str	r0, [r6, #4]	@ float
+ 554:Core/Src/lcd_xpt2046.c **** 		
+ 1680              		.loc 1 554 3 is_stmt 1 view .LVU531
+ 554:Core/Src/lcd_xpt2046.c **** 		
+ 1681              		.loc 1 554 72 is_stmt 0 view .LVU532
+ 1682 02a6 2946     		mov	r1, r5
+ 1683 02a8 4846     		mov	r0, r9
+ 1684 02aa FFF7FEFF 		bl	__aeabi_fdiv
+ 1685              	.LVL151:
+ 554:Core/Src/lcd_xpt2046.c **** 		
+ 1686              		.loc 1 554 39 view .LVU533
+ 1687 02ae B060     		str	r0, [r6, #8]	@ float
+ 556:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dY_Y = ( CalibrationFactor.En * 1.0 ) / CalibrationFactor.Divider;
+ 1688              		.loc 1 556 3 is_stmt 1 view .LVU534
+ 556:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dY_Y = ( CalibrationFactor.En * 1.0 ) / CalibrationFactor.Divider;
+ 1689              		.loc 1 556 72 is_stmt 0 view .LVU535
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 46
+
+
+ 1690 02b0 2946     		mov	r1, r5
+ 1691 02b2 4046     		mov	r0, r8
+ 1692 02b4 FFF7FEFF 		bl	__aeabi_fdiv
+ 1693              	.LVL152:
+ 556:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dY_Y = ( CalibrationFactor.En * 1.0 ) / CalibrationFactor.Divider;
+ 1694              		.loc 1 556 39 view .LVU536
+ 1695 02b8 F060     		str	r0, [r6, #12]	@ float
+ 557:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dY   = ( CalibrationFactor.Fn * 1.0 ) / CalibrationFactor.Divider;
+ 1696              		.loc 1 557 3 is_stmt 1 view .LVU537
+ 557:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dY   = ( CalibrationFactor.Fn * 1.0 ) / CalibrationFactor.Divider;
+ 1697              		.loc 1 557 72 is_stmt 0 view .LVU538
+ 1698 02ba 2946     		mov	r1, r5
+ 1699 02bc 3846     		mov	r0, r7
+ 1700 02be FFF7FEFF 		bl	__aeabi_fdiv
+ 1701              	.LVL153:
+ 557:Core/Src/lcd_xpt2046.c **** 		strXPT2046_TouchPara[LCD_Mode].dY   = ( CalibrationFactor.Fn * 1.0 ) / CalibrationFactor.Divider;
+ 1702              		.loc 1 557 39 view .LVU539
+ 1703 02c2 3061     		str	r0, [r6, #16]	@ float
+ 558:Core/Src/lcd_xpt2046.c **** 		
+ 1704              		.loc 1 558 3 is_stmt 1 view .LVU540
+ 558:Core/Src/lcd_xpt2046.c **** 		
+ 1705              		.loc 1 558 72 is_stmt 0 view .LVU541
+ 1706 02c4 2946     		mov	r1, r5
+ 1707 02c6 0298     		ldr	r0, [sp, #8]	@ float
+ 1708 02c8 FFF7FEFF 		bl	__aeabi_fdiv
+ 1709              	.LVL154:
+ 558:Core/Src/lcd_xpt2046.c **** 		
+ 1710              		.loc 1 558 39 view .LVU542
+ 1711 02cc 7061     		str	r0, [r6, #20]	@ float
+ 577:Core/Src/lcd_xpt2046.c **** 	
+ 1712              		.loc 1 577 2 is_stmt 1 view .LVU543
+ 1713 02ce 134D     		ldr	r5, .L71+4
+ 1714 02d0 134C     		ldr	r4, .L71+8
+ 1715 02d2 2B88     		ldrh	r3, [r5]
+ 1716 02d4 2288     		ldrh	r2, [r4]
+ 1717 02d6 0021     		movs	r1, #0
+ 1718 02d8 0846     		mov	r0, r1
+ 1719 02da FFF7FEFF 		bl	ILI9341_Clear
+ 1720              	.LVL155:
+ 579:Core/Src/lcd_xpt2046.c **** 	
+ 1721              		.loc 1 579 2 view .LVU544
+ 1722 02de 4FF4FC60 		mov	r0, #2016
+ 1723 02e2 FFF7FEFF 		bl	LCD_SetTextColor
+ 1724              	.LVL156:
+ 581:Core/Src/lcd_xpt2046.c **** 	//²åÈë¿Õ¸ñ£¬¾ÓÖÐÏÔÊ¾	
+ 1725              		.loc 1 581 2 view .LVU545
+ 583:Core/Src/lcd_xpt2046.c ****   ILI9341_DispStringLine_EN (LCD_Y_LENGTH >> 1, cStr );	
+ 1726              		.loc 1 583 2 view .LVU546
+ 583:Core/Src/lcd_xpt2046.c ****   ILI9341_DispStringLine_EN (LCD_Y_LENGTH >> 1, cStr );	
+ 1727              		.loc 1 583 37 is_stmt 0 view .LVU547
+ 1728 02e6 2488     		ldrh	r4, [r4]
+ 583:Core/Src/lcd_xpt2046.c ****   ILI9341_DispStringLine_EN (LCD_Y_LENGTH >> 1, cStr );	
+ 1729              		.loc 1 583 40 view .LVU548
+ 1730 02e8 FFF7FEFF 		bl	LCD_GetFont
+ 1731              	.LVL157:
+ 583:Core/Src/lcd_xpt2046.c ****   ILI9341_DispStringLine_EN (LCD_Y_LENGTH >> 1, cStr );	
+ 1732              		.loc 1 583 63 view .LVU549
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 47
+
+
+ 1733 02ec 8288     		ldrh	r2, [r0, #4]
+ 583:Core/Src/lcd_xpt2046.c ****   ILI9341_DispStringLine_EN (LCD_Y_LENGTH >> 1, cStr );	
+ 1734              		.loc 1 583 37 view .LVU550
+ 1735 02ee B4FBF2F2 		udiv	r2, r4, r2
+ 583:Core/Src/lcd_xpt2046.c ****   ILI9341_DispStringLine_EN (LCD_Y_LENGTH >> 1, cStr );	
+ 1736              		.loc 1 583 72 view .LVU551
+ 1737 02f2 103A     		subs	r2, r2, #16
+ 583:Core/Src/lcd_xpt2046.c ****   ILI9341_DispStringLine_EN (LCD_Y_LENGTH >> 1, cStr );	
+ 1738              		.loc 1 583 2 view .LVU552
+ 1739 02f4 0B4B     		ldr	r3, .L71+12
+ 1740 02f6 0093     		str	r3, [sp]
+ 1741 02f8 2023     		movs	r3, #32
+ 1742 02fa 5208     		lsrs	r2, r2, #1
+ 1743 02fc 0A49     		ldr	r1, .L71+16
+ 1744 02fe 1BA8     		add	r0, sp, #108
+ 1745 0300 FFF7FEFF 		bl	sprintf
+ 1746              	.LVL158:
+ 584:Core/Src/lcd_xpt2046.c **** 
+ 1747              		.loc 1 584 3 is_stmt 1 view .LVU553
+ 1748 0304 2888     		ldrh	r0, [r5]
+ 1749 0306 1BA9     		add	r1, sp, #108
+ 1750 0308 4008     		lsrs	r0, r0, #1
+ 1751 030a FFF7FEFF 		bl	ILI9341_DispStringLine_EN
+ 1752              	.LVL159:
+ 586:Core/Src/lcd_xpt2046.c **** 
+ 1753              		.loc 1 586 3 view .LVU554
+ 1754 030e 0748     		ldr	r0, .L71+20
+ 1755 0310 FFF7FEFF 		bl	XPT2046_DelayUS
+ 1756              	.LVL160:
+ 588:Core/Src/lcd_xpt2046.c **** 	
+ 1757              		.loc 1 588 2 view .LVU555
+ 588:Core/Src/lcd_xpt2046.c **** 	
+ 1758              		.loc 1 588 9 is_stmt 0 view .LVU556
+ 1759 0314 0120     		movs	r0, #1
+ 1760 0316 93E7     		b	.L66
+ 1761              	.L72:
+ 1762              		.align	2
+ 1763              	.L71:
+ 1764 0318 00000000 		.word	.LANCHOR1
+ 1765 031c 00000000 		.word	LCD_Y_LENGTH
+ 1766 0320 00000000 		.word	LCD_X_LENGTH
+ 1767 0324 28000000 		.word	.LC3
+ 1768 0328 00000000 		.word	.LC0
+ 1769 032c 40420F00 		.word	1000000
+ 1770              		.cfi_endproc
+ 1771              	.LFE77:
+ 1773              		.section	.text.Calibrate_or_Get_TouchParaWithFlash,"ax",%progbits
+ 1774              		.align	1
+ 1775              		.global	Calibrate_or_Get_TouchParaWithFlash
+ 1776              		.syntax unified
+ 1777              		.thumb
+ 1778              		.thumb_func
+ 1780              	Calibrate_or_Get_TouchParaWithFlash:
+ 1781              	.LVL161:
+ 1782              	.LFB78:
+ 613:Core/Src/lcd_xpt2046.c **** 
+ 614:Core/Src/lcd_xpt2046.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 48
+
+
+ 615:Core/Src/lcd_xpt2046.c **** 
+ 616:Core/Src/lcd_xpt2046.c **** /**
+ 617:Core/Src/lcd_xpt2046.c ****   * @brief  ´ÓFLASHÖÐ»ñÈ¡ »ò ÖØÐÂÐ£Õý´¥Ãþ²ÎÊý£¨Ð£Õýºó»áÐ´Èëµ½SPI FLASHÖÐ£©
+ 618:Core/Src/lcd_xpt2046.c ****   * @note		ÈôFLASHÖÐ´ÓÎ´Ð´Èë¹ý´¥Ãþ²ÎÊý£¬
+ 619:Core/Src/lcd_xpt2046.c **** 	*						»á´¥·¢Ð£Õý³ÌÐòÐ£ÕýLCD_ModeÖ¸¶¨Ä£Ê½µÄ´¥Ãþ²ÎÊý£¬´ËÊ±ÆäËüÄ£Ê½Ð´ÈëÄ¬ÈÏÖµ
+ 620:Core/Src/lcd_xpt2046.c ****   *
+ 621:Core/Src/lcd_xpt2046.c **** 	*					ÈôFLASHÖÐÒÑÓÐ´¥Ãþ²ÎÊý£¬ÇÒ²»Ç¿ÖÆÖØÐÂÐ£Õý
+ 622:Core/Src/lcd_xpt2046.c **** 	*						»áÖ±½ÓÊ¹ÓÃFLASHÀïµÄ´¥Ãþ²ÎÊýÖµ
+ 623:Core/Src/lcd_xpt2046.c ****   *
+ 624:Core/Src/lcd_xpt2046.c **** 	*					Ã¿´ÎÐ£ÕýÊ±Ö»»á¸üÐÂÖ¸¶¨µÄLCD_ModeÄ£Ê½µÄ´¥Ãþ²ÎÊý£¬ÆäËüÄ£Ê½µÄ²»±ä
+ 625:Core/Src/lcd_xpt2046.c ****   * @note  ±¾º¯Êýµ÷ÓÃºó»á°ÑÒº¾§Ä£Ê½ÉèÖÃÎªLCD_Mode
+ 626:Core/Src/lcd_xpt2046.c ****   *
+ 627:Core/Src/lcd_xpt2046.c **** 	* @param  LCD_Mode:ÒªÐ£Õý´¥Ãþ²ÎÊýµÄÒº¾§Ä£Ê½
+ 628:Core/Src/lcd_xpt2046.c **** 	* @param  forceCal:ÊÇ·ñÇ¿ÖÆÖØÐÂÐ£Õý²ÎÊý£¬¿ÉÒÔÎªÒÔÏÂÖµ£º
+ 629:Core/Src/lcd_xpt2046.c **** 	*		@arg 1£ºÇ¿ÖÆÖØÐÂÐ£Õý
+ 630:Core/Src/lcd_xpt2046.c **** 	*		@arg 0£ºÖ»ÓÐµ±FLASHÖÐ²»´æÔÚ´¥Ãþ²ÎÊý±êÖ¾Ê±²ÅÖØÐÂÐ£Õý
+ 631:Core/Src/lcd_xpt2046.c ****   * @retval ÎÞ
+ 632:Core/Src/lcd_xpt2046.c ****   */	
+ 633:Core/Src/lcd_xpt2046.c **** void Calibrate_or_Get_TouchParaWithFlash(uint8_t LCD_Mode,uint8_t forceCal)
+ 634:Core/Src/lcd_xpt2046.c **** {
+ 1783              		.loc 1 634 1 is_stmt 1 view -0
+ 1784              		.cfi_startproc
+ 1785              		@ args = 0, pretend = 0, frame = 8
+ 1786              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1787              		.loc 1 634 1 is_stmt 0 view .LVU558
+ 1788 0000 30B5     		push	{r4, r5, lr}
+ 1789              	.LCFI19:
+ 1790              		.cfi_def_cfa_offset 12
+ 1791              		.cfi_offset 4, -12
+ 1792              		.cfi_offset 5, -8
+ 1793              		.cfi_offset 14, -4
+ 1794 0002 83B0     		sub	sp, sp, #12
+ 1795              	.LCFI20:
+ 1796              		.cfi_def_cfa_offset 24
+ 1797 0004 0446     		mov	r4, r0
+ 1798 0006 0D46     		mov	r5, r1
+ 635:Core/Src/lcd_xpt2046.c **** 	uint8_t para_flag=0;
+ 1799              		.loc 1 635 2 is_stmt 1 view .LVU559
+ 1800              		.loc 1 635 10 is_stmt 0 view .LVU560
+ 1801 0008 0023     		movs	r3, #0
+ 1802 000a 8DF80730 		strb	r3, [sp, #7]
+ 636:Core/Src/lcd_xpt2046.c **** 	
+ 637:Core/Src/lcd_xpt2046.c **** 	//³õÊ¼»¯FLASH
+ 638:Core/Src/lcd_xpt2046.c **** 	SPI_FLASH_Init();
+ 1803              		.loc 1 638 2 is_stmt 1 view .LVU561
+ 1804 000e FFF7FEFF 		bl	SPI_FLASH_Init
+ 1805              	.LVL162:
+ 639:Core/Src/lcd_xpt2046.c **** 	
+ 640:Core/Src/lcd_xpt2046.c **** 	//¶ÁÈ¡´¥Ãþ²ÎÊý±êÖ¾
+ 641:Core/Src/lcd_xpt2046.c **** 	SPI_FLASH_BufferRead(&para_flag,FLASH_TOUCH_PARA_FLAG_ADDR,1);
+ 1806              		.loc 1 641 2 view .LVU562
+ 1807 0012 0122     		movs	r2, #1
+ 1808 0014 4FF48061 		mov	r1, #1024
+ 1809 0018 0DF10700 		add	r0, sp, #7
+ 1810 001c FFF7FEFF 		bl	SPI_FLASH_BufferRead
+ 1811              	.LVL163:
+ 642:Core/Src/lcd_xpt2046.c **** 
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 49
+
+
+ 643:Core/Src/lcd_xpt2046.c **** 	//Èô²»´æÔÚ±êÖ¾»òflorceCal=1Ê±£¬ÖØÐÂÐ£Õý²ÎÊý
+ 644:Core/Src/lcd_xpt2046.c **** 	if((para_flag != FLASH_TOUCH_PARA_FLAG_VALUE ) | (forceCal ==1))
+ 1812              		.loc 1 644 2 view .LVU563
+ 1813              		.loc 1 644 49 is_stmt 0 view .LVU564
+ 1814 0020 9DF80720 		ldrb	r2, [sp, #7]	@ zero_extendqisi2
+ 1815 0024 012D     		cmp	r5, #1
+ 1816 0026 14BF     		ite	ne
+ 1817 0028 0023     		movne	r3, #0
+ 1818 002a 0123     		moveq	r3, #1
+ 1819 002c A52A     		cmp	r2, #165
+ 1820 002e 18BF     		it	ne
+ 1821 0030 43F00103 		orrne	r3, r3, #1
+ 1822              		.loc 1 644 4 view .LVU565
+ 1823 0034 23B3     		cbz	r3, .L74
+ 645:Core/Src/lcd_xpt2046.c **** 	{ 		
+ 646:Core/Src/lcd_xpt2046.c **** 		//Èô±êÖ¾´æÔÚ£¬ËµÃ÷Ô­±¾FLASHÄÚÓÐ´¥Ãþ²ÎÊý£¬
+ 647:Core/Src/lcd_xpt2046.c **** 		//ÏÈ¶Á»ØËùÓÐLCDÄ£Ê½µÄ²ÎÊýÖµ£¬ÒÔ±ãÉÔºóÇ¿ÖÆ¸üÐÂÊ±Ö»¸üÐÂÖ¸¶¨LCDÄ£Ê½µÄ²ÎÊý,ÆäËüÄ£Ê½µÄ²»±ä
+ 648:Core/Src/lcd_xpt2046.c **** 		if(  para_flag == FLASH_TOUCH_PARA_FLAG_VALUE && forceCal == 1)
+ 1824              		.loc 1 648 3 is_stmt 1 view .LVU566
+ 1825              		.loc 1 648 5 is_stmt 0 view .LVU567
+ 1826 0036 A52A     		cmp	r2, #165
+ 1827 0038 19D0     		beq	.L79
+ 1828              	.L76:
+ 649:Core/Src/lcd_xpt2046.c **** 		{
+ 650:Core/Src/lcd_xpt2046.c **** 			SPI_FLASH_BufferRead((uint8_t *)&strXPT2046_TouchPara,FLASH_TOUCH_PARA_ADDR,4*6*8);	
+ 651:Core/Src/lcd_xpt2046.c **** 		}
+ 652:Core/Src/lcd_xpt2046.c **** 		
+ 653:Core/Src/lcd_xpt2046.c **** 		//µÈ´ý´¥ÃþÆÁÐ£ÕýÍê±Ï,¸üÐÂÖ¸¶¨LCDÄ£Ê½µÄ´¥Ãþ²ÎÊýÖµ
+ 654:Core/Src/lcd_xpt2046.c **** 		while( ! XPT2046_Touch_Calibrate (LCD_Mode) );     
+ 1829              		.loc 1 654 48 is_stmt 1 discriminator 1 view .LVU568
+ 1830              		.loc 1 654 8 discriminator 1 view .LVU569
+ 1831              		.loc 1 654 12 is_stmt 0 discriminator 1 view .LVU570
+ 1832 003a 2046     		mov	r0, r4
+ 1833 003c FFF7FEFF 		bl	XPT2046_Touch_Calibrate
+ 1834              	.LVL164:
+ 1835              		.loc 1 654 8 discriminator 1 view .LVU571
+ 1836 0040 0028     		cmp	r0, #0
+ 1837 0042 FAD0     		beq	.L76
+ 655:Core/Src/lcd_xpt2046.c **** 
+ 656:Core/Src/lcd_xpt2046.c **** 		//²Á³ýÉÈÇø
+ 657:Core/Src/lcd_xpt2046.c **** 		SPI_FLASH_SectorErase(0);
+ 1838              		.loc 1 657 3 is_stmt 1 view .LVU572
+ 1839 0044 0020     		movs	r0, #0
+ 1840 0046 FFF7FEFF 		bl	SPI_FLASH_SectorErase
+ 1841              	.LVL165:
+ 658:Core/Src/lcd_xpt2046.c **** 		
+ 659:Core/Src/lcd_xpt2046.c **** 		//ÉèÖÃ´¥Ãþ²ÎÊý±êÖ¾
+ 660:Core/Src/lcd_xpt2046.c **** 		para_flag = FLASH_TOUCH_PARA_FLAG_VALUE;
+ 1842              		.loc 1 660 3 view .LVU573
+ 1843              		.loc 1 660 13 is_stmt 0 view .LVU574
+ 1844 004a A523     		movs	r3, #165
+ 1845 004c 8DF80730 		strb	r3, [sp, #7]
+ 661:Core/Src/lcd_xpt2046.c **** 		//Ð´Èë´¥Ãþ²ÎÊý±êÖ¾
+ 662:Core/Src/lcd_xpt2046.c **** 		SPI_FLASH_BufferWrite(&para_flag,FLASH_TOUCH_PARA_FLAG_ADDR,1);
+ 1846              		.loc 1 662 3 is_stmt 1 view .LVU575
+ 1847 0050 0122     		movs	r2, #1
+ 1848 0052 4FF48061 		mov	r1, #1024
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 50
+
+
+ 1849 0056 0DF10700 		add	r0, sp, #7
+ 1850 005a FFF7FEFF 		bl	SPI_FLASH_BufferWrite
+ 1851              	.LVL166:
+ 663:Core/Src/lcd_xpt2046.c **** 		//Ð´Èë×îÐÂµÄ´¥Ãþ²ÎÊý
+ 664:Core/Src/lcd_xpt2046.c **** 		SPI_FLASH_BufferWrite((uint8_t *)&strXPT2046_TouchPara,FLASH_TOUCH_PARA_ADDR,4*6*8);
+ 1852              		.loc 1 664 3 view .LVU576
+ 1853 005e C022     		movs	r2, #192
+ 1854 0060 4FF40061 		mov	r1, #2048
+ 1855 0064 0A48     		ldr	r0, .L80
+ 1856 0066 FFF7FEFF 		bl	SPI_FLASH_BufferWrite
+ 1857              	.LVL167:
+ 1858              	.L73:
+ 665:Core/Src/lcd_xpt2046.c ****  
+ 666:Core/Src/lcd_xpt2046.c **** 	}
+ 667:Core/Src/lcd_xpt2046.c **** 	else	//Èô±êÖ¾´æÔÚÇÒ²»Ç¿ÖÆÐ£Õý£¬ÔòÖ±½Ó´ÓFLASHÖÐ¶ÁÈ¡
+ 668:Core/Src/lcd_xpt2046.c **** 	{
+ 669:Core/Src/lcd_xpt2046.c **** 		SPI_FLASH_BufferRead((uint8_t *)&strXPT2046_TouchPara,FLASH_TOUCH_PARA_ADDR,4*6*8);	 
+ 670:Core/Src/lcd_xpt2046.c **** 
+ 671:Core/Src/lcd_xpt2046.c **** 			#if 0	//Êä³öµ÷ÊÔÐÅÏ¢£¬×¢ÒâÒª³õÊ¼»¯´®¿Ú
+ 672:Core/Src/lcd_xpt2046.c **** 				{
+ 673:Core/Src/lcd_xpt2046.c **** 					
+ 674:Core/Src/lcd_xpt2046.c **** 					uint8_t para_flag=0,i;
+ 675:Core/Src/lcd_xpt2046.c **** 					float *ulHeadAddres  ;
+ 676:Core/Src/lcd_xpt2046.c **** 					
+ 677:Core/Src/lcd_xpt2046.c **** 					/* ´òÓ¡Ð£Ð£×¼ÏµÊý */ 
+ 678:Core/Src/lcd_xpt2046.c **** 					XPT2046_INFO ( "´ÓFLASHÀï¶ÁÈ¡µÃµÄÐ£×¼ÏµÊýÈçÏÂ£º" );
+ 679:Core/Src/lcd_xpt2046.c **** 					
+ 680:Core/Src/lcd_xpt2046.c **** 					ulHeadAddres = ( float* ) ( & strXPT2046_TouchPara );
+ 681:Core/Src/lcd_xpt2046.c **** 
+ 682:Core/Src/lcd_xpt2046.c **** 					for ( i = 0; i < 6*8; i ++ )
+ 683:Core/Src/lcd_xpt2046.c **** 					{				
+ 684:Core/Src/lcd_xpt2046.c **** 						if(i%6==0)
+ 685:Core/Src/lcd_xpt2046.c **** 							printf("\r\n");			
+ 686:Core/Src/lcd_xpt2046.c **** 									
+ 687:Core/Src/lcd_xpt2046.c **** 						printf ( "%12f,", *ulHeadAddres );
+ 688:Core/Src/lcd_xpt2046.c **** 						ulHeadAddres++;				
+ 689:Core/Src/lcd_xpt2046.c **** 					}
+ 690:Core/Src/lcd_xpt2046.c **** 					printf("\r\n");
+ 691:Core/Src/lcd_xpt2046.c **** 				}
+ 692:Core/Src/lcd_xpt2046.c **** 			#endif
+ 693:Core/Src/lcd_xpt2046.c **** 	}
+ 694:Core/Src/lcd_xpt2046.c **** 	
+ 695:Core/Src/lcd_xpt2046.c **** 
+ 696:Core/Src/lcd_xpt2046.c **** }
+ 1859              		.loc 1 696 1 is_stmt 0 view .LVU577
+ 1860 006a 03B0     		add	sp, sp, #12
+ 1861              	.LCFI21:
+ 1862              		.cfi_remember_state
+ 1863              		.cfi_def_cfa_offset 12
+ 1864              		@ sp needed
+ 1865 006c 30BD     		pop	{r4, r5, pc}
+ 1866              	.L79:
+ 1867              	.LCFI22:
+ 1868              		.cfi_restore_state
+ 648:Core/Src/lcd_xpt2046.c **** 		{
+ 1869              		.loc 1 648 49 discriminator 1 view .LVU578
+ 1870 006e 012D     		cmp	r5, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 51
+
+
+ 1871 0070 E3D1     		bne	.L76
+ 650:Core/Src/lcd_xpt2046.c **** 		}
+ 1872              		.loc 1 650 4 is_stmt 1 view .LVU579
+ 1873 0072 C022     		movs	r2, #192
+ 1874 0074 4FF40061 		mov	r1, #2048
+ 1875 0078 0548     		ldr	r0, .L80
+ 1876 007a FFF7FEFF 		bl	SPI_FLASH_BufferRead
+ 1877              	.LVL168:
+ 1878 007e DCE7     		b	.L76
+ 1879              	.L74:
+ 669:Core/Src/lcd_xpt2046.c **** 
+ 1880              		.loc 1 669 3 view .LVU580
+ 1881 0080 C022     		movs	r2, #192
+ 1882 0082 4FF40061 		mov	r1, #2048
+ 1883 0086 0248     		ldr	r0, .L80
+ 1884 0088 FFF7FEFF 		bl	SPI_FLASH_BufferRead
+ 1885              	.LVL169:
+ 1886              		.loc 1 696 1 is_stmt 0 view .LVU581
+ 1887 008c EDE7     		b	.L73
+ 1888              	.L81:
+ 1889 008e 00BF     		.align	2
+ 1890              	.L80:
+ 1891 0090 00000000 		.word	.LANCHOR1
+ 1892              		.cfi_endproc
+ 1893              	.LFE78:
+ 1895              		.global	__aeabi_f2iz
+ 1896              		.section	.text.XPT2046_Get_TouchedPoint,"ax",%progbits
+ 1897              		.align	1
+ 1898              		.global	XPT2046_Get_TouchedPoint
+ 1899              		.syntax unified
+ 1900              		.thumb
+ 1901              		.thumb_func
+ 1903              	XPT2046_Get_TouchedPoint:
+ 1904              	.LVL170:
+ 1905              	.LFB79:
+ 697:Core/Src/lcd_xpt2046.c ****    
+ 698:Core/Src/lcd_xpt2046.c **** /**
+ 699:Core/Src/lcd_xpt2046.c ****   * @brief  »ñÈ¡ XPT2046 ´¥Ãþµã£¨Ð£×¼ºó£©µÄ×ø±ê
+ 700:Core/Src/lcd_xpt2046.c ****   * @param  pDisplayCoordinate £º¸ÃÖ¸Õë´æ·Å»ñÈ¡µ½µÄ´¥Ãþµã×ø±ê
+ 701:Core/Src/lcd_xpt2046.c ****   * @param  pTouchPara£º×ø±êÐ£×¼ÏµÊý
+ 702:Core/Src/lcd_xpt2046.c ****   * @retval »ñÈ¡Çé¿ö
+ 703:Core/Src/lcd_xpt2046.c **** 	*   ¸Ã·µ»ØÖµÎªÒÔÏÂÖµÖ®Ò»£º
+ 704:Core/Src/lcd_xpt2046.c ****   *     @arg 1 :»ñÈ¡³É¹¦
+ 705:Core/Src/lcd_xpt2046.c ****   *     @arg 0 :»ñÈ¡Ê§°Ü
+ 706:Core/Src/lcd_xpt2046.c ****   */
+ 707:Core/Src/lcd_xpt2046.c **** uint8_t XPT2046_Get_TouchedPoint ( strType_XPT2046_Coordinate * pDisplayCoordinate, strType_XPT2046
+ 708:Core/Src/lcd_xpt2046.c **** {
+ 1906              		.loc 1 708 1 is_stmt 1 view -0
+ 1907              		.cfi_startproc
+ 1908              		@ args = 0, pretend = 0, frame = 8
+ 1909              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1910              		.loc 1 708 1 is_stmt 0 view .LVU583
+ 1911 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1912              	.LCFI23:
+ 1913              		.cfi_def_cfa_offset 36
+ 1914              		.cfi_offset 4, -36
+ 1915              		.cfi_offset 5, -32
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 52
+
+
+ 1916              		.cfi_offset 6, -28
+ 1917              		.cfi_offset 7, -24
+ 1918              		.cfi_offset 8, -20
+ 1919              		.cfi_offset 9, -16
+ 1920              		.cfi_offset 10, -12
+ 1921              		.cfi_offset 11, -8
+ 1922              		.cfi_offset 14, -4
+ 1923 0004 83B0     		sub	sp, sp, #12
+ 1924              	.LCFI24:
+ 1925              		.cfi_def_cfa_offset 48
+ 1926 0006 0546     		mov	r5, r0
+ 1927 0008 0C46     		mov	r4, r1
+ 709:Core/Src/lcd_xpt2046.c **** 	uint8_t ucRet = 1;           //ÈôÕý³££¬Ôò·µ»Ø0
+ 1928              		.loc 1 709 2 is_stmt 1 view .LVU584
+ 1929              	.LVL171:
+ 710:Core/Src/lcd_xpt2046.c **** 	
+ 711:Core/Src/lcd_xpt2046.c **** 	strType_XPT2046_Coordinate strScreenCoordinate; 
+ 1930              		.loc 1 711 2 view .LVU585
+ 712:Core/Src/lcd_xpt2046.c **** 	
+ 713:Core/Src/lcd_xpt2046.c **** 
+ 714:Core/Src/lcd_xpt2046.c ****   if ( XPT2046_ReadAdc_Smooth_XY ( & strScreenCoordinate ) )
+ 1931              		.loc 1 714 3 view .LVU586
+ 1932              		.loc 1 714 8 is_stmt 0 view .LVU587
+ 1933 000a 6846     		mov	r0, sp
+ 1934              	.LVL172:
+ 1935              		.loc 1 714 8 view .LVU588
+ 1936 000c FFF7FEFF 		bl	XPT2046_ReadAdc_Smooth_XY
+ 1937              	.LVL173:
+ 1938              		.loc 1 714 6 view .LVU589
+ 1939 0010 0028     		cmp	r0, #0
+ 1940 0012 48D0     		beq	.L83
+ 715:Core/Src/lcd_xpt2046.c ****   {    
+ 716:Core/Src/lcd_xpt2046.c **** 		pDisplayCoordinate ->x = ( ( pTouchPara[LCD_SCAN_MODE].dX_X * strScreenCoordinate.x ) + ( pTouchP
+ 1941              		.loc 1 716 3 is_stmt 1 view .LVU590
+ 1942              		.loc 1 716 42 is_stmt 0 view .LVU591
+ 1943 0014 DFF89490 		ldr	r9, .L85
+ 1944 0018 99F80030 		ldrb	r3, [r9]	@ zero_extendqisi2
+ 1945 001c 03EB4303 		add	r3, r3, r3, lsl #1
+ 1946 0020 04EBC30A 		add	r10, r4, r3, lsl #3
+ 1947              		.loc 1 716 57 view .LVU592
+ 1948 0024 54F83360 		ldr	r6, [r4, r3, lsl #3]	@ float
+ 1949              		.loc 1 716 84 view .LVU593
+ 1950 0028 BDF90080 		ldrsh	r8, [sp]
+ 1951              		.loc 1 716 63 view .LVU594
+ 1952 002c 4046     		mov	r0, r8
+ 1953 002e FFF7FEFF 		bl	__aeabi_i2f
+ 1954              	.LVL174:
+ 1955 0032 3146     		mov	r1, r6
+ 1956 0034 FFF7FEFF 		bl	__aeabi_fmul
+ 1957              	.LVL175:
+ 1958 0038 0646     		mov	r6, r0
+ 1959              		.loc 1 716 118 view .LVU595
+ 1960 003a DAF804B0 		ldr	fp, [r10, #4]	@ float
+ 1961              		.loc 1 716 145 view .LVU596
+ 1962 003e BDF90270 		ldrsh	r7, [sp, #2]
+ 1963              		.loc 1 716 124 view .LVU597
+ 1964 0042 3846     		mov	r0, r7
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 53
+
+
+ 1965 0044 FFF7FEFF 		bl	__aeabi_i2f
+ 1966              	.LVL176:
+ 1967 0048 5946     		mov	r1, fp
+ 1968 004a FFF7FEFF 		bl	__aeabi_fmul
+ 1969              	.LVL177:
+ 1970 004e 0146     		mov	r1, r0
+ 1971              		.loc 1 716 89 view .LVU598
+ 1972 0050 3046     		mov	r0, r6
+ 1973 0052 FFF7FEFF 		bl	__aeabi_fadd
+ 1974              	.LVL178:
+ 1975              		.loc 1 716 150 view .LVU599
+ 1976 0056 DAF80810 		ldr	r1, [r10, #8]	@ float
+ 1977 005a FFF7FEFF 		bl	__aeabi_fadd
+ 1978              	.LVL179:
+ 1979              		.loc 1 716 26 view .LVU600
+ 1980 005e FFF7FEFF 		bl	__aeabi_f2iz
+ 1981              	.LVL180:
+ 1982 0062 2880     		strh	r0, [r5]	@ movhi
+ 717:Core/Src/lcd_xpt2046.c **** 		pDisplayCoordinate ->y = ( ( pTouchPara[LCD_SCAN_MODE].dY_X * strScreenCoordinate.x ) + ( pTouchP
+ 1983              		.loc 1 717 3 is_stmt 1 view .LVU601
+ 1984              		.loc 1 717 42 is_stmt 0 view .LVU602
+ 1985 0064 99F80030 		ldrb	r3, [r9]	@ zero_extendqisi2
+ 1986 0068 03EB4303 		add	r3, r3, r3, lsl #1
+ 1987 006c 04EBC304 		add	r4, r4, r3, lsl #3
+ 1988              	.LVL181:
+ 1989              		.loc 1 717 57 view .LVU603
+ 1990 0070 E668     		ldr	r6, [r4, #12]	@ float
+ 1991              		.loc 1 717 63 view .LVU604
+ 1992 0072 4046     		mov	r0, r8
+ 1993 0074 FFF7FEFF 		bl	__aeabi_i2f
+ 1994              	.LVL182:
+ 1995 0078 3146     		mov	r1, r6
+ 1996 007a FFF7FEFF 		bl	__aeabi_fmul
+ 1997              	.LVL183:
+ 1998 007e 0646     		mov	r6, r0
+ 1999              		.loc 1 717 118 view .LVU605
+ 2000 0080 D4F81080 		ldr	r8, [r4, #16]	@ float
+ 2001              		.loc 1 717 124 view .LVU606
+ 2002 0084 3846     		mov	r0, r7
+ 2003 0086 FFF7FEFF 		bl	__aeabi_i2f
+ 2004              	.LVL184:
+ 2005 008a 4146     		mov	r1, r8
+ 2006 008c FFF7FEFF 		bl	__aeabi_fmul
+ 2007              	.LVL185:
+ 2008 0090 0146     		mov	r1, r0
+ 2009              		.loc 1 717 89 view .LVU607
+ 2010 0092 3046     		mov	r0, r6
+ 2011 0094 FFF7FEFF 		bl	__aeabi_fadd
+ 2012              	.LVL186:
+ 2013              		.loc 1 717 150 view .LVU608
+ 2014 0098 6169     		ldr	r1, [r4, #20]	@ float
+ 2015 009a FFF7FEFF 		bl	__aeabi_fadd
+ 2016              	.LVL187:
+ 2017              		.loc 1 717 26 view .LVU609
+ 2018 009e FFF7FEFF 		bl	__aeabi_f2iz
+ 2019              	.LVL188:
+ 2020 00a2 6880     		strh	r0, [r5, #2]	@ movhi
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 54
+
+
+ 709:Core/Src/lcd_xpt2046.c **** 	
+ 2021              		.loc 1 709 10 view .LVU610
+ 2022 00a4 0120     		movs	r0, #1
+ 2023              	.L83:
+ 2024              	.LVL189:
+ 718:Core/Src/lcd_xpt2046.c **** 
+ 719:Core/Src/lcd_xpt2046.c ****   }
+ 720:Core/Src/lcd_xpt2046.c **** 	 
+ 721:Core/Src/lcd_xpt2046.c **** 	else ucRet = 0;            //Èç¹û»ñÈ¡µÄ´¥µãÐÅÏ¢ÓÐÎó£¬Ôò·µ»Ø0
+ 722:Core/Src/lcd_xpt2046.c **** 		
+ 723:Core/Src/lcd_xpt2046.c ****   return ucRet;
+ 2025              		.loc 1 723 3 is_stmt 1 view .LVU611
+ 724:Core/Src/lcd_xpt2046.c **** } 
+ 2026              		.loc 1 724 1 is_stmt 0 view .LVU612
+ 2027 00a6 03B0     		add	sp, sp, #12
+ 2028              	.LCFI25:
+ 2029              		.cfi_def_cfa_offset 36
+ 2030              		@ sp needed
+ 2031 00a8 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 2032              	.LVL190:
+ 2033              	.L86:
+ 2034              		.loc 1 724 1 view .LVU613
+ 2035              		.align	2
+ 2036              	.L85:
+ 2037 00ac 00000000 		.word	LCD_SCAN_MODE
+ 2038              		.cfi_endproc
+ 2039              	.LFE79:
+ 2041              		.section	.text.XPT2046_TouchDetect,"ax",%progbits
+ 2042              		.align	1
+ 2043              		.global	XPT2046_TouchDetect
+ 2044              		.syntax unified
+ 2045              		.thumb
+ 2046              		.thumb_func
+ 2048              	XPT2046_TouchDetect:
+ 2049              	.LFB80:
+ 725:Core/Src/lcd_xpt2046.c **** 
+ 726:Core/Src/lcd_xpt2046.c **** 
+ 727:Core/Src/lcd_xpt2046.c **** 
+ 728:Core/Src/lcd_xpt2046.c **** 
+ 729:Core/Src/lcd_xpt2046.c **** 
+ 730:Core/Src/lcd_xpt2046.c **** /**
+ 731:Core/Src/lcd_xpt2046.c ****   * @brief  ´¥ÃþÆÁ¼ì²â×´Ì¬»ú
+ 732:Core/Src/lcd_xpt2046.c ****   * @retval ´¥Ãþ×´Ì¬
+ 733:Core/Src/lcd_xpt2046.c **** 	*   ¸Ã·µ»ØÖµÎªÒÔÏÂÖµÖ®Ò»£º
+ 734:Core/Src/lcd_xpt2046.c ****   *     @arg TOUCH_PRESSED :´¥Ãþ°´ÏÂ
+ 735:Core/Src/lcd_xpt2046.c ****   *     @arg TOUCH_NOT_PRESSED :ÎÞ´¥Ãþ
+ 736:Core/Src/lcd_xpt2046.c ****   */
+ 737:Core/Src/lcd_xpt2046.c **** uint8_t XPT2046_TouchDetect(void)
+ 738:Core/Src/lcd_xpt2046.c **** { 
+ 2050              		.loc 1 738 1 is_stmt 1 view -0
+ 2051              		.cfi_startproc
+ 2052              		@ args = 0, pretend = 0, frame = 0
+ 2053              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2054 0000 10B5     		push	{r4, lr}
+ 2055              	.LCFI26:
+ 2056              		.cfi_def_cfa_offset 8
+ 2057              		.cfi_offset 4, -8
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 55
+
+
+ 2058              		.cfi_offset 14, -4
+ 739:Core/Src/lcd_xpt2046.c **** 	static enumTouchState touch_state = XPT2046_STATE_RELEASE;
+ 2059              		.loc 1 739 2 view .LVU615
+ 740:Core/Src/lcd_xpt2046.c **** 	static uint32_t i;
+ 2060              		.loc 1 740 2 view .LVU616
+ 741:Core/Src/lcd_xpt2046.c **** 	uint8_t detectResult = TOUCH_NOT_PRESSED;
+ 2061              		.loc 1 741 2 view .LVU617
+ 2062              	.LVL191:
+ 742:Core/Src/lcd_xpt2046.c **** 	
+ 743:Core/Src/lcd_xpt2046.c **** 	switch(touch_state)
+ 2063              		.loc 1 743 2 view .LVU618
+ 2064 0002 244B     		ldr	r3, .L98
+ 2065 0004 1C78     		ldrb	r4, [r3]	@ zero_extendqisi2
+ 2066 0006 012C     		cmp	r4, #1
+ 2067 0008 16D0     		beq	.L88
+ 2068 000a 022C     		cmp	r4, #2
+ 2069 000c 32D0     		beq	.L89
+ 2070 000e 24B1     		cbz	r4, .L97
+ 744:Core/Src/lcd_xpt2046.c **** 	{
+ 745:Core/Src/lcd_xpt2046.c **** 		case XPT2046_STATE_RELEASE:	
+ 746:Core/Src/lcd_xpt2046.c **** 			if(XPT2046_PENIRQ_Read() == XPT2046_PENIRQ_ActiveLevel) //µÚÒ»´Î³öÏÖ´¥ÃþÐÅºÅ
+ 747:Core/Src/lcd_xpt2046.c **** 			{
+ 748:Core/Src/lcd_xpt2046.c **** 				touch_state = XPT2046_STATE_WAITING;
+ 749:Core/Src/lcd_xpt2046.c **** 				detectResult =TOUCH_NOT_PRESSED;
+ 750:Core/Src/lcd_xpt2046.c **** 				}
+ 751:Core/Src/lcd_xpt2046.c **** 			else	//ÎÞ´¥Ãþ
+ 752:Core/Src/lcd_xpt2046.c **** 			{
+ 753:Core/Src/lcd_xpt2046.c **** 				touch_state = XPT2046_STATE_RELEASE;
+ 754:Core/Src/lcd_xpt2046.c **** 				detectResult =TOUCH_NOT_PRESSED;
+ 755:Core/Src/lcd_xpt2046.c **** 			}
+ 756:Core/Src/lcd_xpt2046.c **** 			break;
+ 757:Core/Src/lcd_xpt2046.c **** 				
+ 758:Core/Src/lcd_xpt2046.c **** 		case XPT2046_STATE_WAITING:
+ 759:Core/Src/lcd_xpt2046.c **** 				if(XPT2046_PENIRQ_Read() == XPT2046_PENIRQ_ActiveLevel)
+ 760:Core/Src/lcd_xpt2046.c **** 				{
+ 761:Core/Src/lcd_xpt2046.c **** 					 i++;
+ 762:Core/Src/lcd_xpt2046.c **** 					//µÈ´ýÊ±¼ä´óÓÚãÐÖµÔòÈÏÎª´¥Ãþ±»°´ÏÂ
+ 763:Core/Src/lcd_xpt2046.c **** 					//Ïû¶¶Ê±¼ä = DURIATION_TIME * ±¾º¯Êý±»µ÷ÓÃµÄÊ±¼ä¼ä¸ô
+ 764:Core/Src/lcd_xpt2046.c **** 					//ÈçÔÚ¶¨Ê±Æ÷ÖÐµ÷ÓÃ£¬Ã¿10msµ÷ÓÃÒ»´Î£¬ÔòÏû¶¶Ê±¼äÎª£ºDURIATION_TIME*10ms
+ 765:Core/Src/lcd_xpt2046.c **** 					if(i > DURIATION_TIME)		
+ 766:Core/Src/lcd_xpt2046.c **** 					{
+ 767:Core/Src/lcd_xpt2046.c **** 						i=0;
+ 768:Core/Src/lcd_xpt2046.c **** 						touch_state = XPT2046_STATE_PRESSED;
+ 769:Core/Src/lcd_xpt2046.c **** 						detectResult = TOUCH_PRESSED;
+ 770:Core/Src/lcd_xpt2046.c **** 					}
+ 771:Core/Src/lcd_xpt2046.c **** 					else												//µÈ´ýÊ±¼äÀÛ¼Ó
+ 772:Core/Src/lcd_xpt2046.c **** 					{
+ 773:Core/Src/lcd_xpt2046.c **** 						touch_state = XPT2046_STATE_WAITING;
+ 774:Core/Src/lcd_xpt2046.c **** 						detectResult =	 TOUCH_NOT_PRESSED;					
+ 775:Core/Src/lcd_xpt2046.c **** 					}
+ 776:Core/Src/lcd_xpt2046.c **** 				}
+ 777:Core/Src/lcd_xpt2046.c **** 				else	//µÈ´ýÊ±¼äÖµÎ´´ïµ½ãÐÖµ¾ÍÎªÎÞÐ§µçÆ½£¬µ±³É¶¶¶¯´¦Àí					
+ 778:Core/Src/lcd_xpt2046.c **** 				{
+ 779:Core/Src/lcd_xpt2046.c **** 				    i = 0;
+ 780:Core/Src/lcd_xpt2046.c ****             touch_state = XPT2046_STATE_RELEASE; 
+ 781:Core/Src/lcd_xpt2046.c **** 						detectResult = TOUCH_NOT_PRESSED;
+ 782:Core/Src/lcd_xpt2046.c **** 				}
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 56
+
+
+ 783:Core/Src/lcd_xpt2046.c **** 		
+ 784:Core/Src/lcd_xpt2046.c **** 			break;
+ 785:Core/Src/lcd_xpt2046.c **** 		
+ 786:Core/Src/lcd_xpt2046.c **** 		case XPT2046_STATE_PRESSED:	
+ 787:Core/Src/lcd_xpt2046.c **** 				if(XPT2046_PENIRQ_Read() == XPT2046_PENIRQ_ActiveLevel)		//´¥Ãþ³ÖÐø°´ÏÂ
+ 788:Core/Src/lcd_xpt2046.c **** 				{
+ 789:Core/Src/lcd_xpt2046.c **** 					touch_state = XPT2046_STATE_PRESSED;
+ 790:Core/Src/lcd_xpt2046.c **** 					detectResult = TOUCH_PRESSED;
+ 791:Core/Src/lcd_xpt2046.c **** 				}
+ 792:Core/Src/lcd_xpt2046.c **** 				else	//´¥ÃþÊÍ·Å
+ 793:Core/Src/lcd_xpt2046.c **** 				{
+ 794:Core/Src/lcd_xpt2046.c **** 					touch_state = XPT2046_STATE_RELEASE;
+ 795:Core/Src/lcd_xpt2046.c **** 					detectResult = TOUCH_NOT_PRESSED;
+ 796:Core/Src/lcd_xpt2046.c **** 				}
+ 797:Core/Src/lcd_xpt2046.c **** 			break;			
+ 798:Core/Src/lcd_xpt2046.c **** 		
+ 799:Core/Src/lcd_xpt2046.c **** 		default:
+ 800:Core/Src/lcd_xpt2046.c **** 				touch_state = XPT2046_STATE_RELEASE;
+ 2071              		.loc 1 800 5 view .LVU619
+ 2072              		.loc 1 800 17 is_stmt 0 view .LVU620
+ 2073 0010 0024     		movs	r4, #0
+ 2074 0012 204B     		ldr	r3, .L98
+ 2075 0014 1C70     		strb	r4, [r3]
+ 801:Core/Src/lcd_xpt2046.c **** 				detectResult = TOUCH_NOT_PRESSED;
+ 2076              		.loc 1 801 5 is_stmt 1 view .LVU621
+ 802:Core/Src/lcd_xpt2046.c **** 				break;
+ 2077              		.loc 1 802 5 view .LVU622
+ 2078              	.LVL192:
+ 2079              	.L92:
+ 803:Core/Src/lcd_xpt2046.c **** 	
+ 804:Core/Src/lcd_xpt2046.c **** 	}		
+ 805:Core/Src/lcd_xpt2046.c **** 	
+ 806:Core/Src/lcd_xpt2046.c **** 	return detectResult;
+ 2080              		.loc 1 806 2 view .LVU623
+ 807:Core/Src/lcd_xpt2046.c **** }
+ 2081              		.loc 1 807 1 is_stmt 0 view .LVU624
+ 2082 0016 2046     		mov	r0, r4
+ 2083 0018 10BD     		pop	{r4, pc}
+ 2084              	.LVL193:
+ 2085              	.L97:
+ 746:Core/Src/lcd_xpt2046.c **** 			{
+ 2086              		.loc 1 746 4 is_stmt 1 view .LVU625
+ 746:Core/Src/lcd_xpt2046.c **** 			{
+ 2087              		.loc 1 746 7 is_stmt 0 view .LVU626
+ 2088 001a 4FF40071 		mov	r1, #512
+ 2089 001e 1E48     		ldr	r0, .L98+4
+ 2090 0020 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 2091              	.LVL194:
+ 746:Core/Src/lcd_xpt2046.c **** 			{
+ 2092              		.loc 1 746 6 view .LVU627
+ 2093 0024 20B9     		cbnz	r0, .L91
+ 748:Core/Src/lcd_xpt2046.c **** 				detectResult =TOUCH_NOT_PRESSED;
+ 2094              		.loc 1 748 5 is_stmt 1 view .LVU628
+ 748:Core/Src/lcd_xpt2046.c **** 				detectResult =TOUCH_NOT_PRESSED;
+ 2095              		.loc 1 748 17 is_stmt 0 view .LVU629
+ 2096 0026 1B4A     		ldr	r2, .L98
+ 2097 0028 0121     		movs	r1, #1
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 57
+
+
+ 2098 002a 1170     		strb	r1, [r2]
+ 749:Core/Src/lcd_xpt2046.c **** 				}
+ 2099              		.loc 1 749 5 is_stmt 1 view .LVU630
+ 749:Core/Src/lcd_xpt2046.c **** 				}
+ 2100              		.loc 1 749 18 is_stmt 0 view .LVU631
+ 2101 002c 0446     		mov	r4, r0
+ 2102 002e F2E7     		b	.L92
+ 2103              	.L91:
+ 753:Core/Src/lcd_xpt2046.c **** 				detectResult =TOUCH_NOT_PRESSED;
+ 2104              		.loc 1 753 5 is_stmt 1 view .LVU632
+ 753:Core/Src/lcd_xpt2046.c **** 				detectResult =TOUCH_NOT_PRESSED;
+ 2105              		.loc 1 753 17 is_stmt 0 view .LVU633
+ 2106 0030 184B     		ldr	r3, .L98
+ 2107 0032 0022     		movs	r2, #0
+ 2108 0034 1A70     		strb	r2, [r3]
+ 754:Core/Src/lcd_xpt2046.c **** 			}
+ 2109              		.loc 1 754 5 is_stmt 1 view .LVU634
+ 754:Core/Src/lcd_xpt2046.c **** 			}
+ 2110              		.loc 1 754 5 is_stmt 0 view .LVU635
+ 2111 0036 EEE7     		b	.L92
+ 2112              	.L88:
+ 759:Core/Src/lcd_xpt2046.c **** 				{
+ 2113              		.loc 1 759 5 is_stmt 1 view .LVU636
+ 759:Core/Src/lcd_xpt2046.c **** 				{
+ 2114              		.loc 1 759 8 is_stmt 0 view .LVU637
+ 2115 0038 4FF40071 		mov	r1, #512
+ 2116 003c 1648     		ldr	r0, .L98+4
+ 2117 003e FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 2118              	.LVL195:
+ 759:Core/Src/lcd_xpt2046.c **** 				{
+ 2119              		.loc 1 759 7 view .LVU638
+ 2120 0042 88B9     		cbnz	r0, .L93
+ 761:Core/Src/lcd_xpt2046.c **** 					//µÈ´ýÊ±¼ä´óÓÚãÐÖµÔòÈÏÎª´¥Ãþ±»°´ÏÂ
+ 2121              		.loc 1 761 7 is_stmt 1 view .LVU639
+ 761:Core/Src/lcd_xpt2046.c **** 					//µÈ´ýÊ±¼ä´óÓÚãÐÖµÔòÈÏÎª´¥Ãþ±»°´ÏÂ
+ 2122              		.loc 1 761 8 is_stmt 0 view .LVU640
+ 2123 0044 154A     		ldr	r2, .L98+8
+ 2124 0046 1368     		ldr	r3, [r2]
+ 2125 0048 0133     		adds	r3, r3, #1
+ 2126 004a 1360     		str	r3, [r2]
+ 765:Core/Src/lcd_xpt2046.c **** 					{
+ 2127              		.loc 1 765 6 is_stmt 1 view .LVU641
+ 765:Core/Src/lcd_xpt2046.c **** 					{
+ 2128              		.loc 1 765 8 is_stmt 0 view .LVU642
+ 2129 004c 022B     		cmp	r3, #2
+ 2130 004e 06D9     		bls	.L94
+ 767:Core/Src/lcd_xpt2046.c **** 						touch_state = XPT2046_STATE_PRESSED;
+ 2131              		.loc 1 767 7 is_stmt 1 view .LVU643
+ 767:Core/Src/lcd_xpt2046.c **** 						touch_state = XPT2046_STATE_PRESSED;
+ 2132              		.loc 1 767 8 is_stmt 0 view .LVU644
+ 2133 0050 1346     		mov	r3, r2
+ 2134 0052 0022     		movs	r2, #0
+ 2135 0054 1A60     		str	r2, [r3]
+ 768:Core/Src/lcd_xpt2046.c **** 						detectResult = TOUCH_PRESSED;
+ 2136              		.loc 1 768 7 is_stmt 1 view .LVU645
+ 768:Core/Src/lcd_xpt2046.c **** 						detectResult = TOUCH_PRESSED;
+ 2137              		.loc 1 768 19 is_stmt 0 view .LVU646
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 58
+
+
+ 2138 0056 0F4B     		ldr	r3, .L98
+ 2139 0058 0222     		movs	r2, #2
+ 2140 005a 1A70     		strb	r2, [r3]
+ 769:Core/Src/lcd_xpt2046.c **** 					}
+ 2141              		.loc 1 769 7 is_stmt 1 view .LVU647
+ 2142              	.LVL196:
+ 769:Core/Src/lcd_xpt2046.c **** 					}
+ 2143              		.loc 1 769 7 is_stmt 0 view .LVU648
+ 2144 005c DBE7     		b	.L92
+ 2145              	.LVL197:
+ 2146              	.L94:
+ 773:Core/Src/lcd_xpt2046.c **** 						detectResult =	 TOUCH_NOT_PRESSED;					
+ 2147              		.loc 1 773 7 is_stmt 1 view .LVU649
+ 773:Core/Src/lcd_xpt2046.c **** 						detectResult =	 TOUCH_NOT_PRESSED;					
+ 2148              		.loc 1 773 19 is_stmt 0 view .LVU650
+ 2149 005e 0D4B     		ldr	r3, .L98
+ 2150 0060 0122     		movs	r2, #1
+ 2151 0062 1A70     		strb	r2, [r3]
+ 774:Core/Src/lcd_xpt2046.c **** 					}
+ 2152              		.loc 1 774 7 is_stmt 1 view .LVU651
+ 774:Core/Src/lcd_xpt2046.c **** 					}
+ 2153              		.loc 1 774 20 is_stmt 0 view .LVU652
+ 2154 0064 0446     		mov	r4, r0
+ 2155 0066 D6E7     		b	.L92
+ 2156              	.L93:
+ 779:Core/Src/lcd_xpt2046.c ****             touch_state = XPT2046_STATE_RELEASE; 
+ 2157              		.loc 1 779 9 is_stmt 1 view .LVU653
+ 779:Core/Src/lcd_xpt2046.c ****             touch_state = XPT2046_STATE_RELEASE; 
+ 2158              		.loc 1 779 11 is_stmt 0 view .LVU654
+ 2159 0068 0024     		movs	r4, #0
+ 2160 006a 0C4B     		ldr	r3, .L98+8
+ 2161 006c 1C60     		str	r4, [r3]
+ 780:Core/Src/lcd_xpt2046.c **** 						detectResult = TOUCH_NOT_PRESSED;
+ 2162              		.loc 1 780 13 is_stmt 1 view .LVU655
+ 780:Core/Src/lcd_xpt2046.c **** 						detectResult = TOUCH_NOT_PRESSED;
+ 2163              		.loc 1 780 25 is_stmt 0 view .LVU656
+ 2164 006e 094B     		ldr	r3, .L98
+ 2165 0070 1C70     		strb	r4, [r3]
+ 781:Core/Src/lcd_xpt2046.c **** 				}
+ 2166              		.loc 1 781 7 is_stmt 1 view .LVU657
+ 781:Core/Src/lcd_xpt2046.c **** 				}
+ 2167              		.loc 1 781 7 is_stmt 0 view .LVU658
+ 2168 0072 D0E7     		b	.L92
+ 2169              	.L89:
+ 787:Core/Src/lcd_xpt2046.c **** 				{
+ 2170              		.loc 1 787 5 is_stmt 1 view .LVU659
+ 787:Core/Src/lcd_xpt2046.c **** 				{
+ 2171              		.loc 1 787 8 is_stmt 0 view .LVU660
+ 2172 0074 4FF40071 		mov	r1, #512
+ 2173 0078 0748     		ldr	r0, .L98+4
+ 2174 007a FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 2175              	.LVL198:
+ 787:Core/Src/lcd_xpt2046.c **** 				{
+ 2176              		.loc 1 787 7 view .LVU661
+ 2177 007e 20B9     		cbnz	r0, .L95
+ 789:Core/Src/lcd_xpt2046.c **** 					detectResult = TOUCH_PRESSED;
+ 2178              		.loc 1 789 6 is_stmt 1 view .LVU662
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 59
+
+
+ 789:Core/Src/lcd_xpt2046.c **** 					detectResult = TOUCH_PRESSED;
+ 2179              		.loc 1 789 18 is_stmt 0 view .LVU663
+ 2180 0080 044B     		ldr	r3, .L98
+ 2181 0082 0222     		movs	r2, #2
+ 2182 0084 1A70     		strb	r2, [r3]
+ 790:Core/Src/lcd_xpt2046.c **** 				}
+ 2183              		.loc 1 790 6 is_stmt 1 view .LVU664
+ 2184              	.LVL199:
+ 790:Core/Src/lcd_xpt2046.c **** 				}
+ 2185              		.loc 1 790 19 is_stmt 0 view .LVU665
+ 2186 0086 0124     		movs	r4, #1
+ 2187 0088 C5E7     		b	.L92
+ 2188              	.LVL200:
+ 2189              	.L95:
+ 794:Core/Src/lcd_xpt2046.c **** 					detectResult = TOUCH_NOT_PRESSED;
+ 2190              		.loc 1 794 6 is_stmt 1 view .LVU666
+ 794:Core/Src/lcd_xpt2046.c **** 					detectResult = TOUCH_NOT_PRESSED;
+ 2191              		.loc 1 794 18 is_stmt 0 view .LVU667
+ 2192 008a 0024     		movs	r4, #0
+ 2193 008c 014B     		ldr	r3, .L98
+ 2194 008e 1C70     		strb	r4, [r3]
+ 795:Core/Src/lcd_xpt2046.c **** 				}
+ 2195              		.loc 1 795 6 is_stmt 1 view .LVU668
+ 795:Core/Src/lcd_xpt2046.c **** 				}
+ 2196              		.loc 1 795 6 is_stmt 0 view .LVU669
+ 2197 0090 C1E7     		b	.L92
+ 2198              	.L99:
+ 2199 0092 00BF     		.align	2
+ 2200              	.L98:
+ 2201 0094 00000000 		.word	.LANCHOR2
+ 2202 0098 001C0140 		.word	1073814528
+ 2203 009c 00000000 		.word	.LANCHOR3
+ 2204              		.cfi_endproc
+ 2205              	.LFE80:
+ 2207              		.section	.text.XPT2046_TouchDown,"ax",%progbits
+ 2208              		.align	1
+ 2209              		.global	XPT2046_TouchDown
+ 2210              		.syntax unified
+ 2211              		.thumb
+ 2212              		.thumb_func
+ 2214              	XPT2046_TouchDown:
+ 2215              	.LVL201:
+ 2216              	.LFB81:
+ 808:Core/Src/lcd_xpt2046.c **** 
+ 809:Core/Src/lcd_xpt2046.c **** 
+ 810:Core/Src/lcd_xpt2046.c **** /**
+ 811:Core/Src/lcd_xpt2046.c ****   * @brief   ´¥ÃþÆÁ±»°´ÏÂµÄÊ±ºò»áµ÷ÓÃ±¾º¯Êý
+ 812:Core/Src/lcd_xpt2046.c ****   * @param  touch°üº¬´¥Ãþ×ø±êµÄ½á¹¹Ìå
+ 813:Core/Src/lcd_xpt2046.c ****   * @note  ÇëÔÚ±¾º¯ÊýÖÐ±àÐ´×Ô¼ºµÄ´¥Ãþ°´ÏÂ´¦ÀíÓ¦ÓÃ
+ 814:Core/Src/lcd_xpt2046.c ****   * @retval ÎÞ
+ 815:Core/Src/lcd_xpt2046.c ****   */
+ 816:Core/Src/lcd_xpt2046.c **** void XPT2046_TouchDown(strType_XPT2046_Coordinate * touch)
+ 817:Core/Src/lcd_xpt2046.c **** {
+ 2217              		.loc 1 817 1 is_stmt 1 view -0
+ 2218              		.cfi_startproc
+ 2219              		@ args = 0, pretend = 0, frame = 0
+ 2220              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 60
+
+
+ 2221              		.loc 1 817 1 is_stmt 0 view .LVU671
+ 2222 0000 10B5     		push	{r4, lr}
+ 2223              	.LCFI27:
+ 2224              		.cfi_def_cfa_offset 8
+ 2225              		.cfi_offset 4, -8
+ 2226              		.cfi_offset 14, -4
+ 2227 0002 82B0     		sub	sp, sp, #8
+ 2228              	.LCFI28:
+ 2229              		.cfi_def_cfa_offset 16
+ 2230 0004 0446     		mov	r4, r0
+ 818:Core/Src/lcd_xpt2046.c **** 	//ÈôÎª¸ºÖµ±íÊ¾Ö®Ç°ÒÑ´¦Àí¹ý
+ 819:Core/Src/lcd_xpt2046.c **** 	if(touch->pre_x == -1 && touch->pre_y == -1)
+ 2231              		.loc 1 819 2 is_stmt 1 view .LVU672
+ 2232              		.loc 1 819 10 is_stmt 0 view .LVU673
+ 2233 0006 B0F90430 		ldrsh	r3, [r0, #4]
+ 2234              		.loc 1 819 4 view .LVU674
+ 2235 000a B3F1FF3F 		cmp	r3, #-1
+ 2236 000e 04D1     		bne	.L101
+ 2237              		.loc 1 819 32 discriminator 1 view .LVU675
+ 2238 0010 B0F90630 		ldrsh	r3, [r0, #6]
+ 2239              		.loc 1 819 24 discriminator 1 view .LVU676
+ 2240 0014 B3F1FF3F 		cmp	r3, #-1
+ 2241 0018 13D0     		beq	.L100
+ 2242              	.L101:
+ 820:Core/Src/lcd_xpt2046.c **** 		return;
+ 821:Core/Src/lcd_xpt2046.c **** 	
+ 822:Core/Src/lcd_xpt2046.c **** 	/***ÔÚ´Ë´¦±àÐ´×Ô¼ºµÄ´¥Ãþ°´ÏÂ´¦ÀíÓ¦ÓÃ***/
+ 823:Core/Src/lcd_xpt2046.c ****   
+ 824:Core/Src/lcd_xpt2046.c **** 	/*´¦Àí´¥Ãþ»­°åµÄÑ¡Ôñ°´Å¥*/
+ 825:Core/Src/lcd_xpt2046.c ****   Touch_Button_Down(touch->x,touch->y);
+ 2243              		.loc 1 825 3 is_stmt 1 view .LVU677
+ 2244              		.loc 1 825 26 is_stmt 0 view .LVU678
+ 2245 001a B4F90000 		ldrsh	r0, [r4]
+ 2246              	.LVL202:
+ 2247              		.loc 1 825 35 view .LVU679
+ 2248 001e B4F90210 		ldrsh	r1, [r4, #2]
+ 2249              		.loc 1 825 3 view .LVU680
+ 2250 0022 89B2     		uxth	r1, r1
+ 2251 0024 80B2     		uxth	r0, r0
+ 2252 0026 FFF7FEFF 		bl	Touch_Button_Down
+ 2253              	.LVL203:
+ 826:Core/Src/lcd_xpt2046.c ****   
+ 827:Core/Src/lcd_xpt2046.c ****   /*´¦ÀíÃè»æ¹ì¼£*/
+ 828:Core/Src/lcd_xpt2046.c ****   Draw_Trail(touch->pre_x,touch->pre_y,touch->x,touch->y,&brush);
+ 2254              		.loc 1 828 3 is_stmt 1 view .LVU681
+ 2255 002a 074B     		ldr	r3, .L104
+ 2256 002c 0093     		str	r3, [sp]
+ 2257 002e B4F90230 		ldrsh	r3, [r4, #2]
+ 2258 0032 B4F90020 		ldrsh	r2, [r4]
+ 2259 0036 B4F90610 		ldrsh	r1, [r4, #6]
+ 2260 003a B4F90400 		ldrsh	r0, [r4, #4]
+ 2261 003e FFF7FEFF 		bl	Draw_Trail
+ 2262              	.LVL204:
+ 2263              	.L100:
+ 829:Core/Src/lcd_xpt2046.c **** 	
+ 830:Core/Src/lcd_xpt2046.c **** 	/***ÔÚÉÏÃæ±àÐ´×Ô¼ºµÄ´¥Ãþ°´ÏÂ´¦ÀíÓ¦ÓÃ***/
+ 831:Core/Src/lcd_xpt2046.c **** 	
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 61
+
+
+ 832:Core/Src/lcd_xpt2046.c **** 	
+ 833:Core/Src/lcd_xpt2046.c **** }
+ 2264              		.loc 1 833 1 is_stmt 0 view .LVU682
+ 2265 0042 02B0     		add	sp, sp, #8
+ 2266              	.LCFI29:
+ 2267              		.cfi_def_cfa_offset 8
+ 2268              		@ sp needed
+ 2269 0044 10BD     		pop	{r4, pc}
+ 2270              	.LVL205:
+ 2271              	.L105:
+ 2272              		.loc 1 833 1 view .LVU683
+ 2273 0046 00BF     		.align	2
+ 2274              	.L104:
+ 2275 0048 00000000 		.word	brush
+ 2276              		.cfi_endproc
+ 2277              	.LFE81:
+ 2279              		.section	.text.XPT2046_TouchUp,"ax",%progbits
+ 2280              		.align	1
+ 2281              		.global	XPT2046_TouchUp
+ 2282              		.syntax unified
+ 2283              		.thumb
+ 2284              		.thumb_func
+ 2286              	XPT2046_TouchUp:
+ 2287              	.LVL206:
+ 2288              	.LFB82:
+ 834:Core/Src/lcd_xpt2046.c **** 
+ 835:Core/Src/lcd_xpt2046.c **** /**
+ 836:Core/Src/lcd_xpt2046.c ****   * @brief   ´¥ÃþÆÁÊÍ·ÅµÄÊ±ºò»áµ÷ÓÃ±¾º¯Êý
+ 837:Core/Src/lcd_xpt2046.c ****   * @param  touch°üº¬´¥Ãþ×ø±êµÄ½á¹¹Ìå
+ 838:Core/Src/lcd_xpt2046.c ****   * @note  ÇëÔÚ±¾º¯ÊýÖÐ±àÐ´×Ô¼ºµÄ´¥ÃþÊÍ·Å´¦ÀíÓ¦ÓÃ
+ 839:Core/Src/lcd_xpt2046.c ****   * @retval ÎÞ
+ 840:Core/Src/lcd_xpt2046.c ****   */
+ 841:Core/Src/lcd_xpt2046.c **** void XPT2046_TouchUp(strType_XPT2046_Coordinate * touch) 
+ 842:Core/Src/lcd_xpt2046.c **** {
+ 2289              		.loc 1 842 1 is_stmt 1 view -0
+ 2290              		.cfi_startproc
+ 2291              		@ args = 0, pretend = 0, frame = 0
+ 2292              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2293              		.loc 1 842 1 is_stmt 0 view .LVU685
+ 2294 0000 08B5     		push	{r3, lr}
+ 2295              	.LCFI30:
+ 2296              		.cfi_def_cfa_offset 8
+ 2297              		.cfi_offset 3, -8
+ 2298              		.cfi_offset 14, -4
+ 843:Core/Src/lcd_xpt2046.c **** 	//ÈôÎª¸ºÖµ±íÊ¾Ö®Ç°ÒÑ´¦Àí¹ý
+ 844:Core/Src/lcd_xpt2046.c **** 	if(touch->pre_x == -1 && touch->pre_y == -1)
+ 2299              		.loc 1 844 2 is_stmt 1 view .LVU686
+ 2300              		.loc 1 844 10 is_stmt 0 view .LVU687
+ 2301 0002 B0F90430 		ldrsh	r3, [r0, #4]
+ 2302              		.loc 1 844 4 view .LVU688
+ 2303 0006 B3F1FF3F 		cmp	r3, #-1
+ 2304 000a 04D1     		bne	.L107
+ 2305              		.loc 1 844 32 discriminator 1 view .LVU689
+ 2306 000c B0F90620 		ldrsh	r2, [r0, #6]
+ 2307              		.loc 1 844 24 discriminator 1 view .LVU690
+ 2308 0010 B2F1FF3F 		cmp	r2, #-1
+ 2309 0014 05D0     		beq	.L106
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 62
+
+
+ 2310              	.L107:
+ 845:Core/Src/lcd_xpt2046.c **** 		return;
+ 846:Core/Src/lcd_xpt2046.c **** 		
+ 847:Core/Src/lcd_xpt2046.c **** 	/***ÔÚ´Ë´¦±àÐ´×Ô¼ºµÄ´¥ÃþÊÍ·Å´¦ÀíÓ¦ÓÃ***/
+ 848:Core/Src/lcd_xpt2046.c ****   
+ 849:Core/Src/lcd_xpt2046.c **** 	/*´¦Àí´¥Ãþ»­°åµÄÑ¡Ôñ°´Å¥*/
+ 850:Core/Src/lcd_xpt2046.c ****   Touch_Button_Up(touch->pre_x,touch->pre_y);	
+ 2311              		.loc 1 850 3 is_stmt 1 view .LVU691
+ 2312              		.loc 1 850 37 is_stmt 0 view .LVU692
+ 2313 0016 B0F90610 		ldrsh	r1, [r0, #6]
+ 2314              		.loc 1 850 3 view .LVU693
+ 2315 001a 89B2     		uxth	r1, r1
+ 2316 001c 98B2     		uxth	r0, r3
+ 2317              	.LVL207:
+ 2318              		.loc 1 850 3 view .LVU694
+ 2319 001e FFF7FEFF 		bl	Touch_Button_Up
+ 2320              	.LVL208:
+ 2321              	.L106:
+ 851:Core/Src/lcd_xpt2046.c **** 	
+ 852:Core/Src/lcd_xpt2046.c **** 	/***ÔÚÉÏÃæ±àÐ´×Ô¼ºµÄ´¥ÃþÊÍ·Å´¦ÀíÓ¦ÓÃ***/
+ 853:Core/Src/lcd_xpt2046.c **** }
+ 2322              		.loc 1 853 1 view .LVU695
+ 2323 0022 08BD     		pop	{r3, pc}
+ 2324              		.cfi_endproc
+ 2325              	.LFE82:
+ 2327              		.section	.text.XPT2046_TouchEvenHandler,"ax",%progbits
+ 2328              		.align	1
+ 2329              		.global	XPT2046_TouchEvenHandler
+ 2330              		.syntax unified
+ 2331              		.thumb
+ 2332              		.thumb_func
+ 2334              	XPT2046_TouchEvenHandler:
+ 2335              	.LFB83:
+ 854:Core/Src/lcd_xpt2046.c **** 
+ 855:Core/Src/lcd_xpt2046.c **** /**
+ 856:Core/Src/lcd_xpt2046.c **** 	* @brief   ¼ì²âµ½´¥ÃþÖÐ¶ÏÊ±µ÷ÓÃµÄ´¦Àíº¯Êý,Í¨¹ýËüµ÷ÓÃtp_down ºÍtp_up»ã±¨´¥Ãþµã
+ 857:Core/Src/lcd_xpt2046.c **** 	*	@note 	 ±¾º¯ÊýÐèÒªÔÚwhileÑ­»·Àï±»µ÷ÓÃ£¬Ò²¿ÉÊ¹ÓÃ¶¨Ê±Æ÷¶¨Ê±µ÷ÓÃ
+ 858:Core/Src/lcd_xpt2046.c **** 	*			ÀýÈç£¬¿ÉÒÔÃ¿¸ô5msµ÷ÓÃÒ»´Î£¬Ïû¶¶ãÐÖµºêDURIATION_TIME¿ÉÉèÖÃÎª2£¬ÕâÑùÃ¿Ãë×î¶à¿ÉÒÔ¼ì²â100¸öµã¡£
+ 859:Core/Src/lcd_xpt2046.c **** 	*						¿ÉÔÚXPT2046_TouchDown¼°XPT2046_TouchUpº¯ÊýÖÐ±àÐ´×Ô¼ºµÄ´¥ÃþÓ¦ÓÃ
+ 860:Core/Src/lcd_xpt2046.c **** 	* @param   none
+ 861:Core/Src/lcd_xpt2046.c **** 	* @retval  none
+ 862:Core/Src/lcd_xpt2046.c **** 	*/
+ 863:Core/Src/lcd_xpt2046.c **** void XPT2046_TouchEvenHandler(void )
+ 864:Core/Src/lcd_xpt2046.c **** {
+ 2336              		.loc 1 864 1 is_stmt 1 view -0
+ 2337              		.cfi_startproc
+ 2338              		@ args = 0, pretend = 0, frame = 0
+ 2339              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2340 0000 10B5     		push	{r4, lr}
+ 2341              	.LCFI31:
+ 2342              		.cfi_def_cfa_offset 8
+ 2343              		.cfi_offset 4, -8
+ 2344              		.cfi_offset 14, -4
+ 865:Core/Src/lcd_xpt2046.c **** 	  static strType_XPT2046_Coordinate cinfo={-1,-1,-1,-1};
+ 2345              		.loc 1 865 4 view .LVU697
+ 866:Core/Src/lcd_xpt2046.c **** 	
+ 867:Core/Src/lcd_xpt2046.c **** 		if(XPT2046_TouchDetect() == TOUCH_PRESSED)
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 63
+
+
+ 2346              		.loc 1 867 3 view .LVU698
+ 2347              		.loc 1 867 6 is_stmt 0 view .LVU699
+ 2348 0002 FFF7FEFF 		bl	XPT2046_TouchDetect
+ 2349              	.LVL209:
+ 2350              		.loc 1 867 5 view .LVU700
+ 2351 0006 0128     		cmp	r0, #1
+ 2352 0008 12D0     		beq	.L114
+ 868:Core/Src/lcd_xpt2046.c **** 		{
+ 869:Core/Src/lcd_xpt2046.c **** 			LED_GREEN;
+ 870:Core/Src/lcd_xpt2046.c **** 			
+ 871:Core/Src/lcd_xpt2046.c **** 			//»ñÈ¡´¥Ãþ×ø±ê
+ 872:Core/Src/lcd_xpt2046.c **** 			XPT2046_Get_TouchedPoint(&cinfo,strXPT2046_TouchPara);
+ 873:Core/Src/lcd_xpt2046.c **** 			
+ 874:Core/Src/lcd_xpt2046.c **** 			//Êä³öµ÷ÊÔÐÅÏ¢µ½´®¿Ú
+ 875:Core/Src/lcd_xpt2046.c **** 			XPT2046_DEBUG("x=%d,y=%d",cinfo.x,cinfo.y);
+ 876:Core/Src/lcd_xpt2046.c **** 			
+ 877:Core/Src/lcd_xpt2046.c **** 			//µ÷ÓÃ´¥Ãþ±»°´ÏÂÊ±µÄ´¦Àíº¯Êý£¬¿ÉÔÚ¸Ãº¯Êý±àÐ´×Ô¼ºµÄ´¥Ãþ°´ÏÂ´¦Àí¹ý³Ì
+ 878:Core/Src/lcd_xpt2046.c **** 			XPT2046_TouchDown(&cinfo);
+ 879:Core/Src/lcd_xpt2046.c **** 			
+ 880:Core/Src/lcd_xpt2046.c **** 			/*¸üÐÂ´¥ÃþÐÅÏ¢µ½pre xy*/
+ 881:Core/Src/lcd_xpt2046.c **** 			cinfo.pre_x = cinfo.x; cinfo.pre_y = cinfo.y;  
+ 882:Core/Src/lcd_xpt2046.c **** 
+ 883:Core/Src/lcd_xpt2046.c **** 		}
+ 884:Core/Src/lcd_xpt2046.c **** 		else
+ 885:Core/Src/lcd_xpt2046.c **** 		{
+ 886:Core/Src/lcd_xpt2046.c **** 			LED_BLUE;
+ 2353              		.loc 1 886 4 is_stmt 1 view .LVU701
+ 2354 000a 154B     		ldr	r3, .L115
+ 2355 000c 2022     		movs	r2, #32
+ 2356 000e 1A61     		str	r2, [r3, #16]
+ 2357              		.loc 1 886 4 view .LVU702
+ 2358              		.loc 1 886 4 view .LVU703
+ 2359 0010 0122     		movs	r2, #1
+ 2360 0012 1A61     		str	r2, [r3, #16]
+ 2361              		.loc 1 886 4 view .LVU704
+ 2362 0014 4FF40032 		mov	r2, #131072
+ 2363 0018 1A61     		str	r2, [r3, #16]
+ 2364              		.loc 1 886 12 view .LVU705
+ 887:Core/Src/lcd_xpt2046.c **** 			
+ 888:Core/Src/lcd_xpt2046.c **** 			//µ÷ÓÃ´¥Ãþ±»ÊÍ·ÅÊ±µÄ´¦Àíº¯Êý£¬¿ÉÔÚ¸Ãº¯Êý±àÐ´×Ô¼ºµÄ´¥ÃþÊÍ·Å´¦Àí¹ý³Ì
+ 889:Core/Src/lcd_xpt2046.c **** 			XPT2046_TouchUp(&cinfo); 
+ 2365              		.loc 1 889 4 view .LVU706
+ 2366 001a 124C     		ldr	r4, .L115+4
+ 2367 001c 2046     		mov	r0, r4
+ 2368 001e FFF7FEFF 		bl	XPT2046_TouchUp
+ 2369              	.LVL210:
+ 890:Core/Src/lcd_xpt2046.c **** 			
+ 891:Core/Src/lcd_xpt2046.c **** 			/*´¥±ÊÊÍ·Å£¬°Ñ xy ÖØÖÃÎª¸º*/
+ 892:Core/Src/lcd_xpt2046.c **** 			cinfo.x = -1;
+ 2370              		.loc 1 892 4 view .LVU707
+ 2371              		.loc 1 892 12 is_stmt 0 view .LVU708
+ 2372 0022 4FF6FF73 		movw	r3, #65535
+ 2373 0026 2380     		strh	r3, [r4]	@ movhi
+ 893:Core/Src/lcd_xpt2046.c **** 			cinfo.y = -1; 
+ 2374              		.loc 1 893 4 is_stmt 1 view .LVU709
+ 2375              		.loc 1 893 12 is_stmt 0 view .LVU710
+ 2376 0028 6380     		strh	r3, [r4, #2]	@ movhi
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 64
+
+
+ 894:Core/Src/lcd_xpt2046.c **** 			cinfo.pre_x = -1;
+ 2377              		.loc 1 894 4 is_stmt 1 view .LVU711
+ 2378              		.loc 1 894 16 is_stmt 0 view .LVU712
+ 2379 002a A380     		strh	r3, [r4, #4]	@ movhi
+ 895:Core/Src/lcd_xpt2046.c **** 			cinfo.pre_y = -1;
+ 2380              		.loc 1 895 4 is_stmt 1 view .LVU713
+ 2381              		.loc 1 895 16 is_stmt 0 view .LVU714
+ 2382 002c E380     		strh	r3, [r4, #6]	@ movhi
+ 2383              	.L110:
+ 896:Core/Src/lcd_xpt2046.c **** 		}
+ 897:Core/Src/lcd_xpt2046.c **** 
+ 898:Core/Src/lcd_xpt2046.c **** }
+ 2384              		.loc 1 898 1 view .LVU715
+ 2385 002e 10BD     		pop	{r4, pc}
+ 2386              	.L114:
+ 869:Core/Src/lcd_xpt2046.c **** 			
+ 2387              		.loc 1 869 4 is_stmt 1 view .LVU716
+ 2388 0030 0B4B     		ldr	r3, .L115
+ 2389 0032 2022     		movs	r2, #32
+ 2390 0034 1A61     		str	r2, [r3, #16]
+ 869:Core/Src/lcd_xpt2046.c **** 			
+ 2391              		.loc 1 869 4 view .LVU717
+ 869:Core/Src/lcd_xpt2046.c **** 			
+ 2392              		.loc 1 869 4 view .LVU718
+ 2393 0036 4FF48032 		mov	r2, #65536
+ 2394 003a 1A61     		str	r2, [r3, #16]
+ 869:Core/Src/lcd_xpt2046.c **** 			
+ 2395              		.loc 1 869 4 view .LVU719
+ 2396 003c 0222     		movs	r2, #2
+ 2397 003e 1A61     		str	r2, [r3, #16]
+ 869:Core/Src/lcd_xpt2046.c **** 			
+ 2398              		.loc 1 869 13 view .LVU720
+ 872:Core/Src/lcd_xpt2046.c **** 			
+ 2399              		.loc 1 872 4 view .LVU721
+ 2400 0040 084C     		ldr	r4, .L115+4
+ 2401 0042 0949     		ldr	r1, .L115+8
+ 2402 0044 2046     		mov	r0, r4
+ 2403 0046 FFF7FEFF 		bl	XPT2046_Get_TouchedPoint
+ 2404              	.LVL211:
+ 875:Core/Src/lcd_xpt2046.c **** 			
+ 2405              		.loc 1 875 4 view .LVU722
+ 875:Core/Src/lcd_xpt2046.c **** 			
+ 2406              		.loc 1 875 4 view .LVU723
+ 875:Core/Src/lcd_xpt2046.c **** 			
+ 2407              		.loc 1 875 4 view .LVU724
+ 878:Core/Src/lcd_xpt2046.c **** 			
+ 2408              		.loc 1 878 4 view .LVU725
+ 2409 004a 2046     		mov	r0, r4
+ 2410 004c FFF7FEFF 		bl	XPT2046_TouchDown
+ 2411              	.LVL212:
+ 881:Core/Src/lcd_xpt2046.c **** 
+ 2412              		.loc 1 881 4 view .LVU726
+ 881:Core/Src/lcd_xpt2046.c **** 
+ 2413              		.loc 1 881 23 is_stmt 0 view .LVU727
+ 2414 0050 B4F90030 		ldrsh	r3, [r4]
+ 881:Core/Src/lcd_xpt2046.c **** 
+ 2415              		.loc 1 881 16 view .LVU728
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 65
+
+
+ 2416 0054 A380     		strh	r3, [r4, #4]	@ movhi
+ 881:Core/Src/lcd_xpt2046.c **** 
+ 2417              		.loc 1 881 27 is_stmt 1 view .LVU729
+ 881:Core/Src/lcd_xpt2046.c **** 
+ 2418              		.loc 1 881 46 is_stmt 0 view .LVU730
+ 2419 0056 B4F90230 		ldrsh	r3, [r4, #2]
+ 881:Core/Src/lcd_xpt2046.c **** 
+ 2420              		.loc 1 881 39 view .LVU731
+ 2421 005a E380     		strh	r3, [r4, #6]	@ movhi
+ 2422 005c E7E7     		b	.L110
+ 2423              	.L116:
+ 2424 005e 00BF     		.align	2
+ 2425              	.L115:
+ 2426 0060 000C0140 		.word	1073810432
+ 2427 0064 00000000 		.word	.LANCHOR4
+ 2428 0068 00000000 		.word	.LANCHOR1
+ 2429              		.cfi_endproc
+ 2430              	.LFE83:
+ 2432              		.global	ucXPT2046_TouchFlag
+ 2433              		.global	strXPT2046_TouchPara
+ 2434              		.section	.bss.i.1,"aw",%nobits
+ 2435              		.align	2
+ 2436              		.set	.LANCHOR3,. + 0
+ 2439              	i.1:
+ 2440 0000 00000000 		.space	4
+ 2441              		.section	.bss.touch_state.2,"aw",%nobits
+ 2442              		.set	.LANCHOR2,. + 0
+ 2445              	touch_state.2:
+ 2446 0000 00       		.space	1
+ 2447              		.section	.bss.ucXPT2046_TouchFlag,"aw",%nobits
+ 2448              		.set	.LANCHOR0,. + 0
+ 2451              	ucXPT2046_TouchFlag:
+ 2452 0000 00       		.space	1
+ 2453              		.section	.data.cinfo.0,"aw"
+ 2454              		.align	2
+ 2455              		.set	.LANCHOR4,. + 0
+ 2458              	cinfo.0:
+ 2459 0000 FFFF     		.short	-1
+ 2460 0002 FFFF     		.short	-1
+ 2461 0004 FFFF     		.short	-1
+ 2462 0006 FFFF     		.short	-1
+ 2463              		.section	.data.strXPT2046_TouchPara,"aw"
+ 2464              		.align	2
+ 2465              		.set	.LANCHOR1,. + 0
+ 2468              	strXPT2046_TouchPara:
+ 2469 0000 F6CFD3BB 		.word	-1143746570
+ 2470 0004 D10896BD 		.word	-1114240815
+ 2471 0008 D42D8C43 		.word	1133260244
+ 2472 000c A359993D 		.word	1033460131
+ 2473 0010 D97A063B 		.word	990280409
+ 2474 0014 A578D1C0 		.word	-1060013915
+ 2475 0018 65C5B03D 		.word	1034995045
+ 2476 001c 6EDBF73A 		.word	989322094
+ 2477 0020 F3624DC1 		.word	-1051893005
+ 2478 0024 CCEC73BB 		.word	-1150030644
+ 2479 0028 A0C186BD 		.word	-1115242080
+ 2480 002c 39B77E43 		.word	1132377913
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 66
+
+
+ 2481 0030 3752363B 		.word	993415735
+ 2482 0034 7EFE7B3D 		.word	1031536254
+ 2483 0038 F18739C1 		.word	-1053194255
+ 2484 003c F3C9AA3D 		.word	1034602995
+ 2485 0040 D40CA93B 		.word	1000934612
+ 2486 0044 C4667AC1 		.word	-1048942908
+ 2487 0048 2ECBB73D 		.word	1035455278
+ 2488 004c EC8497B9 		.word	-1181252372
+ 2489 0050 CEE5A4C1 		.word	-1046157874
+ 2490 0054 CA17B4BA 		.word	-1162602550
+ 2491 0058 E3FE833D 		.word	1032060643
+ 2492 005c 996E80C1 		.word	-1048547687
+ 2493 0060 8010493A 		.word	977866880
+ 2494 0064 DACA8BBD 		.word	-1114912038
+ 2495 0068 4BE47A43 		.word	1132127307
+ 2496 006c 8F39AFBD 		.word	-1112589937
+ 2497 0070 EA784CB9 		.word	-1186170646
+ 2498 0074 B35FA743 		.word	1135042483
+ 2499 0078 438EADBD 		.word	-1112699325
+ 2500 007c DE214538 		.word	944054750
+ 2501 0080 E294A143 		.word	1134662882
+ 2502 0084 26370ABB 		.word	-1156958426
+ 2503 0088 85ED87BD 		.word	-1115165307
+ 2504 008c 2F7E8243 		.word	1132625455
+ 2505 0090 9738F2BA 		.word	-1158530921
+ 2506 0094 E82E893D 		.word	1032400616
+ 2507 0098 07EA4CC1 		.word	-1051923961
+ 2508 009c 08CAADBD 		.word	-1112684024
+ 2509 00a0 A30653BA 		.word	-1168963933
+ 2510 00a4 9CB2A643 		.word	1134998172
+ 2511 00a8 E50AAFBD 		.word	-1112601883
+ 2512 00ac 5DA365BA 		.word	-1167744163
+ 2513 00b0 F702A743 		.word	1135018743
+ 2514 00b4 C32A5EBB 		.word	-1151456573
+ 2515 00b8 8A8E843D 		.word	1032097418
+ 2516 00bc E5C1C6C0 		.word	-1060716059
+ 2517              		.text
+ 2518              	.Letext0:
+ 2519              		.file 2 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 2520              		.file 3 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 2521              		.file 4 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 2522              		.file 5 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h"
+ 2523              		.file 6 "Core/Inc/lcd_xpt2046.h"
+ 2524              		.file 7 "Core/Inc/fonts.h"
+ 2525              		.file 8 "Core/Inc/lcd.h"
+ 2526              		.file 9 "Core/Inc/palette.h"
+ 2527              		.file 10 "Core/Inc/bsp_spi_flash.h"
+ 2528              		.file 11 "d:\\mingw\\gcc-arm-none-eabi-10.3-2021.10-win32\\gcc-arm-none-eabi-10.3-2021.10\\arm-non
+ 2529              		.file 12 "<built-in>"
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 67
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lcd_xpt2046.c
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:18     .text.XPT2046_DelayUS:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:23     .text.XPT2046_DelayUS:00000000 XPT2046_DelayUS
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:85     .text.XPT2046_WriteCMD:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:90     .text.XPT2046_WriteCMD:00000000 XPT2046_WriteCMD
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:181    .text.XPT2046_WriteCMD:0000005c $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:189    .text.XPT2046_Calculate_CalibrationFactor:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:194    .text.XPT2046_Calculate_CalibrationFactor:00000000 XPT2046_Calculate_CalibrationFactor
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:463    .text.ILI9341_DrawCross:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:468    .text.ILI9341_DrawCross:00000000 ILI9341_DrawCross
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:510    .text.XPT2046_ReadCMD:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:515    .text.XPT2046_ReadCMD:00000000 XPT2046_ReadCMD
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:597    .text.XPT2046_ReadCMD:00000044 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:603    .text.XPT2046_ReadAdc:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:608    .text.XPT2046_ReadAdc:00000000 XPT2046_ReadAdc
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:634    .text.XPT2046_ReadAdc_XY:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:639    .text.XPT2046_ReadAdc_XY:00000000 XPT2046_ReadAdc_XY
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:689    .text.XPT2046_ReadAdc_Smooth_XY:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:694    .text.XPT2046_ReadAdc_Smooth_XY:00000000 XPT2046_ReadAdc_Smooth_XY
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1006   .text.XPT2046_ReadAdc_Smooth_XY:00000148 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1012   .text.XPT2046_Init:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1018   .text.XPT2046_Init:00000000 XPT2046_Init
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1155   .text.XPT2046_Init:00000090 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1162   .rodata.XPT2046_Touch_Calibrate.str1.4:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1185   .text.XPT2046_Touch_Calibrate:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1191   .text.XPT2046_Touch_Calibrate:00000000 XPT2046_Touch_Calibrate
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1643   .text.XPT2046_Touch_Calibrate:00000258 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1657   .text.XPT2046_Touch_Calibrate:00000280 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1764   .text.XPT2046_Touch_Calibrate:00000318 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1774   .text.Calibrate_or_Get_TouchParaWithFlash:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1780   .text.Calibrate_or_Get_TouchParaWithFlash:00000000 Calibrate_or_Get_TouchParaWithFlash
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1891   .text.Calibrate_or_Get_TouchParaWithFlash:00000090 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1897   .text.XPT2046_Get_TouchedPoint:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:1903   .text.XPT2046_Get_TouchedPoint:00000000 XPT2046_Get_TouchedPoint
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2037   .text.XPT2046_Get_TouchedPoint:000000ac $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2042   .text.XPT2046_TouchDetect:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2048   .text.XPT2046_TouchDetect:00000000 XPT2046_TouchDetect
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2201   .text.XPT2046_TouchDetect:00000094 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2208   .text.XPT2046_TouchDown:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2214   .text.XPT2046_TouchDown:00000000 XPT2046_TouchDown
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2275   .text.XPT2046_TouchDown:00000048 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2280   .text.XPT2046_TouchUp:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2286   .text.XPT2046_TouchUp:00000000 XPT2046_TouchUp
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2328   .text.XPT2046_TouchEvenHandler:00000000 $t
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2334   .text.XPT2046_TouchEvenHandler:00000000 XPT2046_TouchEvenHandler
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2426   .text.XPT2046_TouchEvenHandler:00000060 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2451   .bss.ucXPT2046_TouchFlag:00000000 ucXPT2046_TouchFlag
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2468   .data.strXPT2046_TouchPara:00000000 strXPT2046_TouchPara
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2435   .bss.i.1:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2439   .bss.i.1:00000000 i.1
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2445   .bss.touch_state.2:00000000 touch_state.2
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2446   .bss.touch_state.2:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2452   .bss.ucXPT2046_TouchFlag:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2454   .data.cinfo.0:00000000 $d
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2458   .data.cinfo.0:00000000 cinfo.0
+C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s:2464   .data.strXPT2046_TouchPara:00000000 $d
+ARM GAS  C:\Users\84759\AppData\Local\Temp\ccyKMQX0.s 			page 68
+
+
+
+UNDEFINED SYMBOLS
+__aeabi_i2f
+__aeabi_fcmpeq
+ILI9341_DrawLine
+HAL_GPIO_ReadPin
+memset
+HAL_GPIO_Init
+__aeabi_fmul
+__aeabi_fadd
+__aeabi_fdiv
+__aeabi_f2uiz
+LCD_SetFont
+LCD_SetColors
+ILI9341_GramScan
+ILI9341_Clear
+LCD_GetFont
+sprintf
+ILI9341_DispStringLine_EN
+LCD_SetTextColor
+Font8x16
+LCD_X_LENGTH
+LCD_Y_LENGTH
+SPI_FLASH_Init
+SPI_FLASH_BufferRead
+SPI_FLASH_SectorErase
+SPI_FLASH_BufferWrite
+__aeabi_f2iz
+LCD_SCAN_MODE
+Touch_Button_Down
+Draw_Trail
+brush
+Touch_Button_Up
